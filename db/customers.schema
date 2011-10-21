@@ -1,0 +1,65 @@
+#
+# Description
+# -----------
+# The customers table stores information for each
+# customer of a business.
+#
+# Information in this table should be the same
+# as what is stored in users.users table when
+# a customer has a login to the system.
+#
+# If the customer does not have a login to the system,
+# then they will only exist in this table.  If they want
+# to login online, then they must have an entry in users module.
+#
+# Fields
+# ------
+# id: 				The id for each customer.
+#
+# business_id:		The business the customer is attached to.
+#
+# status:			0 - unknown
+#					1 - active
+#					2 - deleted
+#
+# prefix:			Dr. Mr. Ms. Miss. Mrs.
+# first:			The first name(s) of the customer.
+# middle:			The middle name(s) of the customer.
+# last:				The last name(s) of the customer.
+# suffix:			Any letters after the end of their name, Ph.D, etc.
+#
+# company:			The company the customer is associated with.
+# department:		The department within the company.
+# title:			The title in that department.
+#
+# notes:			The current notes for the customer.  Any updates to notes are tracked through change_log.
+#
+# date_added:		The date and time the record was added.
+# last_updated:		The date and time the record was udpated.
+# 
+create table customers (
+	id int not null auto_increment,
+	business_id int not null,
+	status tinyint unsigned not null,
+	prefix varchar(10) not null,
+	first varchar(100) not null,
+	middle varchar(100) not null,
+	last varchar(100) not null,
+	suffix varchar(100) not null,
+	company varchar(100) not null,
+	department varchar(100) not null,
+	title varchar(100) not null,
+	phone_home varchar(50) not null,
+	phone_work varchar(50) not null,
+	phone_cell varchar(50) not null,
+	phone_fax varchar(50) not null,
+	primary_email varchar(255) not null,
+	alternate_email varchar(255) not null,
+	notes varchar(6000) not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index (business_id),
+	index (first, middle, last),
+	index (company)
+) ENGINE='InnoDB', COMMENT='v1.02';

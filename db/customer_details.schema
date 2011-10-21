@@ -1,0 +1,32 @@
+#
+# Description
+# -----------
+# The customer_details table stores extra information for a customer
+# in a non-restrictive manner.  Extra data fields can be added
+# for a customer without having to change the database structure.
+#
+# The detail_key is a decimal notated key.  Some examples:
+# notes.(timestamp).date - The date and time of the note.
+# notes.(timestamp).text - The data the user entered.
+# notes.(timestamp).user_id - The user who added the note.
+# relationship - the relationship with the business in addition to customer. eg: partner, employee, friend, etc
+# birthday - the birthday of the customer.
+#
+# custom.name = string (custom fields create by the business)
+#
+# Fields
+# ------
+# customer_id:		The customer the detail is for.
+# detail_key:		The detail key.
+# detail_value:		The data stored for the key.
+# date_added:		The date and time the record was added.
+# last_updated:		The date and time the record was last updated.
+#
+create table customer_details (
+	customer_id int not null,
+	detail_key varchar(50) not null,
+	detail_value varchar(255) not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (customer_id, detail_key)
+);

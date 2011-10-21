@@ -1,0 +1,11 @@
+#
+# This file will upgrade the database table customers to version 1.02.
+#
+ALTER TABLE customers ADD COLUMN phone_home varchar(50) not null after title;
+ALTER TABLE customers ADD COLUMN phone_work varchar(50) not null after phone_home;
+ALTER TABLE customers ADD COLUMN phone_cell varchar(50) not null after phone_work;
+ALTER TABLE customers ADD COLUMN phone_fax varchar(50) not null after phone_cell;
+ALTER TABLE customers ADD COLUMN primary_email varchar(255) not null after phone_fax;
+ALTER TABLE customers ADD COLUMN alternate_email varchar(255) not null after primary_email;
+ALTER TABLE customers MODIFY COLUMN notes varchar(6000) not null;
+ALTER TABLE customers COMMENT='v1.02';
