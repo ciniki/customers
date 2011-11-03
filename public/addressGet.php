@@ -61,7 +61,7 @@ function ciniki_customers_addressGet($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['address']) ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'380', 'msg'=>'Invalid customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'380', 'msg'=>'Invalid customer'));
 	}
 	return array('stat'=>'ok', 'address'=>$rc['address']);
 }

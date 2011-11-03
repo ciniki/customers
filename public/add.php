@@ -49,7 +49,7 @@ function ciniki_customers_add($ciniki) {
 	// They must specify either a firstname or lastname
 	//
 	if( $args['first'] == '' && $args['last'] == '' && $args['name'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'368', 'msg'=>'You must specify a first or last name'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'368', 'msg'=>'You must specify a first or last name'));
 	}
 
 	//
@@ -118,7 +118,7 @@ function ciniki_customers_add($ciniki) {
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
-		return array('stat'=>'fail', 'err'=>array('code'=>'369', 'msg'=>'Unable to add customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'369', 'msg'=>'Unable to add customer'));
 	}
 	$customer_id = $rc['insert_id'];
 

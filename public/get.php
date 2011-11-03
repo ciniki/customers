@@ -58,7 +58,7 @@ function ciniki_customers_get($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['customer']) ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'370', 'msg'=>'Invalid customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'370', 'msg'=>'Invalid customer'));
 	}
 	return array('stat'=>'ok', 'customer'=>$rc['customer']);
 }

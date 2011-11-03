@@ -110,7 +110,7 @@ function ciniki_customers_update($ciniki) {
 	}
 	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
-		return array('stat'=>'fail', 'err'=>array('code'=>'371', 'msg'=>'Unable to add customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'371', 'msg'=>'Unable to add customer'));
 	}
 
 	//

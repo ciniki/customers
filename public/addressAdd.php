@@ -44,7 +44,7 @@ function ciniki_customers_addressAdd($ciniki) {
 	// They must specify something about the address
 	//
 	if( $args['address1'] == '' && $args['city'] == '' && $args['province'] == '' && $args['postal'] != '' ) {
-		return array('stat'=>'fail', 'err'=>array('code'=>'374', 'msg'=>'No address specified'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'374', 'msg'=>'No address specified'));
 	}
 	
     //  
@@ -105,7 +105,7 @@ function ciniki_customers_addressAdd($ciniki) {
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
-		return array('stat'=>'fail', 'err'=>array('code'=>'373', 'msg'=>'Unable to add customer address'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'373', 'msg'=>'Unable to add customer address'));
 	}
 	$address_id = $rc['insert_id'];
 

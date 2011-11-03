@@ -37,7 +37,7 @@ function ciniki_customers_autoMerge($ciniki, $business_id, $row) {
 	//print "autoMerge Row: \n";
 	//print_r($row);
 
-	return array('stat'=>'fail', 'err'=>array('code'=>'99', 'msg'=>'Function not complete'));
+	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'99', 'msg'=>'Function not complete'));
 
 
 
@@ -248,7 +248,7 @@ function ciniki_customers_autoMerge($ciniki, $business_id, $row) {
 			. " AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. " AND customer_emails.customer_id = customers.id ";
 		if( $separator == '' ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'82', 'msg'=>'Internal Error', 'pmsg'=>'Mismatch in number of emails found'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'82', 'msg'=>'Internal Error', 'pmsg'=>'Mismatch in number of emails found'));
 		}
 		$db_emails = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'customer');
 		if( $db_emails['stat'] != 'ok' ) {
@@ -276,7 +276,7 @@ function ciniki_customers_autoMerge($ciniki, $business_id, $row) {
 			return $rc;
 		}
 		if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-			return array('stat'=>'fail', 'err'=>array('code'=>'79', 'msg'=>'Internal Error', 'pmsg'=>'Unable to get new id for new customer'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'79', 'msg'=>'Internal Error', 'pmsg'=>'Unable to get new id for new customer'));
 		} 
 		$customer_id = $rc['insert_id'];
 
