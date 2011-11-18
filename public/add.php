@@ -96,7 +96,7 @@ function ciniki_customers_add($ciniki) {
 	//
 	// Add the customer to the database
 	//
-	$strsql = "INSERT INTO customers (business_id, status, prefix, first, middle, last, suffix, "
+	$strsql = "INSERT INTO ciniki_customers (business_id, status, prefix, first, middle, last, suffix, "
 		. "company, department, title, notes, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
@@ -146,7 +146,7 @@ function ciniki_customers_add($ciniki) {
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
 			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-				'customers', $customer_id, $field, $args[$field]);
+				'ciniki_customers', $customer_id, $field, $args[$field]);
 		}
 	}
 

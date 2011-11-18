@@ -49,7 +49,7 @@ function ciniki_customers_get($ciniki) {
 		. "prefix, first, middle, last, suffix, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, primary_email, alternate_email, "
 		. "notes "
-		. "FROM customers "
+		. "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');

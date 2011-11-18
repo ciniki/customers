@@ -57,7 +57,7 @@ function ciniki_customers_addressDelete($ciniki) {
 	//
 	// Add the customer to the database
 	//
-	$strsql = "DELETE FROM customer_addresses "
+	$strsql = "DELETE FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' ";
 	$rc = ciniki_core_dbDelete($ciniki, $strsql, 'customers');
@@ -66,7 +66,7 @@ function ciniki_customers_addressDelete($ciniki) {
 		return $rc;
 	}
 	$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-		'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], '*', 'deleted');
+		'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], '*', 'deleted');
 
 	//
 	// Commit the database changes

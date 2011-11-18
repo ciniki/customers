@@ -4,10 +4,6 @@
 // -----------
 // Search customers by name
 //
-// Info
-// ----
-// Status: 			defined
-//
 // Arguments
 // ---------
 // user_id: 		The user making the request
@@ -45,7 +41,8 @@ function ciniki_customers_searchQuick($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT id, CONCAT_WS(' ', first, last) AS name, status FROM customers "
+	$strsql = "SELECT id, CONCAT_WS(' ', first, last) AS name, status "
+		. "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND status = 1 "
 		. "AND (first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

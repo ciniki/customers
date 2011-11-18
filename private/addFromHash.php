@@ -21,7 +21,7 @@ function ciniki_customers_addFromHash($ciniki, $customer) {
 	$rc = ciniki_core_dbHashToSQL($ciniki, 
 		array('prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title'),
 		$customer,
-		'INSERT INTO customers (business_id, status, ',
+		'INSERT INTO ciniki_customers (business_id, status, ',
 		'date_added, last_updated) VALUES ('
 		'UTC_TIMESTAMP(), UTC_TIMESTAMP())');
 	if( $rc['stat'] != 'ok' ) {

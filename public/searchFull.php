@@ -47,7 +47,7 @@ function ciniki_customers_searchFull($ciniki) {
 	
 	$strsql = "SELECT id, status, prefix, first, middle, last, suffix, "
 		. "company, department, title "
-		. "FROM customers "
+		. "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ( first LIKE '%" . ciniki_core_dbQuote($ciniki, $args['search_str']) . "%' "
 			. "OR middle LIKE '%" . ciniki_core_dbQuote($ciniki, $args['search_str']) . "%' "

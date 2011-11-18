@@ -85,7 +85,7 @@ function ciniki_customers_addressAdd($ciniki) {
 	//
 	// Add the customer to the database
 	//
-	$strsql = "INSERT INTO customer_addresses (customer_id, "
+	$strsql = "INSERT INTO ciniki_customer_addresses (customer_id, "
 		. "flags, "
 		. "address1, address2, city, province, postal, country, "
 		. "date_added, last_updated) VALUES ("
@@ -127,7 +127,7 @@ function ciniki_customers_addressAdd($ciniki) {
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
 			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-				'customer_addresses', $args['customer_id'] + '-' + $address_id, $field, $args[$field]);
+				'ciniki_customer_addresses', $args['customer_id'] + '-' + $address_id, $field, $args[$field]);
 		}
 	}
 

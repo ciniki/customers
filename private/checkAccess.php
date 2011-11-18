@@ -38,7 +38,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 		//
 		// Find any users which are owners of the requested business_id
 		//
-		$strsql = "SELECT business_id, user_id FROM business_users "
+		$strsql = "SELECT business_id, user_id FROM ciniki_business_users "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
 			. "AND (groups&0x03) > 0 " //	Check for business owner or employee
@@ -66,7 +66,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 		//
 		// Make sure the customer is attached to the business
 		//
-		$strsql = "SELECT business_id, id FROM customers "
+		$strsql = "SELECT business_id, id FROM ciniki_customers "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
 			. "";

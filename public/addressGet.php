@@ -51,7 +51,7 @@ function ciniki_customers_addressGet($ciniki) {
 		. "ELT(((flags&0x01))+1,'Off','On') AS shipping, "
 		. "ELT(((flags&0x02)>>1)+1,'Off','On') AS billing, "
 		. "ELT(((flags&0x04)>>2)+1,'Off','On') AS mailing "
-		. "FROM customer_addresses "
+		. "FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
 		. "";

@@ -71,7 +71,7 @@ function ciniki_customers_update($ciniki) {
 	//
 	// Add the customer to the database
 	//
-	$strsql = "UPDATE customers SET last_updated = UTC_TIMESTAMP()";
+	$strsql = "UPDATE ciniki_customers SET last_updated = UTC_TIMESTAMP()";
 
 	//
 	// Add all the fields to the change log
@@ -98,7 +98,7 @@ function ciniki_customers_update($ciniki) {
 		if( isset($args[$field]) ) {
 			$strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
 			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-				'customers', $args['customer_id'], $field, $args[$field]);
+				'ciniki_customers', $args['customer_id'], $field, $args[$field]);
 		}
 	}
 	$strsql .= "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

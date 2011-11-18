@@ -68,36 +68,36 @@ function ciniki_customers_addressUpdate($ciniki) {
 	if( $args['shipping'] == 'On' || $args['shipping'] == 'on' ) {
 		$on_flags = $on_flags | 0x01;
 		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-			'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'shipping', 'On');
+			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'shipping', 'On');
 	} elseif( $args['shipping'] == 'Off' || $args['shipping'] == 'off' ) {
 		$off_flags = $off_flags | 0x01;
 		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-			'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'shipping', 'Off');
+			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'shipping', 'Off');
 	}
 	if( $args['billing'] == 'On' || $args['billing'] == 'on' ) {
 		$on_flags = $on_flags | 0x02;
 		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-			'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'billing', 'On');
+			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'billing', 'On');
 	} elseif( $args['billing'] == 'Off' || $args['billing'] == 'off' ) {
 		$off_flags = $off_flags | 0x02;
 		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-			'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'billing', 'Off');
+			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'billing', 'Off');
 	}
 	if( $args['mailing'] == 'On' || $args['mailing'] == 'on' ) {
 		$on_flags = $on_flags | 0x04;
 		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-			'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'mailing', 'On');
+			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'mailing', 'On');
 	} elseif( $args['mailing'] == 'Off' || $args['mailing'] == 'off' ) {
 		$off_flags = $off_flags | 0x04;
 		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-			'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'mailing', 'Off');
+			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'mailing', 'Off');
 	}
 
 
 	//
 	// Add the customer to the database
 	//
-	$strsql = "UPDATE customer_addresses SET last_updated = UTC_TIMESTAMP()";
+	$strsql = "UPDATE ciniki_customer_addresses SET last_updated = UTC_TIMESTAMP()";
 	
 	if( $on_flags > 0 ) {
 		$strsql .= ", flags = flags|$on_flags ";
@@ -122,7 +122,7 @@ function ciniki_customers_addressUpdate($ciniki) {
 		if( isset($args[$field]) ) {
 			$strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
 			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-				'customer_addresses', $args['customer_id'] + '-' + $args['address_id'], $field, $args[$field]);
+				'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], $field, $args[$field]);
 		}
 	}
 	$strsql .= "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "

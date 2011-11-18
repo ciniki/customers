@@ -37,7 +37,7 @@
 # date_added:		The date and time the record was added.
 # last_updated:		The date and time the record was udpated.
 # 
-create table customers (
+create table ciniki_customers (
 	id int not null auto_increment,
 	business_id int not null,
 	status tinyint unsigned not null,
