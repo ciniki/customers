@@ -24,6 +24,23 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 	//
 
 	//
+	// Check if the module is turned on for the business
+	// Check the business is active
+	//
+	$strsql = "SELECT ruleset FROM ciniki_businesses, ciniki_business_modules "
+		. "WHERE ciniki_businesses.id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND ciniki_businesses.status = 1 "														// Business is active
+		. "AND ciniki_businesses.id = ciniki_business_modules.business_id "
+		. "AND ciniki_business_modules.package = 'ciniki' "
+		. "AND ciniki_business_modules.module = 'customers' "
+		. "";
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'module');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	//
 	// Sysadmins are allowed full access
 	//
 	if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
