@@ -1,0 +1,7 @@
+#
+# This file will upgrade the database table customers to version 1.03.
+#
+ALTER TABLE ciniki_customers ADD COLUMN uuid char(36) not null after id;
+UPDATE ciniki_customers SET uuid = uuid();
+CREATE INDEX idx_uuid ON ciniki_customers (uuid);
+ALTER TABLE ciniki_customers COMMENT='v1.03';

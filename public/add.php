@@ -96,9 +96,10 @@ function ciniki_customers_add($ciniki) {
 	//
 	// Add the customer to the database
 	//
-	$strsql = "INSERT INTO ciniki_customers (business_id, status, prefix, first, middle, last, suffix, "
+	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, prefix, first, middle, last, suffix, "
 		. "company, department, title, notes, "
 		. "date_added, last_updated) VALUES ("
+		. "UUID(), "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "1, "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['prefix']) . "', "
