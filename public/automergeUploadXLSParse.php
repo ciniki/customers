@@ -104,7 +104,6 @@ function ciniki_customers_automergeUploadXLSParse($ciniki) {
 		$highestColumn = $objWorksheet->getHighestColumn(); // e.g 'F'
 		$numCols = PHPExcel_Cell::columnIndexFromString($highestColumn); 
 	} catch(Exception $e) {
-		error_log($e);
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'578', 'msg'=>'Unable to understand spreadsheet data'));
 	}
