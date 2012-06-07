@@ -31,9 +31,10 @@ function ciniki_customers_addressAdd($ciniki) {
         'province'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No province specified'), 
         'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No postal specified'), 
         'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No country specified'), 
-        'shipping'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No shipping flag specified'), 
-        'billing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No billing flag specified'), 
-        'mailing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No mailing flag specified'), 
+        'flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No flags specified'), 
+//        'shipping'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No shipping flag specified'), 
+//        'billing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No billing flag specified'), 
+//        'mailing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No mailing flag specified'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -71,16 +72,16 @@ function ciniki_customers_addressAdd($ciniki) {
 		return $rc;
 	}
 
-	$flags = 0;
-	if( $args['shipping'] == 'On' || $args['shipping'] == 'on' ) {
-		$flags = $flags | 0x01;
-	}
-	if( $args['billing'] == 'On' || $args['billing'] == 'on' ) {
-		$flags = $flags | 0x02;
-	}
-	if( $args['mailing'] == 'On' || $args['mailing'] == 'on' ) {
-		$flags = $flags | 0x04;
-	}
+//	$flags = 0;
+//	if( $args['shipping'] == 'On' || $args['shipping'] == 'on' ) {
+//		$flags = $flags | 0x01;
+//	}
+//	if( $args['billing'] == 'On' || $args['billing'] == 'on' ) {
+//		$flags = $flags | 0x02;
+//	}
+//	if( $args['mailing'] == 'On' || $args['mailing'] == 'on' ) {
+//		$flags = $flags | 0x04;
+//	}
 
 	//
 	// Add the customer to the database
@@ -90,7 +91,7 @@ function ciniki_customers_addressAdd($ciniki) {
 		. "address1, address2, city, province, postal, country, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
-		. "$flags, "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['address1']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['address2']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['city']) . "', "
@@ -120,9 +121,7 @@ function ciniki_customers_addressAdd($ciniki) {
 		'province',
 		'postal',
 		'country',
-		'shipping',
-		'billing',
-		'mailing',
+		'flags',
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
