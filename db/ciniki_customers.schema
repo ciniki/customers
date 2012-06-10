@@ -33,10 +33,23 @@
 # department:		The department within the company.
 # title:			The title in that department.
 #
+# phone_home:		The home phone number for the customer.
+# phone_work:		The work phone number for the customer.
+# phone_cell:		The cell phone number for the customer.
+# phone_fax:		The fax number for the customer.
+#
+# primary_email:	The main email address for the customer.
+# secondary_email:	A secondary email address for the customer.
+#
+# password:				The password for the customer which lets them login to the website for customer 
+#						customer only documents, mailing list management, etc.
+# temp_password:		The temporary password for resets.
+# temp_password_date:	The UTC date and time the password reset was requested.
+#
 # notes:			The current notes for the customer.  Any updates to notes are tracked through change_log.
 #
-# date_added:		The date and time the record was added.
-# last_updated:		The date and time the record was udpated.
+# date_added:		The UTC date and time the record was added.
+# last_updated:		The UTC date and time the record was udpated.
 # 
 create table ciniki_customers (
 	id int not null auto_increment,
@@ -57,6 +70,9 @@ create table ciniki_customers (
 	phone_fax varchar(50) not null,
 	primary_email varchar(255) not null,
 	alternate_email varchar(255) not null,
+	password varchar(41) not null,
+	temp_password varchar(41) not null,
+	temp_password_date datetime not null,
 	notes varchar(6000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
@@ -65,4 +81,4 @@ create table ciniki_customers (
 	index (business_id),
 	index (first, middle, last),
 	index (company)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

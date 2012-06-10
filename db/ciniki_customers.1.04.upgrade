@@ -1,0 +1,7 @@
+#
+# This file will upgrade the database table customers to version 1.04.
+#
+ALTER TABLE ciniki_customers ADD COLUMN password varchar(41) not null AFTER alternate_email;
+ALTER TABLE ciniki_customers ADD COLUMN temp_password varchar(41) not null AFTER password;
+ALTER TABLE ciniki_customers ADD COLUMN temp_password_date datetime not null AFTER temp_password;
+ALTER TABLE ciniki_customers COMMENT='v1.04';

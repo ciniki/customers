@@ -28,7 +28,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 	}
 
 	if( !isset($rc['ruleset']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'582', 'msg'=>'No permissions granted'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'690', 'msg'=>'No permissions granted'));
 	}
 	$modules = $rc['modules'];
 
