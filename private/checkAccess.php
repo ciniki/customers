@@ -36,7 +36,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 	// Sysadmins are allowed full access
 	//
 	if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
-		return array('stat'=>'ok');
+		return array('stat'=>'ok', 'modules'=>$modules);
 	}
 
 	//
@@ -103,6 +103,6 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 	//
 	// All checks passed, return ok
 	//
-	return array('stat'=>'ok');
+	return array('stat'=>'ok', 'modules'=>$modules);
 }
 ?>

@@ -1,0 +1,10 @@
+#
+# This file will upgrade the database table customers to version 1.05.
+#
+DROP INDEX business_id ON ciniki_customers;
+ALTER TABLE ciniki_customers DROP COLUMN primary_email;
+ALTER TABLE ciniki_customers DROP COLUMN alternate_email;
+ALTER TABLE ciniki_customers DROP COLUMN password;
+ALTER TABLE ciniki_customers DROP COLUMN temp_password;
+ALTER TABLE ciniki_customers DROP COLUMN temp_password_date;
+ALTER TABLE ciniki_customers COMMENT='v1.05';
