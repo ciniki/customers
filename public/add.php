@@ -32,6 +32,8 @@ function ciniki_customers_add($ciniki) {
         'company'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'errmsg'=>'No compan specified'), 
         'department'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'errmsg'=>'No company department specified'), 
         'title'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'errmsg'=>'No company title specified'), 
+        'email'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'errmsg'=>'No email specified'), 
+        'flags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'errmsg'=>'No email options specified'), 
 //        'primary_email'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'errmsg'=>'No primary email specified'), 
  //       'alternate_email'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'errmsg'=>'No alternate email specified'), 
         'phone_home'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'errmsg'=>'No Home Phone specified'), 
@@ -148,6 +150,49 @@ function ciniki_customers_add($ciniki) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
 			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
 				'ciniki_customers', $customer_id, $field, $args[$field]);
+		}
+	}
+
+	//
+	// Check if email address was specified, and add to customer emails
+	//
+	if( isset($args['email']) && $args['email'] != '' ) {
+		//
+		// Add the customer email to the database
+		//
+		$strsql = "INSERT INTO ciniki_customer_emails (business_id, customer_id, email, flags, "
+			. "date_added, last_updated) VALUES ("
+			. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
+			. "'" . ciniki_core_dbQuote($ciniki, $customer_id) . "', "
+			. "'" . ciniki_core_dbQuote($ciniki, $args['email']) . "', "
+			. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
+			. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
+		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'customers');
+		if( $rc['stat'] != 'ok' ) { 
+			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			if( $rc['err']['code'] == '73' ) {
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'724', 'msg'=>'Email address already exists'));
+			}
+			return $rc;
+		}
+		if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'720', 'msg'=>'Unable to add customer email'));
+		}
+		$email_id = $rc['insert_id'];
+
+		//
+		// Add all the fields to the change log
+		//
+		$changelog_fields = array(
+			'email',
+			'flags',
+			);
+		foreach($changelog_fields as $field) {
+			if( isset($args[$field]) && $args[$field] != '' ) {
+				$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
+					'ciniki_customer_emails', $args['customer_id'] + '-' + $email_id, $field, $args[$field]);
+			}
 		}
 	}
 

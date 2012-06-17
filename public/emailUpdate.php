@@ -25,6 +25,7 @@ function ciniki_customers_emailUpdate($ciniki) {
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
         'email_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email specified'), 
         'email'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No email specified'), 
+        'flags'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No email options specified'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -65,6 +66,7 @@ function ciniki_customers_emailUpdate($ciniki) {
 	//
 	$changelog_fields = array(
 		'email',
+		'flags',
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) ) {

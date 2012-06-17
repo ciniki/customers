@@ -26,6 +26,7 @@ function ciniki_customers_emailAdd($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
 		'email'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email address specified'),
+		'flags'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email options specified'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -57,18 +58,19 @@ function ciniki_customers_emailAdd($ciniki) {
 	}
 
 	//
-	// Add the customer to the database
+	// Add the customer email to the database
 	//
-	$strsql = "INSERT INTO ciniki_customer_emails (business_id, customer_id, email, "
+	$strsql = "INSERT INTO ciniki_customer_emails (business_id, customer_id, email, flags, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['email']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
 	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'customers');
 	if( $rc['stat'] != 'ok' ) { 
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
-		if( $rc['err']['code'] == '74' ) {
+		if( $rc['err']['code'] == '73' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'724', 'msg'=>'Email address already exists'));
 		}
 		return $rc;
@@ -82,9 +84,9 @@ function ciniki_customers_emailAdd($ciniki) {
 	//
 	// Add all the fields to the change log
 	//
-
 	$changelog_fields = array(
 		'email',
+		'flags',
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {

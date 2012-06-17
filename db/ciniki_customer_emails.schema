@@ -20,6 +20,8 @@
 # temp_password:		The temporary password for resets.
 # temp_password_date:	The UTC date and time the password reset was requested.
 #
+# flags:				0x01 - Customer is allowed to login to website, should be set by default.
+#
 # date_added:			The UTC date and time the record was added.
 # last_updated:			The UTC date and time the record was last updated.
 #
@@ -31,9 +33,10 @@ create table ciniki_customer_emails (
 	password varchar(41) not null,
 	temp_password varchar(41) not null,
 	temp_password_date datetime not null,
+	flags tinyint unsigned not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
 	unique index (business_id, email),
 	index (customer_id)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';
