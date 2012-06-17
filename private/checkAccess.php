@@ -48,6 +48,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+
 	//
 	// Find any users which are owners of the requested business_id
 	//
