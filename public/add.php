@@ -191,7 +191,7 @@ function ciniki_customers_add($ciniki) {
 		foreach($changelog_fields as $field) {
 			if( isset($args[$field]) && $args[$field] != '' ) {
 				$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-					'ciniki_customer_emails', $args['customer_id'] + '-' + $email_id, $field, $args[$field]);
+					'ciniki_customer_emails', $customer_id + '-' + $email_id, $field, $args[$field]);
 			}
 		}
 	}
