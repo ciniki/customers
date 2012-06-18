@@ -71,13 +71,13 @@ function ciniki_customers_emailAdd($ciniki) {
 	if( $rc['stat'] != 'ok' ) { 
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
 		if( $rc['err']['code'] == '73' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'724', 'msg'=>'Email address already exists'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'738', 'msg'=>'Email address already exists'));
 		}
 		return $rc;
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'720', 'msg'=>'Unable to add customer email'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'739', 'msg'=>'Unable to add customer email'));
 	}
 	$email_id = $rc['insert_id'];
 
