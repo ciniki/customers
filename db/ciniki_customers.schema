@@ -21,7 +21,7 @@
 #
 # status:			0 - unknown
 #					1 - active
-#					2 - deleted
+#					60 - deleted
 #
 # prefix:			Dr. Mr. Ms. Miss. Mrs.
 # first:			The first name(s) of the customer.
