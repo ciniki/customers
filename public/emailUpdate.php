@@ -42,6 +42,24 @@ function ciniki_customers_emailUpdate($ciniki) {
         return $rc;
     }   
 
+	//
+	// Check the email ID belongs to the requested customer
+	//
+	$strsql = "SELECT id, customer_id "
+		. "FROM ciniki_customer_emails "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
+		. "";
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'email');
+	if( $rc['stat'] != 'ok' ) {	
+		return $rc;
+	}
+	if( !isset($rc['email']) ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'743', 'msg'=>'Access denied'));
+	}
+
 	//  
 	// Turn off autocommit
 	//  
@@ -50,7 +68,7 @@ function ciniki_customers_emailUpdate($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddChangeLog.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -71,8 +89,8 @@ function ciniki_customers_emailUpdate($ciniki) {
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) ) {
 			$strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
-			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-				'ciniki_customer_emails', $args['customer_id'] + '-' + $args['email_id'], $field, $args[$field]);
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+				2, 'ciniki_customer_emails', $args['email_id'], $field, $args[$field]);
 		}
 	}
 	$strsql .= "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "

@@ -48,7 +48,7 @@ function ciniki_customers_emailDelete($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbDelete.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddChangeLog.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -65,8 +65,8 @@ function ciniki_customers_emailDelete($ciniki) {
 		ciniki_core_dbTransactionRollback($ciniki, 'customers');
 		return $rc;
 	}
-	$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-		'ciniki_customer_emails', $args['customer_id'] + '-' + $args['email_id'], '*', 'deleted');
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+		3, 'ciniki_customer_emails', $args['email_id'], '*', '');
 
 	//
 	// Commit the database changes

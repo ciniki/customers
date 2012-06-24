@@ -41,7 +41,8 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Get the customer details and emails
 	//
-	$strsql = "SELECT ciniki_customers.id, CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name, "
+	$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
+		. "CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name, "
 		. "company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
@@ -53,11 +54,12 @@ function ciniki_customers_getFull($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQueryTree.php');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'name', 'company', 'department', 'title', 
+			'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix', 'name', 
+				'company', 'department', 'title', 
 				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
 				'notes')),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
-			'fields'=>array('id'=>'email_id', 'address'=>'email')),
+			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -80,7 +82,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
 		array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
-			'fields'=>array('id', 'address1', 'address2', 'city', 'province', 'postal', 
+			'fields'=>array('id', 'customer_id', 'address1', 'address2', 'city', 'province', 'postal', 
 				'country', 'flags')),
 		));
 	if( $rc['stat'] != 'ok' ) {

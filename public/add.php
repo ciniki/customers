@@ -89,7 +89,7 @@ function ciniki_customers_add($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddChangeLog.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -148,8 +148,8 @@ function ciniki_customers_add($ciniki) {
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-				'ciniki_customers', $customer_id, $field, $args[$field]);
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+				1, 'ciniki_customers', $customer_id, $field, $args[$field]);
 		}
 	}
 
@@ -182,6 +182,11 @@ function ciniki_customers_add($ciniki) {
 		$email_id = $rc['insert_id'];
 
 		//
+		// Log the addition of the customer id
+		//
+		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+			1, 'ciniki_customer_emails', $email_id, 'customer_id', $customer_id);
+		//
 		// Add all the fields to the change log
 		//
 		$changelog_fields = array(
@@ -190,8 +195,8 @@ function ciniki_customers_add($ciniki) {
 			);
 		foreach($changelog_fields as $field) {
 			if( isset($args[$field]) && $args[$field] != '' ) {
-				$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-					'ciniki_customer_emails', $customer_id + '-' + $email_id, $field, $args[$field]);
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+					1, 'ciniki_customer_emails', $email_id, $field, $args[$field]);
 			}
 		}
 	}

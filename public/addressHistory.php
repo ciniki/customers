@@ -53,7 +53,25 @@ function ciniki_customers_addressHistory($ciniki) {
 		return $rc;
 	}
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetChangeLog.php');
-	return ciniki_core_dbGetChangeLog($ciniki, $args['business_id'], 'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], $args['field'], 'customers');
+	//
+	// Check the address ID belongs to the requested customer
+	//
+	$strsql = "SELECT id, customer_id "
+		. "FROM ciniki_customer_addresses "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
+		. "";
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'address');
+	if( $rc['stat'] != 'ok' ) {	
+		return $rc;
+	}
+	if( !isset($rc['address']) ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'740', 'msg'=>'Access denied'));
+	}
+
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
+	return ciniki_core_dbGetModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_addresses', $args['address_id'], $args['field'], 'customers');
 }
 ?>

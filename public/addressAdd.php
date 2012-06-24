@@ -66,22 +66,11 @@ function ciniki_customers_addressAdd($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddChangeLog.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}
-
-//	$flags = 0;
-//	if( $args['shipping'] == 'On' || $args['shipping'] == 'on' ) {
-//		$flags = $flags | 0x01;
-//	}
-//	if( $args['billing'] == 'On' || $args['billing'] == 'on' ) {
-//		$flags = $flags | 0x02;
-//	}
-//	if( $args['mailing'] == 'On' || $args['mailing'] == 'on' ) {
-//		$flags = $flags | 0x04;
-//	}
 
 	//
 	// Add the customer to the database
@@ -113,8 +102,8 @@ function ciniki_customers_addressAdd($ciniki) {
 	//
 	// Add all the fields to the change log
 	//
-
 	$changelog_fields = array(
+		'customer_id',
 		'address1',
 		'address2',
 		'city',
@@ -125,8 +114,8 @@ function ciniki_customers_addressAdd($ciniki) {
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-				'ciniki_customer_addresses', $args['customer_id'] + '-' + $address_id, $field, $args[$field]);
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+				1, 'ciniki_customer_addresses', $address_id, $field, $args[$field]);
 		}
 	}
 
