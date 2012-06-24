@@ -128,7 +128,6 @@ function ciniki_customers_add($ciniki) {
 	//
 	// Add all the fields to the change log
 	//
-
 	$changelog_fields = array(
 		'prefix',
 		'first',
@@ -138,8 +137,6 @@ function ciniki_customers_add($ciniki) {
 		'company',
 		'department',
 		'title',
-//		'primary_email',
-//		'alternate_email',
 		'phone_home',
 		'phone_work',
 		'phone_cell',

@@ -72,6 +72,6 @@ function ciniki_customers_emailHistory($ciniki) {
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
-	return ciniki_core_dbGetModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_emails', $args['email_id'], $args['field'], 'customers');
+	return ciniki_core_dbGetModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_emails', $args['email_id'], $args['field']);
 }
 ?>
