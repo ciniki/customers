@@ -56,11 +56,12 @@ function ciniki_customers_addressHistory($ciniki) {
 	//
 	// Check the address ID belongs to the requested customer
 	//
-	$strsql = "SELECT id, customer_id "
-		. "FROM ciniki_customer_addresses "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+	$strsql = "SELECT ciniki_customer_addresses.id, customer_id "
+		. "FROM ciniki_customers, ciniki_customer_addresses "
+		. "WHERE ciniki_customer_addresses.id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
 		. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
+		. "AND customer_id = ciniki_customers.id "
+		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'address');
