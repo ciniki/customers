@@ -97,6 +97,7 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	if( isset($modules['ciniki.subscriptions']) ) {
 		$strsql = "SELECT ciniki_subscriptions.id, ciniki_subscriptions.name, "
+			. "ciniki_subscription_customers.id AS customer_subscription_id, "
 			. "ciniki_subscriptions.description, ciniki_subscription_customers.status "
 			. "FROM ciniki_subscriptions "
 			. "LEFT JOIN ciniki_subscription_customers ON (ciniki_subscriptions.id = ciniki_subscription_customers.subscription_id "
@@ -107,7 +108,7 @@ function ciniki_customers_getFull($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
 			array('container'=>'subscriptions', 'fname'=>'id', 'name'=>'subscription',
-				'fields'=>array('id', 'name', 'description', 'status')),
+				'fields'=>array('id', 'name', 'description', 'customer_subscription_id', 'status')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
