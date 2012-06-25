@@ -62,7 +62,6 @@ function ciniki_customers_update($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-//	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddChangeLog.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
 	if( $rc['stat'] != 'ok' ) { 
@@ -98,8 +97,6 @@ function ciniki_customers_update($ciniki) {
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) ) {
 			$strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
-//			$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-//				'ciniki_customers', $args['customer_id'], $field, $args[$field]);
 			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'],
 				2, 'ciniki_customers', $args['customer_id'], $field, $args[$field]);
 		}
