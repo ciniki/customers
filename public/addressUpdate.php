@@ -83,53 +83,14 @@ function ciniki_customers_addressUpdate($ciniki) {
 		return $rc;
 	}   
 
-//	$on_flags = 0;
-//	$off_flags = 0;
-//	if( $args['shipping'] == 'On' || $args['shipping'] == 'on' ) {
-//		$on_flags = $on_flags | 0x01;
-//		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-//			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'shipping', 'On');
-//	} elseif( $args['shipping'] == 'Off' || $args['shipping'] == 'off' ) {
-//		$off_flags = $off_flags | 0x01;
-//		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-//			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'shipping', 'Off');
-//	}
-//	if( $args['billing'] == 'On' || $args['billing'] == 'on' ) {
-//		$on_flags = $on_flags | 0x02;
-//		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-//			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'billing', 'On');
-//	} elseif( $args['billing'] == 'Off' || $args['billing'] == 'off' ) {
-//		$off_flags = $off_flags | 0x02;
-//		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-//			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'billing', 'Off');
-//	}
-//	if( $args['mailing'] == 'On' || $args['mailing'] == 'on' ) {
-//		$on_flags = $on_flags | 0x04;
-//		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-//			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'mailing', 'On');
-//	} elseif( $args['mailing'] == 'Off' || $args['mailing'] == 'off' ) {
-//		$off_flags = $off_flags | 0x04;
-//		$rc = ciniki_core_dbAddChangeLog($ciniki, 'customers', $args['business_id'], 
-//			'ciniki_customer_addresses', $args['customer_id'] + '-' + $args['address_id'], 'mailing', 'Off');
-//	}
-//
-
 	//
 	// Add the customer to the database
 	//
 	$strsql = "UPDATE ciniki_customer_addresses SET last_updated = UTC_TIMESTAMP()";
 	
-//	if( $on_flags > 0 ) {
-//		$strsql .= ", flags = flags|$on_flags ";
-//	}
-//	if( $off_flags > 0 ) {
-//		$strsql .= ", flags = flags^$off_flags ";
-//	}
-
 	//
 	// Add all the fields to the change log
 	//
-
 	$changelog_fields = array(
 		'address1',
 		'address2',
