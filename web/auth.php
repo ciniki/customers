@@ -8,7 +8,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_auth(&$ciniki, $business_id, $email, $password) {
+function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	//
 	// Find all the required and optional arguments
 	//
@@ -41,7 +41,10 @@ function ciniki_customers_auth(&$ciniki, $business_id, $email, $password) {
 	//
 	session_start();
 	$_SESSION['customer'] = $customer;
+	$_SESSION['change_log_id'] = 'web.' . date('ymd.His');
 	$ciniki['session']['customer'] = $customer;
+	$ciniki['session']['change_log_id'] = $_SESSION['change_log_id'];
+	$ciniki['session']['user'] = array('id'=>'-2');
 
 	return array('stat'=>'ok');
 }
