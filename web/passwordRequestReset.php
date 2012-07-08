@@ -13,7 +13,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_passwordRequestReset($ciniki, $business_id, $email, $url) {
+function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email, $url) {
 	
     //  
 	// Create a random password for the user
