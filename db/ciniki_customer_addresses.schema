@@ -2,12 +2,11 @@
 # Description
 # -----------
 # The customer_addresses table stores addresses for customers
-# for a business.  The customer addresses are stored in two
-# places, the customers module and the users module.  The reason
-# for the duplication is to allow business owners to 
-# change customer information without affecting other businesses.
-# If a customer changes their information, it will get 
-# propagated through to this table.  
+# for a business.  
+#
+# There is no limit to the number of addresses 
+# a customer can have attached to their account.  Each address
+# can be flagged as one or many of shipping, billing, mailing.
 #
 # Fields
 # ------
@@ -30,6 +29,11 @@
 #
 # address1:			The first line of the address
 # address2:			The second line of the address (suite #, etc)
+#
+# city:				The city name for the address.
+# province:			The province or state for the address.
+# postal:			The postal or zip code for the address.
+# country:			The country the address is located in.
 #					
 # date_added:		The date and time the record was added.
 # last_updated:		The date and time the record was last updated.
