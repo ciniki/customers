@@ -79,7 +79,6 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
 	$rc = ciniki_core_dbUpdate(&$ciniki, $strsql, 'users');
 	if( $rc['stat'] != 'ok' ) {
-	error_log($strsql);
 		ciniki_core_dbTransactionRollback($ciniki, 'users');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'753', 'msg'=>'Unable to update password.'));
 	}
