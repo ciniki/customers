@@ -24,7 +24,7 @@ function ciniki_customers_duplicatesFind($ciniki) {
 	// Check access to business_id
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/customers/private/checkAccess.php');
-	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.duplicatesList', 0);
+	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.duplicatesFind', 0);
 	if( $ac['stat'] != 'ok' ) {
 		return $ac;
 	}

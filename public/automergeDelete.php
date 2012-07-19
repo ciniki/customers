@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will remove all entries for an excel file.  
+// This function will remove all entries for an automerge file.  
 //
 // Arguments
 // ---------
@@ -32,7 +32,7 @@ function ciniki_customers_automergeDelete($ciniki) {
 	// Check access to business_id
 	//
 	require_once($ciniki['config']['core']['modules_dir'] . '/customers/private/checkAccess.php');
-	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.excelDelete', $args['automerge_id']);
+	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.automergeDelete', $args['automerge_id']);
 	if( $ac['stat'] != 'ok' ) {
 		return $ac;
 	}
