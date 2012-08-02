@@ -50,6 +50,6 @@ function ciniki_customers_addressList($ciniki) {
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQuery.php');
-	return ciniki_core_dbRspQuery($ciniki, $strsql, 'customers', 'addresses', 'address', array('stat'=>'ok', 'addresses'=>array()));
+	return ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'addresses', 'address', array('stat'=>'ok', 'addresses'=>array()));
 }
 ?>

@@ -38,7 +38,7 @@ function ciniki_customers_blankFind($ciniki) {
 		. "AND (first = '' OR last = '') "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'first', 'middle', 'last', 'company'),
 			),

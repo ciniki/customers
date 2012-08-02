@@ -48,7 +48,7 @@ function ciniki_customers_merge($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}
@@ -70,13 +70,13 @@ function ciniki_customers_merge($ciniki) {
 		. "AND (id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
 			. "OR id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "') "
 		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
 				'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 'notes')),
 		));
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'765', 'msg'=>'Unable to find customers', 'err'=>$rc['err']));
 	}
 
@@ -92,11 +92,11 @@ function ciniki_customers_merge($ciniki) {
 	}
 
 	if( $primary == NULL ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'756', 'msg'=>'Unable to find customer'));
 	}
 	if( $secondary == NULL ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'757', 'msg'=>'Unable to find customer'));
 	}
 
@@ -141,13 +141,13 @@ function ciniki_customers_merge($ciniki) {
 				$strsql_primary .= ", $field = '" . ciniki_core_dbQuote($ciniki, $secondary[$field]) . "' ";
 				$strsql_secondary .= ", $field = '' ";
 				// Record update as merge action
-				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'],
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 					4, 'ciniki_customers', $args['primary_customer_id'], $field, $secondary[$field]);
 				// Copy the field history to the primary customer
-				$rc = ciniki_core_dbCopyModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'],
+				$rc = ciniki_core_dbCopyModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 					'ciniki_customers', $args['secondary_customer_id'], $args['primary_customer_id'], $field);
 				// Record secondary customer update as merge delete action
-				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'],
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 					5, 'ciniki_customers', $args['secondary_customer_id'], $field, '');
 				$strsql_history .= "'" . ciniki_core_dbQuote($ciniki, $field) . "'";
 				$field_count++;
@@ -158,17 +158,17 @@ function ciniki_customers_merge($ciniki) {
 		$strsql_primary .= "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
 			. "";
-		$rc = ciniki_core_dbUpdate($ciniki, $strsql_primary, 'customers');
+		$rc = ciniki_core_dbUpdate($ciniki, $strsql_primary, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'758', 'msg'=>'Unable to update customer details', 'err'=>$rc['err']));
 		}
 		$strsql_secondary .= "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
 			. "";
-		$rc = ciniki_core_dbUpdate($ciniki, $strsql_secondary, 'customers');
+		$rc = ciniki_core_dbUpdate($ciniki, $strsql_secondary, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'766', 'msg'=>'Unable to update customer details', 'err'=>$rc['err']));
 		}
 	}
@@ -180,9 +180,9 @@ function ciniki_customers_merge($ciniki) {
 		. "FROM ciniki_customer_emails "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'customer');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'764', 'msg'=>'Unable to customer emails', 'err'=>$rc['err']));
 	}
 	$emails = $rc['rows'];
@@ -192,14 +192,14 @@ function ciniki_customers_merge($ciniki) {
 			. ", last_updated = UTC_TIMESTAMP() "
 			. "WHERE id = '" . $row['id'] . "' "
 			. "";
-		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'customers');
+		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'759', 'msg'=>'Unable to update customer emails', 'err'=>$rc['err']));
 		}
 		if( $rc['num_affected_rows'] == 1 ) {
 			// Record update as merge action
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'],
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 				4, 'ciniki_customer_emails', $row['id'], 'customer_id', $args['primary_customer_id']);
 		}
 	}
@@ -211,9 +211,9 @@ function ciniki_customers_merge($ciniki) {
 		. "FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'customer');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'763', 'msg'=>'Unable to customer addresses', 'err'=>$rc['err']));
 	}
 	$addresses = $rc['rows'];
@@ -223,14 +223,14 @@ function ciniki_customers_merge($ciniki) {
 			. ", last_updated = UTC_TIMESTAMP() "
 			. "WHERE id = '" . $row['id'] . "' "
 			. "";
-		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'customers');
+		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'760', 'msg'=>'Unable to update customer addresses', 'err'=>$rc['err']));
 		}
 		if( $rc['num_affected_rows'] == 1 ) {
 			// Record update as merge action
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'],
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 				4, 'ciniki_customer_addresses', $row['id'], 'customer_id', $args['primary_customer_id']);
 		}
 	}
@@ -239,6 +239,7 @@ function ciniki_customers_merge($ciniki) {
 	// Merge Subscriptions
 	//
 	if( isset($modules['ciniki.subscriptions']) ) {
+		$updated = 0;
 		$strsql = "SELECT ciniki_subscriptions.id, "
 			. "IFNULL(c1.id, 0) AS c1_id, c1.customer_id AS c1_customer_id, c1.status AS c1_status, UNIX_TIMESTAMP(c1.last_updated) AS c1_last_updated, "
 			. "IFNULL(c2.id, 0) AS c2_id, c2.customer_id AS c2_customer_id, c2.status AS c2_status, UNIX_TIMESTAMP(c2.last_updated) AS c2_last_updated "
@@ -249,9 +250,9 @@ function ciniki_customers_merge($ciniki) {
 				. "AND c2.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' ) "
 			. "WHERE ciniki_subscriptions.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'subscriptions', 'subscription');
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.subscriptions', 'subscription');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'780', 'msg'=>'Unable to find subscriptions', 'err'=>$rc['err']));
 		}
 		$subscriptions = $rc['rows'];
@@ -264,14 +265,15 @@ function ciniki_customers_merge($ciniki) {
 					$strsql = "UPDATE ciniki_subscription_customers SET customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
 						. "WHERE ciniki_subscription_customers.id = '" . ciniki_core_dbQuote($ciniki, $row['c2_id']) . "' "
 						. "";
-					$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'subscriptions');
+					$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
 					if( $rc['stat'] != 'ok' ) {
-						ciniki_core_dbTransactionRollback($ciniki, 'customers');
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'781', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
 					}
-					ciniki_core_dbAddModuleHistory($ciniki, 'subscriptions', 'ciniki_subscription_history', $args['business_id'],
+					ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
 						4, 'ciniki_subscription_customers', $row['c2_id'], 'customer_id', $args['customer_id']);
 					// subscription history automatically moves with the change in customer_id
+					$updated = 1;
 				}
 				// subscription for primary exists, and secondary is more recent updated, then copy
 				elseif( $row['c1_id'] > 0 ) {
@@ -281,18 +283,19 @@ function ciniki_customers_merge($ciniki) {
 							. "SET last_updated = UTC_TIMESTAMP(), status = '" . ciniki_core_dbQuote($ciniki, $row['c2_status']) . "' "
 							. "WHERE ciniki_subscription_customers.id = '" . ciniki_core_dbQuote($ciniki, $row['c1_id']) . "' "
 							. "";
-						$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'subscriptions');
+						$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
 						if( $rc['stat'] != 'ok' ) {
-							ciniki_core_dbTransactionRollback($ciniki, 'customers');
+							ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 							return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'782', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
 						}
-						ciniki_core_dbAddModuleHistory($ciniki, 'subscriptions', 'ciniki_subscription_history', $args['business_id'],
+						ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
 							4, 'ciniki_subscription_customers', $row['c1_id'], 'status', $row['c2_status']);
 						
 						// Copy subscription history
-						$rc = ciniki_core_dbCopyModuleHistory($ciniki, 'subscriptions', 'ciniki_subscription_history', $args['business_id'],
+						$rc = ciniki_core_dbCopyModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
 							'ciniki_subscription_customers', $row['c2_id'], $row['c1_id'], 'status');
 
+						$updated = 1;
 					}	
 					// Unsubscribe secondary, so that customer can be deleted
 					if( $row['c2_status'] != '60' ) {
@@ -300,17 +303,27 @@ function ciniki_customers_merge($ciniki) {
 							. "SET status = 60 "
 							. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $row['c2_id']) . "' "
 							. "";
-						$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'subscriptions');
+						$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
 						if( $rc['stat'] != 'ok' ) {
-							ciniki_core_dbTransactionRollback($ciniki, 'customers');
+							ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 							return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'783', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
 						}
 
-						ciniki_core_dbAddModuleHistory($ciniki, 'subscriptions', 'ciniki_subscription_history', $args['business_id'],
+						ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
 							4, 'ciniki_subscription_customers', $row['c2_id'], 'status', '60');
+						$updated = 1;
 					}
 				}
 			}
+		}
+		
+		if( $updated == 1 ) {
+			//
+			// Update the last_change date in the business modules
+			// Ignore the result, as we don't want to stop user updates if this fails.
+			//
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+			ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'subscriptions');
 		}
 	}
 	
@@ -318,6 +331,7 @@ function ciniki_customers_merge($ciniki) {
 	// Merge wine orders
 	//
 	if( isset($modules['ciniki.wineproduction']) ) {
+		$updated = 0;
 		//
 		// Get the list of orders attached to the secondary customer
 		//
@@ -326,9 +340,9 @@ function ciniki_customers_merge($ciniki) {
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
 			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'wineproductions', 'wineproduction');
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.wineproductions', 'wineproduction');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'761', 'msg'=>'Unable to find wine production orders', 'err'=>$rc['err']));
 		}
 		$wineproductions = $rc['rows'];
@@ -339,26 +353,43 @@ function ciniki_customers_merge($ciniki) {
 				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. "AND id = '" . $row['id'] . "' "
 				. "";
-			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'wineproductions');
+			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.wineproductions');
 			if( $rc['stat'] != 'ok' ) {
-				ciniki_core_dbTransactionRollback($ciniki, 'customers');
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'762', 'msg'=>'Unable to update wine production orders', 'err'=>$rc['err']));
 			}
 			if( $rc['num_affected_rows'] == 1 ) {
 				// Record update as merge action
-				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'wineproductions', 'ciniki_wineproduction_history', $args['business_id'],
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.wineproductions', 'ciniki_wineproduction_history', $args['business_id'],
 					4, 'ciniki_wineproductions', $row['id'], 'customer_id', $args['primary_customer_id']);
 			}
+			$updated = 1;
+		}
+
+		if( $updated == 1 ) {
+			//
+			// Update the last_change date in the business modules
+			// Ignore the result, as we don't want to stop user updates if this fails.
+			//
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+			ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'wineproduction');
 		}
 	}
 
 	//
 	// Commit the database changes
 	//
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'customers');
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	return array('stat'=>'ok');
 }

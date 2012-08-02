@@ -53,7 +53,7 @@ function ciniki_customers_automergeStats($ciniki) {
 		. "WHERE automerge_id = '" . ciniki_core_dbQuote($ciniki, $args['automerge_id']) . "' "
 		// . "GROUP BY status "
 		. "";
-	$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'excel');
+	$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'excel');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -68,7 +68,7 @@ function ciniki_customers_automergeStats($ciniki) {
 		. "WHERE automerge_id = '" . ciniki_core_dbQuote($ciniki, $args['automerge_id']) . "' "
 		. "GROUP BY status "
 		. "";
-	$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'excel');
+	$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'excel');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -85,7 +85,7 @@ function ciniki_customers_automergeStats($ciniki) {
 		. "WHERE automerge_id = '" . ciniki_core_dbQuote($ciniki, $args['automerge_id']) . "' "
 		. "AND row = 1"
 		. "";
-	$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'num');
+	$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -105,7 +105,7 @@ function ciniki_customers_automergeStats($ciniki) {
 			. "GROUP BY row HAVING COUNT(status) = '" . ciniki_core_dbQuote($ciniki, $num_cols) . "'"
 			. ") AS sb"
 		. "";
-	$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'excel');
+	$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'excel');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

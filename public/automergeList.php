@@ -51,6 +51,6 @@ function ciniki_customers_automergeList($ciniki) {
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND status = 10 "	// The file has been uploaded and parsed into the database
 		. "";
-	return ciniki_core_dbRspQuery($ciniki, $strsql, 'customers', 'files', 'excel', array('stat'=>'ok', 'files'=>array()));
+	return ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'files', 'excel', array('stat'=>'ok', 'files'=>array()));
 }
 ?>

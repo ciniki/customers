@@ -56,7 +56,7 @@ function ciniki_customers_addressGet($ciniki) {
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'address');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

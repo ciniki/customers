@@ -64,7 +64,7 @@ function ciniki_customers_addressHistory($ciniki) {
 		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'address');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 	if( $rc['stat'] != 'ok' ) {	
 		return $rc;
 	}
@@ -73,6 +73,6 @@ function ciniki_customers_addressHistory($ciniki) {
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
-	return ciniki_core_dbGetModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_addresses', $args['address_id'], $args['field']);
+	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_addresses', $args['address_id'], $args['field']);
 }
 ?>

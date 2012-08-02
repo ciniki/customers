@@ -55,7 +55,7 @@ function ciniki_customers_delete($ciniki) {
 		. "FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'num');
+	$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'779', 'msg'=>'Unable to check for addresses', 'err'=>$rc['err']));
 	}
@@ -70,7 +70,7 @@ function ciniki_customers_delete($ciniki) {
 		. "FROM ciniki_customer_emails "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'num');
+	$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'770', 'msg'=>'Unable to check for emails', 'err'=>$rc['err']));
 	}
@@ -87,7 +87,7 @@ function ciniki_customers_delete($ciniki) {
 			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 			. "AND status = 1 "
 			. "";
-		$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'num');
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'772', 'msg'=>'Unable to check for subscriptions', 'err'=>$rc['err']));
 		}
@@ -105,7 +105,7 @@ function ciniki_customers_delete($ciniki) {
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 			. "";
-		$rc = ciniki_core_dbCount($ciniki, $strsql, 'customers', 'num');
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'774', 'msg'=>'Unable to check for wine orders', 'err'=>$rc['err']));
 		}
@@ -118,7 +118,7 @@ function ciniki_customers_delete($ciniki) {
 	//  
 	// Turn off autocommit
 	//  
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}
@@ -129,16 +129,16 @@ function ciniki_customers_delete($ciniki) {
 	$strsql = "DELETE FROM ciniki_customers WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbDelete($ciniki, $strsql, 'customers');
+	$rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'776', 'msg'=>'Unable to delete, internal error.'));
 	}
 
 	//
 	// Log the deletion
 	//
-	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'],
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 		3, 'ciniki_customers', $args['customer_id'], '*', '');
 
 	//
@@ -151,9 +151,9 @@ function ciniki_customers_delete($ciniki) {
 			. "AND ciniki_subscriptions.id = ciniki_subscription_customers.subscription_id "
 			. "AND ciniki_subscription_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'subscriptions', 'subscription');
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.subscriptions', 'subscription');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'777', 'msg'=>'Unable to remove subscriptions', 'err'=>$rc['err']));
 		}
 		$subscriptions = $rc['rows'];
@@ -162,23 +162,37 @@ function ciniki_customers_delete($ciniki) {
 				. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $row['id']) . "' "
 				. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 				. "";
-			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'subscriptions');
+			$rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.subscriptions');
 			if( $rc['stat'] != 'ok' ) {
-				ciniki_core_dbTransactionRollback($ciniki, 'customers');
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'778', 'msg'=>'Unable to remove subscription', 'err'=>$rc['err']));
 			}
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'subscriptions', 'ciniki_subscription_history', $args['business_id'],
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
 				3, 'ciniki_subscription_customers', $row['id'], '*', '');
 		}
+
+		//
+		// Update the last_change date in the business modules
+		// Ignore the result, as we don't want to stop user updates if this fails.
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+		ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'subscriptions');
 	}
 
 	//
 	// Commit the database changes
 	//
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'customers');
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	return array('stat'=>'ok');
 }

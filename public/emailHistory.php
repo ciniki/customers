@@ -63,7 +63,7 @@ function ciniki_customers_emailHistory($ciniki) {
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'email');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 	if( $rc['stat'] != 'ok' ) {	
 		return $rc;
 	}
@@ -72,6 +72,6 @@ function ciniki_customers_emailHistory($ciniki) {
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
-	return ciniki_core_dbGetModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_emails', $args['email_id'], $args['field']);
+	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_emails', $args['email_id'], $args['field']);
 }
 ?>

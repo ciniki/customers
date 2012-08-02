@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will add a new customer address to the customers production module.
+// This function will add a new customer address to a customer.
 //
 // Info
 // ----
@@ -10,8 +10,22 @@
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
-// customer_id:		The customer id the address is to be added to.
+// api_key:
+// auth_token:
+// business_id:		The ID of the business the customer belongs to.
+// customer_id:		The ID of the customer to add the address to.
+// address1:		(optional) The first line of the address.
+// address2:		(optional) The second line of the address.
+// city:			(optional) The city of the address.
+// province:		(optional) The province or state of the address.
+// postal:			(optional) The postal code or zip code of the address.
+// country:			(optional) The country of the address.
+// flags:			(optional) The options for the address, specifing what the 
+//					address should be used for.
+//				
+//					0x01 - Shipping
+//					0x02 - Billing
+//					0x04 - Mailing
 // 
 // Returns
 // -------
@@ -67,7 +81,7 @@ function ciniki_customers_addressAdd($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}
@@ -88,13 +102,13 @@ function ciniki_customers_addressAdd($ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $args['postal']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['country']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'customers');
+	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return $rc;
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'373', 'msg'=>'Unable to add customer address'));
 	}
 	$address_id = $rc['insert_id'];
@@ -114,7 +128,7 @@ function ciniki_customers_addressAdd($ciniki) {
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 				1, 'ciniki_customer_addresses', $address_id, $field, $args[$field]);
 		}
 	}
@@ -122,10 +136,17 @@ function ciniki_customers_addressAdd($ciniki) {
 	//
 	// Commit the database changes
 	//
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'customers');
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	return array('stat'=>'ok', 'id'=>$address_id);
 }

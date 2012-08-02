@@ -12,7 +12,10 @@
 //
 // Arguments
 // ---------
+// ciniki:
 // business_id: 		The ID of the business the request is for.
+// method:				The method requested.
+// customer_id:			The ID of the customer for the method, or 0 if no customer specified.
 // 
 // Returns
 // -------
@@ -59,7 +62,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 		. "AND (permission_group = 'owners' OR permission_group = 'employees') "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQuery.php');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'businesses', 'user');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'378', 'msg'=>'Access denied', 'err'=>$rc['err']));
 	}
@@ -90,7 +93,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 			. "AND id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
 			. "";
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQuery.php');
-		$rc = ciniki_core_dbRspQuery($ciniki, $strsql, 'customers', 'customers', 'customer', array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'377', 'msg'=>'Access denied')));
+		$rc = ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer', array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'377', 'msg'=>'Access denied')));
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'515', 'msg'=>'Access denied', 'err'=>$rc['err']));
 		}

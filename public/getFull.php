@@ -52,7 +52,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQueryTree.php');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix', 'name', 
 				'company', 'department', 'title', 
@@ -80,7 +80,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
 			'fields'=>array('id', 'customer_id', 'address1', 'address2', 'city', 'province', 'postal', 
 				'country', 'flags')),
@@ -106,7 +106,7 @@ function ciniki_customers_getFull($ciniki) {
 			. "AND status = 1 "
 			. "ORDER BY ciniki_subscriptions.name "
 			. "";
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'customers', array(
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'subscriptions', 'fname'=>'id', 'name'=>'subscription',
 				'fields'=>array('id', 'name', 'description', 'customer_subscription_id', 'status')),
 			));

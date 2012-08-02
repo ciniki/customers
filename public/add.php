@@ -10,8 +10,36 @@
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
-// 
+// api_key:
+// auth_token:
+// business_id:			The ID of the business to add the customer to.
+// name:				(optional) The full name of the customer.  If this is specified,
+//						it will be split at the first comma into last, first
+//						or split at the last space "first name last".  If there
+//						there is no space or comma, the name will be added as
+// 						the first name.
+//
+//						**note** One of either name or first must be specified.
+//
+// prefix:				(optional) The prefix or title for the persons name: Ms. Mrs. Mr. Dr. etc.
+// first:				(optional) The first name of the customer.
+// middle:				(optional) The middle name or initial of the customer.
+// last:				(optional) The last name of the customer.
+// suffix:				(optional) The credentials or degrees for the customer: Ph.D, M.D., Jr., etc.
+// company:				(optional) The company the customer works for.
+// department:			(optional) The department at the company the customer works for.
+// title:				(optional) The customers title at the company.
+// email:				(optional) The email address of the customer.
+// flags:				(optional) The options for the customer email address.  Default: 0.
+//	
+//						0x01 - The customer is allowed to login to the business website.
+//
+// phone_home:			(optional) The home phone number for the customer.
+// phone_work:			(optional) The work phone number for the customer.
+// phone_cell:			(optional) The cell phone number for the customer.
+// phone_fax:			(optional) The fax number for the customer.
+// notes:				(optional) The notes for the customer.
+//
 // Returns
 // -------
 // <rsp stat='ok' id='34' />
@@ -90,7 +118,7 @@ function ciniki_customers_add($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'customers');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}   
@@ -114,13 +142,13 @@ function ciniki_customers_add($ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $args['title']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['notes']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'customers');
+	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return $rc;
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'customers');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'369', 'msg'=>'Unable to add customer'));
 	}
 	$customer_id = $rc['insert_id'];
@@ -145,7 +173,7 @@ function ciniki_customers_add($ciniki) {
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 				1, 'ciniki_customers', $customer_id, $field, $args[$field]);
 		}
 	}
@@ -164,16 +192,16 @@ function ciniki_customers_add($ciniki) {
 			. "'" . ciniki_core_dbQuote($ciniki, $args['email']) . "', "
 			. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
 			. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'customers');
+		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) { 
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			if( $rc['err']['code'] == '73' ) {
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'724', 'msg'=>'Email address already exists'));
 			}
 			return $rc;
 		}
 		if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'customers');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'720', 'msg'=>'Unable to add customer email'));
 		}
 		$email_id = $rc['insert_id'];
@@ -181,7 +209,7 @@ function ciniki_customers_add($ciniki) {
 		//
 		// Log the addition of the customer id
 		//
-		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 			1, 'ciniki_customer_emails', $email_id, 'customer_id', $customer_id);
 		//
 		// Add all the fields to the change log
@@ -192,7 +220,7 @@ function ciniki_customers_add($ciniki) {
 			);
 		foreach($changelog_fields as $field) {
 			if( isset($args[$field]) && $args[$field] != '' ) {
-				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'customers', 'ciniki_customer_history', $args['business_id'], 
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 					1, 'ciniki_customer_emails', $email_id, $field, $args[$field]);
 			}
 		}
@@ -201,10 +229,17 @@ function ciniki_customers_add($ciniki) {
 	//
 	// Commit the database changes
 	//
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'customers');
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	return array('stat'=>'ok', 'id'=>$customer_id);
 }

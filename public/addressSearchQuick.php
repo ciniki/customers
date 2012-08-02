@@ -60,6 +60,6 @@ function ciniki_customers_addressSearchQuick($ciniki) {
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQuery.php');
-	return ciniki_core_dbRspQuery($ciniki, $strsql, 'customers', 'cities', 'city', array('stat'=>'ok', 'cities'=>array()));
+	return ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'cities', 'city', array('stat'=>'ok', 'cities'=>array()));
 }
 ?>

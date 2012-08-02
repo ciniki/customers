@@ -48,7 +48,7 @@ function ciniki_customers_emailGet($ciniki) {
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
 		. "";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'customers', 'email');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
