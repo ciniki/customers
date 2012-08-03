@@ -74,7 +74,7 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
 		. "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') ";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-	$rc = ciniki_core_dbUpdate(&$ciniki, $strsql, 'ciniki.customers');
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'733', 'msg'=>'Unable to update password.'));
