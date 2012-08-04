@@ -31,6 +31,8 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'750', 'msg'=>'You must be signed in to change your password.'));
 	}
 
+	error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . "");
+
 	//
 	// Check temp password
 	// Must change password within 2 hours (7200 seconds)
@@ -43,9 +45,11 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
 	if( $rc['stat'] != 'ok' ) {
+		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (" . $rc['err']['code'] . ")");
 		return $rc;
 	}
 	if( !isset($rc['user']) || !is_array($rc['user']) ) {
+		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (751)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'751', 'msg'=>'Unable to update password.'));
 	}
 	$user = $rc['user'];
@@ -54,6 +58,7 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	// Perform an extra check to make sure only 1 row was found, other return error
 	//
 	if( $rc['num_rows'] != 1 ) {
+		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (752)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'752', 'msg'=>'Invalid temporary password'));
 	}
 
@@ -77,14 +82,16 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
 		. "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $oldpassword) . "') ";
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-	$rc = ciniki_core_dbUpdate(&$ciniki, $strsql, 'ciniki.customers');
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (753)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'753', 'msg'=>'Unable to update password.'));
 	}
 
 	if( $rc['num_affected_rows'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (754)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'754', 'msg'=>'Unable to change password.'));
 	}
 
@@ -93,15 +100,18 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	//
 	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
+		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (755)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'755', 'msg'=>'Unable to update password.'));
 	}
+
+	error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " success");
 
 	//
 	// Update the last_change date in the business modules
 	// Ignore the result, as we don't want to stop user updates if this fails.
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $business_id, 'ciniki', 'customers');
 
 	return array('stat'=>'ok');
 }

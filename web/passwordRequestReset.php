@@ -15,6 +15,8 @@
 //
 function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email, $url) {
 	
+	error_log("WEB: passwordRequestReset $email");
+
     //  
 	// Create a random password for the user
 	//  
@@ -37,9 +39,11 @@ function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
 	if( $rc['stat'] != 'ok' ) {
+		error_log("WEB: changeTempPassword $email fail (725)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'725', 'msg'=>'Unable to reset password.', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['user']) || !isset($rc['user']['email']) ) {
+		error_log("WEB: changeTempPassword $email fail (726)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'726', 'msg'=>'Unable to reset password.'));
 	}
 	$user = $rc['user'];
@@ -68,11 +72,13 @@ function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+		error_log("WEB: changeTempPassword $email fail (727)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'727', 'msg'=>'Unable to reset password.'));
 	}
 
 	if( $rc['num_affected_rows'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+		error_log("WEB: changeTempPassword $email fail (728)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'728', 'msg'=>'Unable to reset password.'));
 	}
 
@@ -107,6 +113,7 @@ function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email
 	//
 	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
+		error_log("WEB: changeTempPassword $email fail (729)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'729', 'msg'=>'Unable to reset password.'));
 	}
 
@@ -123,12 +130,14 @@ function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email
 		mail($ciniki['config']['customers']['password.forgot.notify'], $subject, $msg, $headers, '-f' . $ciniki['config']['core']['system.email']);
 	}
 
+	error_log("WEB: passwordRequestReset $email success");
+
 	//
 	// Update the last_change date in the business modules
 	// Ignore the result, as we don't want to stop user updates if this fails.
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $business_id, 'ciniki', 'customers');
 
 	return array('stat'=>'ok');
 }
