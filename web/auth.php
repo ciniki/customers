@@ -43,7 +43,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	//
 	// Create a session for the customer
 	//
-	session_start();
+//	session_start();
 	$_SESSION['customer'] = $customer;
 	$_SESSION['change_log_id'] = 'web.' . date('ymd.His');
 	$ciniki['session']['customer'] = $customer;
