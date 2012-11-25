@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.06.
+#
+ALTER TABLE ciniki_customers ADD COLUMN cid varchar(50) not null AFTER uuid;
+ALTER TABLE ciniki_customers ADD COLUMN type tinyint unsigned not null AFTER status;
+ALTER TABLE ciniki_customers COMMENT='v1.06';

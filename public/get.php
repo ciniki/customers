@@ -19,7 +19,7 @@ function ciniki_customers_get($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'),
@@ -33,19 +33,30 @@ function ciniki_customers_get($ciniki) {
     // Make sure this module is activated, and
     // check permission to run this function for this business
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/customers/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
     $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.get', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
-    require_once($ciniki['config']['core']['modules_dir'] . '/users/private/dateFormat.php');
-    require_once($ciniki['config']['core']['modules_dir'] . '/users/private/datetimeFormat.php');
+	//
+	// Get the types of customers available for this business
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
+    $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+	if( $rc['stat'] != 'ok' ) {	
+		return $rc;
+	}
+	$types = $rc['types'];
+
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
 	$date_format = ciniki_users_dateFormat($ciniki);
 	$datetime_format = ciniki_users_datetimeFormat($ciniki);
 
 	$strsql = "SELECT id, CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name, "
+		. "type, cid, "
 		. "prefix, first, middle, last, suffix, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "notes "
@@ -60,6 +71,11 @@ function ciniki_customers_get($ciniki) {
 	if( !isset($rc['customer']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'370', 'msg'=>'Invalid customer'));
 	}
+
+	if( $rc['customer']['type'] > 0 && isset($types[$rc['customer']['type']]) ) {
+		$rc['customer']['display_type'] = $types[$rc['customer']['type']]['detail_value'];
+	}
+
 	return array('stat'=>'ok', 'customer'=>$rc['customer']);
 }
 ?>

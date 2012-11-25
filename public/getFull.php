@@ -11,7 +11,7 @@ function ciniki_customers_getFull($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'),
@@ -25,14 +25,24 @@ function ciniki_customers_getFull($ciniki) {
     // Make sure this module is activated, and
     // check permission to run this function for this business
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/customers/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
     $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.getFull', $args['customer_id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 	$modules = $rc['modules'];
 
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	//
+	// Get the types of customers available for this business
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
+    $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+	if( $rc['stat'] != 'ok' ) {	
+		return $rc;
+	}
+	$types = $rc['types'];
+
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 //	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/dateFormat.php');
 //	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/datetimeFormat.php');
 //	$date_format = ciniki_users_dateFormat($ciniki);
@@ -41,7 +51,7 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Get the customer details and emails
 	//
-	$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
+	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
 		. "CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name, "
 		. "company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
@@ -51,10 +61,10 @@ function ciniki_customers_getFull($ciniki) {
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQueryTree.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix', 'name', 
+			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'name', 
 				'company', 'department', 'title', 
 				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
 				'notes')),
@@ -67,6 +77,13 @@ function ciniki_customers_getFull($ciniki) {
 	if( !isset($rc['customers']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'722', 'msg'=>'Invalid customer'));
 	}
+	//
+	// Set the display type for the customer
+	//
+	if( $rc['customers'][0]['customer']['type'] > 0 && isset($types[$rc['customers'][0]['customer']['type']]) ) {
+		$rc['customers'][0]['customer']['display_type'] = $types[$rc['customers'][0]['customer']['type']]['detail_value'];
+	}
+
 
 	$customer = $rc['customers'][0]['customer'];
 	$customer['addresses'] = array();
@@ -91,6 +108,7 @@ function ciniki_customers_getFull($ciniki) {
 	if( isset($rc['addresses']) ) {
 		$customer['addresses'] = $rc['addresses'];
 	}
+
 
 	// 
 	// Get customer subscriptions if module is enabled

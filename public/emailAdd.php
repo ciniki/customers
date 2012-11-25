@@ -26,7 +26,7 @@ function ciniki_customers_emailAdd($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
 		'email'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email address specified'),
-		'flags'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email options specified'),
+		'flags'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No email options specified'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

@@ -50,8 +50,10 @@ function ciniki_customers_addressSearchQuick($ciniki) {
 	// if no rows found, then return empty array
 	//
 	$strsql = "SELECT DISTINCT city AS name, province, country "
-		. "FROM ciniki_customer_addresses "
-		. "WHERE city like '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+		. "FROM ciniki_customers, ciniki_customer_addresses "
+		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ciniki_customers.id = ciniki_customer_addresses.customer_id "
+		. "AND city like '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 		. "ORDER BY city, province, country ";
 	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
 		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";	// is_numeric verified

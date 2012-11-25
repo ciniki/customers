@@ -23,6 +23,8 @@ function ciniki_customers_update($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
+        'cid'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No customer ID specified'), 
+        'type'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No type specified'), 
         'prefix'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No prefix specified'), 
         'first'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No first name specified'), 
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No middle name specified'), 
@@ -78,6 +80,8 @@ function ciniki_customers_update($ciniki) {
 	//
 
 	$changelog_fields = array(
+		'cid',
+		'type',
 		'prefix',
 		'first',
 		'middle',

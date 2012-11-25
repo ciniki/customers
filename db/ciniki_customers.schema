@@ -17,11 +17,17 @@
 # id: 				The id for each customer.
 # uuid:				Universal Unique ID
 #
+# cid:				The ID for the customer, specified by the business.  This is a field
+#					used for outside reference, no internal linking should be done with
+#					this field.
+#
 # business_id:		The business the customer is attached to.
 #
 # status:			0 - unknown
 #					1 - active
 #					60 - deleted
+#
+# type:				The type of customer, defined in the ciniki_customer_settings table.
 #
 # prefix:			Dr. Mr. Ms. Miss. Mrs.
 # first:			The first name(s) of the customer.
@@ -46,8 +52,10 @@
 create table ciniki_customers (
 	id int not null auto_increment,
 	uuid char(36) not null,
+	cid varchar(50) not null,
 	business_id int not null,
 	status tinyint unsigned not null,
+	type tinyint unsigned not null,
 	prefix varchar(10) not null,
 	first varchar(100) not null,
 	middle varchar(100) not null,
@@ -67,4 +75,4 @@ create table ciniki_customers (
 	unique index (uuid),
 	index (first, middle, last),
 	index (company)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';
