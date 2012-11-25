@@ -1,0 +1,34 @@
+#
+# Description
+# -----------
+# This table stores how the customers of a business are related to each other
+#
+#
+# Fields
+# ------
+# id: 					The id for each customer.
+#
+# business_id:			The business the customer is attached to.
+#
+# customer_id:			The customer the address is attached to.
+# 
+# relationship_type:	The possible relationships are:
+#
+#						0 - unknown
+#						1 - parent
+#						2 - business owner
+#
+# date_added:			The UTC date and time the record was added.
+# last_updated:			The UTC date and time the record was last updated.
+#
+create table ciniki_customer_relationships (
+	id int not null auto_increment,
+	business_id int not null,
+	customer_id int not null,
+	relationship_type tinyint unsigned not null,
+	related_id int not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	unique index (customer_id, type, related_id)
+) ENGINE='InnoDB', COMMENT='v1.01';
