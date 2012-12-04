@@ -6,8 +6,12 @@
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
-// search_str:		The search string provided by the user.
+// api_key:
+// auth_token:
+// business_id:			The ID of the business to search for the customers.
+// start_needle:		The search string to use.
+// limit:				(optional) The maximum number of results to return.  If not
+//						specified, the maximum results will be 25.
 // 
 // Returns
 // -------
@@ -51,7 +55,7 @@ function ciniki_customers_searchQuick($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT ciniki_customers.id, CONCAT_WS(' ', first, last) AS name, status, type, company, cid, ";
+	$strsql = "SELECT DISTINCT ciniki_customers.id, CONCAT_WS(' ', first, last) AS name, status, type, company, cid, ";
 	if( count($types) > 0 ) {
 		$strsql .= "CASE type ";
 		foreach($types as $tid => $type) {
@@ -67,6 +71,7 @@ function ciniki_customers_searchQuick($ciniki) {
 		. "AND ciniki_customers.status = 1 "
 		. "AND (first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+			. "OR cid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR company LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR company LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

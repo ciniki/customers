@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.07.
+# This upgrade adds an index to the customers ID the business uses.
+#
+CREATE INDEX cid ON ciniki_customers (cid);
+ALTER TABLE ciniki_customers COMMENT='v1.07';
