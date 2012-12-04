@@ -24,6 +24,9 @@
 # Does the business use inter-relationships tracking between customers
 # - use-relationships - (yes|no)
 #
+# Does the business use fiscal year end
+# - use-fiscalyearend - (yes|no)
+#
 # Fields
 # ------
 # business_id:	The id of the business the detail is for.
