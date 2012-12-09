@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This method will merge two customers into
+// This method will merge two customers into one.
 //
 // Returns
 // -------
@@ -373,6 +373,88 @@ function ciniki_customers_merge($ciniki) {
 			//
 			ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 			ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'wineproduction');
+		}
+	}
+
+	//
+	// Merge service jobs
+	//
+	if( isset($modules['ciniki.services']) ) {
+		$updated = 0;
+		//
+		// Get the list of service subscriptions for a customer
+		//
+		$strsql = "SELECT id "
+			. "FROM ciniki_service_subscriptions "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.services', 'services');
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'851', 'msg'=>'Unable to find service subscriptions', 'err'=>$rc['err']));
+		}
+		$services = $rc['rows'];
+		foreach($services as $i => $row) {
+			$strsql = "UPDATE ciniki_service_subscriptions "
+				. "SET customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
+				. ", last_updated = UTC_TIMESTAMP() "
+				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND id = '" . $row['id'] . "' "
+				. "";
+			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.services');
+			if( $rc['stat'] != 'ok' ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'852', 'msg'=>'Unable to update services', 'err'=>$rc['err']));
+			}
+			if( $rc['num_affected_rows'] == 1 ) {
+				// Record update as merge action
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.services', 'ciniki_service_history', $args['business_id'],
+					4, 'ciniki_service_subscriptions', $row['id'], 'customer_id', $args['primary_customer_id']);
+			}
+			$updated = 1;
+		}
+		//
+		// Get the list of service jobs for a customer
+		//
+		$strsql = "SELECT id "
+			. "FROM ciniki_service_jobs "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.services', 'services');
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'853', 'msg'=>'Unable to find service subscriptions', 'err'=>$rc['err']));
+		}
+		$services = $rc['rows'];
+		foreach($services as $i => $row) {
+			$strsql = "UPDATE ciniki_service_jobs "
+				. "SET customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
+				. ", last_updated = UTC_TIMESTAMP() "
+				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND id = '" . $row['id'] . "' "
+				. "";
+			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.services');
+			if( $rc['stat'] != 'ok' ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'854', 'msg'=>'Unable to update services', 'err'=>$rc['err']));
+			}
+			if( $rc['num_affected_rows'] == 1 ) {
+				// Record update as merge action
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.services', 'ciniki_service_history', $args['business_id'],
+					4, 'ciniki_service_jobs', $row['id'], 'customer_id', $args['primary_customer_id']);
+			}
+			$updated = 1;
+		}
+
+		if( $updated == 1 ) {
+			//
+			// Update the last_change date in the business modules
+			// Ignore the result, as we don't want to stop user updates if this fails.
+			//
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+			ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'services');
 		}
 	}
 
