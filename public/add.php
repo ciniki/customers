@@ -183,6 +183,7 @@ function ciniki_customers_add($ciniki) {
 	// Add all the fields to the change log
 	//
 	$changelog_fields = array(
+		'cid',
 		'prefix',
 		'first',
 		'middle',
