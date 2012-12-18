@@ -24,8 +24,8 @@
 # Does the business use inter-relationships tracking between customers
 # - use-relationships - (yes|no)
 #
-# Does the business use fiscal year end
-# - use-fiscalyearend - (yes|no)
+# Does the business use birthdates for customers
+# - use-birthdate - (yes|no)
 #
 # Fields
 # ------

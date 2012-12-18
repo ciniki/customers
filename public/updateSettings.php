@@ -56,6 +56,7 @@ function ciniki_customers_updateSettings($ciniki) {
 	$changelog_fields = array(
 		'use-cid',
 		'use-relationships',
+		'use-birthdate',
 		'types-1-label',
 		'types-1-form',
 		'types-1-type',

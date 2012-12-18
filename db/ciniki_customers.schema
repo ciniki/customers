@@ -46,15 +46,7 @@
 #
 # notes:			The current notes for the customer.  Any updates to notes are tracked through change_log.
 #
-# fye_month:		The fiscal year end month for this customer.
-#
-#					0 - not used
-#					1-12 - Jan - Feb
-#
-# fye_day:			The fiscal year end day for this customer.
-#
-#					0 - not used
-#					1-31 - Day of the the month
+# birthdate:		The birthdate of the customer.
 #
 # date_added:		The UTC date and time the record was added.
 # last_updated:		The UTC date and time the record was udpated.
@@ -79,8 +71,7 @@ create table ciniki_customers (
 	phone_cell varchar(50) not null,
 	phone_fax varchar(50) not null,
 	notes varchar(6000) not null,
-#	fye_month tinyint unsigned not null,
-#	fye_day tinyint unsigned not null,
+	birthdate date not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
@@ -88,4 +79,4 @@ create table ciniki_customers (
 	index (first, middle, last),
 	index (company),
 	index (cid)
-) ENGINE='InnoDB', COMMENT='v1.07';
+) ENGINE='InnoDB', COMMENT='v1.08';

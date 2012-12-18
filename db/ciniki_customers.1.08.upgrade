@@ -1,0 +1,7 @@
+#
+# This file will upgrade the database table customers to version 1.08.
+# This upgrade adds birthdate field
+#
+ALTER TABLE ciniki_customers ADD COLUMN birthdate date not null AFTER notes;
+ALTER TABLE ciniki_customers COMMENT='v1.08';
+

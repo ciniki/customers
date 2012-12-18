@@ -43,9 +43,9 @@ function ciniki_customers_getFull($ciniki) {
 	$types = $rc['types'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-//	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/dateFormat.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/dateFormat.php');
+	$date_format = ciniki_users_dateFormat($ciniki);
 //	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/datetimeFormat.php');
-//	$date_format = ciniki_users_dateFormat($ciniki);
 //	$datetime_format = ciniki_users_datetimeFormat($ciniki);
 
 	//
@@ -56,6 +56,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
+		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "notes "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
@@ -67,7 +68,7 @@ function ciniki_customers_getFull($ciniki) {
 			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'name', 
 				'company', 'department', 'title', 
 				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
-				'notes')),
+				'notes', 'birthdate')),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
 		));

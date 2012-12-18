@@ -59,6 +59,7 @@ function ciniki_customers_get($ciniki) {
 		. "type, cid, "
 		. "prefix, first, middle, last, suffix, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
+		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "notes "
 		. "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
