@@ -32,7 +32,7 @@ function ciniki_customers_addressHistory($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
@@ -47,7 +47,7 @@ function ciniki_customers_addressHistory($ciniki) {
 	//
 	// Check access to business_id as owner, or sys admin
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/customers/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
 	$rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.addressHistory', $args['customer_id']);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -63,7 +63,7 @@ function ciniki_customers_addressHistory($ciniki) {
 		. "AND customer_id = ciniki_customers.id "
 		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 	if( $rc['stat'] != 'ok' ) {	
 		return $rc;
@@ -72,7 +72,7 @@ function ciniki_customers_addressHistory($ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'740', 'msg'=>'Access denied'));
 	}
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
 	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_addresses', $args['address_id'], $args['field']);
 }
 ?>

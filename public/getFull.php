@@ -43,9 +43,9 @@ function ciniki_customers_getFull($ciniki) {
 	$types = $rc['types'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/dateFormat.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
 	$date_format = ciniki_users_dateFormat($ciniki);
-//	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/datetimeFormat.php');
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
 //	$datetime_format = ciniki_users_datetimeFormat($ciniki);
 
 	//
