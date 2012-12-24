@@ -10,13 +10,27 @@
 #
 # business_id:			The business the customer is attached to.
 #
-# customer_id:			The customer the address is attached to.
+# customer_id:			The ID of the customer to whom the related_id is
+#						related to.
 # 
 # relationship_type:	The possible relationships are:
 #
 #						0 - unknown
-#						1 - parent
-#						2 - business owner
+#						1 - business owner
+#						2 - business partner
+#						30 - parent
+#						31 - step-parent
+#						32 - spouse
+#						33 - sibling
+#						34 - step-sibling
+#						35 - 
+#
+# related_id:			The ID of the customer who is related to customer_id.
+#
+# date_started:			The date the relationship started.  Used for marriages/divorces, etc.
+# date_ended:			The date the relationship ended.
+#
+# notes:				Any notes about the relationship.
 #
 # date_added:			The UTC date and time the record was added.
 # last_updated:			The UTC date and time the record was last updated.
@@ -27,8 +41,11 @@ create table ciniki_customer_relationships (
 	customer_id int not null,
 	relationship_type tinyint unsigned not null,
 	related_id int not null,
+	date_started date not null,
+	date_ended date not null,
+	notes varchar(6000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
-	unique index (customer_id, type, related_id)
+	unique index (business_id, customer_id, relationship_type, related_id)
 ) ENGINE='InnoDB', COMMENT='v1.01';
