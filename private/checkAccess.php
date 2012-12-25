@@ -79,6 +79,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $req_id) {
 
 
 	if( $method == 'ciniki.customers.relationshipHistory' 
+		|| $method == 'ciniki.customers.relationshipGet'
 		|| $method == 'ciniki.customers.relationshipDelete'
 		|| $method == 'ciniki.customers.relationshipUpdate' ) {
 		//

@@ -139,7 +139,7 @@ function ciniki_customers_getFull($ciniki) {
 	if( isset($settings['use-relationships']) && $settings['use-relationships'] == 'yes' ) {
 		$strsql = "SELECT ciniki_customer_relationships.id, relationship_type AS type, "
 			. "relationship_type AS type_name, "
-			. "customer_id, related_id, "
+			. "ciniki_customer_relationships.customer_id, ciniki_customer_relationships.related_id, "
 //			. "IF(customer_id='" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', related_id, customer_id) AS related_id, "
 			. "date_started, date_ended, "
 			. "";
@@ -175,7 +175,7 @@ function ciniki_customers_getFull($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'relationships', 'fname'=>'id', 'name'=>'relationship',
-				'fields'=>array('id', 'type', 'type_name', 'related_id', 
+				'fields'=>array('id', 'type', 'customer_id', 'type_name', 'related_id', 
 					'name'=>'customer_name', 'date_started', 'date_ended'),
 				'maps'=>array('type_name'=>$relationship_types)),
 			));
@@ -184,18 +184,18 @@ function ciniki_customers_getFull($ciniki) {
 		}
 		if( isset($rc['relationships']) ) {
 			$customer['relationships'] = $rc['relationships'];
-		}
-		foreach($customer['relationships'] as $rid => $relationship) {
-			$relationship = $relationship['relationship'];
-			//
-			// Check if this relationship needs to be reversed
-			//
-			if( $relationship['related_id'] == $args['customer_id'] ) {
-				if( isset($relationship_types[-$relationship['type']]) ) {
-					$customer['relationships'][$rid]['relationship']['type_name'] = $relationship_types[-$relationship['type']];
+			foreach($customer['relationships'] as $rid => $relationship) {
+				$relationship = $relationship['relationship'];
+				//
+				// Check if this relationship needs to be reversed
+				//
+				if( $relationship['related_id'] == $args['customer_id'] ) {
+					if( isset($relationship_types[-$relationship['type']]) ) {
+						$customer['relationships'][$rid]['relationship']['type_name'] = $relationship_types[-$relationship['type']];
+					}
+					$customer['relationships'][$rid]['relationship']['type'] = -$relationship['type'];
+					$customer['relationships'][$rid]['relationship']['related_id'] = $relationship['customer_id'];
 				}
-				$customer['relationships'][$rid]['relationship']['type'] = -$relationship['type'];
-				$customer['relationships'][$rid]['relationship']['related_id'] = $relationship['customer_id'];
 			}
 		}
 	}

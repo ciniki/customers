@@ -28,6 +28,13 @@
 #						46 - step-sibling
 #						47 - sibling-in-law
 #
+# 						When the reverse of a relationship should be used in the API,
+#						for example "child of" then a negative relationship_type should be sent (-41). 
+#						The negative indicates the reversal of the relationship_role.  Relationships
+#						are always stores with the dominant customer as the customer_id and the 
+#						related_id as the younger/submissive customer.  In roles like spouse, there
+#						is now difference.
+#
 # related_id:			The ID of the customer who is related to customer_id.
 #
 # date_started:			The date the relationship started.  Used for marriages/divorces, etc.

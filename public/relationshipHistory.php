@@ -37,6 +37,7 @@ function ciniki_customers_relationshipHistory($ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'relationship_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Relationship'), 
+		'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'),
 		'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
@@ -56,9 +57,16 @@ function ciniki_customers_relationshipHistory($ciniki) {
 	if( $args['field'] == 'date_started'
 		|| $args['field'] == 'date_ended' ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
-		return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_relationships', $args['relationship_id'], $args['field'], 'date');
+		return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+			'ciniki_customer_relationships', $args['relationship_id'], $args['field'], 'date');
 	}
 
+	//
+	// The related_id field requires it's own special query, because the history should come
+	// from either the customer_id or related_id depending on which the customer_id is set
+	// to.  This means any responses where the customer_id is the history are filtered out,
+	// and only the other customer_id is returned
+	//
 	if( $args['field'] == 'related_id' ) {
 		//
 		// Check if different customer types have been enabled
@@ -70,6 +78,18 @@ function ciniki_customers_relationshipHistory($ciniki) {
 		}
 		$types = $rc['types'];
 
+		//
+		// Get the history log from ciniki_core_change_logs table.
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+		$datetime_format = ciniki_users_datetimeFormat($ciniki);
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbParseAge');
+
+		$strsql = "SELECT user_id, DATE_FORMAT(log_date, '" . ciniki_core_dbQuote($ciniki, $datetime_format) . "') as date, "
+			. "CAST(UNIX_TIMESTAMP(UTC_TIMESTAMP())-UNIX_TIMESTAMP(log_date) as DECIMAL(12,0)) as age, "
+			. "new_value as value, "
+			. "";
 		if( count($types) > 0 ) {
 			// If there are customer types defined, choose the right name for the customer
 			// This is required here to be able to sort properly
@@ -82,14 +102,24 @@ function ciniki_customers_relationshipHistory($ciniki) {
 					$strsql .= "CONCAT_WS(' ', first, last) ";
 				}
 			}
-			$strsql .= "ELSE CONCAT_WS(' ', first, last) END ";
+			$strsql .= "ELSE CONCAT_WS(' ', first, last) END AS fkidstr_value ";
 		} else {
 			// Default to a person
-			$strsql .= "CONCAT_WS(' ', first, last) ";
+			$strsql .= "CONCAT_WS(' ', first, last) AS fkidstr_value ";
 		}
-		return ciniki_core_dbGetModuleHistoryFkId($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-			$args['business_id'], 'ciniki_customer_relationships', 'relatedship_id', $args['field'], 
-			'ciniki_customers', 'id', $strsql);
+		$strsql .= " FROM ciniki_customer_history "
+			. "LEFT JOIN ciniki_customers ON (ciniki_customer_history.new_value = ciniki_customers.id "
+				. " AND ciniki_customers.business_id ='" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "') "
+			. " WHERE ciniki_customer_history.business_id ='" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. " AND table_name = 'ciniki_customer_relationships' "
+			. " AND table_key = '" . ciniki_core_dbQuote($ciniki, $args['relationship_id']) . "' "
+			. " AND ((table_field = 'related_id' AND new_value != '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "') "
+				. "OR (table_field = 'customer_id' AND new_value != '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "')) "
+			. " ORDER BY log_date DESC "
+			. " ";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQueryPlusDisplayNames');
+		$rc = ciniki_core_dbRspQueryPlusDisplayNames($ciniki, $strsql, 'ciniki.customers', 'history', 'action', array('stat'=>'ok', 'history'=>array(), 'users'=>array()));
+		return $rc;
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');

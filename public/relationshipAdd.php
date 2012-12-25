@@ -51,7 +51,7 @@ function ciniki_customers_relationshipAdd($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'relationship_type'=>array('required'=>'yes', 'blank'=>'no', 
-			'validlist'=>array('10','-10','11','30', '40', '41', '-41', '42', '-42', '43', '44', '45'), 
+			'validlist'=>array('10','-10','11','30', '40', '41', '-41', '42', '-42', '43', '-43', '44', '45', '46', '47'), 
 			'name'=>'Relationship Type'), 
         'related_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Related Customer'), 
         'date_started'=>array('required'=>'no', 'type'=>'date', 'default'=>'', 'blank'=>'yes', 'name'=>'Date Started'), 
