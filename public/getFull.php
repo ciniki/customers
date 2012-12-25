@@ -4,6 +4,9 @@
 // -----------
 // This function will return a full record of the customer, including attached addresses and emails.
 //
+// Arguments
+// ---------
+//
 // Returns
 // -------
 //
@@ -41,6 +44,26 @@ function ciniki_customers_getFull($ciniki) {
 		return $rc;
 	}
 	$types = $rc['types'];
+
+	//
+	// Get the settings for customer module
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
+    $rc = ciniki_customers_getSettings($ciniki, $args['business_id']); 
+	if( $rc['stat'] != 'ok' ) {	
+		return $rc;
+	}
+	$settings = $rc['settings'];
+
+	//
+	// Get the relationship types
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getRelationshipTypes');
+    $rc = ciniki_customers_getRelationshipTypes($ciniki, $args['business_id']); 
+	if( $rc['stat'] != 'ok' ) {	
+		return $rc;
+	}
+	$relationship_types = $rc['types'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
@@ -110,6 +133,72 @@ function ciniki_customers_getFull($ciniki) {
 		$customer['addresses'] = $rc['addresses'];
 	}
 
+	//
+	// Get the relationships for the customer
+	//
+	if( isset($settings['use-relationships']) && $settings['use-relationships'] == 'yes' ) {
+		$strsql = "SELECT ciniki_customer_relationships.id, relationship_type AS type, "
+			. "relationship_type AS type_name, "
+			. "customer_id, related_id, "
+//			. "IF(customer_id='" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', related_id, customer_id) AS related_id, "
+			. "date_started, date_ended, "
+			. "";
+		if( count($types) > 0 ) {
+			// If there are customer types defined, choose the right name for the customer
+			// This is required here to be able to sort properly
+			$strsql .= "CASE ciniki_customers.type ";
+			foreach($types as $tid => $type) {
+				$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
+				if( $type['detail_value'] == 'business' ) {
+					$strsql .= " ciniki_customers.company ";
+				} else {
+					$strsql .= "CONCAT_WS(' ', first, last) ";
+				}
+			}
+			$strsql .= "ELSE CONCAT_WS(' ', first, last) END AS customer_name ";
+		} else {
+			// Default to a person
+			$strsql .= "CONCAT_WS(' ', first, last) AS customer_name ";
+		}
+		$strsql .= "FROM ciniki_customer_relationships "
+			. "LEFT JOIN ciniki_customers ON ("
+				. "(ciniki_customer_relationships.customer_id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+				. "AND ciniki_customer_relationships.customer_id = ciniki_customers.id "
+				. ") OR ("
+				. "ciniki_customer_relationships.related_id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+				. "AND ciniki_customer_relationships.related_id = ciniki_customers.id "
+				. ")) "
+			. "WHERE ciniki_customer_relationships.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND (ciniki_customer_relationships.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+				. "OR ciniki_customer_relationships.related_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+				. ") "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'relationships', 'fname'=>'id', 'name'=>'relationship',
+				'fields'=>array('id', 'type', 'type_name', 'related_id', 
+					'name'=>'customer_name', 'date_started', 'date_ended'),
+				'maps'=>array('type_name'=>$relationship_types)),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['relationships']) ) {
+			$customer['relationships'] = $rc['relationships'];
+		}
+		foreach($customer['relationships'] as $rid => $relationship) {
+			$relationship = $relationship['relationship'];
+			//
+			// Check if this relationship needs to be reversed
+			//
+			if( $relationship['related_id'] == $args['customer_id'] ) {
+				if( isset($relationship_types[-$relationship['type']]) ) {
+					$customer['relationships'][$rid]['relationship']['type_name'] = $relationship_types[-$relationship['type']];
+				}
+				$customer['relationships'][$rid]['relationship']['type'] = -$relationship['type'];
+				$customer['relationships'][$rid]['relationship']['related_id'] = $relationship['customer_id'];
+			}
+		}
+	}
 
 	// 
 	// Get customer subscriptions if module is enabled

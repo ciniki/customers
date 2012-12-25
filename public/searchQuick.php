@@ -55,15 +55,23 @@ function ciniki_customers_searchQuick($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, CONCAT_WS(' ', first, last) AS name, status, type, company, cid, ";
+	$strsql = "SELECT DISTINCT ciniki_customers.id, status, type, company, cid, ";
 	if( count($types) > 0 ) {
-		$strsql .= "CASE type ";
+		// If there are customer types defined, choose the right name for the customer
+		// This is required here to be able to sort properly
+		$strsql .= "CASE ciniki_customers.type ";
 		foreach($types as $tid => $type) {
-			$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN '" . ciniki_core_dbQuote($ciniki, $type['detail_value']) . "' ";
+			$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
+			if( $type['detail_value'] == 'business' ) {
+				$strsql .= " ciniki_customers.company ";
+			} else {
+				$strsql .= "CONCAT_WS(' ', first, last) ";
+			}
 		}
-		$strsql .= "ELSE 'person' END AS display_type ";
+		$strsql .= "ELSE CONCAT_WS(' ', first, last) END AS name ";
 	} else {
-		$strsql .= "'person' AS display_type ";
+		// Default to a person
+		$strsql .= "CONCAT_WS(' ', first, last) AS name ";
 	}
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "

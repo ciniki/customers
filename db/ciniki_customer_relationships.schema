@@ -16,14 +16,17 @@
 # relationship_type:	The possible relationships are:
 #
 #						0 - unknown
-#						1 - business owner
-#						2 - business partner
-#						30 - parent
-#						31 - step-parent
-#						32 - spouse
-#						33 - sibling
-#						34 - step-sibling
-#						35 - 
+#						10 - business owner
+#						11 - business partner
+#						30 - friend
+#						40 - relative
+#						41 - parent
+#						42 - step-parent
+#						43 - parent-in-law
+#						44 - spouse
+#						45 - sibling
+#						46 - step-sibling
+#						47 - sibling-in-law
 #
 # related_id:			The ID of the customer who is related to customer_id.
 #

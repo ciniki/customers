@@ -377,7 +377,8 @@ function ciniki_customers_merge($ciniki) {
 	}
 
 	//
-	// Merge service jobs
+	// Merge service subscriptions and jobs.  It may result in duplicate services, 
+	// which may need to be fixed.
 	//
 	if( isset($modules['ciniki.services']) ) {
 		$updated = 0;

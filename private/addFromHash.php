@@ -14,8 +14,9 @@
 //
 function ciniki_customers_addFromHash($ciniki, $customer) {
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashToSQL.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashToSQL');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
 	$rc = ciniki_core_dbHashToSQL($ciniki, 
 		array('prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title'),
 		$customer,

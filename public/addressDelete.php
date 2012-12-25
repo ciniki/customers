@@ -55,7 +55,8 @@ function ciniki_customers_addressDelete($ciniki) {
 	}   
 
 	//
-	// Add the customer to the database
+	// Delete the customer address from the database.  The address information still
+	// exists in the ciniki_customer_history table.
 	//
 	$strsql = "DELETE FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -65,8 +66,17 @@ function ciniki_customers_addressDelete($ciniki) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return $rc;
 	}
-	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-		3, 'ciniki_customer_addresses', $args['address_id'], '*', '');
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
+		$args['business_id'], 3, 'ciniki_customer_addresses', $args['address_id'], '*', '');
+
+	//
+	// Update the customer last_updated date
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTouch');
+	$rc = ciniki_core_dbTouch($ciniki, 'ciniki.customers', 'ciniki_customers', 'id', $args['customer_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'596', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
+	}
 
 	//
 	// Commit the database changes

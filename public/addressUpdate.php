@@ -121,6 +121,15 @@ function ciniki_customers_addressUpdate($ciniki) {
 	}
 
 	//
+	// Update the customer last_updated date
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTouch');
+	$rc = ciniki_core_dbTouch($ciniki, 'ciniki.customers', 'ciniki_customers', 'id', $args['customer_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'597', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
+	}
+
+	//
 	// Commit the database changes
 	//
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');

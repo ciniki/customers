@@ -6,25 +6,22 @@
 // proper permissions to access or change the data.  This function
 // must be called by all public API functions to ensure security.
 //
-// Info
-// ----
-// Status: 			beta
-//
 // Arguments
 // ---------
 // ciniki:
 // business_id: 		The ID of the business the request is for.
 // method:				The method requested.
-// customer_id:			The ID of the customer for the method, or 0 if no customer specified.
+// req_id:				The ID of the customer or ID of the relationship for the 
+//						method, or 0 if no customer or relationship specified.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_id) {
+function ciniki_customers_checkAccess($ciniki, $business_id, $method, $req_id) {
 	//
 	// Check if the business is active and the module is enabled
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/businesses/private/checkModuleAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'checkModuleAccess');
 	$rc = ciniki_businesses_checkModuleAccess($ciniki, $business_id, 'ciniki', 'customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -50,7 +47,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'376', 'msg'=>'Access denied'));
 	}
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
 	//
 	// Find any users which are owners of the requested business_id
@@ -61,7 +58,7 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 		. "AND package = 'ciniki' "
 		. "AND (permission_group = 'owners' OR permission_group = 'employees') "
 		. "";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQuery.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'378', 'msg'=>'Access denied', 'err'=>$rc['err']));
@@ -80,26 +77,47 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $customer_
 	// At this point, we have ensured the user is a part of the business.
 	//
 
+
+	if( $method == 'ciniki.customers.relationshipHistory' 
+		|| $method == 'ciniki.customers.relationshipDelete'
+		|| $method == 'ciniki.customers.relationshipUpdate' ) {
+		//
+		// Make sure the relationship is owned by the business
+		//
+		$strsql = "SELECT business_id, id "
+			. "FROM ciniki_customer_relationships "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "AND id = '" . ciniki_core_dbQuote($ciniki, $req_id) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'relationship');
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'319', 'msg'=>'Access denied', 'err'=>$rc['err']));
+		}
+		if( !isset($rc['relationship']) 
+			|| $rc['relationship']['business_id'] != $business_id
+			|| $rc['relationship']['id'] != $req_id ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'298', 'msg'=>'Access denied'));
+		}
+	}
+
 	//
 	// Check the customer is attached to the business
 	//
-	if( $customer_id > 0 ) {
-		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	elseif( $req_id > 0 ) {
 		//
 		// Make sure the customer is attached to the business
 		//
 		$strsql = "SELECT business_id, id FROM ciniki_customers "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
+			. "AND id = '" . ciniki_core_dbQuote($ciniki, $req_id) . "' "
 			. "";
-		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbRspQuery.php');
 		$rc = ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer', array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'377', 'msg'=>'Access denied')));
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'515', 'msg'=>'Access denied', 'err'=>$rc['err']));
 		}
 		if( $rc['num_rows'] != 1 
 			|| $rc['customers'][0]['customer']['business_id'] != $business_id
-			|| $rc['customers'][0]['customer']['id'] != $customer_id ) {
+			|| $rc['customers'][0]['customer']['id'] != $req_id ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'379', 'msg'=>'Access denied'));
 		}
 	}
