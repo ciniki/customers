@@ -2,18 +2,19 @@
 //
 // Description
 // -----------
-//
-// Info
-// ----
-// Status: 			defined
-//
+// This method will remove a customer email address.
+
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// api_key:
+// auth_token:
+// business_id:			The ID of the business the customer is attached to.
+// customer_id:			The ID of the customer the email address is attached to.
+// email_id:			The ID of the email address to be removed.
 // 
 // Returns
 // -------
-// <rsp stat='ok' id='34' />
+// <rsp stat='ok' />
 //
 function ciniki_customers_emailDelete($ciniki) {
     //  
@@ -21,9 +22,9 @@ function ciniki_customers_emailDelete($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
-        'email_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+        'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

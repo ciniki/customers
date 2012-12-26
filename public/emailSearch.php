@@ -2,8 +2,8 @@
 //
 // Description
 // -----------
-// Search the customer for an email address.  This is used to check
-// if the email address already exists for a customer.
+// This method will search for an exact match on the specified email address 
+// belonging to the specified customer.
 //
 // Arguments
 // ---------
@@ -15,6 +15,9 @@
 // 
 // Returns
 // -------
+// <rsp stat="ok">
+//    <email id="7" customer_id="2" email="veggiefrog@gmail.com" />
+// </rsp>
 //
 function ciniki_customers_emailSearch($ciniki) {
     //  

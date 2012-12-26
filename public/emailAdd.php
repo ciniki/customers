@@ -2,16 +2,19 @@
 //
 // Description
 // -----------
-// This function will add a new customer email to the customers production module.
-//
-// Info
-// ----
-// Status: 			defined
+// This method will add a new email address to a customer.
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
-// customer_id:		The customer id the email is to be added to.
+// api_key:
+// auth_token:
+// business_id:		The ID of the business the customer is attached to.
+// customer_id:		The ID of the customer to add the email address to.
+// email:			The email address to add.
+// flags:			The options for the email address.
+//
+//					0x01 - Customer is allowed to login via the business website.
+//					       This is used by the ciniki.web module.
 // 
 // Returns
 // -------
@@ -23,10 +26,10 @@ function ciniki_customers_emailAdd($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
-		'email'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email address specified'),
-		'flags'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No email options specified'),
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+		'email'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email Address'),
+		'flags'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Options'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

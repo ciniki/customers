@@ -2,18 +2,24 @@
 //
 // Description
 // -----------
-//
-// Info
-// ----
-// Status: 			defined
+// This method will update the details for a customer email address.
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// api_key:
+// auth_token:
+// business_id:  	The ID of the business the email address is attached to.
+// customer_id:		The ID of the customer the email address is attached to.
+// email_id:		The ID of the email to change.
+// email:			(optional) The new email address for the customer.
+// flags:			(optional) The options for the email address.
+//
+//					0x01 - Customer is allowed to login via the business website.
+//					       This is used by the ciniki.web module.
 // 
 // Returns
 // -------
-// <rsp stat='ok' id='34' />
+// <rsp stat='ok' />
 //
 function ciniki_customers_emailUpdate($ciniki) {
     //  
@@ -21,11 +27,11 @@ function ciniki_customers_emailUpdate($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
-        'email_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email specified'), 
-        'email'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No email specified'), 
-        'flags'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No email options specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+        'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email ID'), 
+        'email'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email Address'), 
+        'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

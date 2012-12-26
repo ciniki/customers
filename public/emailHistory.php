@@ -2,20 +2,18 @@
 //
 // Description
 // -----------
-// This function will get the history of a field from the ciniki_core_change_logs table.
+// This method will return the history of a customers email address field.
 // This allows the user to view what has happened to a data element, and if they
 // choose, revert to a previous version.
-//
-// Info
-// ----
-// Status: beta
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:			The ID of the business to get the details for.
-// key:					The detail key to get the history for.
+// business_id:			The ID of the business to get the email history for.
+// customer_id:			The ID of the customer to get the email history for.
+// email_id:			The ID of the email address to get this history for.
+// field:				The field to get the history of.
 //
 // Returns
 // -------
@@ -34,10 +32,10 @@ function ciniki_customers_emailHistory($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
-		'email_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No email specified'), 
-		'field'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No field specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+		'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email'), 
+		'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
