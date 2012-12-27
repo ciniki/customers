@@ -19,7 +19,7 @@ function ciniki_customers_automergeStats($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No spreadsheet specified'), 
@@ -32,7 +32,7 @@ function ciniki_customers_automergeStats($ciniki) {
 	//
 	// Check access to business_id
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/customers/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
 	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.automergeStats', $args['automerge_id']);
 	if( $ac['stat'] != 'ok' ) {
 		return $ac;
@@ -47,7 +47,7 @@ function ciniki_customers_automergeStats($ciniki) {
 	//
 	// Get the number of rows in data
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbCount.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
 	$strsql = "SELECT 'rows', COUNT(DISTINCT row) "
 		. "FROM ciniki_customer_automerge_data "
 		. "WHERE automerge_id = '" . ciniki_core_dbQuote($ciniki, $args['automerge_id']) . "' "
@@ -62,7 +62,7 @@ function ciniki_customers_automergeStats($ciniki) {
 	//
 	// Get the number of rows with conflicts
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbCount.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
 	$strsql = "SELECT 'rows', COUNT(DISTINCT row) "
 		. "FROM ciniki_customer_automerge_data "
 		. "WHERE automerge_id = '" . ciniki_core_dbQuote($ciniki, $args['automerge_id']) . "' "

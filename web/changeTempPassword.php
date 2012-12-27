@@ -21,7 +21,7 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
 	if( strlen($newpassword) < 8 ) {
 		error_log("WEB: changeTempPassword $email fail (730)");
@@ -40,7 +40,7 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 		. "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') "
 		. "AND (UNIX_TIMESTAMP(UTC_TIMESTAMP()) - UNIX_TIMESTAMP(temp_password_date)) < 7200 "
 		. "";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
 	if( $rc['stat'] != 'ok' ) {
 		error_log("WEB: changeTempPassword $email fail (" . $rc['err']['code'] . ")");
@@ -63,9 +63,9 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	//
 	// Turn off autocommit
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		error_log("WEB: changeTempPassword $email fail (" . $rc['err']['code'] . ")");
@@ -80,7 +80,7 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 		. "last_updated = UTC_TIMESTAMP() "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
 		. "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') ";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');

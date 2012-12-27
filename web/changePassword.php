@@ -21,7 +21,7 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
 	if( strlen($newpassword) < 8 ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'749', 'msg'=>'New password must be longer than 8 characters.'));
@@ -42,7 +42,7 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['email']) . "' "
 		. "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $oldpassword) . "') "
 		. "";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
 	if( $rc['stat'] != 'ok' ) {
 		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (" . $rc['err']['code'] . ")");
@@ -65,9 +65,9 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	//
 	// Turn off autocommit
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -81,7 +81,7 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 		. "last_updated = UTC_TIMESTAMP() "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
 		. "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $oldpassword) . "') ";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');

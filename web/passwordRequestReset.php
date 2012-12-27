@@ -36,7 +36,7 @@ function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email
 		. "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
 		. "";
-	require_once($ciniki['config']['ciniki.core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
 	if( $rc['stat'] != 'ok' ) {
 		error_log("WEB: changeTempPassword $email fail (725)");
@@ -51,9 +51,9 @@ function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email
 	//
 	// Turn off autocommit
 	//
-	require_once($ciniki['config']['ciniki.core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['ciniki.core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['ciniki.core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -68,7 +68,7 @@ function ciniki_customers_web_passwordRequestReset($ciniki, $business_id, $email
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
 		. "";
-	require_once($ciniki['config']['ciniki.core']['modules_dir'] . '/core/private/dbUpdate.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
