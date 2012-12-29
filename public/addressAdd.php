@@ -31,7 +31,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_customers_addressAdd($ciniki) {
+function ciniki_customers_addressAdd(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -80,6 +80,7 @@ function ciniki_customers_addressAdd($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
@@ -87,12 +88,22 @@ function ciniki_customers_addressAdd($ciniki) {
 	}
 
 	//
+	// Get a new UUID
+	//
+	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$uuid = $rc['uuid'];
+
+	//
 	// Add the customer to the database
 	//
-	$strsql = "INSERT INTO ciniki_customer_addresses (customer_id, "
+	$strsql = "INSERT INTO ciniki_customer_addresses (uuid, customer_id, "
 		. "flags, "
 		. "address1, address2, city, province, postal, country, "
 		. "date_added, last_updated) VALUES ("
+		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['address1']) . "', "
@@ -112,6 +123,12 @@ function ciniki_customers_addressAdd($ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'373', 'msg'=>'Unable to add customer address'));
 	}
 	$address_id = $rc['insert_id'];
+
+	//
+	// Add the uuid to the history
+	//
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+		1, 'ciniki_customer_addresses', $address_id, 'uuid', $uuid);
 
 	//
 	// Add all the fields to the change log
@@ -156,6 +173,8 @@ function ciniki_customers_addressAdd($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customerUpdate', 'id'=>$args['customer_id']);
 
 	return array('stat'=>'ok', 'id'=>$address_id);
 }

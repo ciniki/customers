@@ -20,7 +20,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_customers_emailAdd($ciniki) {
+function ciniki_customers_emailAdd(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -53,6 +53,7 @@ function ciniki_customers_emailAdd($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
@@ -61,10 +62,20 @@ function ciniki_customers_emailAdd($ciniki) {
 	}
 
 	//
+	// Get a new UUID
+	//
+	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$uuid = $rc['uuid'];
+
+	//
 	// Add the customer email to the database
 	//
-	$strsql = "INSERT INTO ciniki_customer_emails (business_id, customer_id, email, flags, "
+	$strsql = "INSERT INTO ciniki_customer_emails (uuid, business_id, customer_id, email, flags, "
 		. "date_added, last_updated) VALUES ("
+		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['email']) . "', "
@@ -83,6 +94,12 @@ function ciniki_customers_emailAdd($ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'739', 'msg'=>'Unable to add customer email'));
 	}
 	$email_id = $rc['insert_id'];
+
+	//
+	// Add the uuid to the history
+	//
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+		1, 'ciniki_customer_emails', $email_id, 'uuid', $uuid);
 
 	//
 	// Add all the fields to the change log
@@ -122,6 +139,8 @@ function ciniki_customers_emailAdd($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customerUpdate', 'id'=>$args['customer_id']);
 
 	return array('stat'=>'ok', 'id'=>$email_id);
 }

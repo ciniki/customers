@@ -14,7 +14,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_customers_addressUpdate($ciniki) {
+function ciniki_customers_addressUpdate(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -143,6 +143,8 @@ function ciniki_customers_addressUpdate($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customerUpdate', 'id'=>$args['customer_id']);
 
 	return array('stat'=>'ok');
 }

@@ -49,6 +49,22 @@ function ciniki_customers_delete($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 
 	//
+	// Get the uuid of the customer to be deleted
+	//
+	$strsql = "SELECT uuid FROM ciniki_customers "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( !isset($rc['customer']) ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'227', 'msg'=>'Unable to find existing customer'));
+	}
+	$uuid = $rc['customer']['uuid'];
+
+	//
 	// Check for addresses
 	//
 	$strsql = "SELECT 'addresses', COUNT(*) "
@@ -109,8 +125,38 @@ function ciniki_customers_delete($ciniki) {
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'774', 'msg'=>'Unable to check for wine orders', 'err'=>$rc['err']));
 		}
-		if( isset($rc['num']['subscriptions']) && $rc['num']['subscriptions'] > 0 ) {
+		if( isset($rc['num']['wineproductions']) && $rc['num']['wineproductions'] > 0 ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'775', 'msg'=>'Unable to delete, wine orders still exist for this customer.'));
+		}
+	}
+
+	//
+	// Check for service subscriptions and service_jobs
+	//
+	if( isset($modules['ciniki.services']) ) {
+		$strsql = "SELECT 'subscriptions', COUNT(*) "
+			. "FROM ciniki_service_subscriptions "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'198', 'msg'=>'Unable to check for services', 'err'=>$rc['err']));
+		}
+		if( isset($rc['num']['subscriptions']) && $rc['num']['subscriptions'] > 0 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'199', 'msg'=>'Unable to delete, services still exist for this customer.'));
+		}
+		$strsql = "SELECT 'jobs', COUNT(*) "
+			. "FROM ciniki_service_jobs "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'222', 'msg'=>'Unable to check for service jobs', 'err'=>$rc['err']));
+		}
+		if( isset($rc['num']['subscriptions']) && $rc['num']['subscriptions'] > 0 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'224', 'msg'=>'Unable to delete, service jobs still exist for this customer.'));
 		}
 	}
 
@@ -138,6 +184,8 @@ function ciniki_customers_delete($ciniki) {
 	//
 	// Log the deletion
 	//
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
+		3, 'ciniki_customers', $args['customer_id'], 'uuid', $uuid);
 	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 		3, 'ciniki_customers', $args['customer_id'], '*', '');
 

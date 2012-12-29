@@ -14,7 +14,7 @@
 // -------
 // <rsp stat="ok" />
 //
-function ciniki_customers_automergeDelete($ciniki) {
+function ciniki_customers_automergeDelete(&$ciniki) {
 	//
 	// Find all the required and optional arguments
 	//

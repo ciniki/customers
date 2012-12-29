@@ -75,8 +75,8 @@ create table ciniki_customers (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
-	unique index (uuid),
+	unique index (uuid, business_id),
 	index (first, middle, last),
 	index (company),
 	index (cid)
-) ENGINE='InnoDB', COMMENT='v1.08';
+) ENGINE='InnoDB', COMMENT='v1.09';

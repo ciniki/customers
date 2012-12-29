@@ -42,7 +42,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_customers_relationshipAdd($ciniki) {
+function ciniki_customers_relationshipAdd(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  

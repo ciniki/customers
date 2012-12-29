@@ -1,0 +1,7 @@
+#
+# This upgrade will add the uuid column, and populate it.
+#
+ALTER TABLE ciniki_customer_addresses ADD COLUMN uuid char(36) not null after id;
+UPDATE ciniki_customer_addresses SET uuid = uuid();
+CREATE UNIQUE INDEX uuid ON ciniki_customer_addresses (uuid, customer_id);
+ALTER TABLE ciniki_customer_addresses COMMENT='v1.02';
