@@ -1,0 +1,6 @@
+#
+# This upgrade will add an unique index on the uuid and business id fields to stop duplicate log entrys during bad replication.
+#
+CREATE UNIQUE INDEX uuid ON ciniki_customer_history (uuid, business_id);
+ALTER TABLE ciniki_customer_history COMMENT='v1.02';
+

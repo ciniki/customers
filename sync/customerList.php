@@ -19,7 +19,7 @@ function ciniki_customers_sync_customerList($ciniki, $sync, $business_id, $args)
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'269', 'msg'=>'No type specified'));
 	}
 	if( $args['type'] == 'incremental' 
-		&& (!isset($args['last_timestamp']) || $args['last_timestamp'] == '') ) {
+		&& (!isset($args['since_uts']) || $args['since_uts'] == '') ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'270', 'msg'=>'No timestamp specified'));
 	}
 
@@ -33,10 +33,11 @@ function ciniki_customers_sync_customerList($ciniki, $sync, $business_id, $args)
 		. "FROM ciniki_customers "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' ";
 	if( $args['type'] == 'incremental' ) {
-		$strsql .= "WHERE UNIX_TIMESTAMP(ciniki_customers.last_updated) >= '" . ciniki_core_dbQuote($ciniki, $args['last_timestamp']) . "' ";
+		$strsql .= "AND UNIX_TIMESTAMP(ciniki_customers.last_updated) >= '" . ciniki_core_dbQuote($ciniki, $args['since_uts']) . "' ";
 	}
 	$strsql .= "ORDER BY last_updated "
 		. "";
+	error_log($strsql);
 	$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.customers', 'customers', 'uuid');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'271', 'msg'=>'Unable to get list', 'err'=>$rc['err']));

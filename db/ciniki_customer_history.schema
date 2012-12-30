@@ -30,6 +30,7 @@
 #					5 - merge delete
 #					6 - automerge
 #					7 - automerge delete
+#					8 - sync restore
 #
 # table_name:		The table where the change was made.
 #
@@ -54,7 +55,8 @@ create table ciniki_customer_history (
 	new_value varchar(65000) not null,
 	log_date datetime not null,
 	primary key (id),
+	unique index (uuid, business_id),
 	index (user_id), 
 	index (business_id, table_name, table_key, table_field),
 	index (log_date)
-) ENGINE=InnoDB, COMMENT='v1.01';
+) ENGINE=InnoDB, COMMENT='v1.02';

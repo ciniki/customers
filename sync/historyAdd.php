@@ -19,8 +19,6 @@ function ciniki_customers_sync_historyAdd($ciniki, $sync, $business_id, $args) {
 	}
 	$history = $args['history'];
 
-	print_r($history);
-
 	//  
 	// Turn off autocommit
 	//  

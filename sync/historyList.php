@@ -19,7 +19,7 @@ function ciniki_customers_sync_historyList($ciniki, $sync, $business_id, $args) 
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'266', 'msg'=>'No type specified'));
 	}
 	if( $args['type'] == 'incremental' 
-		&& (!isset($args['last_timestamp']) || $args['last_timestamp'] == '') ) {
+		&& (!isset($args['since_uts']) || $args['since_uts'] == '') ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'267', 'msg'=>'No timestamp specified'));
 	}
 
@@ -33,7 +33,7 @@ function ciniki_customers_sync_historyList($ciniki, $sync, $business_id, $args) 
 		. "FROM ciniki_customer_history "
 		. "WHERE ciniki_customer_history.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' ";
 	if( $args['type'] == 'incremental' ) {
-		$strsql .= "WHERE UNIX_TIMESTAMP(ciniki_customers.log_date) >= '" . ciniki_core_dbQuote($ciniki, $args['last_timestamp']) . "' ";
+		$strsql .= "AND UNIX_TIMESTAMP(ciniki_customer_history.log_date) >= '" . ciniki_core_dbQuote($ciniki, $args['since_uts']) . "' ";
 	}
 	$strsql .= "ORDER BY log_date "
 		. "";
