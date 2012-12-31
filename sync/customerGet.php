@@ -331,7 +331,7 @@ function ciniki_customers_sync_customerGet($ciniki, $sync, $business_id, $args) 
 		. "";
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'history');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'258', 'msg'=>'Unable to find deleted addresses'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'257', 'msg'=>'Unable to find deleted addresses'));
 	}
 	$prev_key = 0;
 	foreach($rc['rows'] as $rid => $row) {
