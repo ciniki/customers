@@ -266,12 +266,9 @@ function ciniki_customers_add(&$ciniki) {
 		//
 		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 			1, 'ciniki_customer_emails', $email_id, 'uuid', $uuid);
-
-		//
-		// Log the addition of the customer id
-		//
 		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 			1, 'ciniki_customer_emails', $email_id, 'customer_id', $customer_id);
+
 		//
 		// Add all the fields to the change log
 		//
@@ -338,6 +335,8 @@ function ciniki_customers_add(&$ciniki) {
 		//
 		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 			1, 'ciniki_customer_addresses', $address_id, 'uuid', $uuid);
+		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+			1, 'ciniki_customer_addresses', $address_id, 'customer_id', $customer_id);
 
 		//
 		// Add all the fields to the change log

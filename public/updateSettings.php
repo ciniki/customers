@@ -12,7 +12,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_customers_updateSettings($ciniki) {
+function ciniki_customers_updateSettings(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -120,6 +120,8 @@ function ciniki_customers_updateSettings($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.syncPushSettings', 'args'=>array());
 
 	return array('stat'=>'ok');
 }

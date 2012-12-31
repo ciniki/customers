@@ -19,6 +19,8 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 	}
 	$remote_customer = $args['customer'];
 
+	// FIXME: Check if the customer was deleted locally before adding
+
 	//
 	// Check if customer already exists, and if not run the add script
 	//
@@ -54,6 +56,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncUpdateObjectSQL');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashIDQuery');
@@ -66,7 +69,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 	//
 	// Compare basic elements of customer
 	//
-	$updatable_fields = array(
+	$rc = ciniki_core_syncUpdateObjectSQL($ciniki, $sync, $business_id, $remote_customer, $local_customer, array(
 		'cid'=>array(),
 		'type'=>array(),
 		'prefix'=>array(),
@@ -85,55 +88,18 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 		'birthdate'=>array(),
 		'date_added'=>array('type'=>'uts'),
 		'last_updated'=>array('type'=>'uts'),
-		);
-	$strsql = '';
-	$comma = '';
-	foreach($updatable_fields as $field => $finfo) {
-		//
-		// Check if the fields are different, and if so, figure out which one is newer
-		//
-		if( $remote_customer[$field] != $local_customer[$field] ) {
-			//
-			// Check the history for each field, and see which side is newer, remote or local
-			//
-			$remote_uts = 0;
-			$local_uts = 0;
-			if( isset($remote_customer['history']) ) {
-				foreach($remote_customer['history'] as $history_uuid => $history) {
-					if( $history['table_field'] == $field && $history['log_date'] > $remote_uts ) {
-						$remote_uts = $history['log_date'];
-					}
-				}
-			}
-			if( isset($local_customer['history']) ) {
-				foreach($local_customer['history'] as $history_uuid => $history) {
-					if( $history['table_field'] == $field && $history['log_date'] > $local_uts ) {
-						$local_uts = $history['log_date'];
-					}
-				}
-			}
-			
-			//
-			// Check if the field should be updated locally
-			//
-			if( $remote_uts > $local_uts || ($remote_uts == 0 && $local_uts == 0) ) {
-				// Find the first occurance of field in history for both local and remote, compare log_date
-				if( isset($finfo['type']) && $finfo['type'] == 'uts' ) {
-					$strsql .= $comma . " $field = FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $remote_customer[$field]) . "') ";
-				} else {
-					$strsql .= $comma . " $field = '" . ciniki_core_dbQuote($ciniki, $remote_customer[$field]) . "' ";
-				}
-				$comma = ',';
-			}
-		}
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
 	}
-	if( $strsql != '' ) {
-		$strsql = "UPDATE ciniki_customers SET " . $strsql . " "
+	if( isset($rc['strsql']) && $rc['strsql'] != '' ) {
+		$strsql = "UPDATE ciniki_customers SET " . $rc['strsql'] . " "
 			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $local_customer['id']) . "' "
 			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "";
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
 	}
@@ -145,6 +111,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 		$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 			'ciniki_customer_history', $local_customer['id'], 'ciniki_customers', $remote_customer['history'], $local_customer['history'], array());
 		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'229', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
 		}
 	}
@@ -160,9 +127,11 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 				// Delete the email
 				//
 				$strsql = "DELETE FROM ciniki_customer_emails "
-					. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $local_email['id']) . "' ";
+					. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $local_email['id']) . "' "
+					. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $local_customer['id']) . "' ";
 				$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 					return $rc;
 				}
 
@@ -174,6 +143,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
 					));
 				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 					return $rc;
 				}
 			}
@@ -222,6 +192,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 					. "";
 				$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.customers', 'history', 'history_uuid');
 				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'261', 'msg'=>'Unable to check for customer email history', 'err'=>$rc['err']));
 				}
 				$delete_uts = 0;
@@ -262,6 +233,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 						. ") "
 						. "";
 					$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
+					// FIXME: Put in a check if a duplicate record returned
 					if( $rc['stat'] != 'ok' ) { 
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 						return $rc;
@@ -287,6 +259,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 							'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
 						));
 					if( $rc['stat'] != 'ok' ) {
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'262', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
 					}
 				}
@@ -294,9 +267,9 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 				// Update
 				$local_email = $local_customer['emails'][$uuid];
 				//
-				// Compare basic elements of customer
+				// Compare basic elements of customer email
 				//
-				$updatable_fields = array(
+				$rc = ciniki_core_syncUpdateObjectSQL($ciniki, $sync, $business_id, $remote_email, $local_email, array(
 					'email'=>array(),
 					'password'=>array(),
 					'temp_password'=>array(),
@@ -304,56 +277,19 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 					'flags'=>array(),
 					'date_added'=>array('type'=>'uts'),
 					'last_updated'=>array('type'=>'uts'),
-					);
-				$strsql = '';
-				$comma = '';
-				foreach($updatable_fields as $field => $finfo) {
-					//
-					// Check if the fields are different, and if so, figure out which one is newer
-					//
-					if( $remote_email[$field] != $local_email[$field] ) {
-						//
-						// Check the history for each field, and see which side is newer, remote or local
-						//
-						$remote_uts = 0;
-						$local_uts = 0;
-						if( isset($remote_email['history']) ) {
-							foreach($remote_email['history'] as $history_uuid => $history) {
-								if( $history['table_field'] == $field && $history['log_date'] > $remote_uts ) {
-									$remote_uts = $history['log_date'];
-								}
-							}
-						}
-						if( isset($local_email['history']) ) {
-							foreach($local_email['history'] as $history_uuid => $history) {
-								if( $history['table_field'] == $field && $history['log_date'] > $local_uts ) {
-									$local_uts = $history['log_date'];
-								}
-							}
-						}
-						
-						//
-						// Check if the field should be updated locally
-						//
-						if( $remote_uts > $local_uts ) {
-							// Find the first occurance of field in history for both local and remote, compare log_date
-							if( isset($finfo['type']) && $finfo['type'] == 'uts' ) {
-								$strsql .= $comma . " $field = FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $remote_email[$field]) . "') ";
-							} else {
-								$strsql .= $comma . " $field = '" . ciniki_core_dbQuote($ciniki, $remote_email[$field]) . "' ";
-							}
-							$comma = ',';
-						}
-					}
+					));
+				if( $rc['stat'] != 'ok' ) {
+					return $rc;
 				}
-				if( $strsql != '' ) {
-					$strsql = "UPDATE ciniki_customer_emails SET " . $strsql . " "
+				if( isset($rc['strsql']) && $rc['strsql'] != '' ) {
+					$strsql = "UPDATE ciniki_customer_emails SET " . $rc['strsql'] . " "
 						. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $local_email['id']) . "' "
 						. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 						. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $local_customer['id']) . "' "
 						. "";
 					$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 					if( $rc['stat'] != 'ok' ) {
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 						return $rc;
 					}
 				}
@@ -365,14 +301,207 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 					$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 						'ciniki_customer_history', $local_email['id'], 'ciniki_customer_emails', $remote_email['history'], $local_email['history'], array());
 					if( $rc['stat'] != 'ok' ) {
-						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'229', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'129', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
 					}
 				}
 			}
 		}
 	}
-	// FIXME: Need to cycle through local emails, to see if they need updating on remote
 
+	//
+	// Check for deleted addresses
+	//
+	if( isset($remote_customer['deleted_addresses']) ) {
+		foreach($remote_customer['deleted_addresses'] as $uuid => $history) {
+			if( isset($local_customer['addresses'][$uuid]) ) {
+				$local_address = $local_customer['addresses'][$uuid];
+				//
+				// Delete the address
+				//
+				$strsql = "DELETE FROM ciniki_customer_addresses "
+					. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $local_address['id']) . "' "
+					. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $local_customer['id']) . "' ";
+				$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+					return $rc;
+				}
+
+				//
+				// Update history
+				//
+				$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
+					'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', array($history['uuid']=>$history), array(), array(
+						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+					));
+				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+					return $rc;
+				}
+			}
+		}
+	}
+
+	//
+	// Compare addresses
+	//
+	if( isset($remote_customer['addresses']) ) {
+		foreach($remote_customer['addresses'] as $uuid => $remote_address) {
+			//
+			// Check if address exists in local
+			//
+			if( !isset($local_customer['addresses'][$uuid]) ) {
+				//
+				// Don't bother checking the deleted list, we need to know the address_id anyway
+				//
+				//
+				// Find all history for this address if it has existed in the local server
+				// Check history for moves or deletions
+				//
+				$strsql = "SELECT ciniki_customer_history.id AS history_id, "
+					. "ciniki_customer_history.uuid AS history_uuid, "
+					. "ciniki_users.uuid AS user_uuid, "
+					. "ciniki_customer_history.session, "
+					. "ciniki_customer_history.action, "
+					. "ciniki_customer_history.table_name, "
+					. "ciniki_customer_history.table_key, "
+					. "ciniki_customer_history.table_field, "
+					. "ciniki_customer_history.new_value, "
+					. "UNIX_TIMESTAMP(ciniki_customer_history.log_date) AS log_date "
+					. "FROM ciniki_customer_history "
+					. "LEFT JOIN ciniki_users ON (ciniki_customer_history.user_id = ciniki_users.id) "
+					. "WHERE ciniki_customer_history.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+					. "AND ciniki_customer_history.table_name = 'ciniki_customer_addresses' "
+					. "AND ciniki_customer_history.table_key = ("
+						. "SELECT table_key FROM ciniki_customer_history "
+						. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+						. "AND table_name = 'ciniki_customer_addresses' "
+						. "AND table_field = 'uuid' "
+						. "AND action = 1 "
+						. "AND new_value = '" . ciniki_core_dbQuote($ciniki, $uuid) . "' "
+						. ")"
+					. "ORDER BY log_date DESC "	// Have the newest changes at the top
+					. "";
+				$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.customers', 'history', 'history_uuid');
+				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'128', 'msg'=>'Unable to check for customer address history', 'err'=>$rc['err']));
+				}
+				$delete_uts = 0;
+				$move_uts = 0;
+				if( isset($rc['history']) ) {
+					$local_history = $rc['history'];
+					foreach($local_history as $uuid => $history) {
+						if( $history['action'] == 3 ) {
+							$delete_uts = $history['log_date'];
+							$address_id = $history['table_key'];
+							break;
+						}
+						if( $history['action'] == 4 ) {	 // Check if UUID was moved to another customer
+							$move_uts = $history['log_date'];
+							$address_id = $history['table_key'];
+							break;
+						}
+					}
+				}
+
+				//
+				// Create the address record, if it hasn't previously been deleted or moved
+				//
+				if( $delete_uts == 0 && $move_uts == 0 ) {
+					$strsql = "INSERT INTO ciniki_customer_addresses (uuid, customer_id, flags, address1, address2, "
+						. "city, province, postal, country, "
+						. "date_added, last_updated) VALUES ("
+						. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $local_customer['id']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['flags']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['address1']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['address2']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['city']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['province']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['postal']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['country']) . "', "
+						. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $remote_address['date_added']) . "'), "
+						. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $remote_address['last_updated']) . "') "
+						. ") "
+						. "";
+					$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
+					if( $rc['stat'] != 'ok' ) { 
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+						return $rc;
+					}
+					if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'124', 'msg'=>'Unable to add customer'));
+					}
+					$address_id = $rc['insert_id'];
+				} 
+				//
+				// If the record was previsouly and the records has been updated since on the remote,
+				// it should be restored to the last know condition on this server, before updates are applied
+				//
+				elseif( $delete_uts > 0 && $delete_uts < $remote_address['last_updated'] ) {
+					// FIXME: Add restore call
+//					$rc = ciniki_customers_emailRestore($ciniki, $email_id);
+				}
+				
+				if( isset($remote_address['history']) ) {
+					$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
+						'ciniki_customer_history', $address_id, 'ciniki_customer_addresses', $remote_address['history'], array(), array(
+							'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+						));
+					if( $rc['stat'] != 'ok' ) {
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'116', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
+					}
+				}
+			} else {
+				// Update
+				$local_address = $local_customer['addresses'][$uuid];
+				//
+				// Compare basic elements of customer
+				//
+				$rc = ciniki_core_syncUpdateObjectSQL($ciniki, $sync, $business_id, $remote_address, $local_address, array(
+					'flags'=>array(),
+					'address1'=>array(),
+					'address2'=>array(),
+					'city'=>array(),
+					'province'=>array(),
+					'postal'=>array(),
+					'country'=>array(),
+					'date_added'=>array('type'=>'uts'),
+					'last_updated'=>array('type'=>'uts'),
+					));
+				if( $rc['stat'] != 'ok' ) {
+					return $rc;
+				}
+				if( isset($rc['strsql']) && $rc['strsql'] != '' ) {
+					$strsql = "UPDATE ciniki_customer_addresses SET " . $rc['strsql'] . " "
+						. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $local_address['id']) . "' "
+						. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $local_customer['id']) . "' "
+						. "";
+					$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+					if( $rc['stat'] != 'ok' ) {
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+						return $rc;
+					}
+				}
+
+				//
+				// Update the address history
+				//
+				if( isset($remote_address['history']) ) {
+					$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
+						'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', $remote_address['history'], $local_address['history'], array());
+					if( $rc['stat'] != 'ok' ) {
+						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'115', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
+					}
+				}
+			}
+		}
+	}
 
 	//
 	// Commit the database changes

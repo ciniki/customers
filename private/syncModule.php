@@ -6,18 +6,17 @@
 //
 // Arguments
 // ---------
-//						method, or 0 if no customer or relationship specified.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
+function ciniki_customers_syncModule($ciniki, $sync, $business_id, $args) {
 
 	//
 	// Get the remote list of customers
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
-	$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.customerList', 'type'=>$type, 'since_uts'=>$sync['last_sync']));
+	$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.customerList', 'type'=>$args['type'], 'since_uts'=>$sync['last_sync']));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -35,10 +34,11 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerGet');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerUpdate');
 
+
 	//
 	// Get the local list of customers
 	//
-	$rc = ciniki_customers_sync_customerList($ciniki, $sync, $business_id, array('type'=>$type, 'since_uts'=>$sync['last_sync']));
+	$rc = ciniki_customers_sync_customerList($ciniki, $sync, $business_id, array('type'=>$args['type'], 'since_uts'=>$sync['last_sync']));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -57,7 +57,7 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 			// a partial or incremental will only check records where the last_updated differs
 			// Check if uuid does not exist, and has not been deleted
 			//
-			if( $type == 'full' || !isset($local_list[$uuid]) || $local_list[$uuid] != $last_updated ) {
+			if( $args['type'] == 'full' || !isset($local_list[$uuid]) || $local_list[$uuid] != $last_updated ) {
 				//
 				// Get the remote customer
 				//
@@ -75,9 +75,8 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 				//
 				$rc = ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, array('customer'=>$customer));
 				if( $rc['stat'] != 'ok' ) {
-					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'284', 'msg'=>'Unable to add customer', $err=>$rc['err']));;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'284', 'msg'=>'Unable to add customer', 'err'=>$rc['err']));;
 				}
-				// FIXME: Add check to see if deleted
 			} 
 		}
 	}
@@ -90,11 +89,11 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 			//
 			// Check if uuid does not exist, and has not been deleted
 			//
-			if( !isset($remote_list[$uuid]) || $remote_list[$uuid] != $last_updated ) {
-				// FIXME: Add check to see if deleted
-				error_log("Update local customer: " . $uuid);
+//			if( !isset($remote_list[$uuid]) || $remote_list[$uuid] != $last_updated ) {
+			if( $args['type'] == 'full' || !isset($remote_list[$uuid]) || $remote_list[$uuid] != $last_updated ) {
+//				error_log("Update local customer: " . $uuid);
 				//
-				// Get the remote customer
+				// Get the local customer
 				//
 				$rc = ciniki_customers_sync_customerGet($ciniki, $sync, $business_id, array('uuid'=>$uuid));
 				if( $rc['stat'] != 'ok' ) {
@@ -115,7 +114,16 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 			}
 		}
 	}
-	
+
+	//
+	// Sync the settings for customers
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'syncModuleSettings');
+	$rc = ciniki_customers_syncModuleSettings($ciniki, $sync, $business_id, $args);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'historyList');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'historyAdd');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'historyGet');
@@ -123,7 +131,7 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 	//
 	// Now get the history from each side, and make sure it's complete
 	//
-	$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.historyList', 'type'=>$type, 'since_uts'=>$sync['last_sync']));
+	$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.historyList', 'type'=>$args['type'], 'since_uts'=>$sync['last_sync']));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -136,7 +144,7 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 	// Get the local history
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'historyList');
-	$rc = ciniki_customers_sync_historyList($ciniki, $sync, $business_id, array('type'=>$type, 'since_uts'=>$sync['last_sync']));
+	$rc = ciniki_customers_sync_historyList($ciniki, $sync, $business_id, array('type'=>$args['type'], 'since_uts'=>$sync['last_sync']));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -154,7 +162,7 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 			// Check if uuid does not exist, and has not been deleted
 			//
 			if( !isset($local_history[$uuid]) ) {
-				error_log("Add history: " . $uuid);
+//				error_log("Add history: " . $uuid);
 				
 				//
 				// Grab remote details
@@ -188,7 +196,7 @@ function ciniki_customers_syncModule($ciniki, $sync, $business_id, $type) {
 			// Check if uuid does not exist, and has not been deleted
 			//
 			if( !isset($remote_history[$uuid]) ) {
-				error_log("Add remote history: " . $uuid);
+//				error_log("Add remote history: " . $uuid);
 				$rc = ciniki_customers_sync_historyGet($ciniki, $sync, $business_id, array('history'=>$uuid));
 				if( $rc['stat'] != 'ok' ) {
 					return $rc;

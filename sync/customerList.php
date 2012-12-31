@@ -37,7 +37,6 @@ function ciniki_customers_sync_customerList($ciniki, $sync, $business_id, $args)
 	}
 	$strsql .= "ORDER BY last_updated "
 		. "";
-	error_log($strsql);
 	$rc = ciniki_core_dbHashIDQuery($ciniki, $strsql, 'ciniki.customers', 'customers', 'uuid');
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'271', 'msg'=>'Unable to get list', 'err'=>$rc['err']));

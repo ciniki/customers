@@ -40,6 +40,13 @@ function ciniki_customers_checkAccess($ciniki, $business_id, $method, $req_id) {
 	}
 
 	//
+	// Only sysadmins should have access to fix the history
+	//
+	if( $method == 'ciniki.customers.historyFix' ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'114', 'msg'=>'Access denied'));
+	}
+
+	//
 	// Check the session user is a business owner
 	//
 	if( $business_id <= 0 ) {

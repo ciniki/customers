@@ -42,12 +42,12 @@ function ciniki_customers_getSettingHistory($ciniki) {
 	// Check access to business_id as owner, or sys admin
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.getSettingHistory');
+	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.getSettingHistory', 0);
 	if( $ac['stat'] != 'ok' ) {
 		return $ac;
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['business_id'], 'ciniki_customers_settings', $args['field'], 'detail_value');
+	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_settings', $args['field'], 'detail_value');
 }
 ?>
