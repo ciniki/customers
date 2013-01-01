@@ -180,6 +180,11 @@ function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) 
 		return $rc;
 	}
 
+	//
+	// Add to syncQueue to sync with other servers.  This allows for cascading syncs.
+	//
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.syncPushCustomer', 'args'=>array('id'=>$customer_id, 'ignore_sync_id'=>$sync['id']));
+
 	return array('stat'=>'ok', 'customer_id'=>$customer_id);
 }
 ?>

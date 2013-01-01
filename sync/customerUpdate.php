@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $args) {
 	//
 	// Check the args
 	//
@@ -512,6 +512,11 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+	
+	//
+	// Add to syncQueue to sync with other servers.  This allows for cascading syncs.
+	//
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.syncPushCustomer', 'args'=>array('id'=>$local_customer['id'], 'ignore_sync_id'=>$sync['id']));
 
 	return array('stat'=>'ok');
 }

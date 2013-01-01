@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_syncModuleSettings($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_syncModuleSettings(&$ciniki, &$sync, $business_id, $args) {
 	//
 	// Check to see if there are any settings to be transferred
 	//

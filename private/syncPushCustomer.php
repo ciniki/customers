@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_syncPushCustomer($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_syncPushCustomer(&$ciniki, &$sync, $business_id, $args) {
 	if( !isset($args['id']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'107', 'msg'=>'Missing ID argument'));
 	}

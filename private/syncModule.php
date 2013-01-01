@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_syncModule($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_syncModule(&$ciniki, &$sync, $business_id, $args) {
 
 	//
 	// Get the remote list of customers

@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_syncPushSettings($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_syncPushSettings(&$ciniki, &$sync, $business_id, $args) {
 	$args['type'] = 'partial';
 	//
 	// Sync the settings
