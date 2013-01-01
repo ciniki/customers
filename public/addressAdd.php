@@ -26,6 +26,8 @@
 //					0x01 - Shipping
 //					0x02 - Billing
 //					0x04 - Mailing
+//
+// notes:			(optional) The notes for the address.
 // 
 // Returns
 // -------
@@ -37,18 +39,16 @@ function ciniki_customers_addressAdd(&$ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
-		'address1'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No address specified'),
-        'address2'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No address specified'), 
-        'city'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No city specified'), 
-        'province'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No province specified'), 
-        'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No postal specified'), 
-        'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No country specified'), 
-        'flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No flags specified'), 
-//        'shipping'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No shipping flag specified'), 
-//        'billing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No billing flag specified'), 
-//        'mailing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No mailing flag specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+		'address1'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address Line 1'),
+        'address2'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address Line 2'), 
+        'city'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'City'), 
+        'province'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Province/State'), 
+        'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Postal/Zip Code'), 
+        'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Country'), 
+        'flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
+        'notes'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -101,7 +101,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
 	//
 	$strsql = "INSERT INTO ciniki_customer_addresses (uuid, customer_id, "
 		. "flags, "
-		. "address1, address2, city, province, postal, country, "
+		. "address1, address2, city, province, postal, country, notes, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
@@ -112,6 +112,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $args['province']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['postal']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['country']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['notes']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
 	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 

@@ -44,7 +44,7 @@ function ciniki_customers_addressGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 
 	$strsql = "SELECT id, customer_id, "
-		. "address1, address2, city, province, postal, country, flags "
+		. "address1, address2, city, province, postal, country, flags, notes "
 //		. "ELT(((flags&0x01))+1,'Off','On') AS shipping, "
 //		. "ELT(((flags&0x02)>>1)+1,'Off','On') AS billing, "
 //		. "ELT(((flags&0x04)>>2)+1,'Off','On') AS mailing "

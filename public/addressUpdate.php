@@ -2,13 +2,29 @@
 //
 // Description
 // -----------
-//
-// Info
-// ----
-// Status: 			defined
+// This method will update a customer address.
 //
 // Arguments
 // ---------
+// api_key:
+// auth_token:
+// business_id:		The ID of the business the customer belongs to.
+// customer_id:		The ID of the customer to update the address for.
+// address_id:		The ID of the address to update.
+// address1:		(optional) The new first line of the address.
+// address2:		(optional) The new second line of the address.
+// city:			(optional) The new city of the address.
+// province:		(optional) The new province or state of the address.
+// postal:			(optional) The new postal code or zip code of the address.
+// country:			(optional) The new country of the address.
+// flags:			(optional) The new options for the address, specifing what the 
+//					address should be used for.
+//				
+//					0x01 - Shipping
+//					0x02 - Billing
+//					0x04 - Mailing
+//
+// notes:			(optional) The new notes for the address.
 // 
 // Returns
 // -------
@@ -20,19 +36,17 @@ function ciniki_customers_addressUpdate(&$ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'), 
-        'address_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No address specified'), 
-        'address1'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No address1 specified'), 
-        'address2'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No address2 specified'), 
-        'city'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No city specified'), 
-        'province'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No province specified'), 
-        'postal'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No postal specified'), 
-        'country'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No country specified'), 
-        'flags'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No flags specified'), 
-//        'shipping'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No shipping toggle specified'), 
-//        'billing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No billing toggle specified'), 
-//        'mailing'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'errmsg'=>'No mailing toggle specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+        'address_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Address ID'), 
+        'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address Line 1'), 
+        'address2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address Line 2'), 
+        'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'), 
+        'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province/State'), 
+        'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal/Zip Code'), 
+        'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'), 
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
+        'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -100,6 +114,7 @@ function ciniki_customers_addressUpdate(&$ciniki) {
 		'postal',
 		'country',
 		'flags',
+		'notes',
 		);
 	foreach($changelog_fields as $field) {
 		if( isset($args[$field]) ) {

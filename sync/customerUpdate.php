@@ -411,7 +411,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 				//
 				if( $delete_uts == 0 && $move_uts == 0 ) {
 					$strsql = "INSERT INTO ciniki_customer_addresses (uuid, customer_id, flags, address1, address2, "
-						. "city, province, postal, country, "
+						. "city, province, postal, country, notes, "
 						. "date_added, last_updated) VALUES ("
 						. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 						. "'" . ciniki_core_dbQuote($ciniki, $local_customer['id']) . "', "
@@ -422,6 +422,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['province']) . "', "
 						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['postal']) . "', "
 						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['country']) . "', "
+						. "'" . ciniki_core_dbQuote($ciniki, $remote_address['notes']) . "', "
 						. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $remote_address['date_added']) . "'), "
 						. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $remote_address['last_updated']) . "') "
 						. ") "
@@ -470,6 +471,7 @@ function ciniki_customers_sync_customerUpdate($ciniki, $sync, $business_id, $arg
 					'province'=>array(),
 					'postal'=>array(),
 					'country'=>array(),
+					'notes'=>array(),
 					'date_added'=>array('type'=>'uts'),
 					'last_updated'=>array('type'=>'uts'),
 					));

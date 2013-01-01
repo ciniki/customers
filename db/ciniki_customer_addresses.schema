@@ -51,6 +51,7 @@ create table ciniki_customer_addresses (
 	province varchar(100) not null, 
 	postal varchar(10) not null,
 	country varchar(50) not null,
+	notes varchar(6000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),

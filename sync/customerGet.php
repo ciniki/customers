@@ -227,6 +227,7 @@ function ciniki_customers_sync_customerGet($ciniki, $sync, $business_id, $args) 
 		. "ciniki_customer_addresses.province, "
 		. "ciniki_customer_addresses.postal, "
 		. "ciniki_customer_addresses.country, "
+		. "ciniki_customer_addresses.notes, "
 		. "UNIX_TIMESTAMP(ciniki_customer_addresses.date_added) AS date_added, "
 		. "UNIX_TIMESTAMP(ciniki_customer_addresses.last_updated) AS last_updated, "
 		. "ciniki_customer_history.id AS history_id, "
@@ -252,7 +253,7 @@ function ciniki_customers_sync_customerGet($ciniki, $sync, $business_id, $args) 
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'addresses', 'fname'=>'address_uuid', 
-			'fields'=>array('id', 'flags', 'address1', 'address2', 'city', 'province', 'postal', 'country',
+			'fields'=>array('id', 'flags', 'address1', 'address2', 'city', 'province', 'postal', 'country', 'notes',
 				'date_added', 'last_updated')),
 		array('container'=>'history', 'fname'=>'history_uuid', 
 			'fields'=>array('user'=>'user_uuid', 'session', 

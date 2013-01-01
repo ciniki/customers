@@ -133,7 +133,7 @@ function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) 
 			// Create the address record
 			//
 			$strsql = "INSERT INTO ciniki_customer_addresses (uuid, customer_id, flags, "
-				. "address1, address2, city, province, postal, country, "
+				. "address1, address2, city, province, postal, country, notes, "
 				. "date_added, last_updated) VALUES ("
 				. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 				. "'" . ciniki_core_dbQuote($ciniki, $customer_id) . "', "
@@ -144,6 +144,7 @@ function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) 
 				. "'" . ciniki_core_dbQuote($ciniki, $address['province']) . "', "
 				. "'" . ciniki_core_dbQuote($ciniki, $address['postal']) . "', "
 				. "'" . ciniki_core_dbQuote($ciniki, $address['country']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['notes']) . "', "
 				. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $address['date_added']) . "'), "
 				. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $address['last_updated']) . "') "
 				. ") "
