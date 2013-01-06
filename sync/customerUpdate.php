@@ -504,8 +504,13 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 				// Update the address history
 				//
 				if( isset($remote_address['history']) ) {
-					$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
-						'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', $remote_address['history'], $local_address['history'], array());
+					if( isset($local_address['history']) ) {
+						$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
+							'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', $remote_address['history'], $local_address['history'], array());
+					} else {
+						$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
+							'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', $remote_address['history'], array(), array());
+					}
 					if( $rc['stat'] != 'ok' ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'115', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
