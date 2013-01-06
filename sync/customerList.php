@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_customerList($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_sync_customerList($ciniki, &$sync, $business_id, $args) {
 	//
 	// Check the args
 	//
