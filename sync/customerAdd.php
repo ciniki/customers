@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_sync_customerAdd(&$ciniki, $sync, $business_id, $args) {
 	//
 	// Check the args
 	//
@@ -33,6 +33,8 @@ function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) 
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}   
+
+	error_log('Adding customer ' . $customer['first'] . " to $business_id");
 
 	//
 	// Create the user record
@@ -74,6 +76,7 @@ function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) 
 		$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 			'ciniki_customer_history', $customer_id, 'ciniki_customers', $customer['history'], array(), array());
 		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'278', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
 		}
 	}
@@ -118,6 +121,7 @@ function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) 
 						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
 					));
 				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'166', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
 				}
 			}
@@ -166,6 +170,7 @@ function ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args) 
 						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
 					));
 				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'160', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
 				}
 			}

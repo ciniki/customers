@@ -34,6 +34,7 @@ function ciniki_customers_historyFix($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 
 	//
 	// Check for items that are missing a add value in history
@@ -188,6 +189,15 @@ function ciniki_customers_historyFix($ciniki) {
 				return $rc;
 			}
 		}
+	}
+
+	//
+	// Check for items missing a UUID
+	//
+	$strsql = "UPDATE ciniki_customer_history SET uuid = UUID() WHERE uuid = ''";
+	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
 	}
 
 	return array('stat'=>'ok');

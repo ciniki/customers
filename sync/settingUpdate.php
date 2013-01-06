@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_settingUpdate($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $args) {
 	//
 	// Check the args
 	//
@@ -44,6 +44,7 @@ function ciniki_customers_sync_settingUpdate($ciniki, $sync, $business_id, $args
 		return $rc;
 	}
 	if( !isset($rc['setting']) ) {
+		$local_setting = array();
 		//
 		// Add the setting if it doesn't exist locally
 		//

@@ -46,6 +46,10 @@ function ciniki_customers_sync_customerList($ciniki, $sync, $business_id, $args)
 		return array('stat'=>'ok', 'customers'=>array());
 	}
 
+	//
+	// FIXME: Get list of deleted customers, since last_incremental/partial/all
+	//
+
 	return array('stat'=>'ok', 'customers'=>$rc['customers']);
 }
 ?>

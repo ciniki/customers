@@ -34,9 +34,11 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 	}
 	if( !isset($rc['customer']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerAdd');
-		return ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args);
+		$rc = ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args);
+		return $rc;
 	}
-
+	
+	$db_updated = 0;
 	//
 	// Get the local customer
 	//
@@ -102,6 +104,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
+		$db_updated = 1;
 	}
 
 	//
@@ -146,6 +149,8 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 					return $rc;
 				}
+
+				$db_updated = 1;
 			}
 		}
 	}
@@ -243,6 +248,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'265', 'msg'=>'Unable to add customer'));
 					}
 					$email_id = $rc['insert_id'];
+					$db_updated = 1;
 				} 
 				//
 				// If the record was previsouly and the records has been updated since on the remote,
@@ -292,6 +298,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 						return $rc;
 					}
+					$db_updated = 1;
 				}
 
 				//
@@ -339,6 +346,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 					return $rc;
 				}
+				$db_updated = 1;
 			}
 		}
 	}
@@ -437,6 +445,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'124', 'msg'=>'Unable to add customer'));
 					}
 					$address_id = $rc['insert_id'];
+					$db_updated = 1;
 				} 
 				//
 				// If the record was previsouly and the records has been updated since on the remote,
@@ -488,6 +497,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 						return $rc;
 					}
+					$db_updated = 1;
 				}
 
 				//
@@ -516,7 +526,9 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, $sync, $business_id, $ar
 	//
 	// Add to syncQueue to sync with other servers.  This allows for cascading syncs.
 	//
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.syncPushCustomer', 'args'=>array('id'=>$local_customer['id'], 'ignore_sync_id'=>$sync['id']));
+	if( $db_updated > 0 ) {
+		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.syncPushCustomer', 'args'=>array('id'=>$local_customer['id'], 'ignore_sync_id'=>$sync['id']));
+	}
 
 	return array('stat'=>'ok');
 }

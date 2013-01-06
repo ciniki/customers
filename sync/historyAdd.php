@@ -94,9 +94,16 @@ function ciniki_customers_sync_historyAdd($ciniki, $sync, $business_id, $args) {
 			if( isset($rc['email']) ) {
 				$history['table_key'] = $rc['email']['table_key'];
 			} else {
-				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'173', 'msg'=>'History element is broken'));
+				//
+				// The customer email has never existed in this server, add all the history for a blank table key
+				//
+				$history['table_key'] = '';
+//				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//				error_log("history broken for: ciniki_customer_emails: " . $history['table_key']);
+//				error_log(print_r($history, true));
+//				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'173', 'msg'=>'History element is broken'));
 			}
+
 		}
 	}
 	elseif( $history['table_name'] == 'ciniki_customer_addresses' ) {
@@ -128,8 +135,9 @@ function ciniki_customers_sync_historyAdd($ciniki, $sync, $business_id, $args) {
 			if( isset($rc['address']) ) {
 				$history['table_key'] = $rc['address']['table_key'];
 			} else {
-				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'172', 'msg'=>'History element is broken'));
+				$history['table_key'] = '';
+//				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'172', 'msg'=>'History element is broken'));
 			}
 		}
 	}
