@@ -40,7 +40,7 @@ create table ciniki_customer_emails (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
-	unique index (uuid, business_id);
+	unique index (uuid, business_id),
 	unique index (customer_id, business_id, email),
 	index (customer_id)
 ) ENGINE='InnoDB', COMMENT='v1.04';
