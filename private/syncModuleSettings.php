@@ -59,7 +59,7 @@ function ciniki_customers_syncModuleSettings(&$ciniki, &$sync, $business_id, $ar
 				//
 				$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.settingGet', 'setting'=>$key));
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'933', 'msg'=>'Unable to get the remote customer setting', 'err'=>$rc['err']));
 				}
 				if( !isset($rc['setting']) ) {
 					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'157', 'msg'=>'Setting not found on remote server'));
@@ -71,7 +71,7 @@ function ciniki_customers_syncModuleSettings(&$ciniki, &$sync, $business_id, $ar
 				//
 				$rc = ciniki_customers_sync_settingUpdate($ciniki, $sync, $business_id, array('setting'=>$setting));
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'934', 'msg'=>'Unable to get the update local customer setting', 'err'=>$rc['err']));
 				}
 			} 
 		}
@@ -89,7 +89,7 @@ function ciniki_customers_syncModuleSettings(&$ciniki, &$sync, $business_id, $ar
 //				error_log("Add remote setting: " . $key);
 				$rc = ciniki_customers_sync_settingGet($ciniki, $sync, $business_id, array('setting'=>$key));
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'935', 'msg'=>'Unable to get the local customer setting', 'err'=>$rc['err']));
 				}
 				if( !isset($rc['setting']) ) {
 					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'154', 'msg'=>'Setting not found on local server'));
@@ -101,7 +101,7 @@ function ciniki_customers_syncModuleSettings(&$ciniki, &$sync, $business_id, $ar
 				//
 				$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.settingUpdate', 'setting'=>$setting));
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'936', 'msg'=>'Unable to get the update remote customer setting', 'err'=>$rc['err']));
 				}
 			} 
 		}

@@ -41,7 +41,7 @@ function ciniki_customers_sync_historyAdd($ciniki, &$sync, $business_id, $args) 
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'938', 'msg'=>'Unable to get customer id', 'err'=>$rc['err']));
 		}
 		if( isset($rc['customer']) ) {
 			$history['table_key'] = $rc['customer']['id'];
@@ -56,7 +56,7 @@ function ciniki_customers_sync_historyAdd($ciniki, &$sync, $business_id, $args) 
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'937', 'msg'=>'Unable to get customer id from history', 'err'=>$rc['err']));
 			}
 			if( isset($rc['customer']) ) {
 				$history['table_key'] = $rc['customer']['table_key'];
@@ -74,7 +74,7 @@ function ciniki_customers_sync_historyAdd($ciniki, &$sync, $business_id, $args) 
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'939', 'msg'=>'Unable to get customer email id', 'err'=>$rc['err']));
 		}
 		if( isset($rc['email']) ) {
 			$history['table_key'] = $rc['email']['id'];
@@ -89,7 +89,7 @@ function ciniki_customers_sync_historyAdd($ciniki, &$sync, $business_id, $args) 
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'940', 'msg'=>'Unable to get customer email id from history', 'err'=>$rc['err']));
 			}
 			if( isset($rc['email']) ) {
 				$history['table_key'] = $rc['email']['table_key'];
@@ -115,7 +115,7 @@ function ciniki_customers_sync_historyAdd($ciniki, &$sync, $business_id, $args) 
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'941', 'msg'=>'Unable to get customer address id', 'err'=>$rc['err']));
 		}
 		if( isset($rc['address']) ) {
 			$history['table_key'] = $rc['address']['id'];
@@ -130,7 +130,7 @@ function ciniki_customers_sync_historyAdd($ciniki, &$sync, $business_id, $args) 
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'942', 'msg'=>'Unable to get customer address id from history', 'err'=>$rc['err']));
 			}
 			if( isset($rc['address']) ) {
 				$history['table_key'] = $rc['address']['table_key'];
@@ -152,7 +152,7 @@ function ciniki_customers_sync_historyAdd($ciniki, &$sync, $business_id, $args) 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'176', 'msg'=>'Unable to add history', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'943', 'msg'=>'Unable to update customer history', 'err'=>$rc['err']));
 	}
 
 	//

@@ -49,7 +49,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 				'action', 'table_name', 'table_key', 'table_field', 'new_value', 'log_date')),
 		));
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'944', 'msg'=>'Unable to get customer history', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['history'][$args['history']]) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'180', 'msg'=>'History does not exist'));
@@ -67,7 +67,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 				. "";
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 			if( $rc['stat'] != 'ok' ) {
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'945', 'msg'=>'Unable to get customer uuid', 'err'=>$rc['err']));
 			}
 			if( isset($rc['customer']) ) {
 				$history['table_key'] = $rc['customer']['uuid'];		
@@ -81,7 +81,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 					. "";
 				$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'946', 'msg'=>'Unable to get customer uuid from history', 'err'=>$rc['err']));
 				}
 				if( isset($rc['customer']) ) {
 					$history['table_key'] = $rc['customer']['new_value'];
@@ -99,7 +99,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 				. "";
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 			if( $rc['stat'] != 'ok' ) {
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'947', 'msg'=>'Unable to get customer email uuid', 'err'=>$rc['err']));
 			}
 			if( isset($rc['email']) ) {
 				$history['table_key'] = $rc['email']['uuid'];
@@ -113,7 +113,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 					. "";
 				$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'948', 'msg'=>'Unable to get customer email uuid from history', 'err'=>$rc['err']));
 				}
 				if( isset($rc['email']) ) {
 					$history['table_key'] = $rc['email']['new_value'];
@@ -134,7 +134,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 				. "";
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 			if( $rc['stat'] != 'ok' ) {
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'949', 'msg'=>'Unable to get customer address uuid', 'err'=>$rc['err']));
 			}
 			if( isset($rc['address']) ) {
 				$history['table_key'] = $rc['address']['uuid'];
@@ -148,7 +148,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 					. "";
 				$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'950', 'msg'=>'Unable to get customer address uuid from history', 'err'=>$rc['err']));
 				}
 				if( isset($rc['address']) ) {
 					$history['table_key'] = $rc['address']['new_value'];
@@ -172,7 +172,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 		if( $rc['stat'] != 'ok' ) {
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'951', 'msg'=>'Unable to get customer uuid', 'err'=>$rc['err']));
 		}
 		if( isset($rc['customer']) ) {
 			$history['new_value'] = $rc['customer']['uuid'];		
@@ -185,7 +185,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 				. "";
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 			if( $rc['stat'] != 'ok' ) {
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'952', 'msg'=>'Unable to get customer uuid from history', 'err'=>$rc['err']));
 			}
 			if( isset($rc['customer']) ) {
 				$history['new_value'] = $rc['customer']['new_value'];

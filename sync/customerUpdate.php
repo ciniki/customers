@@ -30,12 +30,12 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 		. "";
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'960', 'msg'=>'Unable to get customer id', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['customer']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerAdd');
 		$rc = ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args);
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'961', 'msg'=>'Unable to add customer', 'err'=>$rc['err']));
 	}
 	
 	$db_updated = 0;
@@ -45,7 +45,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerGet');
 	$rc = ciniki_customers_sync_customerGet($ciniki, $sync, $business_id, array('uuid'=>$remote_customer['uuid']));
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'962', 'msg'=>'Unable to get customer', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['customer']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'228', 'msg'=>'Customer not found on remote server'));
@@ -92,7 +92,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 		'last_updated'=>array('type'=>'uts'),
 		));
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'963', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
 	}
 	if( isset($rc['strsql']) && $rc['strsql'] != '' ) {
 		$strsql = "UPDATE ciniki_customers SET " . $rc['strsql'] . " "
@@ -102,7 +102,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'964', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
 		}
 		$db_updated = 1;
 	}
@@ -135,7 +135,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 				$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'965', 'msg'=>'Unable to remove customer email', 'err'=>$rc['err']));
 				}
 
 				//
@@ -147,7 +147,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					));
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'966', 'msg'=>'Unable to update customer email history', 'err'=>$rc['err']));
 				}
 
 				$db_updated = 1;
@@ -241,7 +241,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					// FIXME: Put in a check if a duplicate record returned
 					if( $rc['stat'] != 'ok' ) { 
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-						return $rc;
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'967', 'msg'=>'Unable to add customer email', 'err'=>$rc['err']));
 					}
 					if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -285,7 +285,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					'last_updated'=>array('type'=>'uts'),
 					));
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'968', 'msg'=>'Unable to update customer email', 'err'=>$rc['err']));
 				}
 				if( isset($rc['strsql']) && $rc['strsql'] != '' ) {
 					$strsql = "UPDATE ciniki_customer_emails SET " . $rc['strsql'] . " "
@@ -296,7 +296,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 					if( $rc['stat'] != 'ok' ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-						return $rc;
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'969', 'msg'=>'Unable to update customer email', 'err'=>$rc['err']));
 					}
 					$db_updated = 1;
 				}
@@ -332,7 +332,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 				$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'970', 'msg'=>'Unable to remove customer address', 'err'=>$rc['err']));
 				}
 
 				//
@@ -344,7 +344,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					));
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'971', 'msg'=>'Unable to add customer address history', 'err'=>$rc['err']));
 				}
 				$db_updated = 1;
 			}
@@ -438,7 +438,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 					if( $rc['stat'] != 'ok' ) { 
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-						return $rc;
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'972', 'msg'=>'Unable to add customer address', 'err'=>$rc['err']));
 					}
 					if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -485,7 +485,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					'last_updated'=>array('type'=>'uts'),
 					));
 				if( $rc['stat'] != 'ok' ) {
-					return $rc;
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'973', 'msg'=>'Unable to update customer address', 'err'=>$rc['err']));
 				}
 				if( isset($rc['strsql']) && $rc['strsql'] != '' ) {
 					$strsql = "UPDATE ciniki_customer_addresses SET " . $rc['strsql'] . " "
@@ -495,7 +495,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 					$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 					if( $rc['stat'] != 'ok' ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-						return $rc;
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'974', 'msg'=>'Unable to update customer address', 'err'=>$rc['err']));
 					}
 					$db_updated = 1;
 				}

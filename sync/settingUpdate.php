@@ -41,7 +41,7 @@ function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $arg
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'settingGet');
 	$rc = ciniki_customers_sync_settingGet($ciniki, $sync, $business_id, array('setting'=>$remote_setting['detail_key']));
 	if( $rc['stat'] != 'ok' && $rc['err']['code'] != 152 ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'979', 'msg'=>'Unable to get customer setting', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['setting']) ) {
 		$local_setting = array();
@@ -58,7 +58,7 @@ function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $arg
 		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'976', 'msg'=>'Unable to get customer setting', 'err'=>$rc['err']));
 		}
 	} else {
 		$local_setting = $rc['setting'];
@@ -71,7 +71,7 @@ function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $arg
 			'last_updated'=>array('type'=>'uts'),
 			));
 		if( $rc['stat'] != 'ok' ) {
-			return $rc;
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'977', 'msg'=>'Unable to update customer setting', 'err'=>$rc['err']));
 		}
 		if( isset($rc['strsql']) && $rc['strsql'] != '' ) {
 			$strsql = "UPDATE ciniki_customer_settings SET " . $rc['strsql'] . " "
@@ -80,7 +80,7 @@ function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $arg
 				. "";
 			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 			if( $rc['stat'] != 'ok' ) {
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'978', 'msg'=>'Unable to update customer setting', 'err'=>$rc['err']));
 			}
 		}
 	}

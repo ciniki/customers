@@ -64,7 +64,7 @@ function ciniki_customers_sync_customerAdd(&$ciniki, &$sync, $business_id, $args
 	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'953', 'msg'=>'Unable to add customer', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -107,11 +107,11 @@ function ciniki_customers_sync_customerAdd(&$ciniki, &$sync, $business_id, $args
 			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 			if( $rc['stat'] != 'ok' ) { 
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'954', 'msg'=>'Unable to add customer email', 'err'=>$rc['err']));
 			}
 			if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'167', 'msg'=>'Unable to add customer'));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'167', 'msg'=>'Unable to add customer email'));
 			}
 			$email_id = $rc['insert_id'];
 			
@@ -156,7 +156,7 @@ function ciniki_customers_sync_customerAdd(&$ciniki, &$sync, $business_id, $args
 			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
 			if( $rc['stat'] != 'ok' ) { 
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return $rc;
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'955', 'msg'=>'Unable to add customer address', 'err'=>$rc['err']));
 			}
 			if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');

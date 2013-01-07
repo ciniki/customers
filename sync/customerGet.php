@@ -124,7 +124,7 @@ function ciniki_customers_sync_customerGet($ciniki, &$sync, $business_id, $args)
 				'action', 'table_field', 'new_value', 'log_date')),
 		));
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'956', 'msg'=>'Unable to get customer emails', 'err'=>$rc['err']));
 	}
 	if( isset($rc['emails']) ) {
 		$customer['emails'] = $rc['emails'];
@@ -150,7 +150,7 @@ function ciniki_customers_sync_customerGet($ciniki, &$sync, $business_id, $args)
 								. "";
 							$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'history');
 							if( $rc['stat'] != 'ok' ) {
-								return $rc;
+								return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'957', 'msg'=>'Unable to get customer id from history', 'err'=>$rc['err']));
 							}
 							if( isset($rc['history']) ) {
 								$customer['emails'][$email_uuid]['history'][$uuid]['new_value'] = $rc['history']['new_value'];
@@ -260,7 +260,7 @@ function ciniki_customers_sync_customerGet($ciniki, &$sync, $business_id, $args)
 				'action', 'table_field', 'new_value', 'log_date')),
 		));
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'958', 'msg'=>'Unable to get customer addresses', 'err'=>$rc['err']));
 	}
 	if( isset($rc['addresses']) ) {
 		$customer['addresses'] = $rc['addresses'];
@@ -286,7 +286,7 @@ function ciniki_customers_sync_customerGet($ciniki, &$sync, $business_id, $args)
 								. "";
 							$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'history');
 							if( $rc['stat'] != 'ok' ) {
-								return $rc;
+								return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'959', 'msg'=>'Unable to get customer id from history', 'err'=>$rc['err']));
 							}
 							if( isset($rc['history']) ) {
 								$customer['addresses'][$aid]['history'][$uuid]['new_value'] = $rc['history']['new_value'];

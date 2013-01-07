@@ -57,7 +57,7 @@ function ciniki_customers_sync_settingGet($ciniki, $sync, $business_id, $args) {
 				'action', 'table_field', 'new_value', 'log_date')),
 		));
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'975', 'msg'=>'Unable to get customer setting', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['settings'][$args['setting']]) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'152', 'msg'=>'Setting does not exist'));
