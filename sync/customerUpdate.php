@@ -35,7 +35,10 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 	if( !isset($rc['customer']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerAdd');
 		$rc = ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args);
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'961', 'msg'=>'Unable to add customer', 'err'=>$rc['err']));
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'961', 'msg'=>'Unable to add customer', 'err'=>$rc['err']));
+		}
+		return $rc;
 	}
 	
 	$db_updated = 0;
