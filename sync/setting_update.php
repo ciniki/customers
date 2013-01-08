@@ -10,14 +10,30 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $args) {
+function ciniki_customers_setting_update(&$ciniki, $sync, $business_id, $args) {
 	//
 	// Check the args
 	//
-	if( !isset($args['setting']) || $args['setting'] == '' ) {
+	if( (!isset($args['uuid']) || $args['uuid'] == '' ) 
+		&& (!isset($args['setting']) || $args['setting'] == '') ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'131', 'msg'=>'No setting specified'));
 	}
-	$remote_setting = $args['setting'];
+	if( isset($args['uuid']) && $args['uuid'] != '' ) {
+		//
+		// Get the remote setting to update
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
+		$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>"ciniki.customers.setting.get", 'uuid'=>$args['uuid']));
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'980', 'msg'=>"Unable to get the remote setting", 'err'=>$rc['err']));
+		}
+		if( !isset($rc['setting']) ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'285', 'msg'=>"setting not found on remote server"));
+		}
+		$remote_setting = $rc['setting'];
+	} else {
+		$remote_setting = $args['setting'];
+	}
 
 	//  
 	// Turn off autocommit
@@ -35,11 +51,12 @@ function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $arg
 		return $rc;
 	}   
 
+	$db_updated = 0;
 	//
 	// Get the local setting
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'settingGet');
-	$rc = ciniki_customers_sync_settingGet($ciniki, $sync, $business_id, array('setting'=>$remote_setting['detail_key']));
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'setting_get');
+	$rc = ciniki_customers_setting_get($ciniki, $sync, $business_id, array('setting'=>$remote_setting['detail_key']));
 	if( $rc['stat'] != 'ok' && $rc['err']['code'] != 152 ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'979', 'msg'=>'Unable to get customer setting', 'err'=>$rc['err']));
 	}
@@ -82,6 +99,7 @@ function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $arg
 			if( $rc['stat'] != 'ok' ) {
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'978', 'msg'=>'Unable to update customer setting', 'err'=>$rc['err']));
 			}
+			$db_updated = 1;
 		}
 	}
 
@@ -114,7 +132,9 @@ function ciniki_customers_sync_settingUpdate(&$ciniki, $sync, $business_id, $arg
 	//
 	// Add to syncQueue to sync with other servers.  This allows for cascading syncs.
 	//
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.syncPushSettings', 'args'=>array('ignore_sync_id'=>$sync['id']));
+	if( $db_updated > 0 ) {
+		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.setting.push', 'args'=>array('ignore_sync_id'=>$sync['id']));
+	}
 
 	return array('stat'=>'ok');
 }

@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_settingList($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_setting_list($ciniki, $sync, $business_id, $args) {
 	//
 	// Check the args
 	//
@@ -43,9 +43,9 @@ function ciniki_customers_sync_settingList($ciniki, $sync, $business_id, $args) 
 	}
 
 	if( !isset($rc['settings']) ) {
-		return array('stat'=>'ok', 'settings'=>array());
+		return array('stat'=>'ok', 'list'=>array());
 	}
 
-	return array('stat'=>'ok', 'settings'=>$rc['settings']);
+	return array('stat'=>'ok', 'list'=>$rc['settings']);
 }
 ?>

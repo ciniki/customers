@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_syncPushCustomer(&$ciniki, &$sync, $business_id, $args) {
+function ciniki_customers_customer_push(&$ciniki, &$sync, $business_id, $args) {
 	if( !isset($args['id']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'107', 'msg'=>'Missing ID argument'));
 	}
@@ -17,8 +17,8 @@ function ciniki_customers_syncPushCustomer(&$ciniki, &$sync, $business_id, $args
 	//
 	// Get the local customer
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerGet');
-	$rc = ciniki_customers_sync_customerGet($ciniki, $sync, $business_id, array('id'=>$args['id']));
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customer_get');
+	$rc = ciniki_customers_customer_get($ciniki, $sync, $business_id, array('id'=>$args['id']));
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'110', 'msg'=>'Unable to get customer'));
 	}
@@ -31,7 +31,7 @@ function ciniki_customers_syncPushCustomer(&$ciniki, &$sync, $business_id, $args
 	// Update the remote customer
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
-	$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.customerUpdate', 'customer'=>$customer));
+	$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.customer.update', 'customer'=>$customer));
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'111', 'msg'=>'Unable to sync customer'));
 	}

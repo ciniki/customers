@@ -10,11 +10,11 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) {
+function ciniki_customers_history_get($ciniki, &$sync, $business_id, $args) {
 	//
 	// Check the args
 	//
-	if( !isset($args['history']) || $args['history'] == '' ) {
+	if( !isset($args['uuid']) || $args['uuid'] == '' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'282', 'msg'=>'No history specified'));
 	}
 
@@ -40,7 +40,7 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 		. "FROM ciniki_customer_history "
 		. "LEFT JOIN ciniki_users ON (ciniki_customer_history.user_id = ciniki_users.id) "
 		. "WHERE ciniki_customer_history.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND ciniki_customer_history.uuid = '" . ciniki_core_dbQuote($ciniki, $args['history']) . "' "
+		. "AND ciniki_customer_history.uuid = '" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "' "
 		. "ORDER BY log_date "
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -51,10 +51,10 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'944', 'msg'=>'Unable to get customer history', 'err'=>$rc['err']));
 	}
-	if( !isset($rc['history'][$args['history']]) ) {
+	if( !isset($rc['history'][$args['uuid']]) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'180', 'msg'=>'History does not exist'));
 	}
-	$history = $rc['history'][$args['history']];
+	$history = $rc['history'][$args['uuid']];
 
 	//
 	// Lookup the table_key uuid
@@ -190,7 +190,8 @@ function ciniki_customers_sync_historyGet($ciniki, &$sync, $business_id, $args) 
 			if( isset($rc['customer']) ) {
 				$history['new_value'] = $rc['customer']['new_value'];
 			} else {
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'182', 'msg'=>'History element is broken'));
+				$history['new_value'] = '';
+//				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'182', 'msg'=>'History element is broken'));
 			}
 		}
 	}

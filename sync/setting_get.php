@@ -10,12 +10,17 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_settingGet($ciniki, $sync, $business_id, $args) {
+function ciniki_customers_setting_get($ciniki, $sync, $business_id, $args) {
 	//
 	// Check the args
 	//
-	if( !isset($args['setting']) || $args['setting'] == '' ) {
+	if( (!isset($args['uuid']) || $args['uuid'] == '' )
+		&& (!isset($args['setting']) || $args['setting'] == '') ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'153', 'msg'=>'No setting specified'));
+	}
+
+	if( !isset($args['setting']) && isset($args['uuid']) ) {
+		$args['setting'] = $args['uuid'];
 	}
 
 	//

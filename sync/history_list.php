@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_historyList($ciniki, &$sync, $business_id, $args) {
+function ciniki_customers_history_list($ciniki, &$sync, $business_id, $args) {
 	//
 	// Check the args
 	//
@@ -43,10 +43,10 @@ function ciniki_customers_sync_historyList($ciniki, &$sync, $business_id, $args)
 	}
 
 	if( !isset($rc['history']) ) {
-		return array('stat'=>'ok', 'history'=>array());
+		return array('stat'=>'ok', 'list'=>array());
 	}
 
 //error_log(print_r($rc['history'], true));
-	return array('stat'=>'ok', 'history'=>$rc['history']);
+	return array('stat'=>'ok', 'list'=>$rc['history']);
 }
 ?>

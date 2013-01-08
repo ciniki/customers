@@ -10,48 +10,49 @@
 // Returns
 // -------
 //
-function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $args) {
+function ciniki_customers_customer_update(&$ciniki, &$sync, $business_id, $args) {
 	//
 	// Check the args
 	//
-	if( !isset($args['customer']) || $args['customer'] == '' ) {
+	if( (!isset($args['uuid']) || $args['uuid'] == '') 
+		&& (!isset($args['customer']) || $args['customer'] == '') ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'273', 'msg'=>'No type specified'));
 	}
-	$remote_customer = $args['customer'];
+
+	if( isset($args['uuid']) && $args['uuid'] != '' ) {
+		//
+		// Get the remote customer to update
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
+		$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>"ciniki.customers.customer.get", 'uuid'=>$args['uuid']));
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'980', 'msg'=>"Unable to get the remote customer", 'err'=>$rc['err']));
+		}
+		if( !isset($rc['customer']) ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'285', 'msg'=>"customer not found on remote server"));
+		}
+		$remote_customer = $rc['customer'];
+	} else {
+		$remote_customer = $args['customer'];
+	}
 
 	// FIXME: Check if the customer was deleted locally before adding
 
 	//
-	// Check if customer already exists, and if not run the add script
-	//
-	$strsql = "SELECT id FROM ciniki_customers "
-		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND ciniki_customers.uuid = '" . ciniki_core_dbQuote($ciniki, $remote_customer['uuid']) . "' "
-		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
-	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'960', 'msg'=>'Unable to get customer id', 'err'=>$rc['err']));
-	}
-	if( !isset($rc['customer']) ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerAdd');
-		$rc = ciniki_customers_sync_customerAdd($ciniki, $sync, $business_id, $args);
-		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'961', 'msg'=>'Unable to add customer', 'err'=>$rc['err']));
-		}
-		return $rc;
-	}
-	
-	$db_updated = 0;
-	//
 	// Get the local customer
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customerGet');
-	$rc = ciniki_customers_sync_customerGet($ciniki, $sync, $business_id, array('uuid'=>$remote_customer['uuid']));
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customer_get');
+	$rc = ciniki_customers_customer_get($ciniki, $sync, $business_id, array('uuid'=>$remote_customer['uuid']));
 	if( $rc['stat'] != 'ok' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'962', 'msg'=>'Unable to get customer', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['customer']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'228', 'msg'=>'Customer not found on remote server'));
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customer_add');
+		$rc = ciniki_customers_customer_add($ciniki, $sync, $business_id, $args);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'961', 'msg'=>'Unable to add customer', 'err'=>$rc['err']));
+		}
+		return $rc;
 	}
 	$local_customer = $rc['customer'];
 
@@ -71,6 +72,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 		return $rc;
 	}   
 
+	$db_updated = 0;
 	//
 	// Compare basic elements of customer
 	//
@@ -535,7 +537,7 @@ function ciniki_customers_sync_customerUpdate(&$ciniki, &$sync, $business_id, $a
 	// Add to syncQueue to sync with other servers.  This allows for cascading syncs.
 	//
 	if( $db_updated > 0 ) {
-		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.syncPushCustomer', 'args'=>array('id'=>$local_customer['id'], 'ignore_sync_id'=>$sync['id']));
+		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$local_customer['id'], 'ignore_sync_id'=>$sync['id']));
 	}
 
 	return array('stat'=>'ok');
