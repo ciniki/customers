@@ -26,10 +26,10 @@ function ciniki_customers_customer_update(&$ciniki, &$sync, $business_id, $args)
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
 		$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>"ciniki.customers.customer.get", 'uuid'=>$args['uuid']));
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'980', 'msg'=>"Unable to get the remote customer", 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'936', 'msg'=>"Unable to get the remote customer", 'err'=>$rc['err']));
 		}
 		if( !isset($rc['customer']) ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'285', 'msg'=>"customer not found on remote server"));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'935', 'msg'=>"customer not found on remote server"));
 		}
 		$remote_customer = $rc['customer'];
 	} else {
