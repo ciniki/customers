@@ -57,7 +57,7 @@ function ciniki_customers_history_update(&$ciniki, $sync, $business_id, $args) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'history_get');
 	$rc = ciniki_customers_history_get($ciniki, $sync, $business_id, array('uuid'=>$remote_history['uuid']));
-	if( $rc['stat'] != 'ok' && $rc['err']['code'] != 152 ) {
+	if( $rc['stat'] != 'ok' && $rc['err']['code'] != 180 ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'990', 'msg'=>'Unable to get history', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['history']) ) {
@@ -91,21 +91,30 @@ function ciniki_customers_history_update(&$ciniki, $sync, $business_id, $args) {
 		//
 		$local_history = $rc['history'];
 		$strsql = "";
-		if( $local_history['user'] == '' ) {
-			if( $remote_history['user'] != '' ) {
-				//
-				// Add the history to the ciniki_customer_history table
-				//
-				ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncUpdateTableElementHistory');
-				$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
-					'ciniki_customer_history', $remote_history['table_key'], $remote_history['table_name'], 
-						array($remote_history['uuid']=>$remote_history), array($local_history['uuid']=>$local_history), array(
-						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
-					));
-				if( $rc['stat'] != 'ok' ) {
-					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'943', 'msg'=>'Unable to update customer history', 'err'=>$rc['err']));
-				}
+		if( ($local_history['user'] == '' && $remote_history['user'] != '') 
+			|| ($local_history['table_key'] == '' && $remote_history['table_key'] != '') ) {
+			//
+			// Translate history elements first
+			//
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'history_translate');
+			$rc = ciniki_customers_history_translate($ciniki, $sync, $business_id, array('history'=>$remote_history));
+			if( $rc['stat'] != 'ok' ) {
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'989', 'msg'=>'Unable to translate customer history'));
+			}
+			$remote_history = $rc['history'];
+
+			//
+			// Add the history to the ciniki_customer_history table
+			//
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncUpdateTableElementHistory');
+			$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
+				'ciniki_customer_history', $remote_history['table_key'], $remote_history['table_name'], 
+					array($remote_history['uuid']=>$remote_history), array($local_history['uuid']=>$local_history), array(
+					'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+				));
+			if( $rc['stat'] != 'ok' ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'943', 'msg'=>'Unable to update customer history', 'err'=>$rc['err']));
 			}
 		}
 	}

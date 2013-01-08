@@ -52,7 +52,7 @@ function ciniki_customers_history_get($ciniki, &$sync, $business_id, $args) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'944', 'msg'=>'Unable to get customer history', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['history'][$args['uuid']]) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'180', 'msg'=>'History does not exist'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'180', 'msg'=>'History does not exist: ' . $args['uuid']));
 	}
 	$history = $rc['history'][$args['uuid']];
 
