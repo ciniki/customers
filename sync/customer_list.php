@@ -45,11 +45,12 @@ function ciniki_customers_customer_list($ciniki, &$sync, $business_id, $args) {
 	if( !isset($rc['customers']) ) {
 		return array('stat'=>'ok', 'list'=>array());
 	}
+	$list = $rc['customers'];
 
 	//
 	// FIXME: Get list of deleted customers, since last_incremental/partial/all
 	//
 
-	return array('stat'=>'ok', 'list'=>$rc['customers']);
+	return array('stat'=>'ok', 'list'=>$list);
 }
 ?>

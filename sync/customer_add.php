@@ -118,7 +118,7 @@ function ciniki_customers_customer_add(&$ciniki, &$sync, $business_id, $args) {
 			if( isset($email['history']) ) {
 				$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 					'ciniki_customer_history', $email_id, 'ciniki_customer_emails', $email['history'], array(), array(
-						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+						'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 					));
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -167,7 +167,7 @@ function ciniki_customers_customer_add(&$ciniki, &$sync, $business_id, $args) {
 			if( isset($address['history']) ) {
 				$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 					'ciniki_customer_history', $address_id, 'ciniki_customer_addresses', $address['history'], array(), array(
-						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+						'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 					));
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -176,6 +176,62 @@ function ciniki_customers_customer_add(&$ciniki, &$sync, $business_id, $args) {
 			}
 		}
 	}
+
+	// 
+	// Create relationships
+	//
+	if( isset($customer['relationships']) ) {
+		foreach($customer['relationships'] as $uuid => $relationship) {
+			//
+			// Lookup the customer ID's
+			//
+			
+
+			//
+			// Create the relationship record
+			//
+			$strsql = "INSERT INTO ciniki_customer_relationships (uuid, customer_id, relationship_type, "
+				. "related_id, "
+				. "date_added, last_updated) VALUES ("
+				. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $customer_id) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['flags']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['address1']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['address2']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['city']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['province']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['postal']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['country']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $address['notes']) . "', "
+				. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $address['date_added']) . "'), "
+				. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $address['last_updated']) . "') "
+				. ") "
+				. "";
+			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
+			if( $rc['stat'] != 'ok' && $rc['err']['code'] != '73' ) { 
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'914', 'msg'=>'Unable to add customer address', 'err'=>$rc['err']));
+			}
+			if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'916', 'msg'=>'Unable to add customer'));
+			}
+			$address_id = $rc['insert_id'];
+			
+			if( isset($address['history']) ) {
+				$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
+					'ciniki_customer_history', $address_id, 'ciniki_customer_addresses', $address['history'], array(), array(
+						'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
+					));
+				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'917', 'msg'=>'Unable to save history', 'err'=>$rc['err']));
+				}
+			}
+		}
+	}
+
+
 
 	//
 	// Commit the database changes
@@ -190,6 +246,6 @@ function ciniki_customers_customer_add(&$ciniki, &$sync, $business_id, $args) {
 	//
 	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$customer_id, 'ignore_sync_id'=>$sync['id']));
 
-	return array('stat'=>'ok', 'customer_id'=>$customer_id);
+	return array('stat'=>'ok', 'id'=>$customer_id);
 }
 ?>

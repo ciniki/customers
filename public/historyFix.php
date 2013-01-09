@@ -35,6 +35,7 @@ function ciniki_customers_historyFix($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDelete');
 
 	//
 	// Check for items that are missing a add value in history
@@ -192,6 +193,58 @@ function ciniki_customers_historyFix($ciniki) {
 	}
 
 	//
+	// Check for items that are missing a add value in history
+	//
+	$fields = array('uuid', 'customer_id','relationship_type','related_id');
+	foreach($fields as $field) {
+		//
+		// Get the list of relationship which don't have a history for the field
+		//
+		$strsql = "SELECT ciniki_customer_relationships.id, ciniki_customer_relationships.$field AS field_value, "
+			. "UNIX_TIMESTAMP(ciniki_customer_relationships.date_added) AS date_added, "
+			. "UNIX_TIMESTAMP(ciniki_customer_relationships.last_updated) AS last_updated "
+			. "FROM ciniki_customer_relationships "
+			. "LEFT JOIN ciniki_customers ON (ciniki_customer_relationships.customer_id = ciniki_customers.id "
+				. ") "
+			. "LEFT JOIN ciniki_customer_history ON (ciniki_customer_relationships.id = ciniki_customer_history.table_key "
+				. "AND ciniki_customer_history.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND ciniki_customer_history.table_name = 'ciniki_customer_relationships' "
+				. "AND (ciniki_customer_history.action = 1 OR ciniki_customer_history.action = 2) "
+				. "AND ciniki_customer_history.table_field = '" . ciniki_core_dbQuote($ciniki, $field) . "' "
+				. ") "
+			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_customer_relationships.$field <> '' "
+			. "AND ciniki_customer_relationships.$field <> '0000-00-00' "
+			. "AND ciniki_customer_relationships.$field <> '0000-00-00 00:00:00' "
+			. "AND ciniki_customer_history.uuid IS NULL "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'history');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+	
+		$elements = $rc['rows'];
+		foreach($elements AS $rid => $row) {
+			$strsql = "INSERT INTO ciniki_customer_history (uuid, business_id, user_id, session, action, "
+				. "table_name, table_key, table_field, new_value, log_date) VALUES ("
+				. "UUID(), "
+				. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $ciniki['session']['change_log_id']) . "', "
+				. "'1', 'ciniki_customer_relationships', "
+				. "'" . ciniki_core_dbQuote($ciniki, $row['id']) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $field) . "', "
+				. "'" . ciniki_core_dbQuote($ciniki, $row['field_value']) . "', "
+				. "FROM_UNIXTIME('" . ciniki_core_dbQuote($ciniki, $row['date_added']) . "') "
+				. ")";
+			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+		}
+	}
+
+	//
 	// Check for items missing a UUID
 	//
 	$strsql = "UPDATE ciniki_customer_history SET uuid = UUID() WHERE uuid = ''";
@@ -199,6 +252,16 @@ function ciniki_customers_historyFix($ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Remote any entries with blank table_key, they are useless we don't know what they were attached to
+	//
+	$strsql = "DELETE FROM ciniki_customer_history WHERE table_key = ''";
+	$rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.customers');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
 
 	return array('stat'=>'ok');
 }

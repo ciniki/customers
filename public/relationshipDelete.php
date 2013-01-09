@@ -56,7 +56,7 @@ function ciniki_customers_relationshipDelete(&$ciniki) {
 	//
 	// Check if customer_id and related_id were passed
 	//
-	$strsql = "SELECT customer_id FROM ciniki_customer_relationships "
+	$strsql = "SELECT uuid, customer_id FROM ciniki_customer_relationships "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['relationship_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
@@ -69,6 +69,7 @@ function ciniki_customers_relationshipDelete(&$ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'504', 'msg'=>'Unable to get existing relationship information'));
 	}
 	$org_customer_id = $rc['relationship']['customer_id'];
+	$uuid = $rc['relationship']['uuid'];
 
 	//
 	// Remove the customer email address from the database.  It is still there in 
@@ -108,6 +109,9 @@ function ciniki_customers_relationshipDelete(&$ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.relationship.push', 
+		'args'=>array('delete_id'=>$args['relationship_id'], 'delete_uuid'=>$uuid));
 
 	return array('stat'=>'ok');
 }

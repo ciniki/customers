@@ -6,7 +6,9 @@
 #
 # Fields
 # ------
-# id: 					The id for each customer.
+# id: 					The id for each customer relationship.
+#
+# uuid:					The Universal Unique ID for ech relationship.
 #
 # business_id:			The business the customer is attached to.
 #
@@ -47,6 +49,7 @@
 #
 create table ciniki_customer_relationships (
 	id int not null auto_increment,
+	uuid char(36) not null,
 	business_id int not null,
 	customer_id int not null,
 	relationship_type tinyint unsigned not null,
@@ -57,5 +60,6 @@ create table ciniki_customer_relationships (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
-	unique index (business_id, customer_id, relationship_type, related_id)
-) ENGINE='InnoDB', COMMENT='v1.01';
+	unique index (business_id, customer_id, relationship_type, related_id),
+	unique index (uuid, customer_id)
+) ENGINE='InnoDB', COMMENT='v1.02';

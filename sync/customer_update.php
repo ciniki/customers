@@ -16,7 +16,7 @@ function ciniki_customers_customer_update(&$ciniki, &$sync, $business_id, $args)
 	//
 	if( (!isset($args['uuid']) || $args['uuid'] == '') 
 		&& (!isset($args['customer']) || $args['customer'] == '') ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'273', 'msg'=>'No type specified'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'273', 'msg'=>'No customer specified'));
 	}
 
 	if( isset($args['uuid']) && $args['uuid'] != '' ) {
@@ -148,7 +148,7 @@ function ciniki_customers_customer_update(&$ciniki, &$sync, $business_id, $args)
 				//
 				$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 					'ciniki_customer_history', $local_email['id'], 'ciniki_customer_emails', array($history['uuid']=>$history), array(), array(
-						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+						'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 					));
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -267,7 +267,7 @@ function ciniki_customers_customer_update(&$ciniki, &$sync, $business_id, $args)
 				if( isset($remote_email['history']) ) {
 					$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 						'ciniki_customer_history', $email_id, 'ciniki_customer_emails', $remote_email['history'], array(), array(
-							'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+							'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 						));
 					if( $rc['stat'] != 'ok' ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -345,7 +345,7 @@ function ciniki_customers_customer_update(&$ciniki, &$sync, $business_id, $args)
 				//
 				$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 					'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', array($history['uuid']=>$history), array(), array(
-						'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+						'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 					));
 				if( $rc['stat'] != 'ok' ) {
 					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -464,7 +464,7 @@ function ciniki_customers_customer_update(&$ciniki, &$sync, $business_id, $args)
 				if( isset($remote_address['history']) ) {
 					$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
 						'ciniki_customer_history', $address_id, 'ciniki_customer_addresses', $remote_address['history'], array(), array(
-							'customer_id'=>array('module'=>'ciniki.customers', 'table'=>'ciniki_customers'),
+							'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 						));
 					if( $rc['stat'] != 'ok' ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');

@@ -15,6 +15,9 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 	// Check the args
 	//
 	if( (!isset($args['uuid']) || $args['uuid'] == '') 
+		&& (!isset($args['email_uuid']) || $args['email_uuid'] == '')
+		&& (!isset($args['address_uuid']) || $args['address_uuid'] == '')
+		&& (!isset($args['relationship_uuid']) || $args['relationship_uuid'] == '')
 		&& (!isset($args['id']) || $args['id'] == '') ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'263', 'msg'=>'No customer specified'));
 	}
@@ -45,13 +48,28 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 			. "AND ciniki_customer_history.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customer_history.table_name = 'ciniki_customers' "
 			. ") "
-		. "LEFT JOIN ciniki_users ON (ciniki_customer_history.user_id = ciniki_users.id) "
-		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "";
+		. "LEFT JOIN ciniki_users ON (ciniki_customer_history.user_id = ciniki_users.id) ";
+	if( isset($args['email_uuid']) && $args['email_uuid'] != '' ) {
+		$strsql .= "LEFT JOIN ciniki_customer_emails ON (ciniki_customer.id = ciniki_customer_emails.customer_id "
+			. "AND ciniki_customer_emails.uuid = '" . ciniki_core_dbQuote($ciniki, $args['email_uuid']) . ") ";
+	} elseif( isset($args['address_uuid']) && $args['address_uuid'] != '' ) {
+		$strsql .= "LEFT JOIN ciniki_customer_addresses ON (ciniki_customer.id = ciniki_customer_addresses.customer_id "
+			. "AND ciniki_customer_addressess.uuid = '" . ciniki_core_dbQuote($ciniki, $args['address_uuid']) . ") ";
+	} elseif( isset($args['relationship_uuid']) && $args['relationship_uuid'] != '' ) {
+		$strsql .= "LEFT JOIN ciniki_customer_relationships ON (ciniki_customer.id = ciniki_customer_relationships.customer_id "
+			. "AND ciniki_customer_relationships.uuid = '" . ciniki_core_dbQuote($ciniki, $args['relationship_uuid']) . ") ";
+	}
+	$strsql .= "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' ";
 	if( isset($args['uuid']) && $args['uuid'] != '' ) {
 		$strsql .= "AND ciniki_customers.uuid = '" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "' ";
 	} elseif( isset($args['id']) && $args['id'] != '' ) {
 		$strsql .= "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['id']) . "' ";
+	} elseif( isset($args['email_uuid']) && $args['email_uuid'] != '' ) {
+		$strsql .= "AND ciniki_customer_emails.uuid = '" . ciniki_core_dbQuote($ciniki, $args['email_uuid']) . "' ";
+	} elseif( isset($args['address_uuid']) && $args['address_uuid'] != '' ) {
+		$strsql .= "AND ciniki_customer_addresses.uuid = '" . ciniki_core_dbQuote($ciniki, $args['address_uuid']) . "' ";
+	} elseif( isset($args['relationship_uuid']) && $args['relationship_uuid'] != '' ) {
+		$strsql .= "AND ciniki_customer_relationships.uuid = '" . ciniki_core_dbQuote($ciniki, $args['relationship_uuid']) . "' ";
 	} else {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'286', 'msg'=>'No customer specified'));
 	}
@@ -133,12 +151,12 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 		// Check for missing customer_id's, and try to get them from the history
 		//
 		$customer_uuids = array();
-		foreach($customer['emails'] as $email_uuid => $details) {
+		foreach($customer['emails'] as $eid => $details) {
 			if( isset($details['history']) ) {
 				foreach($details['history'] as $uuid => $entry) {
 					if($entry['table_field'] == 'customer_id' && is_numeric($entry['new_value']) ) {
 						if( isset($customer_uuids[$entry['new_value']]) ) {
-							$customer['emails'][$email_uuid]['history'][$uuid]['new_value'] = $customer_uuids[$entry['new_value']];
+							$customer['emails'][$eid]['history'][$uuid]['new_value'] = $customer_uuids[$entry['new_value']];
 						} else {
 							$strsql = "SELECT new_value "
 								. "FROM ciniki_customer_history "
@@ -153,7 +171,7 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 								return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'957', 'msg'=>'Unable to get customer id from history', 'err'=>$rc['err']));
 							}
 							if( isset($rc['history']) ) {
-								$customer['emails'][$email_uuid]['history'][$uuid]['new_value'] = $rc['history']['new_value'];
+								$customer['emails'][$eid]['history'][$uuid]['new_value'] = $rc['history']['new_value'];
 								// Save uuid to list for faster reference in future searches
 								$customer_uuids[$entry['new_value']] = $rc['history']['new_value'];
 							}
@@ -161,7 +179,7 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 					}
 				}
 			} else {
-				$customer['emails'][$email_uuid]['history'] = array();
+				$customer['emails'][$eid]['history'] = array();
 			}
 		}
 	}
@@ -217,6 +235,7 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 	if( count($deleted) > 0 ) {
 		$customer['deleted_emails'] = $deleted;
 	}
+
 
 	//
 	// Get the customer address information
@@ -297,7 +316,7 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 					}
 				}
 			} else {
-				$customer['emails'][$email_uuid]['history'] = array();
+				$customer['addresses'][$aid]['history'] = array();
 			}
 		}
 	}
@@ -353,7 +372,6 @@ function ciniki_customers_customer_get($ciniki, &$sync, $business_id, $args) {
 	if( count($deleted) > 0 ) {
 		$customer['deleted_addresses'] = $deleted;
 	}
-
 //	unset($customer['id']);
 
 	return array('stat'=>'ok', 'customer'=>$customer);
