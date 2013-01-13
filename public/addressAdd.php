@@ -65,7 +65,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'374', 'msg'=>'No address specified'));
 	}
 
-	if( !isset($args['flags']) && $args['flags'] == '' && isset($args['address_flags']) && $args['address_flags'] != '' ) {
+	if( (!isset($args['flags']) || $args['flags'] == '') && isset($args['address_flags']) && $args['address_flags'] != '' ) {
 		$args['flags'] = $args['address_flags'];
 	}
 	

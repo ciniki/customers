@@ -24,6 +24,8 @@
 //					0x02 - Billing
 //					0x04 - Mailing
 //
+// address_flags:	(optional) Same as flags, just allows for alternate name.
+//
 // notes:			(optional) The new notes for the address.
 // 
 // Returns
@@ -46,6 +48,7 @@ function ciniki_customers_addressUpdate(&$ciniki) {
         'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal/Zip Code'), 
         'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
+        'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -63,6 +66,10 @@ function ciniki_customers_addressUpdate(&$ciniki) {
         return $rc;
     }   
 
+	if( (!isset($args['flags']) || $args['flags'] == '') && isset($args['address_flags']) && $args['address_flags'] != '' ) {
+		$args['flags'] = $args['address_flags'];
+	}
+	
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 
