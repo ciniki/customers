@@ -10,7 +10,7 @@
 // auth_token:
 // business_id:		The ID of the business the customer is attached to.
 // customer_id:		The ID of the customer to add the email address to.
-// email:			The email address to add.
+// address:			The email address to add.
 // flags:			The options for the email address.
 //
 //					0x01 - Customer is allowed to login via the business website.
@@ -28,7 +28,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
-		'email'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email Address'),
+		'address'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email Address'),
 		'flags'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Options'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -78,7 +78,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['email']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['address']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
 	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
@@ -106,7 +106,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
 	//
 	$changelog_fields = array(
 		'customer_id',
-		'email',
+		'address',
 		'flags',
 		);
 	foreach($changelog_fields as $field) {

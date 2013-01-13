@@ -27,6 +27,8 @@
 //					0x02 - Billing
 //					0x04 - Mailing
 //
+// address_flags:	(optional) Same as flags, just allows for alternate name.
+//
 // notes:			(optional) The notes for the address.
 // 
 // Returns
@@ -48,6 +50,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
         'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Postal/Zip Code'), 
         'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Country'), 
         'flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
+        'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'notes'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -60,6 +63,10 @@ function ciniki_customers_addressAdd(&$ciniki) {
 	//
 	if( $args['address1'] == '' && $args['city'] == '' && $args['province'] == '' && $args['postal'] != '' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'374', 'msg'=>'No address specified'));
+	}
+
+	if( !isset($args['flags']) && $args['flags'] == '' && isset($args['address_flags']) && $args['address_flags'] != '' ) {
+		$args['flags'] = $args['address_flags'];
 	}
 	
     //  

@@ -11,7 +11,7 @@
 // business_id:  	The ID of the business the email address is attached to.
 // customer_id:		The ID of the customer the email address is attached to.
 // email_id:		The ID of the email to change.
-// email:			(optional) The new email address for the customer.
+// address:			(optional) The new email address for the customer.
 // flags:			(optional) The options for the email address.
 //
 //					0x01 - Customer is allowed to login via the business website.
@@ -30,7 +30,7 @@ function ciniki_customers_emailUpdate(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email ID'), 
-        'email'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email Address'), 
+        'address'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email Address'), 
         'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -89,14 +89,14 @@ function ciniki_customers_emailUpdate(&$ciniki) {
 	// Add all the fields to the change log
 	//
 	$changelog_fields = array(
-		'email',
-		'flags',
+		'address'=>'email',
+		'flags'=>'flags',
 		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) ) {
-			$strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
+	foreach($changelog_fields as $submit_field => $db_field) {
+		if( isset($args[$submit_field]) ) {
+			$strsql .= ", $db_field = '" . ciniki_core_dbQuote($ciniki, $args[$submit_field]) . "' ";
 			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-				2, 'ciniki_customer_emails', $args['email_id'], $field, $args[$field]);
+				2, 'ciniki_customer_emails', $args['email_id'], $db_field, $args[$submit_field]);
 		}
 	}
 	$strsql .= "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "

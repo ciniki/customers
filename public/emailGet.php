@@ -15,7 +15,7 @@
 // Returns
 // -------
 // <rsp stat="ok">
-//    <email id="7" customer_id="2" email="veggiefrog@gmail.com" flags="0" />
+//    <email id="7" customer_id="2" address="veggiefrog@gmail.com" flags="0" />
 // </rsp>
 //
 function ciniki_customers_emailGet($ciniki) {
@@ -45,7 +45,7 @@ function ciniki_customers_emailGet($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
-	$strsql = "SELECT id, customer_id, email, flags "
+	$strsql = "SELECT id, customer_id, email AS address, flags "
 		. "FROM ciniki_customer_emails "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
