@@ -17,6 +17,7 @@ function ciniki_customers_sync_objects($ciniki, &$sync, $business_id, $args) {
 	return array('stat'=>'ok', 'objects'=>array(
 		'setting'=>array(),
 		'customer'=>array(),
+		'email'=>array(),
 		'relationship'=>array(),
 		'history'=>array(),
 	));

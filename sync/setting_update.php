@@ -57,7 +57,7 @@ function ciniki_customers_setting_update(&$ciniki, $sync, $business_id, $args) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'setting_get');
 	$rc = ciniki_customers_setting_get($ciniki, $sync, $business_id, array('setting'=>$remote_setting['detail_key']));
-	if( $rc['stat'] != 'ok' && $rc['err']['code'] != 152 ) {
+	if( $rc['stat'] != 'ok' && $rc['stat'] != 'noexist' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'979', 'msg'=>'Unable to get customer setting', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['setting']) ) {

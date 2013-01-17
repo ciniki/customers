@@ -54,7 +54,7 @@ function ciniki_customers_relationshipDelete(&$ciniki) {
 	}   
 
 	//
-	// Check if customer_id and related_id were passed
+	// get the uuid
 	//
 	$strsql = "SELECT uuid, customer_id FROM ciniki_customer_relationships "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['relationship_id']) . "' "

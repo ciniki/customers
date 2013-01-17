@@ -100,7 +100,8 @@ function ciniki_customers_relationship_delete(&$ciniki, &$sync, $business_id, $a
 	}
 	
 	//
-	// Add to syncQueue to sync with other servers.  This allows for cascading syncs.
+	// Add to syncQueue to sync with other servers.  This allows for cascading syncs.  Don't need to
+	// include the delete_id because the history is already specified.
 	//
 	if( $db_updated > 0 ) {
 		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.relationship.push', 

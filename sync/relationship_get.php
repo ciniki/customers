@@ -88,8 +88,11 @@ function ciniki_customers_relationship_get($ciniki, &$sync, $business_id, $args)
 	//
 	// Check that one and only one row was returned
 	//
-	if( !isset($rc['relationships']) || count($rc['relationships']) != 1 ) {
+	if( !isset($rc['relationships']) ) {
 		return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'929', 'msg'=>'Customer relationship does not exist'));
+	}
+	if( count($rc['relationships']) > 1 ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'923', 'msg'=>'Customer relationship does not exist'));
 	}
 	$relationship = array_pop($rc['relationships']);
 
