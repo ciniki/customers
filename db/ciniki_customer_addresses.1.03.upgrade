@@ -1,0 +1,6 @@
+#
+# This upgrade will add the uuid column, and populate it.
+#
+ALTER TABLE ciniki_customer_addresses ADD COLUMN business_id int not null AFTER uuid;
+UPDATE ciniki_customer_addresses SET business_id = (SELECT business_id FROM ciniki_customers WHERE ciniki_customers.id = ciniki_customer_addresses.customer_id);
+ALTER TABLE ciniki_customer_addresses COMMENT='v1.03';

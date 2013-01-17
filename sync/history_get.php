@@ -18,7 +18,7 @@ function ciniki_customers_history_get($ciniki, &$sync, $business_id, $args) {
 		'module'=>'ciniki.customers',
 		'table_key_maps'=>array('ciniki_customers'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 			'ciniki_customer_emails'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'email_lookup'),
-			'ciniki_customer_addreses'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'address_lookup'),
+			'ciniki_customer_addresses'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'address_lookup'),
 			'ciniki_customer_relationships'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'relationship_lookup'),
 			),
 		'new_value_maps'=>array('customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),

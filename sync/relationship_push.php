@@ -60,7 +60,7 @@ function ciniki_customers_relationship_push(&$ciniki, &$sync, $business_id, $arg
 					. "LIMIT 1 ";
 				$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'history');
 				if( $rc['stat'] != 'ok' ) {
-					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1090', 'msg'=>'Unable to sync customer relationship', 'err'=>$rc['err']));
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1161', 'msg'=>'Unable to sync customer relationship', 'err'=>$rc['err']));
 				}
 				$history = $rc['history'];
 			} else {

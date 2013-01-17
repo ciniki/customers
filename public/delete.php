@@ -7,7 +7,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_delete($ciniki) {
+function ciniki_customers_delete(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -185,8 +185,6 @@ function ciniki_customers_delete($ciniki) {
 	// Log the deletion
 	//
 	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
-		3, 'ciniki_customers', $args['customer_id'], 'uuid', $uuid);
-	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
 		3, 'ciniki_customers', $args['customer_id'], '*', '');
 
 	//
@@ -241,6 +239,8 @@ function ciniki_customers_delete($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['customer_id']));
 
 	return array('stat'=>'ok');
 }

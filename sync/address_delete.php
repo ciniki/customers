@@ -9,31 +9,31 @@
 // Returns
 // -------
 //
-function ciniki_customers_relationship_delete(&$ciniki, &$sync, $business_id, $args) {
+function ciniki_customers_address_delete(&$ciniki, &$sync, $business_id, $args) {
 	//
 	// Check the args
 	//
 	if( !isset($args['uuid']) || $args['uuid'] == '' 
 		|| !isset($args['history']) || $args['history'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1160', 'msg'=>'No relationship specified'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1105', 'msg'=>'No address specified'));
 	}
 	$uuid = $args['uuid'];
 	$history = $args['history'];
 
 	if( isset($args['uuid']) && $args['uuid'] != '' ) {
 		//
-		// Get the local customer relationship to update
+		// Get the local customer address to update
 		//
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'relationship_get');
-		$rc = ciniki_customers_relationship_get($ciniki, $sync, $business_id, array('uuid'=>$args['uuid'], 'translate'=>'no'));
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'address_get');
+		$rc = ciniki_customers_address_get($ciniki, $sync, $business_id, array('uuid'=>$args['uuid'], 'translate'=>'no'));
 		if( $rc['stat'] != 'ok' && $rc['stat'] != 'noexist' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1162', 'msg'=>'Unable to get customer relationship', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1120', 'msg'=>'Unable to get customer address', 'err'=>$rc['err']));
 		}
-		if( !isset($rc['relationship']) ) {
+		if( !isset($rc['address']) ) {
 			// Already deleted
 			return array('stat'=>'ok');
 		}
-		$local_relationship = $rc['relationship'];
+		$local_address = $rc['address'];
 	}
 
 	//  
@@ -58,13 +58,13 @@ function ciniki_customers_relationship_delete(&$ciniki, &$sync, $business_id, $a
 	//
 	// Remove from the local server
 	//
-	$strsql = "DELETE FROM ciniki_customer_relationships "
-		. "WHERE uuid = '" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "' "
+	$strsql = "DELETE FROM ciniki_customer_addresses "
+		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $local_address['id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "";
 	$rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1163', 'msg'=>"Unable to delete the local customer relationship", 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1121', 'msg'=>"Unable to delete the local customer address", 'err'=>$rc['err']));
 	}
 	if( $rc['num_affected_rows'] > 0 ) {
 		$db_updated = 1;
@@ -73,22 +73,22 @@ function ciniki_customers_relationship_delete(&$ciniki, &$sync, $business_id, $a
 	//
 	// Update history
 	//
-	if( isset($local_relationship['history']) ) {
+	if( isset($local_address['history']) ) {
 		$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
-			'ciniki_customer_history', $local_relationship['id'], 'ciniki_customer_relationships', array($history['uuid']=>$history), $local_relationship['history'], array(
+			'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', array($history['uuid']=>$history), $local_address['history'], array(
 				'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 				'related_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 			));
 	} else {
 		$rc = ciniki_core_syncUpdateTableElementHistory($ciniki, $sync, $business_id, 'ciniki.customers',
-			'ciniki_customer_history', $local_relationship['id'], 'ciniki_customer_relationships', array($history['uuid']=>$history), array(), array(
+			'ciniki_customer_history', $local_address['id'], 'ciniki_customer_addresses', array($history['uuid']=>$history), array(), array(
 				'customer_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 				'related_id'=>array('package'=>'ciniki', 'module'=>'customers', 'lookup'=>'customer_lookup'),
 			));
 	}
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1165', 'msg'=>'Unable to update customer email history', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1122', 'msg'=>'Unable to update customer address history', 'err'=>$rc['err']));
 	}
 
 	//
@@ -104,7 +104,7 @@ function ciniki_customers_relationship_delete(&$ciniki, &$sync, $business_id, $a
 	// include the delete_id because the history is already specified.
 	//
 	if( $db_updated > 0 ) {
-		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.relationship.push', 
+		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 
 			'args'=>array('delete_uuid'=>$args['uuid'], 'history'=>$args['history'], 'ignore_sync_id'=>$sync['id']));
 	}
 

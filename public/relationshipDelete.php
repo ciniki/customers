@@ -63,10 +63,10 @@ function ciniki_customers_relationshipDelete(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'relationship');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'503', 'msg'=>'Unable to get existing relationship information', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1150', 'msg'=>'Unable to get existing relationship information', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['relationship']) || !isset($rc['relationship']['customer_id'])) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'504', 'msg'=>'Unable to get existing relationship information'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1151', 'msg'=>'Unable to get existing relationship information'));
 	}
 	$org_customer_id = $rc['relationship']['customer_id'];
 	$uuid = $rc['relationship']['uuid'];
@@ -81,7 +81,7 @@ function ciniki_customers_relationshipDelete(&$ciniki) {
 	$rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'505', 'msg'=>'Unable to remove relationship', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1152', 'msg'=>'Unable to remove relationship', 'err'=>$rc['err']));
 	}
 	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 		3, 'ciniki_customer_relationships', $args['relationship_id'], '*', '');

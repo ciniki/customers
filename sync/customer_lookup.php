@@ -61,7 +61,7 @@ function ciniki_customers_customer_lookup(&$ciniki, &$sync, $business_id, $args)
 		}
 
 		if( isset($rc['customer']) ) {
-			$rc = ciniki_customers_customer_add($ciniki, $sync, $business_id, array('customer'=>$rc['customer']));
+			$rc = ciniki_customers_customer_update($ciniki, $sync, $business_id, array('customer'=>$rc['customer']));
 			if( $rc['stat'] != 'ok' ) {
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1024', 'msg'=>'Unable to add customer to local server', 'err'=>$rc['err']));
 			}

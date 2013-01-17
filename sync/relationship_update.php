@@ -187,6 +187,6 @@ function ciniki_customers_relationship_update(&$ciniki, &$sync, $business_id, $a
 		$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.relationship.push', 'args'=>array('id'=>$relationship_id, 'ignore_sync_id'=>$sync['id']));
 	}
 
-	return array('stat'=>'ok');
+	return array('stat'=>'ok', 'id'=>$relationship_id);
 }
 ?>

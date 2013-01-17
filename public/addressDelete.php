@@ -40,6 +40,23 @@ function ciniki_customers_addressDelete(&$ciniki) {
         return $rc;
     }   
 
+	//
+	// get the uuid
+	//
+	$strsql = "SELECT uuid, customer_id FROM ciniki_customer_addresses "
+		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
+	if( $rc['stat'] != 'ok' ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1156', 'msg'=>'Unable to get existing email information', 'err'=>$rc['err']));
+	}
+	if( !isset($rc['email']) || !isset($rc['email']['customer_id'])) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1157', 'msg'=>'Unable to get existing email information'));
+	}
+	$uuid = $rc['email']['uuid'];
+
 	//  
 	// Turn off autocommit
 	//  
@@ -93,7 +110,7 @@ function ciniki_customers_addressDelete(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$args['customer_id']));
+	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['address_id']));
 
 	return array('stat'=>'ok');
 }

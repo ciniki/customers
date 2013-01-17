@@ -26,11 +26,13 @@ function ciniki_customers_relationship_get($ciniki, &$sync, $business_id, $args)
 	//
 	// Get the customer relationship information
 	//
-	$strsql = "SELECT ciniki_customer_relationships.uuid AS relationship_uuid, "
-		. "c1.uuid AS customer_uuid , "
-		. "ciniki_customer_relationships.id, ciniki_customer_relationships.customer_id, "
+	$strsql = "SELECT ciniki_customer_relationships.uuid AS relationship_uuid, ";
+	if( !isset($args['translate']) || $args['translate'] != 'no' ) {	
+		$strsql .= "c1.uuid AS customer_uuid , "
+			. "c2.uuid AS related_uuid, ";
+	}
+	$strsql .= "ciniki_customer_relationships.id, ciniki_customer_relationships.customer_id, "
 		. "ciniki_customer_relationships.relationship_type, ciniki_customer_relationships.related_id, "
-		. "c2.uuid AS related_uuid, "
 		. "UNIX_TIMESTAMP(ciniki_customer_relationships.date_added) AS date_added, "
 		. "UNIX_TIMESTAMP(ciniki_customer_relationships.last_updated) AS last_updated, "
 		. "ciniki_customer_history.id AS history_id, "
@@ -49,10 +51,11 @@ function ciniki_customers_relationship_get($ciniki, &$sync, $business_id, $args)
 		. "LEFT JOIN ciniki_users ON (ciniki_customer_history.user_id = ciniki_users.id) "
 		. "LEFT JOIN ciniki_customers AS c1 ON (ciniki_customer_relationships.customer_id = c1.id) "
 		. "LEFT JOIN ciniki_customers AS c2 ON (ciniki_customer_relationships.related_id = c2.id) "
-		. "WHERE ciniki_customer_relationships.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND c1.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "";
+		. "WHERE ciniki_customer_relationships.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' ";
+	if( !isset($args['translate']) || $args['translate'] != 'no' ) {	
+		$strsql .= "AND c1.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' ";
+	}
 	if( isset($args['uuid']) && $args['uuid'] != '' ) {
 		$strsql .= "AND ciniki_customer_relationships.uuid = '" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "' ";
 	} elseif( isset($args['id']) && $args['id'] != '' ) {

@@ -51,10 +51,10 @@ function ciniki_customers_emailDelete(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'503', 'msg'=>'Unable to get existing email information', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1153', 'msg'=>'Unable to get existing email information', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['email']) || !isset($rc['email']['customer_id'])) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'504', 'msg'=>'Unable to get existing email information'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1154', 'msg'=>'Unable to get existing email information'));
 	}
 	$org_customer_id = $rc['email']['customer_id'];
 	$uuid = $rc['email']['uuid'];

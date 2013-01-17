@@ -20,9 +20,9 @@ function ciniki_customers_email_lookup(&$ciniki, &$sync, $business_id, $args) {
 	// add from remote side
 	//
 	if( isset($args['remote_uuid']) && $args['remote_uuid'] != '' ) {
-		$strsql = "SELECT ciniki_customer_emails.id FROM ciniki_customer_emails, ciniki_customers "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND ciniki_customer_emails.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
+		$strsql = "SELECT ciniki_customer_emails.id FROM ciniki_customer_emails "
+			. "WHERE ciniki_customer_emails.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
+			. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
 		if( $rc['stat'] != 'ok' ) {
@@ -54,24 +54,25 @@ function ciniki_customers_email_lookup(&$ciniki, &$sync, $business_id, $args) {
 		// Check to see if it exists on the remote side, and add customer if necessary
 		//
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
-		$rc = ciniki_core_syncRequest($ciniki, $sync, $business_id, array('method'=>'ciniki.customers.customer.get', 'email_uuid'=>$args['remote_uuid']));
+		$rc = ciniki_core_syncRequest($ciniki, $sync, $business_id, array('method'=>'ciniki.customers.email.get', 'email_uuid'=>$args['remote_uuid']));
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1051', 'msg'=>'Unable to get customer from remote server', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1051', 'msg'=>'Unable to get customer email from remote server', 'err'=>$rc['err']));
 		}
 
-		if( isset($rc['customer']) ) {
-			$rc = ciniki_customers_customer_add($ciniki, $sync, $business_id, array('customer'=>$rc['customer']));
+		if( isset($rc['email']) ) {
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'email_update');
+			$rc = ciniki_customers_email_update($ciniki, $sync, $business_id, array('email'=>$rc['email']));
 			if( $rc['stat'] != 'ok' ) {
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1052', 'msg'=>'Unable to add customer to local server', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1052', 'msg'=>'Unable to add customer email to local server', 'err'=>$rc['err']));
 			}
-			return array('stat'=>'ok', 'id'=>$rc['customer']['id']);
+			return array('stat'=>'ok', 'id'=>$rc['email']['id']);
 		}
 
 		//
 		// Try again to get the email id
 		//
-		$strsql = "SELECT ciniki_customer_emails.id FROM ciniki_customer_emails, ciniki_customers "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		$strsql = "SELECT ciniki_customer_emails.id FROM ciniki_customer_emails "
+			. "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customer_emails.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
@@ -108,9 +109,8 @@ function ciniki_customers_email_lookup(&$ciniki, &$sync, $business_id, $args) {
 	// ID won't be there.
 	//
 	elseif( isset($args['local_id']) && $args['local_id'] != '' ) {
-		$strsql = "SELECT ciniki_customer_emails.uuid FROM ciniki_customer_emails, ciniki_customers "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND ciniki_customers.id = ciniki_customer_emails.customer_id "
+		$strsql = "SELECT ciniki_customer_emails.uuid FROM ciniki_customer_emails "
+			. "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customer_emails.id = '" . ciniki_core_dbQuote($ciniki, $args['local_id']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');

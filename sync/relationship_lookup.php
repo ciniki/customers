@@ -22,8 +22,8 @@ function ciniki_customers_relationship_lookup(&$ciniki, &$sync, $business_id, $a
 	//
 	if( isset($args['remote_uuid']) && $args['remote_uuid'] != '' ) {
 		$strsql = "SELECT id FROM ciniki_customer_relationships "
-			. "WHERE ciniki_customer_relationships.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND ciniki_customer_relationships.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
+			. "WHERE ciniki_customer_relationships.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
+			. "AND ciniki_customer_relationships.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'relationship');
 		if( $rc['stat'] != 'ok' ) {
@@ -52,20 +52,20 @@ function ciniki_customers_relationship_lookup(&$ciniki, &$sync, $business_id, $a
 		}
 
 		//
-		// Check to see if it exists on the remote side, and add customer if necessary
+		// Check to see if it exists on the remote side, and add customer relationship if necessary
 		//
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
-		$rc = ciniki_core_syncRequest($ciniki, $sync, $business_id, array('method'=>'ciniki.customers.customer.get', 'relationship_uuid'=>$args['remote_uuid']));
+		$rc = ciniki_core_syncRequest($ciniki, $sync, $business_id, array('method'=>'ciniki.customers.relationship.get', 'relationship_uuid'=>$args['remote_uuid']));
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1073', 'msg'=>'Unable to get customer from remote server', 'err'=>$rc['err']));
 		}
 
-		if( isset($rc['customer']) ) {
-			$rc = ciniki_customers_customer_add($ciniki, $sync, $business_id, array('customer'=>$rc['customer']));
+		if( isset($rc['relationship']) ) {
+			$rc = ciniki_customers_relationship_update($ciniki, $sync, $business_id, array('relationship'=>$rc['relationship']));
 			if( $rc['stat'] != 'ok' ) {
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1074', 'msg'=>'Unable to add customer to local server', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1074', 'msg'=>'Unable to add customer relationship to local server', 'err'=>$rc['err']));
 			}
-			return array('stat'=>'ok', 'id'=>$rc['customer']['id']);
+			return array('stat'=>'ok', 'id'=>$rc['relationship']['id']);
 		}
 		
 		//

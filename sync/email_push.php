@@ -9,34 +9,32 @@
 // Returns
 // -------
 //
-function ciniki_customers_customer_push(&$ciniki, &$sync, $business_id, $args) {
-
-	//
-	// Get the local customer
-	//
+function ciniki_customers_email_push(&$ciniki, &$sync, $business_id, $args) {
 	if( isset($args['id']) && $args['id'] != '' ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'customer_get');
-		$rc = ciniki_customers_customer_get($ciniki, $sync, $business_id, array('id'=>$args['id']));
+		//
+		// Get the local customer email
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'email_get');
+		$rc = ciniki_customers_email_get($ciniki, $sync, $business_id, array('id'=>$args['id']));
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'110', 'msg'=>'Unable to get customer'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1106', 'msg'=>'Unable to get customer email'));
 		}
-		if( !isset($rc['customer']) ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'108', 'msg'=>'Customer not found on remote server'));
+		if( !isset($rc['email']) ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1107', 'msg'=>'customer email not found on remote server'));
 		}
-		$customer = $rc['customer'];
+		$email = $rc['email'];
 
 		//
-		// Update the remote customer
+		// Update the remote customer email
 		//
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
-		$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.customer.update', 'customer'=>$customer));
+		$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.email.update', 'email'=>$email));
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'111', 'msg'=>'Unable to sync customer'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1108', 'msg'=>'Unable to sync customer email'));
 		}
-
 		return array('stat'=>'ok');
-	}
-
+	} 
+	
 	elseif( isset($args['delete_uuid']) ) {
 		if( !isset($args['history']) ) {
 			if( isset($args['delete_id']) ) {
@@ -54,7 +52,7 @@ function ciniki_customers_customer_push(&$ciniki, &$sync, $business_id, $args) {
 					. "FROM ciniki_customer_history "
 					. "LEFT JOIN ciniki_users ON (ciniki_customer_history.user_id = ciniki_users.id) "
 					. "WHERE ciniki_customer_history.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-					. "AND ciniki_customer_history.table_name = 'ciniki_customers' "
+					. "AND ciniki_customer_history.table_name = 'ciniki_customer_emails' "
 					. "AND ciniki_customer_history.action = 3 "
 					. "AND ciniki_customer_history.table_key = '" . ciniki_core_dbQuote($ciniki, $args['delete_id']) . "' "
 					. "AND ciniki_customer_history.table_field = '*' "
@@ -62,7 +60,7 @@ function ciniki_customers_customer_push(&$ciniki, &$sync, $business_id, $args) {
 					. "LIMIT 1 ";
 				$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'history');
 				if( $rc['stat'] != 'ok' ) {
-					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1090', 'msg'=>'Unable to sync customer', 'err'=>$rc['err']));
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1109', 'msg'=>'Unable to sync customer email', 'err'=>$rc['err']));
 				}
 				$history = $rc['history'];
 			} else {
@@ -76,13 +74,13 @@ function ciniki_customers_customer_push(&$ciniki, &$sync, $business_id, $args) {
 		// Update the remote customer email
 		//
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
-		$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.customer.delete', 'uuid'=>$args['delete_uuid'], 'history'=>$history));
+		$rc = ciniki_core_syncRequest($ciniki, $sync, array('method'=>'ciniki.customers.email.delete', 'uuid'=>$args['delete_uuid'], 'history'=>$history));
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1164', 'msg'=>'Unable to sync customer'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1159', 'msg'=>'Unable to sync customer email'));
 		}
 		return array('stat'=>'ok');
 	}
 
-	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'107', 'msg'=>'Missing ID argument'));
+	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1158', 'msg'=>'Missing ID argument'));
 }
 ?>

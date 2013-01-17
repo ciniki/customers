@@ -20,9 +20,9 @@ function ciniki_customers_address_lookup(&$ciniki, &$sync, $business_id, $args) 
 	// add from remote side
 	//
 	if( isset($args['remote_uuid']) && $args['remote_uuid'] != '' ) {
-		$strsql = "SELECT ciniki_customer_addresses.id FROM ciniki_customer_addresses, ciniki_customers "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND ciniki_customer_addresses.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
+		$strsql = "SELECT ciniki_customer_addresses.id FROM ciniki_customer_addresses "
+			. "WHERE ciniki_customer_addresses.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
+			. "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
 		if( $rc['stat'] != 'ok' ) {
@@ -54,24 +54,25 @@ function ciniki_customers_address_lookup(&$ciniki, &$sync, $business_id, $args) 
 		// Check to see if it exists on the remote side, and add customer if necessary
 		//
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'syncRequest');
-		$rc = ciniki_core_syncRequest($ciniki, $sync, $business_id, array('method'=>'ciniki.customers.customer.get', 'address_uuid'=>$args['remote_uuid']));
+		$rc = ciniki_core_syncRequest($ciniki, $sync, $business_id, array('method'=>'ciniki.customers.address.get', 'address_uuid'=>$args['remote_uuid']));
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1083', 'msg'=>'Unable to get customer from remote server', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1083', 'msg'=>'Unable to get customer address from remote server', 'err'=>$rc['err']));
 		}
 
-		if( isset($rc['customer']) ) {
-			$rc = ciniki_customers_customer_add($ciniki, $sync, $business_id, array('customer'=>$rc['customer']));
+		if( isset($rc['address']) ) {
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'sync', 'address_update');
+			$rc = ciniki_customers_address_update($ciniki, $sync, $business_id, array('address'=>$rc['address']));
 			if( $rc['stat'] != 'ok' ) {
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1063', 'msg'=>'Unable to add customer to local server', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1063', 'msg'=>'Unable to add customer address to local server', 'err'=>$rc['err']));
 			}
-			return array('stat'=>'ok', 'id'=>$rc['customer']['id']);
+			return array('stat'=>'ok', 'id'=>$rc['address']['id']);
 		}
 
 		//
 		// Try again to get the address id
 		//
-		$strsql = "SELECT ciniki_customer_addresses.id FROM ciniki_customer_addresses, ciniki_customers "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		$strsql = "SELECT ciniki_customer_addresses.id FROM ciniki_customer_addresses "
+			. "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customer_addresses.uuid = '" . ciniki_core_dbQuote($ciniki, $args['remote_uuid']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
@@ -108,9 +109,8 @@ function ciniki_customers_address_lookup(&$ciniki, &$sync, $business_id, $args) 
 	// ID won't be there.
 	//
 	elseif( isset($args['local_id']) && $args['local_id'] != '' ) {
-		$strsql = "SELECT ciniki_customer_addresses.uuid FROM ciniki_customer_addresses, ciniki_customers "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND ciniki_customers.id = ciniki_customer_addresses.customer_id "
+		$strsql = "SELECT ciniki_customer_addresses.uuid FROM ciniki_customer_addresses "
+			. "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customer_addresses.id = '" . ciniki_core_dbQuote($ciniki, $args['local_id']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
