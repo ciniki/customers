@@ -106,11 +106,12 @@ function ciniki_customers_addressAdd(&$ciniki) {
 	//
 	// Add the customer to the database
 	//
-	$strsql = "INSERT INTO ciniki_customer_addresses (uuid, customer_id, "
+	$strsql = "INSERT INTO ciniki_customer_addresses (uuid, business_id, customer_id, "
 		. "flags, "
 		. "address1, address2, city, province, postal, country, notes, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['address1']) . "', "
@@ -182,7 +183,8 @@ function ciniki_customers_addressAdd(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 'args'=>array('id'=>$address_id));
+	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.address', 'args'=>array('id'=>$address_id));
+//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 'args'=>array('id'=>$address_id));
 
 	return array('stat'=>'ok', 'id'=>$address_id);
 }

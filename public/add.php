@@ -31,7 +31,7 @@
 // company:				(optional) The company the customer works for.
 // department:			(optional) The department at the company the customer works for.
 // title:				(optional) The customers title at the company.
-// email:				(optional) The email address of the customer.
+// address:				(optional) The email address of the customer.
 // flags:				(optional) The options for the customer email address.  Default: 0.
 //	
 //						0x01 - The customer is allowed to login to the business website.
@@ -78,7 +78,7 @@ function ciniki_customers_add(&$ciniki) {
         'company'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company'), 
         'department'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Department'), 
         'title'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Title'), 
-        'email'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Email'), 
+        'address'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Email'), 
         'flags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Email Options'), 
 		'address1'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address'),
         'address2'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address'), 
@@ -226,7 +226,8 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	// Check if email address was specified, and add to customer emails
 	//
-	if( isset($args['email']) && $args['email'] != '' ) {
+	$email_id = 0;
+	if( isset($args['address']) && $args['address'] != '' ) {
 		//
 		// Get a new UUID
 		//
@@ -244,7 +245,7 @@ function ciniki_customers_add(&$ciniki) {
 			. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 			. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 			. "'" . ciniki_core_dbQuote($ciniki, $customer_id) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['email']) . "', "
+			. "'" . ciniki_core_dbQuote($ciniki, $args['address']) . "', "
 			. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
 			. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
 		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
@@ -287,6 +288,7 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	// Check if there is an address to add
 	//
+	$address_id = 0;
 	if( (isset($args['address1']) && $args['address1'] != '' ) 
 		|| (isset($args['address2']) && $args['address2'] != '' )
 		|| (isset($args['city']) && $args['city'] != '' )
@@ -378,7 +380,14 @@ function ciniki_customers_add(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$customer_id));
+	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 'args'=>array('id'=>$customer_id));
+	if( $email_id > 0 ) {
+		$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.email', 'args'=>array('id'=>$email_id));
+	}
+	if( $address_id > 0 ) {
+		$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.address', 'args'=>array('id'=>$address_id));
+	}
+//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$customer_id));
 
 	return array('stat'=>'ok', 'id'=>$customer_id);
 }

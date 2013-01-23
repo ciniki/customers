@@ -140,7 +140,8 @@ function ciniki_customers_emailAdd(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.email.push', 'args'=>array('id'=>$email_id));
+	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.email', 'args'=>array('id'=>$email_id));
+//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.email.push', 'args'=>array('id'=>$email_id));
 
 	return array('stat'=>'ok', 'id'=>$email_id);
 }
