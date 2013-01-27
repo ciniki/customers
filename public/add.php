@@ -140,7 +140,6 @@ function ciniki_customers_add(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
@@ -151,6 +150,7 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	// Get a new UUID
 	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
 	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
