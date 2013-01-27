@@ -102,7 +102,7 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	// They must specify either a firstname or lastname
 	//
-	if( $args['first'] == '' && $args['last'] == '' && $args['name'] == '' ) {
+	if( $args['first'] == '' && $args['last'] == '' && $args['name'] == '' && $args['company'] == '' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'368', 'msg'=>'You must specify a first or last name'));
 	}
 
