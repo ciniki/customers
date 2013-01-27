@@ -17,11 +17,11 @@
 # id: 				The id for each customer.
 # uuid:				Universal Unique ID
 #
+# business_id:		The business the customer is attached to.
+#
 # cid:				The ID for the customer, specified by the business.  This is a field
 #					used for outside reference, no internal linking should be done with
 #					this field.
-#
-# business_id:		The business the customer is attached to.
 #
 # status:			0 - unknown
 #					1 - active

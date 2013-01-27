@@ -110,7 +110,8 @@ function ciniki_customers_addressDelete(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['address_id']));
+	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.address', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['address_id']));
+//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['address_id']));
 
 	return array('stat'=>'ok');
 }

@@ -132,7 +132,8 @@ function ciniki_customers_update(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$args['customer_id']));
+	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 'args'=>array('id'=>$args['customer_id']));
+//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$args['customer_id']));
 
 	return array('stat'=>'ok');
 }

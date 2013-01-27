@@ -112,7 +112,8 @@ function ciniki_customers_emailDelete(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.email.push', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['email_id']));
+	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.email', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['email_id']));
+//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.email.push', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['email_id']));
 
 	return array('stat'=>'ok');
 }
