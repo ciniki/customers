@@ -307,11 +307,12 @@ function ciniki_customers_add(&$ciniki) {
 		//
 		// Add the customer to the database
 		//
-		$strsql = "INSERT INTO ciniki_customer_addresses (uuid, customer_id, "
+		$strsql = "INSERT INTO ciniki_customer_addresses (uuid, business_id, customer_id, "
 			. "flags, "
 			. "address1, address2, city, province, postal, country, "
 			. "date_added, last_updated) VALUES ("
 			. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
+			. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
 			. "'" . ciniki_core_dbQuote($ciniki, $customer_id) . "', "
 			. "'" . ciniki_core_dbQuote($ciniki, $args['address_flags']) . "', "
 			. "'" . ciniki_core_dbQuote($ciniki, $args['address1']) . "', "
@@ -353,14 +354,16 @@ function ciniki_customers_add(&$ciniki) {
 			);
 		foreach($changelog_fields as $field) {
 			if( isset($args[$field]) && $args[$field] != '' ) {
-				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 
+					'ciniki_customer_history', $args['business_id'], 
 					1, 'ciniki_customer_addresses', $address_id, $field, $args[$field]);
 			}
 		}
 		// Address_flags should be addes as flags, but must be passed to this method as address_flags so 
 		// not to be confused with email flags
 		if( isset($args['address_flags']) && $args['address_flags'] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 
+				'ciniki_customer_history', $args['business_id'], 
 				1, 'ciniki_customer_addresses', $address_id, 'flags', $args['address_flags']);
 		}
 	}
