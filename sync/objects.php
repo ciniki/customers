@@ -84,32 +84,19 @@ function ciniki_customers_sync_objects($ciniki, &$sync, $business_id, $args) {
 			),
 		'history_table'=>$history_table,
 		);
-	
-	$settings = array(
+	$objects['settings'] = array(
+		'type'=>'settings',
 		'name'=>'Customer Settings',
 		'table'=>'ciniki_customer_settings',
 		'history_table'=>$history_table,
 		);
-//	$history = array(
-//		'table'=>'ciniki_customer_history',
-// All references for uuid maps are in the objects array.
-//		'new_value_maps'=>array(
-//			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
-//			'related_id'=>array('ref'=>'ciniki.customers.customer'),
-//			),
+	
+//	$settings = array(
+//		'name'=>'Customer Settings',
+//		'table'=>'ciniki_customer_settings',
+//		'history_table'=>$history_table,
 //		);
 
-	return array('stat'=>'ok', 'objects'=>$objects, 'settings'=>$settings);
-
-//	return array('stat'=>'ok', 
-//		'objects'=>array(
-//			'setting'=>array(),
-//			'customer'=>array(),
-//			'address'=>array(),
-//			'email'=>array(),
-//			'relationship'=>array(),
-//			'history'=>array(),
-//		)
-//	);
+	return array('stat'=>'ok', 'objects'=>$objects);
 }
 ?>

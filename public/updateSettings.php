@@ -53,6 +53,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	//
 	// The list of allowed fields for updating
 	//
+	$db_updated = 0;
 	$changelog_fields = array(
 		'use-cid',
 		'use-relationships',
@@ -89,7 +90,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	foreach($changelog_fields as $field) {
 		if( isset($ciniki['request']['args'][$field]) ) {
 			$strsql = "INSERT INTO ciniki_customer_settings (business_id, detail_key, detail_value, date_added, last_updated) "
-				. "VALUES ('" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args']['business_id']) . "'"
+				. "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "'"
 				. ", '" . ciniki_core_dbQuote($ciniki, $field) . "'"
 				. ", '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args'][$field]) . "'"
 				. ", UTC_TIMESTAMP(), UTC_TIMESTAMP()) "
@@ -103,6 +104,9 @@ function ciniki_customers_updateSettings(&$ciniki) {
 			}
 			ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 				2, 'ciniki_customer_settings', $field, 'detail_value', $ciniki['request']['args'][$field]);
+			$db_updated = 1;
+			$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.settings', 
+				'args'=>array('id'=>$field));
 		}
 	}
 
@@ -118,11 +122,11 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	// Update the last_change date in the business modules
 	// Ignore the result, as we don't want to stop user updates if this fails.
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+	if( $db_updated > 0 ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+		ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.settings', 'args'=>array());
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.setting.push', 'args'=>array());
+	}
 
 	return array('stat'=>'ok');
 }
