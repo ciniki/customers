@@ -91,12 +91,6 @@ function ciniki_customers_sync_objects($ciniki, &$sync, $business_id, $args) {
 		'history_table'=>$history_table,
 		);
 	
-//	$settings = array(
-//		'name'=>'Customer Settings',
-//		'table'=>'ciniki_customer_settings',
-//		'history_table'=>$history_table,
-//		);
-
 	return array('stat'=>'ok', 'objects'=>$objects);
 }
 ?>
