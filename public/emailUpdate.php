@@ -136,7 +136,6 @@ function ciniki_customers_emailUpdate(&$ciniki) {
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.email', 'args'=>array('id'=>$args['email_id']));
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.email.push', 'args'=>array('id'=>$args['email_id']));
 
 	return array('stat'=>'ok');
 }

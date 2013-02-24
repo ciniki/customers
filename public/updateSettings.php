@@ -105,7 +105,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
 			ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
 				2, 'ciniki_customer_settings', $field, 'detail_value', $ciniki['request']['args'][$field]);
 			$db_updated = 1;
-			$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.settings', 
+			$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.setting', 
 				'args'=>array('id'=>$field));
 		}
 	}

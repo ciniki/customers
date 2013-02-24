@@ -112,8 +112,6 @@ function ciniki_customers_relationshipDelete(&$ciniki) {
 
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.relationship', 
 		'args'=>array('delete_id'=>$args['relationship_id'], 'delete_uuid'=>$uuid));
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.relationship.push', 
-//		'args'=>array('delete_id'=>$args['relationship_id'], 'delete_uuid'=>$uuid));
 
 	return array('stat'=>'ok');
 }

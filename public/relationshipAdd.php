@@ -186,7 +186,6 @@ function ciniki_customers_relationshipAdd(&$ciniki) {
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.relationship', 'args'=>array('id'=>$relationship_id));
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.relationship.push', 'args'=>array('id'=>$relationship_id));
 
 	return array('stat'=>'ok', 'id'=>$relationship_id);
 }

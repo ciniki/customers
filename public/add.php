@@ -391,7 +391,6 @@ function ciniki_customers_add(&$ciniki) {
 	if( $address_id > 0 ) {
 		$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.address', 'args'=>array('id'=>$address_id));
 	}
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('id'=>$customer_id));
 
 	return array('stat'=>'ok', 'id'=>$customer_id);
 }

@@ -241,7 +241,6 @@ function ciniki_customers_delete(&$ciniki) {
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['customer_id']));
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.customer.push', 'args'=>array('delete_uuid'=>$uuid, 'delete_id'=>$args['customer_id']));
 
 	return array('stat'=>'ok');
 }

@@ -184,7 +184,6 @@ function ciniki_customers_addressAdd(&$ciniki) {
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.address', 'args'=>array('id'=>$address_id));
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 'args'=>array('id'=>$address_id));
 
 	return array('stat'=>'ok', 'id'=>$address_id);
 }

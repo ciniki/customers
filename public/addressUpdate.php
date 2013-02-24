@@ -169,7 +169,6 @@ function ciniki_customers_addressUpdate(&$ciniki) {
 
 	error_log('test ' . $args['address_id']);
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.address', 'args'=>array('id'=>$args['address_id']));
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.address.push', 'args'=>array('id'=>$args['address_id']));
 
 	return array('stat'=>'ok');
 }

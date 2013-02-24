@@ -238,7 +238,6 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.relationship', 'args'=>array('id'=>$args['relationship_id']));
-//	$ciniki['syncqueue'][] = array('method'=>'ciniki.customers.relationship.push', 'args'=>array('id'=>$args['relationship_id']));
 
 	return array('stat'=>'ok');
 }
