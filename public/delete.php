@@ -101,7 +101,7 @@ function ciniki_customers_delete(&$ciniki) {
 		$strsql = "SELECT 'subscriptions', COUNT(*) "
 			. "FROM ciniki_subscription_customers "
 			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-			. "AND status = 1 "
+			. "AND status = 10 "
 			. "";
 		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
 		if( $rc['stat'] != 'ok' ) {
