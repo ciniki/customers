@@ -91,24 +91,46 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
 	//
 	if( $customer['email'] != '' 
 		&& isset($ciniki['config']['ciniki.core']['system.email']) && $ciniki['config']['ciniki.core']['system.email'] != '' ) {
+		//
+		// Load the business mail template
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'private', 'loadBusinessTemplate');
+		$rc = ciniki_mail_loadBusinessTemplate($ciniki, $business_id, array());
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		$template = $rc['template'];
+		$theme = $rc['theme'];
+
+		//
+		// Prepare Messages
+		//
 		$subject = "Password reset";
-		$msg = "Hi, \n\n"
+		$url = $url . '?email=' . urlencode($customer['email']) . "&pwd=$password";
+		$html_message = $template['html_header']
+			. "<tr><td style='" . $theme['td_body'] . "'>"
+			. "<p style='" . $theme['p'] . "'>Hi, </p>"
+			. "<p style='" . $theme['p'] . "'>You have requested a new password.  Please click on the following link to set a new password.  This link will only be valid for 2 hours.</p>"
+			. "<p style='" . $theme['p'] . "'><a style='" . $theme['a'] . "' href='$url'>$url</a></p>"
+			;
+		$text_message = $template['text_header']
+			. "Hi, \n\n"
 			. "You have requested a new password.  "
 			. "Please click the following link to reset your password.  This link will only be valid for 2 hours.\n"
 			. "\n"
-			. $url . '?email=' . urlencode($customer['email']) . "&pwd=$password\n"
+			. $url . "\n"
 			. "\n"
-			. "\n";
+			. "\n"
+			. $template['text_footer'];
+
 		//
 		// The from address can be set in the config file.
 		//
-//		$headers = 'From: "' . $ciniki['config']['ciniki.core']['system.email.name'] . '" <' . $ciniki['config']['ciniki.core']['system.email'] . ">\r\n" .
-//				'Reply-To: "' . $ciniki['config']['ciniki.core']['system.email.name'] . '" <' . $ciniki['config']['ciniki.core']['system.email'] . ">\r\n" .
-//				'X-Mailer: PHP/' . phpversion();
-//		mail($customer['email'], $subject, $msg, $headers, '-f' . $ciniki['config']['ciniki.core']['system.email']);
 		$ciniki['emailqueue'][] = array('to'=>$customer['email'],
+			'business_id'=>$business_id,
 			'subject'=>$subject,
-			'textmsg'=>$msg,
+			'textmsg'=>$text_message,
+			'htmlmsg'=>$html_message,
 			);
 	}
 
