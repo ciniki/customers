@@ -161,7 +161,7 @@ function ciniki_customers_add(&$ciniki) {
 	// Add the customer to the database
 	//
 	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, cid, type, prefix, first, middle, last, suffix, "
-		. "company, department, title, notes, birthdate, "
+		. "company, department, title, phone_home, phone_work, phone_cell, phone_fax, notes, birthdate, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
@@ -176,6 +176,10 @@ function ciniki_customers_add(&$ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $args['company']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['department']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['title']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_home']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_work']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_cell']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_fax']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['notes']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['birthdate']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
