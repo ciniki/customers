@@ -157,8 +157,17 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 		$details[] = array('detail'=>array('label'=>'Fax', 'value'=>$customer['phone_fax']));
 	}
 	if( isset($customer['emails']) ) {
+		$emails = '';
+		$comma = '';
 		foreach($customer['emails'] as $e => $email) {
-			$details[] = array('detail'=>array('label'=>'Email', 'value'=>$email['email']['address']));
+			$emails .= $comma . $email['email']['address'];
+			$comma = ', ';
+//			$details[] = array('detail'=>array('label'=>'Email', 'value'=>$email['email']['address']));
+		}
+		if( count($customer['emails']) > 1 ) {
+			$details[] = array('detail'=>array('label'=>'Emails', 'value'=>$emails));
+		} else {
+			$details[] = array('detail'=>array('label'=>'Email', 'value'=>$emails));
 		}
 	}
 	if( isset($customer['addresses']) ) {
