@@ -21,9 +21,9 @@ function ciniki_customers_addressGet($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'),
-		'address_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No address specified'),
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
+		'address_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Address'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

@@ -21,8 +21,8 @@ function ciniki_customers_automergeStats($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No spreadsheet specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Automerge Customer'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

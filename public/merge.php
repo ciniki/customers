@@ -13,9 +13,9 @@ function ciniki_customers_merge($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'primary_customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No primary customer specified'),
-		'secondary_customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No secondary customer specified'),
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'primary_customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Primary Customer'),
+		'secondary_customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Secondary Customer'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

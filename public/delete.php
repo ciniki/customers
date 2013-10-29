@@ -13,8 +13,8 @@ function ciniki_customers_delete(&$ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No customer specified'),
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

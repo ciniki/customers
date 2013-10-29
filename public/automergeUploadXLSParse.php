@@ -28,10 +28,10 @@ function ciniki_customers_automergeUploadXLSParse($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No upload specified'), 
-		'start'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No start specified'), 
-		'size'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No size specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Automerge Customer'), 
+		'start'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Start'), 
+		'size'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Size'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
