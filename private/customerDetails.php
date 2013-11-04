@@ -76,7 +76,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 		return $rc;
 	}
 	if( !isset($rc['customers']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'722', 'msg'=>'Invalid customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1283', 'msg'=>'Invalid customer'));
 	}
 	//
 	// Set the display type for the customer
