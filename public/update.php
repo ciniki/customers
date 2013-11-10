@@ -39,6 +39,8 @@ function ciniki_customers_update(&$ciniki) {
         'phone_fax'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fax Number'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
         'birthdate'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
+		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
+		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -62,7 +64,7 @@ function ciniki_customers_update(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
@@ -70,51 +72,27 @@ function ciniki_customers_update(&$ciniki) {
 	}   
 
 	//
-	// Add the customer to the database
+	// Update the customer
 	//
-	$strsql = "UPDATE ciniki_customers SET last_updated = UTC_TIMESTAMP()";
-
-	//
-	// Add all the fields to the change log
-	//
-
-	$changelog_fields = array(
-		'cid',
-		'type',
-		'prefix',
-		'first',
-		'middle',
-		'last',
-		'suffix',
-		'company',
-		'department',
-		'title',
-//		'primary_email',
-//		'alternate_email',
-		'phone_home',
-		'phone_work',
-		'phone_cell',
-		'phone_fax',
-		'notes',
-		'birthdate',
-		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) ) {
-			$strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'],
-				2, 'ciniki_customers', $args['customer_id'], $field, $args[$field]);
-		}
-	}
-	$strsql .= "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', $args['customer_id'], $args, 0x06);
+	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'371', 'msg'=>'Unable to add customer'));
+
+	//
+	// Check for subscriptions
+	//
+	if( isset($args['subscriptions']) || isset($args['unsubscriptions']) ) {
+		// incase one of the args isn't set, setup with blank arrays
+		if( !isset($args['subscriptions']) ) { $args['subscriptions'] = array(); }
+		if( !isset($args['unsubscriptions']) ) { $args['unsubscriptions'] = array(); }
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'subscriptions', 'private', 'updateCustomerSubscriptions');
+		$rc = ciniki_subscriptions_updateCustomerSubscriptions($ciniki, $args['business_id'], 
+			$args['customer_id'], $args['subscriptions'], $args['unsubscriptions']);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
 	}
 
 	//
@@ -124,15 +102,6 @@ function ciniki_customers_update(&$ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-
-	//
-	// Update the last_change date in the business modules
-	// Ignore the result, as we don't want to stop user updates if this fails.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
-
-	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 'args'=>array('id'=>$args['customer_id']));
 
 	return array('stat'=>'ok');
 }

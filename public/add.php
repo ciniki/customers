@@ -78,7 +78,7 @@ function ciniki_customers_add(&$ciniki) {
         'company'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company'), 
         'department'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Department'), 
         'title'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Title'), 
-        'address'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Email'), 
+        'email'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Email'), 
         'flags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Email Options'), 
 		'address1'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address'),
         'address2'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address'), 
@@ -93,6 +93,8 @@ function ciniki_customers_add(&$ciniki) {
         'phone_fax'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Fax Number'), 
         'notes'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
         'birthdate'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
+		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
+		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -371,6 +373,21 @@ function ciniki_customers_add(&$ciniki) {
 			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 
 				'ciniki_customer_history', $args['business_id'], 
 				1, 'ciniki_customer_addresses', $address_id, 'flags', $args['address_flags']);
+		}
+	}
+
+	//
+	// Check for subscriptions
+	//
+	if( isset($args['subscriptions']) || isset($args['unsubscriptions']) ) {
+		// incase one of the args isn't set, setup with blank arrays
+		if( !isset($args['subscriptions']) ) { $args['subscriptions'] = array(); }
+		if( !isset($args['unsubscriptions']) ) { $args['unsubscriptions'] = array(); }
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'subscriptions', 'private', 'updateCustomerSubscriptions');
+		$rc = ciniki_subscriptions_updateCustomerSubscriptions($ciniki, $args['business_id'], 
+			$customer_id, $args['subscriptions'], $args['unsubscriptions']);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
 		}
 	}
 

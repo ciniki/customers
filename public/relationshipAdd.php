@@ -73,21 +73,6 @@ function ciniki_customers_relationshipAdd(&$ciniki) {
         return $rc;
     }   
 
-	//  
-	// Turn off autocommit
-	//  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) { 
-		return $rc;
-	}
-
 	//
 	// Check if relationship should be reversed
 	//
@@ -99,94 +84,9 @@ function ciniki_customers_relationshipAdd(&$ciniki) {
 	}
 
 	//
-	// Get a new UUID
+	// Add the relationship
 	//
-	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$uuid = $rc['uuid'];
-
-	//
-	// Add the customer relationship to the database
-	//
-	$strsql = "INSERT INTO ciniki_customer_relationships (uuid, business_id, customer_id, "
-		. "relationship_type, related_id, "
-		. "date_started, date_ended, notes, "
-		. "date_added, last_updated) VALUES ("
-		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['relationship_type']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['related_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['date_started']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['date_ended']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['notes']) . "', "
-		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		if( $rc['err']['code'] == '73' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'530', 'msg'=>'Email address already exists'));
-		}
-		return $rc;
-	}
-	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'531', 'msg'=>'Unable to add customer email'));
-	}
-	$relationship_id = $rc['insert_id'];
-
-	//
-	// Save the uuid history
-	//
-	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-		1, 'ciniki_customer_relationships', $relationship_id, 'uuid', $uuid);
-
-	//
-	// Add all the fields to the change log
-	//
-	$changelog_fields = array(
-		'customer_id',
-		'relationship_type',
-		'related_id',
-		'date_started',
-		'date_ended',
-		'notes',
-		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-				1, 'ciniki_customer_relationships', $relationship_id, $field, $args[$field]);
-		}
-	}
-
-	//
-	// Update the customer last_updated date
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTouch');
-	$rc = ciniki_core_dbTouch($ciniki, 'ciniki.customers', 'ciniki_customers', 'id', $args['customer_id']);
-	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'532', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
-	}
-
-	//
-	// Commit the database changes
-	//
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-
-	//
-	// Update the last_change date in the business modules
-	// Ignore the result, as we don't want to stop user updates if this fails.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
-
-	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.relationship', 'args'=>array('id'=>$relationship_id));
-
-	return array('stat'=>'ok', 'id'=>$relationship_id);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+	return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.relationship', $args, 0x07);
 }
 ?>
