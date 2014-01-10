@@ -1,0 +1,8 @@
+#
+# This file will upgrade the database table customers to version 1.08.
+# This upgrade adds birthdate field
+#
+ALTER TABLE ciniki_customers ADD COLUMN name varchar(250) not null after suffix; 
+UPDATE ciniki_customers SET name = REPLACE(TRIM(CONCAT_WS(' ', prefix, first, middle, last, suffix)), '  ', ' ');
+ALTER TABLE ciniki_customers COMMENT='v1.11';
+
