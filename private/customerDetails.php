@@ -52,8 +52,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	// Get the customer details and emails
 	//
 	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
-		. "CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name, "
-		. "company, department, title, "
+		. "name, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
@@ -81,9 +80,9 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	//
 	// Set the display type for the customer
 	//
-	if( $rc['customers'][0]['customer']['type'] > 0 && isset($types[$rc['customers'][0]['customer']['type']]) ) {
-		$rc['customers'][0]['customer']['display_type'] = $types[$rc['customers'][0]['customer']['type']]['detail_value'];
-	}
+//	if( $rc['customers'][0]['customer']['type'] > 0 && isset($types[$rc['customers'][0]['customer']['type']]) ) {
+//		$rc['customers'][0]['customer']['display_type'] = $types[$rc['customers'][0]['customer']['type']]['detail_value'];
+//	}
 
 	$customer = $rc['customers'][0]['customer'];
 

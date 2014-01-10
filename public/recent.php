@@ -39,27 +39,27 @@ function ciniki_customers_recent($ciniki) {
 	//
 	// Get the types of customers available for this business
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-    $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
-	if( $rc['stat'] != 'ok' ) {	
-		return $rc;
-	}
-	$types = $rc['types'];
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
+//	$rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+//	if( $rc['stat'] != 'ok' ) {	
+//		return $rc;
+//	}
+//	$types = $rc['types'];
 
 	//
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT id, CONCAT_WS(' ', first, last) AS name, status, type, company, cid, ";
-	if( count($types) > 0 ) {
-		$strsql .= "CASE type ";
-		foreach($types as $tid => $type) {
-			$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN '" . ciniki_core_dbQuote($ciniki, $type['detail_value']) . "' ";
-		}
-		$strsql .= "ELSE 'person' END AS display_type ";
-	} else {
-		$strsql .= "'person' AS display_type ";
-	}
+	$strsql = "SELECT id, name, status, type, company, cid ";
+//	if( count($types) > 0 ) {
+//		$strsql .= "CASE type ";
+//		foreach($types as $tid => $type) {
+//			$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN '" . ciniki_core_dbQuote($ciniki, $type['detail_value']) . "' ";
+//		}
+//		$strsql .= "ELSE 'person' END AS display_type ";
+//	} else {
+//		$strsql .= "'person' AS display_type ";
+//	}
 	$strsql .= "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND status = 1 "

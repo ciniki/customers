@@ -57,7 +57,7 @@ function ciniki_customers_main() {
 		};
 		this.main.liveSearchResultValue = function(s, f, i, j, d) {
 			if( s == 'search' ) { 
-				if( d.customer.display_type == 'business' ) { return d.customer.company; }
+				if( d.customer.type == 2 ) { return d.customer.company + ' (' + d.customer.name + ')'; }
 				return d.customer.name;
 			}
 			return '';
@@ -75,7 +75,7 @@ function ciniki_customers_main() {
 		};
 		this.main.noData = function(s) { return 'No customers'; }
 		this.main.cellValue = function(s, i, j, d) {
-			if( d.customer.display_type == 'business' ) { return d.customer.company; }
+			if( d.customer.type == 2 ) { return d.customer.company + ' (' + d.customer.name + ')'; }
 			return d.customer.name;
 		};
 		this.main.rowFn = function(s, i, d) { 
@@ -117,7 +117,7 @@ function ciniki_customers_main() {
 		this.search.noData = function() { return 'No customers found'; }
 		this.search.sectionData = function(s) { return this.data; }
 		this.search.cellValue = function(s, i, j, d) { 
-			if( d.customer.display_type == 'business' ) { return d.customer.company; }
+			if( d.customer.type == 2 ) { return d.customer.company + ' (' + d.customer.name + ')'; }
 			return d.customer.first + ' ' + d.customer.last; 
 		};
 		this.search.rowFn = function(s, i, d) { 
@@ -438,10 +438,10 @@ function ciniki_customers_main() {
 		if( M.curBusiness.customers != null && M.curBusiness.customers.settings['use-cid'] != null && M.curBusiness.customers.settings['use-cid'] == 'yes' ) {
 			this.customer.data.details.cid = {'label':'ID', 'value':rsp.customer.cid};
 		}
-		if( M.curBusiness.customers != null && M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label'] != null ) {
-			this.customer.data.details.type = {'label':'Type', 'value':M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label']};
-		}
-		if( rsp.customer.display_type == 'business' ) {
+//		if( M.curBusiness.customers != null && M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label'] != null ) {
+//			this.customer.data.details.type = {'label':'Type', 'value':M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label']};
+//		}
+		if( rsp.customer.type == 2 ) {
 			this.customer.data.details.company = {'label':'Name', 'value':rsp.customer.company};
 			this.customer.data.details.name = {'label':'Contact', 'value':rsp.customer.name};
 		} else {
@@ -488,17 +488,20 @@ function ciniki_customers_main() {
 		//
 		// make subscriptions available
 		//
-		if( mods['ciniki.subscriptions'] != null ) {
-			this.customer.sections.subscriptions.visible = 'yes';
-		} else {
-			this.customer.sections.subscriptions.visible = 'no';
-		}
+		this.customer.sections.subscriptions.visible=(mods['ciniki.subscriptions']!=null)?'yes':'no';
+//		if( mods['ciniki.subscriptions'] != null ) {
+//			this.customer.sections.subscriptions.visible = 'yes';
+//		} else {
+//			this.customer.sections.subscriptions.visible = 'no';
+//		}
 
 		//
 		// Make relationships visible if setup for business
 		//
 		if( M.curBusiness.customers != null && M.curBusiness.customers.settings['use-relationships'] != null && M.curBusiness.customers.settings['use-relationships'] == 'yes' ) {
 			this.customer.sections.relationships.visible = 'yes';
+		} else {
+			this.customer.sections.relationships.visible = 'no';
 		}
 
 		//

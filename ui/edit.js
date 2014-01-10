@@ -24,8 +24,12 @@ function ciniki_customers_edit() {
 		this.edit.customer_id = 0;
 		this.edit.nextFn = null;
 		this.edit.data = {};
+		this.edit.formtab = 'person';
+		this.edit.formtabs = {'label':'', 'field':'type', 'tabs':{
+			'person':{'label':'Person', 'field_id':1, 'form':'person'},
+			'business':{'label':'Business', 'field_id':2, 'form':'business'},
+			}};
 		this.edit.forms = {};
-		this.edit.formtab = null;
 		this.edit.forms.person = {
 			'name':{'label':'Name', 'fields':{
 				'cid':{'label':'Customer ID', 'type':'text', 'active':'no'},
@@ -136,6 +140,9 @@ function ciniki_customers_edit() {
 				}},
 			};
 		this.edit.sectionData = function(s) {
+			if( s == 'subscriptions' ) {
+				return this.subscriptions;
+			}
 			return this.data[s];
 		};
 		this.edit.cellValue = function(s, i, j, d) {
@@ -172,7 +179,18 @@ function ciniki_customers_edit() {
 			}
 			return null;
 		};
-		this.edit.fieldValue = function(s, i, d) { return this.data[i]; }
+		this.edit.fieldID = function(s, i, d) {
+			if( s == 'subscriptions' ) {
+				return d.subscription.id;
+			}
+			return i;
+		};
+		this.edit.fieldValue = function(s, i, d) { 
+			if( s == 'subscriptions' ) {
+				return d.subscription.name;
+			}
+			return this.data[i]; 
+		};
 		this.edit.fieldHistoryArgs = function(s, i) {
 			if( i.substring(0,13) == 'subscription_' ) {
 				return {'method':'ciniki.subscriptions.getCustomerHistory', 'args':{'business_id':M.curBusinessID, 
@@ -349,27 +367,28 @@ function ciniki_customers_edit() {
 		}
 
 		if( M.curBusiness.customers != null && M.curBusiness.customers.settings != null ) {
-			this.edit.formtabs = {'label':'', 'field':'type', 'tabs':{}};
-			var count=0;
-			for(i=1;i<9;i++) {
-				// Setup the form tabs for the customers edit forms
-				if( M.curBusiness.customers.settings['types-'+i+'-label'] != null && M.curBusiness.customers.settings["types-"+i+"-label"] != '' ) {
-					count++;
-					this.edit.formtabs.tabs[i] = {'label':M.curBusiness.customers.settings['types-'+i+'-label'], 'field_id':i, 'form':'person'};
-					if( M.curBusiness.customers.settings['types-'+i+'-form'] != null && M.curBusiness.customers.settings['types-'+i+'-form'] != '' ) {
-						this.edit.formtabs.tabs[i].form = M.curBusiness.customers.settings['types-'+i+'-form'];
-					}
-				}
-			}
-			if( count == 0 ) {
-				this.edit.formtabs = null;
-				this.edit.sections = this.edit.forms.person;
-			}
-			if( M.curBusiness.customers.settings['use-birthdate'] == 'yes' ) {
-				this.edit.forms.person.name.fields.birthdate.active = 'yes';
-			} else {
-				this.edit.forms.person.name.fields.birthdate.active = 'no';
-			}
+//			this.edit.formtabs = {'label':'', 'field':'type', 'tabs':{}};
+//			var count=0;
+//			for(i=1;i<9;i++) {
+//				// Setup the form tabs for the customers edit forms
+//				if( M.curBusiness.customers.settings['types-'+i+'-label'] != null && M.curBusiness.customers.settings["types-"+i+"-label"] != '' ) {
+//					count++;
+//					this.edit.formtabs.tabs[i] = {'label':M.curBusiness.customers.settings['types-'+i+'-label'], 'field_id':i, 'form':'person'};
+//					if( M.curBusiness.customers.settings['types-'+i+'-form'] != null && M.curBusiness.customers.settings['types-'+i+'-form'] != '' ) {
+//						this.edit.formtabs.tabs[i].form = M.curBusiness.customers.settings['types-'+i+'-form'];
+//					}
+//				}
+//			}
+//			if( count == 0 ) {
+//				this.edit.formtabs = null;
+//				this.edit.sections = this.edit.forms.person;
+//			}
+			this.edit.forms.person.name.fields.birthdate.active =(M.curBusiness.customers.settings['use-birthdate']=='yes')?'yes':'no';
+//			if( M.curBusiness.customers.settings['use-birthdate'] == 'yes' ) {
+//				this.edit.forms.person.name.fields.birthdate.active = 'yes';
+//			} else {
+//				this.edit.forms.person.name.fields.birthdate.active = 'no';
+//			}
 			if( M.curBusiness.customers.settings['use-cid'] == 'yes' ) {
 				this.edit.forms.person.name.fields.cid.active = 'yes';
 				this.edit.forms.business.business.fields.cid.active = 'yes';
@@ -378,7 +397,7 @@ function ciniki_customers_edit() {
 				this.edit.forms.business.business.fields.cid.active = 'no';
 			}
 		} else {
-			this.edit.formtabs = null;
+//			this.edit.formtabs = null;
 			this.edit.sections = this.edit.forms.person;
 			this.edit.forms.person.info.fields.cid.active = 'no';
 			this.edit.forms.business.info.fields.cid.active = 'no';
@@ -408,7 +427,6 @@ function ciniki_customers_edit() {
 		this.edit.formtab = null;
 		this.edit.formtab_field_id = null;
 
-
 		if( this.edit.customer_id > 0 ) {
 			// Edit existing customer
 			this.edit.forms.person.email.active = 'no';
@@ -428,13 +446,13 @@ function ciniki_customers_edit() {
 					M.ciniki_customers_edit.edit.data = rsp.customer;
 					M.ciniki_customers_edit.edit.data.emails = rsp.customer.emails;
 					M.ciniki_customers_edit.edit.data.addresses = rsp.customer.addresses;
-					if( rsp.customer.type == 0 ) {
-						M.ciniki_customers_edit.edit.formtab = 'person';
-					}
+//					if( rsp.customer.type == 0 || rsp.customer.type == 1 ) {
+//						M.ciniki_customers_edit.edit.formtab = 'person';
+//					}
 					M.ciniki_customers_edit.showEditSubscriptions(cb);
 				});
 		} else {
-			this.edit.data = {'flags':1, 'address_flags':7};
+			this.edit.data = {'type':'1', 'flags':1, 'address_flags':7};
 			this.edit.forms.person.email.active = 'yes';
 			this.edit.forms.person.address.active = 'yes';
 			this.edit.forms.person.emails.active = 'no';
@@ -484,27 +502,29 @@ function ciniki_customers_edit() {
 						return false;
 					} 
 					// Reset any existing fields
-					M.ciniki_customers_edit.edit.sections.subscriptions = {'label':'', 'fields':null};
+//					M.ciniki_customers_edit.edit.sections.subscriptions = {'label':'', 'fields':null};
 					M.ciniki_customers_edit.edit.subscriptions = rsp.subscriptions;
 					// Add subscriptions to the form
-					if( rsp.subscriptions.length > 0 ) {
-						M.ciniki_customers_edit.edit.sections['subscriptions']['label'] = 'Subscriptions';
-						M.ciniki_customers_edit.edit.sections['subscriptions']['fields'] = {};
-						var i = 0;
-						for(i in rsp.subscriptions) {
-							M.ciniki_customers_edit.edit.data['subscription_' + rsp.subscriptions[i].subscription.id] = rsp.subscriptions[i].subscription.status;
-							M.ciniki_customers_edit.edit.sections.subscriptions.fields['subscription_' + rsp.subscriptions[i].subscription.id] = {'label':rsp.subscriptions[i].subscription.name, 
-								'type':'toggle', 'toggles':M.ciniki_customers_edit.subscriptionOptions};
-						}
-					} else {
-						// Hide the subscriptions section when no business subscription setup
-						M.ciniki_customers_edit.edit.sections.subscriptions.visible = 'no';
-					}
+//					if( rsp.subscriptions.length > 0 ) {
+//						M.ciniki_customers_edit.edit.sections['subscriptions']['label'] = 'Subscriptions';
+//						M.ciniki_customers_edit.edit.sections['subscriptions']['fields'] = {};
+//						var i = 0;
+//						for(i in rsp.subscriptions) {
+//							M.ciniki_customers_edit.edit.data['subscription_' + rsp.subscriptions[i].subscription.id] = rsp.subscriptions[i].subscription.status;
+//							M.ciniki_customers_edit.edit.sections.subscriptions.fields['subscription_' + rsp.subscriptions[i].subscription.id] = {'label':rsp.subscriptions[i].subscription.name, 
+//								'type':'toggle', 'toggles':M.ciniki_customers_edit.subscriptionOptions};
+//						}
+//					} else {
+//						// Hide the subscriptions section when no business subscription setup
+//						M.ciniki_customers_edit.edit.forms.person.subscriptions.visible = 'no';
+//						M.ciniki_customers_edit.edit.forms.business.subscriptions.visible = 'no';
+//					}
 					M.ciniki_customers_edit.edit.refresh();
 					M.ciniki_customers_edit.edit.show(cb);
 				});
 		} else {
-			M.ciniki_customers_edit.edit.sections.subscriptions.visible = 'no';
+			M.ciniki_customers_edit.edit.forms.person.subscriptions.visible = 'no';
+			M.ciniki_customers_edit.edit.forms.business.subscriptions.visible = 'no';
 			M.ciniki_customers_edit.edit.refresh();
 			M.ciniki_customers_edit.edit.show(cb);
 		}
@@ -516,6 +536,10 @@ function ciniki_customers_edit() {
 		var subs = '';
 		var sc = '';
 		var uc = '';
+		var type = 1;
+		if( this.edit.formtab == 'business' ) {
+			type = 2;
+		}
 		for(i in this.edit.subscriptions) {
 			var fname = 'subscription_' + this.edit.subscriptions[i].subscription.id;
 			var o = this.edit.fieldValue('subscriptions', fname, this.edit.sections.subscriptions.fields[fname]);
@@ -536,6 +560,9 @@ function ciniki_customers_edit() {
 				+ this.edit.serializeFormSection('no', '_notes');
 			if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
 			if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
+			if( type != this.edit.data.type ) {
+				c += 'type=' + type + '&';
+			}
 			if( c != '' ) {
 				var rsp = M.api.postJSONCb('ciniki.customers.update', 
 					{'business_id':M.curBusinessID, 
@@ -559,6 +586,7 @@ function ciniki_customers_edit() {
 				+ this.edit.serializeFormSection('yes', '_notes');
 			if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
 			if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
+			c += 'type=' + type + '&';
 			var rsp = M.api.postJSONCb('ciniki.customers.add', 
 				{'business_id':M.curBusinessID}, c, function(rsp) {
 					if( rsp.stat != 'ok' ) {

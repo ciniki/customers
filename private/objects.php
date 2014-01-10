@@ -23,6 +23,7 @@ function ciniki_customers_objects($ciniki) {
 			'middle'=>array(),
 			'last'=>array(),
 			'suffix'=>array(),
+			'name'=>array(),
 			'company'=>array(),
 			'department'=>array(),
 			'title'=>array(),

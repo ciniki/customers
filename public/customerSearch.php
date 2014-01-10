@@ -45,35 +45,35 @@ function ciniki_customers_customerSearch($ciniki) {
 	//
 	// Get the types of customers available for this business
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-    $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
-	if( $rc['stat'] != 'ok' ) {	
-		return $rc;
-	}
-	$types = $rc['types'];
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
+ //   $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+//	if( $rc['stat'] != 'ok' ) {	
+//		return $rc;
+//	}
+//	$types = $rc['types'];
 
 	//
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, status, type, company, cid, ";
-	if( count($types) > 0 ) {
-		// If there are customer types defined, choose the right name for the customer
-		// This is required here to be able to sort properly
-		$strsql .= "CASE ciniki_customers.type ";
-		foreach($types as $tid => $type) {
-			$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
-			if( $type['detail_value'] == 'business' ) {
-				$strsql .= " ciniki_customers.company ";
-			} else {
-				$strsql .= "CONCAT_WS(' ', prefix, first, middle, last, suffix) ";
-			}
-		}
-		$strsql .= "ELSE CONCAT_WS(' ', prefix, first, middle, last, suffix) END AS name ";
-	} else {
-		// Default to a person
-		$strsql .= "CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name ";
-	}
+	$strsql = "SELECT DISTINCT ciniki_customers.id, name, status, type, company, cid ";
+//	if( count($types) > 0 ) {
+//		// If there are customer types defined, choose the right name for the customer
+//		// This is required here to be able to sort properly
+//		$strsql .= "CASE ciniki_customers.type ";
+//		foreach($types as $tid => $type) {
+//			$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
+//			if( $type['detail_value'] == 'business' ) {
+//				$strsql .= " ciniki_customers.company ";
+//			} else {
+//				$strsql .= "CONCAT_WS(' ', prefix, first, middle, last, suffix) ";
+//			}
+//		}
+//		$strsql .= "ELSE CONCAT_WS(' ', prefix, first, middle, last, suffix) END AS name ";
+//	} else {
+//		// Default to a person
+//		$strsql .= "CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name ";
+//	}
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

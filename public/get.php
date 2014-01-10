@@ -42,12 +42,12 @@ function ciniki_customers_get($ciniki) {
 	//
 	// Get the types of customers available for this business
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-    $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
-	if( $rc['stat'] != 'ok' ) {	
-		return $rc;
-	}
-	$types = $rc['types'];
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
+ //   $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+//	if( $rc['stat'] != 'ok' ) {	
+//		return $rc;
+//	}
+//	$types = $rc['types'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
@@ -73,9 +73,9 @@ function ciniki_customers_get($ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'370', 'msg'=>'Invalid customer'));
 	}
 
-	if( $rc['customer']['type'] > 0 && isset($types[$rc['customer']['type']]) ) {
-		$rc['customer']['display_type'] = $types[$rc['customer']['type']]['detail_value'];
-	}
+//	if( $rc['customer']['type'] > 0 && isset($types[$rc['customer']['type']]) ) {
+//		$rc['customer']['display_type'] = $types[$rc['customer']['type']]['detail_value'];
+//	}
 
 	return array('stat'=>'ok', 'customer'=>$rc['customer']);
 }

@@ -71,6 +71,58 @@ function ciniki_customers_update(&$ciniki) {
 		return $rc;
 	}   
 
+	if( isset($args['prefix']) || isset($args['first']) 
+		|| isset($args['middle']) || isset($args['last']) || isset($args['suffix']) ) {
+		//
+		// Get the existing customer name
+		//
+		$strsql = "SELECT prefix, first, middle, last, suffix "
+			. "FROM ciniki_customers "
+			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( !isset($rc['customer']) ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1467', 'msg'=>'Customer does not exist'));
+		}
+		$customer = $rc['customer'];
+
+		$space = '';
+		$args['name'] = '';
+		if( isset($args['prefix']) ) {
+			$args['name'] .= $args['prefix'];
+		} elseif( $customer['prefix'] != '' ) {
+			$args['name'] .= $customer['prefix'];
+		}
+		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
+		if( isset($args['first']) ) {
+			$args['name'] .= $space . $args['first'];
+		} elseif( $customer['first'] != '' ) {
+			$args['name'] .= $space . $customer['first'];
+		}
+		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
+		if( isset($args['middle']) ) {
+			$args['name'] .= $space . $args['middle'];
+		} elseif( $customer['middle'] != '' ) {
+			$args['name'] .= $space . $customer['middle'];
+		}
+		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
+		if( isset($args['last']) ) {
+			$args['name'] .= $space . $args['last'];
+		} elseif( $customer['last'] != '' ) {
+			$args['name'] .= $space . $customer['last'];
+		}
+		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
+		if( isset($args['suffix']) ) {
+			$args['name'] .= $space . $args['suffix'];
+		} elseif( $customer['suffix'] != '' ) {
+			$args['name'] .= $space . $customer['suffix'];
+		}
+	}
+    
 	//
 	// Update the customer
 	//

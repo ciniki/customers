@@ -38,12 +38,12 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Get the types of customers available for this business
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-    $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
-	if( $rc['stat'] != 'ok' ) {	
-		return $rc;
-	}
-	$types = $rc['types'];
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
+//	$rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+//	if( $rc['stat'] != 'ok' ) {	
+//		return $rc;
+//	}
+//	$types = $rc['types'];
 
 	//
 	// Get the settings for customer module
@@ -75,8 +75,7 @@ function ciniki_customers_getFull($ciniki) {
 	// Get the customer details and emails
 	//
 	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
-		. "CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name, "
-		. "company, department, title, "
+		. "name, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
@@ -104,10 +103,9 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Set the display type for the customer
 	//
-	if( $rc['customers'][0]['customer']['type'] > 0 && isset($types[$rc['customers'][0]['customer']['type']]) ) {
-		$rc['customers'][0]['customer']['display_type'] = $types[$rc['customers'][0]['customer']['type']]['detail_value'];
-	}
-
+//	if( $rc['customers'][0]['customer']['type'] > 0 && isset($types[$rc['customers'][0]['customer']['type']]) ) {
+//		$rc['customers'][0]['customer']['display_type'] = $types[$rc['customers'][0]['customer']['type']]['detail_value'];
+//	}
 
 	$customer = $rc['customers'][0]['customer'];
 	$customer['addresses'] = array();
@@ -141,25 +139,25 @@ function ciniki_customers_getFull($ciniki) {
 			. "relationship_type AS type_name, "
 			. "ciniki_customer_relationships.customer_id, ciniki_customer_relationships.related_id, "
 //			. "IF(customer_id='" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', related_id, customer_id) AS related_id, "
-			. "date_started, date_ended, "
+			. "date_started, date_ended, ciniki_customers.name, ciniki_customers.company "
 			. "";
-		if( count($types) > 0 ) {
-			// If there are customer types defined, choose the right name for the customer
-			// This is required here to be able to sort properly
-			$strsql .= "CASE ciniki_customers.type ";
-			foreach($types as $tid => $type) {
-				$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
-				if( $type['detail_value'] == 'business' ) {
-					$strsql .= " ciniki_customers.company ";
-				} else {
-					$strsql .= "CONCAT_WS(' ', first, last) ";
-				}
-			}
-			$strsql .= "ELSE CONCAT_WS(' ', first, last) END AS customer_name ";
-		} else {
-			// Default to a person
-			$strsql .= "CONCAT_WS(' ', first, last) AS customer_name ";
-		}
+//		if( count($types) > 0 ) {
+//			// If there are customer types defined, choose the right name for the customer
+//			// This is required here to be able to sort properly
+//			$strsql .= "CASE ciniki_customers.type ";
+//			foreach($types as $tid => $type) {
+//				$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
+//				if( $type['detail_value'] == 'business' ) {
+//					$strsql .= " ciniki_customers.company ";
+//				} else {
+//					$strsql .= "CONCAT_WS(' ', first, last) ";
+//				}
+//			}
+//			$strsql .= "ELSE CONCAT_WS(' ', first, last) END AS customer_name ";
+//		} else {
+//			// Default to a person
+//			$strsql .= "CONCAT_WS(' ', first, last) AS customer_name ";
+//		}
 		$strsql .= "FROM ciniki_customer_relationships "
 			. "LEFT JOIN ciniki_customers ON ("
 				. "(ciniki_customer_relationships.customer_id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "

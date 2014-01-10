@@ -124,6 +124,25 @@ function ciniki_customers_add(&$ciniki) {
 			$args['first'] = $args['name'];
 		}
 	}
+	if( !isset($args['name']) || $args['name'] == '' ) {
+		$space = ' ';
+		$args['name'] = '';
+		if( isset($args['prefix']) && $args['prefix'] != '' ) {
+			$args['name'] .= $args['prefix'];
+		}
+		if( isset($args['first']) && $args['first'] != '' ) {
+			$args['name'] .= $space . $args['first'];
+		}
+		if( isset($args['middle']) && $args['middle'] != '' ) {
+			$args['name'] .= $space . $args['middle'];
+		}
+		if( isset($args['last']) && $args['last'] != '' ) {
+			$args['name'] .= $space . $args['last'];
+		}
+		if( isset($args['suffix']) && $args['suffix'] != '' ) {
+			$args['name'] .= $space . $args['suffix'];
+		}
+	}
     
     //  
     // Make sure this module is activated, and
@@ -162,7 +181,8 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	// Add the customer to the database
 	//
-	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, cid, type, prefix, first, middle, last, suffix, "
+	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, cid, type, "
+		. "prefix, first, middle, last, suffix, name, "
 		. "company, department, title, phone_home, phone_work, phone_cell, phone_fax, notes, birthdate, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
@@ -175,6 +195,7 @@ function ciniki_customers_add(&$ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $args['middle']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['last']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['suffix']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['name']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['company']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['department']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['title']) . "', "
