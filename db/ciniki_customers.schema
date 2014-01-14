@@ -37,7 +37,9 @@
 # middle:			The middle name(s) of the customer.
 # last:				The last name(s) of the customer.
 # suffix:			Any letters after the end of their name, Ph.D, etc.
-# name:				The concatentation of the name fields (prefix, first, middle, last, suffix)
+# display_name:		The name to be displayed in lists, invoices, etc.  This can be any combination of
+#					prefix, first, middle, last, suffix, company.  The format settings are in
+#					ciniki_customer_settings.schema.
 #
 # company:			The company the customer is associated with.
 # department:		The department within the company.
@@ -67,7 +69,7 @@ create table ciniki_customers (
 	middle varchar(100) not null,
 	last varchar(100) not null,
 	suffix varchar(100) not null,
-	name varchar(250) not null,
+	display_name varchar(250) not null,
 	company varchar(100) not null,
 	department varchar(100) not null,
 	title varchar(100) not null,

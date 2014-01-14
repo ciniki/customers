@@ -49,39 +49,25 @@ function ciniki_customers_updateSettings(&$ciniki) {
 		return $rc;
 	}   
 
+	//
+	// Get the current settings
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
+	$rc = ciniki_customers_getSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$settings = $rc['settings'];
 
 	//
 	// The list of allowed fields for updating
 	//
 	$db_updated = 0;
 	$changelog_fields = array(
+		'display-name-business-format',
 		'use-cid',
 		'use-relationships',
 		'use-birthdate',
-		'types-1-label',
-		'types-1-form',
-		'types-1-type',
-		'types-2-label',
-		'types-2-form',
-		'types-2-type',
-		'types-3-label',
-		'types-3-form',
-		'types-3-type',
-		'types-4-label',
-		'types-4-form',
-		'types-4-type',
-		'types-5-label',
-		'types-5-form',
-		'types-5-type',
-		'types-6-label',
-		'types-6-form',
-		'types-6-type',
-		'types-7-label',
-		'types-7-form',
-		'types-7-type',
-		'types-8-label',
-		'types-8-form',
-		'types-8-type',
 		);
 	//
 	// Check each valid setting and see if a new value was passed in the arguments for it.
@@ -111,6 +97,53 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	}
 
 	//
+	// Check if changing 'display-name-business-format' and update display_name in database
+	//
+	if( isset($ciniki['request']['args']['display-name-business-format']) 
+		&& (!isset($settings['display-name-business-format']) 
+		|| $settings['display-name-business-format'] != $ciniki['request']['args']['display-name-business-format'])
+	) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+		$format = $ciniki['request']['args']['display-name-business-format'];
+		$strsql = "SELECT id, uuid, display_name, company, "
+			. "REPLACE(TRIM(CONCAT_WS(' ', prefix, first, middle, last, suffix)),'  ', ' ') AS person_name "
+			. "FROM ciniki_customers "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND type = 2 "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1468', 'msg'=>'Unable to update settings for business format', 'err'=>$rc['err']));
+		
+		}
+		
+		$customers = $rc['rows'];
+		if( isset($rc['rows']) ) {
+			$customers = $rc['rows'];
+			foreach($customers AS $cid => $customer) {
+				if( $format == 'company - person' ) {
+					$display_name = $customer['company'] . ' - ' . $customer['person_name'];
+				} elseif( $format == 'person - company' ) {
+					$display_name = $customer['person_name'] . ' - ' . $customer['company'];
+				} elseif( $format == 'company [person]' ) {
+					$display_name = $customer['company'] . ' [' . $customer['person_name'] . ']';
+				} elseif( $format == 'person [company]' ) {
+					$display_name = $customer['person_name'] . ' [' . $customer['company'] . ']';
+				} else {
+					$display_name = $customer['company'];
+				}
+				$customer_args = array('display_name'=>$display_name);
+				$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', 
+					$customer['id'], $customer_args, 0x06);
+				if( $rc['stat'] != 'ok' ) {
+					return $rc;
+				}
+			}
+		}
+	}
+
+	//
 	// Commit the database changes
 	//
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
@@ -125,7 +158,6 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	if( $db_updated > 0 ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 		ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
-
 	}
 
 	return array('stat'=>'ok');

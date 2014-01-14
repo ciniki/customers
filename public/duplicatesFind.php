@@ -35,8 +35,9 @@ function ciniki_customers_duplicatesFind($ciniki) {
 	//
 	// Search for any potential duplicate customers
 	//
-	$strsql = "SELECT CONCAT_WS('-', c1.id, c2.id) AS match_id, c1.id AS c1_id, CONCAT_WS(' ', c1.first, c1.last) AS c1_name, "
-		. "c2.id AS c2_id, CONCAT_WS(' ', c2.first, c2.last) AS c2_name "
+	$strsql = "SELECT CONCAT_WS('-', c1.id, c2.id) AS match_id, c1.id AS c1_id, "
+		. "c1.display_name AS c1_display_name, "
+		. "c2.id AS c2_id, c2.display_name AS c2_name "
 		. "FROM ciniki_customers AS c1, ciniki_customers AS c2 "
 		. "WHERE c1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -49,7 +50,7 @@ function ciniki_customers_duplicatesFind($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'matches', 'fname'=>'match_id', 'name'=>'match',
-			'fields'=>array('c1_id', 'c1_name', 'c2_id', 'c2_name'),
+			'fields'=>array('c1_id', 'c1_display_name', 'c2_id', 'c2_display_name'),
 			),
 //		array('container'=>'duplicates', 'fname'=>'c2_id', 'name'=>'customer',
 //			'fields'=>array('id'=>'c2_id', 'first'=>'c2_first', 'last'=>'c2_last'),

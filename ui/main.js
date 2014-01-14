@@ -57,8 +57,7 @@ function ciniki_customers_main() {
 		};
 		this.main.liveSearchResultValue = function(s, f, i, j, d) {
 			if( s == 'search' ) { 
-				if( d.customer.type == 2 ) { return d.customer.company + ' (' + d.customer.name + ')'; }
-				return d.customer.name;
+				return d.customer.display_name;
 			}
 			return '';
 		}
@@ -75,8 +74,7 @@ function ciniki_customers_main() {
 		};
 		this.main.noData = function(s) { return 'No customers'; }
 		this.main.cellValue = function(s, i, j, d) {
-			if( d.customer.type == 2 ) { return d.customer.company + ' (' + d.customer.name + ')'; }
-			return d.customer.name;
+			return d.customer.display_name;
 		};
 		this.main.rowFn = function(s, i, d) { 
 			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMain();\',\'' + d.customer.id + '\');'; 
@@ -117,8 +115,7 @@ function ciniki_customers_main() {
 		this.search.noData = function() { return 'No customers found'; }
 		this.search.sectionData = function(s) { return this.data; }
 		this.search.cellValue = function(s, i, j, d) { 
-			if( d.customer.type == 2 ) { return d.customer.company + ' (' + d.customer.name + ')'; }
-			return d.customer.first + ' ' + d.customer.last; 
+			return d.customer.display_name;
 		};
 		this.search.rowFn = function(s, i, d) { 
 			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.searchCustomers(null, M.ciniki_customers_main.search.search_str);\',\'' + d.customer.id + '\');'; 
@@ -443,9 +440,9 @@ function ciniki_customers_main() {
 //		}
 		if( rsp.customer.type == 2 ) {
 			this.customer.data.details.company = {'label':'Name', 'value':rsp.customer.company};
-			this.customer.data.details.name = {'label':'Contact', 'value':rsp.customer.name};
+			this.customer.data.details.name = {'label':'Contact', 'value':rsp.customer.display_name};
 		} else {
-			this.customer.data.details.name = {'label':'Name', 'value':rsp.customer.name};
+			this.customer.data.details.name = {'label':'Name', 'value':rsp.customer.display_name};
 			if( rsp.customer.company != null &&  rsp.customer.company != '' ) {
 				this.customer.data.details.company = {'label':'Business', 'value':rsp.customer.company};
 			}

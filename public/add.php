@@ -68,7 +68,7 @@ function ciniki_customers_add(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'cid'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Customer'),
-		'type'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Customer Type'),
+		'type'=>array('required'=>'no', 'default'=>'1', 'blank'=>'yes', 'name'=>'Customer Type'),
 		'name'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Name'),
         'prefix'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Prefix'), 
         'first'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Name'), 
@@ -101,6 +101,26 @@ function ciniki_customers_add(&$ciniki) {
     }   
     $args = $rc['args'];
 
+    //  
+    // Make sure this module is activated, and
+    // check permission to run this function for this business
+    //  
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
+    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.add', 0); 
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }   
+
+	//
+	// Get the current settings
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
+	$rc = ciniki_customers_getSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$settings = $rc['settings'];
+
 	//
 	// They must specify either a firstname or lastname
 	//
@@ -124,36 +144,43 @@ function ciniki_customers_add(&$ciniki) {
 			$args['first'] = $args['name'];
 		}
 	}
-	if( !isset($args['name']) || $args['name'] == '' ) {
-		$space = ' ';
-		$args['name'] = '';
-		if( isset($args['prefix']) && $args['prefix'] != '' ) {
-			$args['name'] .= $args['prefix'];
+	//
+	// Determine the display name
+	//
+	$space = ' ';
+	$person_name = '';
+	if( isset($args['prefix']) && $args['prefix'] != '' ) {
+		$person_name .= $args['prefix'];
+	}
+	if( isset($args['first']) && $args['first'] != '' ) {
+		$person_name .= $space . $args['first'];
+	}
+	if( isset($args['middle']) && $args['middle'] != '' ) {
+		$person_name .= $space . $args['middle'];
+	}
+	if( isset($args['last']) && $args['last'] != '' ) {
+		$person_name .= $space . $args['last'];
+	}
+	if( isset($args['suffix']) && $args['suffix'] != '' ) {
+		$person_name .= $space . $args['suffix'];
+	}
+	if( $args['type'] == 2 && $args['company'] != '' ) {
+		if( !isset($settings['display-name-business-format']) 
+			|| $settings['display-name-business-format'] == 'company' ) {
+			$args['display_name'] = $args['company'];
+		} elseif( $settings['display-name-business-format'] == 'company - person' ) {
+			$args['display_name'] = $args['company'] . ' - ' . $person_name;
+		} elseif( $settings['display-name-business-format'] == 'person - company' ) {
+			$args['display_name'] = $person_name . ' - ' . $args['company'];
+		} elseif( $settings['display-name-business-format'] == 'company [person]' ) {
+			$args['display_name'] = $args['company'] . ' [' . $person_name . ']';
+		} elseif( $settings['display-name-business-format'] == 'person [company]' ) {
+			$args['display_name'] = $person_name . ' [' . $args['company'] . ']';
 		}
-		if( isset($args['first']) && $args['first'] != '' ) {
-			$args['name'] .= $space . $args['first'];
-		}
-		if( isset($args['middle']) && $args['middle'] != '' ) {
-			$args['name'] .= $space . $args['middle'];
-		}
-		if( isset($args['last']) && $args['last'] != '' ) {
-			$args['name'] .= $space . $args['last'];
-		}
-		if( isset($args['suffix']) && $args['suffix'] != '' ) {
-			$args['name'] .= $space . $args['suffix'];
-		}
+	} else {
+		$args['display_name'] = $person_name;
 	}
     
-    //  
-    // Make sure this module is activated, and
-    // check permission to run this function for this business
-    //  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.add', 0); 
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }   
-
 	//  
 	// Turn off autocommit
 	//  
@@ -182,7 +209,7 @@ function ciniki_customers_add(&$ciniki) {
 	// Add the customer to the database
 	//
 	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, cid, type, "
-		. "prefix, first, middle, last, suffix, name, "
+		. "prefix, first, middle, last, suffix, display_name, "
 		. "company, department, title, phone_home, phone_work, phone_cell, phone_fax, notes, birthdate, "
 		. "date_added, last_updated) VALUES ("
 		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
@@ -195,7 +222,7 @@ function ciniki_customers_add(&$ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $args['middle']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['last']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['suffix']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['name']) . "', "
+		. "'" . ciniki_core_dbQuote($ciniki, $args['display_name']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['company']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['department']) . "', "
 		. "'" . ciniki_core_dbQuote($ciniki, $args['title']) . "', "

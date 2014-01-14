@@ -57,6 +57,16 @@ function ciniki_customers_update(&$ciniki) {
         return $rc;
     }   
 
+	//
+	// Get the current settings
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
+	$rc = ciniki_customers_getSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$settings = $rc['settings'];
+
 	//  
 	// Turn off autocommit
 	//  
@@ -72,11 +82,12 @@ function ciniki_customers_update(&$ciniki) {
 	}   
 
 	if( isset($args['prefix']) || isset($args['first']) 
-		|| isset($args['middle']) || isset($args['last']) || isset($args['suffix']) ) {
+		|| isset($args['middle']) || isset($args['last']) || isset($args['suffix']) 
+		|| isset($args['company']) || isset($args['type']) ) {
 		//
 		// Get the existing customer name
 		//
-		$strsql = "SELECT prefix, first, middle, last, suffix "
+		$strsql = "SELECT type, prefix, first, middle, last, suffix, display_name, company "
 			. "FROM ciniki_customers "
 			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -90,36 +101,60 @@ function ciniki_customers_update(&$ciniki) {
 		}
 		$customer = $rc['customer'];
 
+		//
+		// Build the persons name
+		//
 		$space = '';
-		$args['name'] = '';
-		if( isset($args['prefix']) ) {
-			$args['name'] .= $args['prefix'];
-		} elseif( $customer['prefix'] != '' ) {
-			$args['name'] .= $customer['prefix'];
+		$person_name = '';
+		if( isset($args['prefix']) && $args['prefix'] != '' ) {
+			$person_name .= $args['prefix'];
+		} elseif( !isset($args['prefix']) && $customer['prefix'] != '' ) {
+			$person_name .= $customer['prefix'];
 		}
-		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
-		if( isset($args['first']) ) {
-			$args['name'] .= $space . $args['first'];
-		} elseif( $customer['first'] != '' ) {
-			$args['name'] .= $space . $customer['first'];
+		if( $space == '' && $person_name != '' ) { $space = ' '; }
+		if( isset($args['first']) && $args['first'] != '' ) {
+			$person_name .= $space . $args['first'];
+		} elseif( !isset($args['first']) && $customer['first'] != '' ) {
+			$person_name .= $space . $customer['first'];
 		}
-		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
-		if( isset($args['middle']) ) {
-			$args['name'] .= $space . $args['middle'];
-		} elseif( $customer['middle'] != '' ) {
-			$args['name'] .= $space . $customer['middle'];
+		if( $space == '' && $person_name != '' ) { $space = ' '; }
+		if( isset($args['middle']) && $args['middle'] != '' ) {
+			$person_name .= $space . $args['middle'];
+		} elseif( !isset($args['middle']) && $customer['middle'] != '' ) {
+			$person_name .= $space . $customer['middle'];
 		}
-		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
-		if( isset($args['last']) ) {
-			$args['name'] .= $space . $args['last'];
-		} elseif( $customer['last'] != '' ) {
-			$args['name'] .= $space . $customer['last'];
+		if( $space == '' && $person_name != '' ) { $space = ' '; }
+		if( isset($args['last']) && $args['last'] != '' ) {
+			$person_name .= $space . $args['last'];
+		} elseif( !isset($args['last']) && $customer['last'] != '' ) {
+			$person_name .= $space . $customer['last'];
 		}
-		if( $space == '' && $args['name'] != '' ) { $space = ' '; }
-		if( isset($args['suffix']) ) {
-			$args['name'] .= $space . $args['suffix'];
-		} elseif( $customer['suffix'] != '' ) {
-			$args['name'] .= $space . $customer['suffix'];
+		if( $space == '' && $person_name != '' ) { $space = ' '; }
+		if( isset($args['suffix']) && $args['suffix'] != '' ) {
+			$person_name .= $space . $args['suffix'];
+		} elseif( !isset($args['suffix']) && $customer['suffix'] != '' ) {
+			$person_name .= $space . $customer['suffix'];
+		}
+		//
+		// Build the display_name
+		//
+		$type = (isset($args['type']))?$args['type']:$customer['type'];
+		$company = (isset($args['company']))?$args['company']:$customer['company'];
+		if( $type == 2 && $company != '' ) {
+			if( !isset($settings['display-name-business-format']) 
+				|| $settings['display-name-business-format'] == 'company' ) {
+				$args['display_name'] = $company;
+			} elseif( $settings['display-name-business-format'] == 'company - person' ) {
+				$args['display_name'] = $company . ' - ' . $person_name;
+			} elseif( $settings['display-name-business-format'] == 'person - company' ) {
+				$args['display_name'] = $person_name . ' - ' . $company;
+			} elseif( $settings['display-name-business-format'] == 'company [person]' ) {
+				$args['display_name'] = $company . ' [' . $person_name . ']';
+			} elseif( $settings['display-name-business-format'] == 'person [company]' ) {
+				$args['display_name'] = $person_name . ' [' . $company . ']';
+			}
+		} else {
+			$args['display_name'] = $person_name;
 		}
 	}
     

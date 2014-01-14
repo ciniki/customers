@@ -50,7 +50,7 @@ function ciniki_customers_recent($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT id, name, status, type, company, cid ";
+	$strsql = "SELECT id, display_name, status, type, company, cid ";
 //	if( count($types) > 0 ) {
 //		$strsql .= "CASE type ";
 //		foreach($types as $tid => $type) {

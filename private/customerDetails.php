@@ -52,7 +52,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	// Get the customer details and emails
 	//
 	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
-		. "name, company, department, title, "
+		. "display_name, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
@@ -64,7 +64,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'name', 
+			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'company', 'department', 'title', 
 				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
 				'notes', 'birthdate')),
@@ -139,7 +139,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	// Build the details array
 	//
 	$details = array();
-	$details[] = array('detail'=>array('label'=>'Name', 'value'=>$customer['name']));
+	$details[] = array('detail'=>array('label'=>'Name', 'value'=>$customer['display_name']));
 	if( isset($customer['company']) && $customer['company'] != '' ) {
 		$details[] = array('detail'=>array('label'=>'Company', 'value'=>$customer['company']));
 	}

@@ -75,7 +75,7 @@ function ciniki_customers_getFull($ciniki) {
 	// Get the customer details and emails
 	//
 	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
-		. "name, company, department, title, "
+		. "display_name, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
@@ -87,7 +87,7 @@ function ciniki_customers_getFull($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'name', 
+			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'company', 'department', 'title', 
 				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
 				'notes', 'birthdate')),
@@ -139,25 +139,8 @@ function ciniki_customers_getFull($ciniki) {
 			. "relationship_type AS type_name, "
 			. "ciniki_customer_relationships.customer_id, ciniki_customer_relationships.related_id, "
 //			. "IF(customer_id='" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', related_id, customer_id) AS related_id, "
-			. "date_started, date_ended, ciniki_customers.name, ciniki_customers.company "
+			. "date_started, date_ended, ciniki_customers.display_name, ciniki_customers.company "
 			. "";
-//		if( count($types) > 0 ) {
-//			// If there are customer types defined, choose the right name for the customer
-//			// This is required here to be able to sort properly
-//			$strsql .= "CASE ciniki_customers.type ";
-//			foreach($types as $tid => $type) {
-//				$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
-//				if( $type['detail_value'] == 'business' ) {
-//					$strsql .= " ciniki_customers.company ";
-//				} else {
-//					$strsql .= "CONCAT_WS(' ', first, last) ";
-//				}
-//			}
-//			$strsql .= "ELSE CONCAT_WS(' ', first, last) END AS customer_name ";
-//		} else {
-//			// Default to a person
-//			$strsql .= "CONCAT_WS(' ', first, last) AS customer_name ";
-//		}
 		$strsql .= "FROM ciniki_customer_relationships "
 			. "LEFT JOIN ciniki_customers ON ("
 				. "(ciniki_customer_relationships.customer_id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -174,7 +157,7 @@ function ciniki_customers_getFull($ciniki) {
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'relationships', 'fname'=>'id', 'name'=>'relationship',
 				'fields'=>array('id', 'type', 'customer_id', 'type_name', 'related_id', 
-					'name'=>'customer_name', 'date_started', 'date_ended'),
+					'display_name', 'date_started', 'date_ended'),
 				'maps'=>array('type_name'=>$relationship_types)),
 			));
 		if( $rc['stat'] != 'ok' ) {

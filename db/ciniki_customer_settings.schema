@@ -3,20 +3,14 @@
 # -----------
 # This table stores the settings for customers for a business.
 #
-# Specify the different types of businesses, and how
-# they look in the interface.
-# - types-1-label - Individual
-# - types-1-form - person
-# - types-1-type - person
-# - types-2-label - Farm
-# - types-2-form - business
-# - types-2-type - business
-# - types-3-label - Small Business
-# - types-3-form - business
-# - types-3-type - business
-# - types-4-label - Corporation
-# - types-4-form - business
-# - types-4-type - business
+# The format for display_name
+# - display-name-business-format - The format for the display name of a customer with a business
+#
+#				company
+#				company - person
+#				company [person]
+#				person - company
+#				person [company]
 #
 # Specify if the cid (customer id) field should be displayed in the UI, if the business uses this field.
 # - use-cid - (yes|no)

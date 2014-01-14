@@ -32,7 +32,7 @@ function ciniki_customers_blankFind($ciniki) {
 	//
 	// Search for any potential blank customers
 	//
-	$strsql = "SELECT id, first, middle, last, company "
+	$strsql = "SELECT id, first, middle, last, display_name, company "
 		. "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND (first = '' OR last = '') "
@@ -40,7 +40,7 @@ function ciniki_customers_blankFind($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'first', 'middle', 'last', 'company'),
+			'fields'=>array('id', 'first', 'middle', 'last', 'display_name', 'company'),
 			),
 		));
 	if( $rc['stat'] != 'ok' ) {

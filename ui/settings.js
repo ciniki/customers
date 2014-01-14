@@ -9,6 +9,13 @@ function ciniki_customers_settings() {
 	this.toggleOptions = {'no':'Off', 'yes':'On'};
 	this.formOptions = {'person':'Person', 'business':'Business'};
 	this.typeOptions = {'person':'Person', 'business':'Business'};
+	this.businessFormats = {
+		'company':'Company',
+		'company - person':'Company - Person',
+		'person - company':'Person - Company',
+		'company [person]':'Company [Person]',
+		'person [company]':'Person [Company]',
+	};
 
 	this.init = function() {
 		//
@@ -22,6 +29,9 @@ function ciniki_customers_settings() {
 				'use-cid':{'label':'Customer ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 //				'use-relationships':{'label':'Customer Relationships', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'use-birthdate':{'label':'Birthdays', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+			}},
+			'name_options':{'label':'Name Format', 'fields':{
+				'display-name-business-format':{'label':'Business', 'type':'select', 'options':this.businessFormats},
 			}},
 //			'_types':{'label':'Customer Types', 'type':'gridform', 'rows':8, 'cols':3, 
 //				'header':['Name', 'Form', 'Type'],

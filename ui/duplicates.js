@@ -37,9 +37,9 @@ function ciniki_customers_duplicates() {
 		this.list.cellValue = function(s, i, j, d) {
 			switch(j) {
 				case 0: return d.match.c1_id;
-				case 1: return d.match.c1_name;
+				case 1: return d.match.c1_display_name;
 				case 2: return d.match.c2_id;
-				case 3: return d.match.c2_name;
+				case 3: return d.match.c2_display_name;
 			}
 			return '';
 		};

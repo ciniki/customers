@@ -21,6 +21,7 @@ function ciniki_customers_edit() {
 		this.edit = new M.panel('Customer',
 			'ciniki_customers_edit', 'edit',
 			'mc', 'medium', 'sectioned', 'ciniki.customers.main.edit');
+		this.edit.subscriptions = null;
 		this.edit.customer_id = 0;
 		this.edit.nextFn = null;
 		this.edit.data = {};
@@ -179,16 +180,7 @@ function ciniki_customers_edit() {
 			}
 			return null;
 		};
-		this.edit.fieldID = function(s, i, d) {
-			if( s == 'subscriptions' ) {
-				return d.subscription.id;
-			}
-			return i;
-		};
 		this.edit.fieldValue = function(s, i, d) { 
-			if( s == 'subscriptions' ) {
-				return d.subscription.name;
-			}
 			return this.data[i]; 
 		};
 		this.edit.fieldHistoryArgs = function(s, i) {
@@ -216,7 +208,7 @@ function ciniki_customers_edit() {
 			}
 		};
 		this.edit.liveSearchResultValue = function(s, f, i, j, d) {
-			if( f == 'first' || f == 'last' || f == 'company' ) { return d.customer.name; }
+			if( f == 'first' || f == 'last' || f == 'company' ) { return d.customer.display_name; }
 			if( f == 'city') { return d.city.name + ',' + d.city.province; }
 			return '';
 		};
@@ -344,14 +336,16 @@ function ciniki_customers_edit() {
 			return false;
 		} 
 
-		//
-		// Turn on or off the flag for web login based on if the module is enabled
-		//
-		if( M.curBusiness['modules']['ciniki.subscriptions'] != null ) {
-			this.edit.forms.person.subscriptions.visible = 'yes';
-		} else {
-			this.edit.forms.person.subscriptions.visible = 'no';
-		}
+//		//
+//		// Turn on or off the flag for web login based on if the module is enabled
+//		//
+//		if( M.curBusiness['modules']['ciniki.subscriptions'] != null ) {
+//			this.edit.forms.person.subscriptions.visible = 'yes';
+//			this.edit.forms.business.subscriptions.visible = 'yes';
+//		} else {
+//			this.edit.forms.person.subscriptions.visible = 'no';
+//			this.edit.forms.business.subscriptions.visible = 'no';
+//		}
 
 		//
 		// Turn on or off the flag for web login based on if the module is enabled
@@ -405,6 +399,8 @@ function ciniki_customers_edit() {
 
 		if( args.next != null && args.next != '' ) {
 			this.edit.nextFn = args.next;
+		} else {
+			this.edit.nextFn = null;
 		}
 		if( args.edit_email_id != null && args.edit_email_id != '' 
 			&& args.customer_id != null && args.customer_id > 0 ) {
@@ -502,31 +498,37 @@ function ciniki_customers_edit() {
 						return false;
 					} 
 					// Reset any existing fields
+					var p = M.ciniki_customers_edit.edit;
 //					M.ciniki_customers_edit.edit.sections.subscriptions = {'label':'', 'fields':null};
-					M.ciniki_customers_edit.edit.subscriptions = rsp.subscriptions;
+					p.subscriptions = rsp.subscriptions;
 					// Add subscriptions to the form
-//					if( rsp.subscriptions.length > 0 ) {
-//						M.ciniki_customers_edit.edit.sections['subscriptions']['label'] = 'Subscriptions';
-//						M.ciniki_customers_edit.edit.sections['subscriptions']['fields'] = {};
-//						var i = 0;
-//						for(i in rsp.subscriptions) {
-//							M.ciniki_customers_edit.edit.data['subscription_' + rsp.subscriptions[i].subscription.id] = rsp.subscriptions[i].subscription.status;
-//							M.ciniki_customers_edit.edit.sections.subscriptions.fields['subscription_' + rsp.subscriptions[i].subscription.id] = {'label':rsp.subscriptions[i].subscription.name, 
-//								'type':'toggle', 'toggles':M.ciniki_customers_edit.subscriptionOptions};
-//						}
-//					} else {
-//						// Hide the subscriptions section when no business subscription setup
-//						M.ciniki_customers_edit.edit.forms.person.subscriptions.visible = 'no';
-//						M.ciniki_customers_edit.edit.forms.business.subscriptions.visible = 'no';
-//					}
-					M.ciniki_customers_edit.edit.refresh();
-					M.ciniki_customers_edit.edit.show(cb);
+					if( rsp.subscriptions.length > 0 ) {
+						p.forms.person.subscriptions.visible = 'yes';
+						p.forms.business.subscriptions.visible = 'yes'; 
+						p.forms.person.subscriptions.fields = {};
+						var i = 0;
+						for(i in rsp.subscriptions) {
+							
+							p.data['subscription_' + rsp.subscriptions[i].subscription.id] = rsp.subscriptions[i].subscription.status;
+							p.forms.person.subscriptions.fields['subscription_' + rsp.subscriptions[i].subscription.id] = {'label':rsp.subscriptions[i].subscription.name, 
+								'type':'toggle', 'toggles':M.ciniki_customers_edit.subscriptionOptions};
+						}
+						p.forms.business.subscriptions.fields = p.forms.person.subscriptions.fields;
+					} else {
+						// Hide the subscriptions section when no business subscription setup
+						p.forms.person.subscriptions.visible = 'no';
+						p.forms.business.subscriptions.visible = 'no';
+					}
+					p.refresh();
+					p.show(cb);
 				});
 		} else {
-			M.ciniki_customers_edit.edit.forms.person.subscriptions.visible = 'no';
-			M.ciniki_customers_edit.edit.forms.business.subscriptions.visible = 'no';
-			M.ciniki_customers_edit.edit.refresh();
-			M.ciniki_customers_edit.edit.show(cb);
+			var p = M.ciniki_customers_edit.edit;
+			p.subscriptions = null;
+			p.forms.person.subscriptions.visible = 'no';
+			p.forms.business.subscriptions.visible = 'no';
+			p.refresh();
+			p.show(cb);
 		}
 	};
 
@@ -540,17 +542,19 @@ function ciniki_customers_edit() {
 		if( this.edit.formtab == 'business' ) {
 			type = 2;
 		}
-		for(i in this.edit.subscriptions) {
-			var fname = 'subscription_' + this.edit.subscriptions[i].subscription.id;
-			var o = this.edit.fieldValue('subscriptions', fname, this.edit.sections.subscriptions.fields[fname]);
-			var n = this.edit.formValue(fname);
-			if( o != n && n > 0 ) {
-				if( n == 10 ) {
-					subs += sc + this.edit.subscriptions[i].subscription.id; sc=',';
-				} else if( n == 60 ) {
-					unsubs += uc + this.edit.subscriptions[i].subscription.id; uc=',';
-				}
-			}	
+		if( this.edit.subscriptions != null ) {
+			for(i in this.edit.subscriptions) {
+				var fname = 'subscription_' + this.edit.subscriptions[i].subscription.id;
+				var o = this.edit.fieldValue('subscriptions', fname, this.edit.sections.subscriptions.fields[fname]);
+				var n = this.edit.formValue(fname);
+				if( o != n && n > 0 ) {
+					if( n == 10 ) {
+						subs += sc + this.edit.subscriptions[i].subscription.id; sc=',';
+					} else if( n == 60 ) {
+						unsubs += uc + this.edit.subscriptions[i].subscription.id; uc=',';
+					}
+				}	
+			}
 		}
 
 		if( this.edit.customer_id > 0 ) {

@@ -24,7 +24,8 @@ function ciniki_customers_customerSearch($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
-        'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('first', 'last', 'company'), 'name'=>'Field'), 
+        'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field',
+			'validlist'=>array('name', 'first', 'last', 'company')), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -56,24 +57,7 @@ function ciniki_customers_customerSearch($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, name, status, type, company, cid ";
-//	if( count($types) > 0 ) {
-//		// If there are customer types defined, choose the right name for the customer
-//		// This is required here to be able to sort properly
-//		$strsql .= "CASE ciniki_customers.type ";
-//		foreach($types as $tid => $type) {
-//			$strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
-//			if( $type['detail_value'] == 'business' ) {
-//				$strsql .= " ciniki_customers.company ";
-//			} else {
-//				$strsql .= "CONCAT_WS(' ', prefix, first, middle, last, suffix) ";
-//			}
-//		}
-//		$strsql .= "ELSE CONCAT_WS(' ', prefix, first, middle, last, suffix) END AS name ";
-//	} else {
-//		// Default to a person
-//		$strsql .= "CONCAT_WS(' ', prefix, first, middle, last, suffix) AS name ";
-//	}
+	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, status, type, company, cid ";
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

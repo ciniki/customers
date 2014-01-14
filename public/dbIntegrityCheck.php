@@ -45,7 +45,8 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
 		$rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['business_id'],
 			'ciniki_customers', 'ciniki_customer_history', 
 			array('uuid', 'cid', 'status', 'type', 'prefix', 'first', 'middle', 'last', 'suffix',
-				'company', 'department', 'title', 'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 
+				'display_name', 'company', 'department', 'title', 
+				'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 
 				'notes', 'birthdate'));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
