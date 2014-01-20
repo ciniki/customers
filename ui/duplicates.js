@@ -484,12 +484,12 @@ function ciniki_customers_duplicates() {
 	this.deleteCustomer = function(cid) {
 		if( cid != null && cid > 0 ) {
 			if( confirm("Are you sure you want to remove this customer?") ) {
-				var rsp = M.api.postJSONCb('ciniki.customers.delete', {'business_id':M.curBusinessID, 'customer_id':cid}, function(rsp) {
+				var rsp = M.api.getJSONCb('ciniki.customers.delete', {'business_id':M.curBusinessID, 'customer_id':cid}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
 					}
-					M.ciniki_customers_dupliates.match1.close();
+					M.ciniki_customers_duplicates.match1.close();
 				});
 			}
 		}

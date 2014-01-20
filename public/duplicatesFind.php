@@ -37,7 +37,7 @@ function ciniki_customers_duplicatesFind($ciniki) {
 	//
 	$strsql = "SELECT CONCAT_WS('-', c1.id, c2.id) AS match_id, c1.id AS c1_id, "
 		. "c1.display_name AS c1_display_name, "
-		. "c2.id AS c2_id, c2.display_name AS c2_name "
+		. "c2.id AS c2_id, c2.display_name AS c2_display_name "
 		. "FROM ciniki_customers AS c1, ciniki_customers AS c2 "
 		. "WHERE c1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -45,7 +45,7 @@ function ciniki_customers_duplicatesFind($ciniki) {
 //		. "AND ((c1.first = c2.first and c1.last = c2.last) OR (c1.first = c2.last and c1.last = c2.first)) "
 		. "AND ((soundex(c1.first) = soundex(c2.first) and soundex(c1.last) = soundex(c2.last)) "
 			. "OR (soundex(c1.first) = soundex(c2.last) and soundex(c1.last) = soundex(c2.first))) "
-		. "ORDER BY c1_name, c1.id "
+		. "ORDER BY c1_display_name, c1.id "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
