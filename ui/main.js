@@ -131,14 +131,40 @@ function ciniki_customers_main() {
 		this.customer.customer_id = 0;
 		this.customer.data = {};
 		this.customer.sections = {
-			'details':{'label':'', 'type':'simplegrid', 'num_cols':2,
+			'details':{'label':'', 'aside':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
 				'cellClasses':['label', ''],
 				'dataMaps':['name', 'value'],
 				},
-			'phones':{'label':'', 'type':'simplegrid', 'num_cols':2, 'visible':'no',
+			'phones':{'label':'', 'aside':'no', 'type':'simplegrid', 'num_cols':2, 'visible':'no',
 				'headerValues':null,
 				'cellClasses':['label', ''],
+				},
+			'emails':{'label':'Emails', 'aside':'no', 'type':'simplegrid', 'num_cols':1,
+				'headerValues':null,
+				'cellClasses':['', ''],
+				'noData':'No emails',
+				'addTxt':'Add Email',
+				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_email_id\':\'0\'});',
+				},
+			'addresses':{'label':'Addresses', 'aside':'no', 'type':'simplegrid', 'num_cols':2,
+				'headerValues':null,
+				'cellClasses':['label', ''],
+				'noData':'No addresses',
+				'addTxt':'Add Address',
+				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_address_id\':\'0\'});',
+				},
+			'relationships':{'label':'Relationships', 'aside':'no', 'type':'simplegrid', 'visible':'no', 'num_cols':1,
+				'headerValues':null,
+				'cellClasses':['', ''],
+				'noData':'No relationships',
+				'addTxt':'Add Relationship',
+				'addFn':'M.startApp(\'ciniki.customers.relationships\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
+				},
+			'subscriptions':{'label':'Subscriptions', 'aside':'no', 'type':'simplegrid', 'visible':'no', 'num_cols':2,
+				'headerValues':null,
+				'cellClasses':['label', ''],
+				'noData':'No subscriptions',
 				},
 			'services':{'label':'Services', 'type':'simplegrid', 'visible':'no', 'num_cols':2, 'class':'simplegrid services border',
 				'headerValues':null,
@@ -147,33 +173,15 @@ function ciniki_customers_main() {
 				'addTxt':'Add Service',
 				'addFn':'M.startApp(\'ciniki.services.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});'
 				},
-			'emails':{'label':'Emails', 'type':'simplegrid', 'num_cols':1,
-				'headerValues':null,
-				'cellClasses':['', ''],
-				'noData':'No emails',
-				'addTxt':'Add Email',
-				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_email_id\':\'0\'});',
+			'invoices':{'label':'Invoices', 'type':'simplegrid', 'visible':'no', 'num_cols':4, 
+				'headerValues':['Invoice #', 'Date', 'Amount', 'Status'],
+				'cellClasses':['','','',''],
+				'limit':5,
+				'moreTxt':'More',
+				'moreFn':'M.startApp(\'ciniki.sapos.customerinvoices\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
 				},
-			'addresses':{'label':'Addresses', 'type':'simplegrid', 'num_cols':2,
-				'headerValues':null,
-				'cellClasses':['label', ''],
-				'noData':'No addresses',
-				'addTxt':'Add Address',
-				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_address_id\':\'0\'});',
-				},
-			'relationships':{'label':'Relationships', 'type':'simplegrid', 'visible':'no', 'num_cols':1,
-				'headerValues':null,
-				'cellClasses':['', ''],
-				'noData':'No relationships',
-				'addTxt':'Add Relationship',
-				'addFn':'M.startApp(\'ciniki.customers.relationships\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
-				},
-			'subscriptions':{'label':'Subscriptions', 'type':'simplegrid', 'visible':'no', 'num_cols':2,
-				'headerValues':null,
-				'cellClasses':['label', ''],
-				'noData':'No subscriptions',
-				},
-			'appointments':{'label':'Appointments', 'type':'simplegrid', 'visible':'no', 'num_cols':2, 'class':'dayschedule',
+			'appointments':{'label':'Appointments', 'type':'simplegrid', 'visible':'no', 
+				'num_cols':2, 'class':'dayschedule',
 				'headerValues':null,
 				'cellClasses':['multiline slice_0', 'schedule_appointment'],
 				'noData':'No upcoming appointments',
@@ -191,6 +199,9 @@ function ciniki_customers_main() {
 				'headerValues':['INV#', 'Wine', 'OD', 'SD', 'RD', 'FD', 'BD'], 
 				'dataMaps':['invoice_number', 'wine_name', 'order_date', 'start_date', 'racking_date', 'filtering_date', 'bottle_date'],
 				'noData':'No past orders',
+				'limit':'5',
+				'moreTxt':'More',
+				'moreFn':'M.ciniki_customers_main.showWineproduction(\'M.ciniki_customers_main.showCustomer();\',M.ciniki_customers_main.customer.customer_id);',
 				},
 			'_notes':{'label':'Notes', 'type':'simpleform', 'fields':{'notes':{'label':'', 'type':'noedit', 'hidelabel':'yes'}}},
 			'_buttons':{'label':'', 'buttons':{
@@ -278,6 +289,14 @@ function ciniki_customers_main() {
 				if( j == 0 ) { return 'subscribed'; }
 				if( j == 1 ) { return d.subscription.name; }
 			}
+			else if( s == 'invoices' ) {
+				switch(j) {
+					case 0: return d.invoice.invoice_number;
+					case 1: return d.invoice.invoice_date;
+					case 2: return d.invoice.total_amount_display;
+					case 3: return d.invoice.status_text;
+				}
+			}
 			else if( s == 'appointments' ) {
 				if( j == 0 ) {
 					if( d.appointment.start_ts == 0 ) {
@@ -339,6 +358,9 @@ function ciniki_customers_main() {
 			if( s == 'addresses' ) {
 				return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_address_id\':\'' + d.address.id + '\'});';
 //				return 'M.ciniki_customers_main.showAddressEdit(\'M.ciniki_customers_main.showCustomer();\',M.ciniki_customers_main.customer.customer_id,\'' + d.address.id + '\');';
+			}
+			if( s == 'invoices' ) {
+				return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'invoice_id\':\'' + d.invoice.id + '\'});';
 			}
 			if( s == 'currentwineproduction' || s == 'pastwineproduction' ) {
 				return 'M.startApp(\'ciniki.wineproduction.main\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'order_id\':' + d.order.id + '});';
@@ -405,27 +427,25 @@ function ciniki_customers_main() {
 	}
 
 	this.showCustomer = function(cb, cid) {
-		if( cid != null ) {
-			M.ciniki_customers_main.customer.customer_id = cid;
-		}
+		if( cid != null ) { this.customer.customer_id = cid; }
 		// Reset to not showing all sections
 		this.customer.sections.phones.visible = 'no';
 		this.customer.sections.subscriptions.visible = 'no';
+		this.customer.sections.invoices.visible = 'no';
 		this.customer.sections.appointments.visible = 'no';
 		this.customer.sections.currentwineproduction.visible = 'no';
 		this.customer.sections.pastwineproduction.visible = 'no';
 		this.customer.sections._buttons.buttons.delete.visible = 'yes';
 
-		M.startLoad();
-		var rsp = M.api.getJSONCb('ciniki.customers.getFull', 
-			{'business_id':M.curBusinessID, 'customer_id':M.ciniki_customers_main.customer.customer_id}, function(rsp) {
-				if( rsp.stat != 'ok' ) {
-					M.stopLoad();
-					M.api.err(rsp);
-					return false;
-				}
-				M.ciniki_customers_main.showCustomerFinish(cb, rsp);
-			});
+		M.api.getJSONCb('ciniki.customers.getModuleData', 
+			{'business_id':M.curBusinessID, 
+				'customer_id':M.ciniki_customers_main.customer.customer_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					M.ciniki_customers_main.showCustomerFinish(cb, rsp);
+				});
 	}
 
 	this.showCustomerFinish = function(cb, rsp) {
@@ -467,11 +487,7 @@ function ciniki_customers_main() {
 			this.customer.sections.phones.visible = 'yes';
 			this.customer.data.phones.fax = {'label':'Fax', 'value':rsp.customer.phone_fax};
 		}
-		if( rsp.customer.notes == '' ) {
-			this.customer.sections._notes.visible = 'no';
-		} else {
-			this.customer.sections._notes.visible = 'yes';
-		}
+		this.customer.sections._notes.visible=(rsp.customer.notes=='')?'no':'yes';
 
 		if( (rsp.customer.emails != null && rsp.customer.emails.length > 0)
 			|| (rsp.customer.addresses != null && rsp.customer.addresses.length > 0)
@@ -486,11 +502,6 @@ function ciniki_customers_main() {
 		// make subscriptions available
 		//
 		this.customer.sections.subscriptions.visible=(mods['ciniki.subscriptions']!=null)?'yes':'no';
-//		if( mods['ciniki.subscriptions'] != null ) {
-//			this.customer.sections.subscriptions.visible = 'yes';
-//		} else {
-//			this.customer.sections.subscriptions.visible = 'no';
-//		}
 
 		//
 		// Make relationships visible if setup for business
@@ -504,57 +515,61 @@ function ciniki_customers_main() {
 		//
 		// Make services available
 		//
-		if( mods['ciniki.services'] != null ) {
-			var rsp = M.api.getJSON('ciniki.services.customerSubscriptions', {'business_id':M.curBusinessID, 
-				'customer_id':this.customer.customer_id, 'jobs':'yes', 'projections':'P4M'});
-			if( rsp.stat != 'ok' ) {
-				M.stopLoad();
-				M.api.err(rsp);
-				return false;
-			} 
-			this.customer.data.services = rsp.subscriptions;
-			this.customer.sections.services.visible = 'yes';
-		} else {
-			this.customer.sections.services.visible = 'no';
-		}
+//		if( mods['ciniki.services'] != null ) {
+//			var rsp = M.api.getJSON('ciniki.services.customerSubscriptions', {'business_id':M.curBusinessID, 
+//				'customer_id':this.customer.customer_id, 'jobs':'yes', 'projections':'P4M'});
+//			if( rsp.stat != 'ok' ) {
+//				M.stopLoad();
+//				M.api.err(rsp);
+//				return false;
+//			} 
+//			this.customer.data.services = rsp.subscriptions;
+//			this.customer.sections.services.visible = 'yes';
+//		} else {
+//			this.customer.sections.services.visible = 'no';
+//		}
 	
 		//
 		// Get the customer wineproduction
 		//
 		if( mods['ciniki.wineproduction'] != null ) {
-			var rsp = M.api.getJSON('ciniki.wineproduction.appointments', {'business_id':M.curBusinessID, 'customer_id':this.customer.customer_id, 'status':'unbottled'});
-			if( rsp.stat != 'ok' ) {
-				M.stopLoad();
-				M.api.err(rsp);
-				return false;
-			} 
-			this.customer.data.appointments = rsp.appointments;
+//			var rsp = M.api.getJSON('ciniki.wineproduction.appointments', {'business_id':M.curBusinessID, 'customer_id':this.customer.customer_id, 'status':'unbottled'});
+//			if( rsp.stat != 'ok' ) {
+//				M.stopLoad();
+//				M.api.err(rsp);
+//				return false;
+//			} 
+//			this.customer.data.appointments = rsp.appointments;
 			this.customer.sections.appointments.visible = 'yes';
 			this.customer.sections.currentwineproduction.visible = 'yes';
 			this.customer.sections.pastwineproduction.visible = 'yes';
 			
-			var rsp = M.api.getJSON('ciniki.wineproduction.list', {'business_id':M.curBusinessID, 'customer_id':this.customer.customer_id});
-			if( rsp.stat != 'ok' ) {
-				M.stopLoad();
-				M.api.err(rsp);
-				return false;
-			} 
-			this.customer.data.currentwineproduction = [];
-			this.customer.data.pastwineproduction = [];
-			var i = 0;
-			for(i in rsp.orders) {
-				var order = rsp.orders[i].order;
-				if( order.status < 50 ) {
-					this.customer.data.currentwineproduction.push(rsp.orders[i]);
-				} else  {
-					this.customer.data.pastwineproduction.push(rsp.orders[i]);
-				}
+//			var rsp = M.api.getJSON('ciniki.wineproduction.list', {'business_id':M.curBusinessID, 'customer_id':this.customer.customer_id});
+//			if( rsp.stat != 'ok' ) {
+//				M.stopLoad();
+//				M.api.err(rsp);
+//				return false;
+//			} 
+//			this.customer.data.currentwineproduction = [];
+//			this.customer.data.pastwineproduction = [];
+//			var i = 0;
+//			for(i in rsp.orders) {
+//				var order = rsp.orders[i].order;
+//				if( order.status < 50 ) {
+//					this.customer.data.currentwineproduction.push(rsp.orders[i]);
+//				} else  {
+//					this.customer.data.pastwineproduction.push(rsp.orders[i]);
+//				}
+//			}
+			if( rsp.currenttwineproduction != null && rsp.currentwineproduction.length > 0 ) {
+				this.customer.sections._buttons.buttons.delete.visible = 'no';
 			}
-			if( rsp.orders.length > 0 ) {
+			if( rsp.pastwineproduction != null && rsp.pastwineproduction.length > 0 ) {
 				this.customer.sections._buttons.buttons.delete.visible = 'no';
 			}
 		}
-		M.stopLoad();
+
+		this.customer.sections.invoices.visible=(rsp.customer.invoices!=null&&rsp.customer.invoices.length>0)?'yes':'no';
 		this.customer.refresh();
 		this.customer.show(cb);
 	}
