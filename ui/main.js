@@ -201,7 +201,7 @@ function ciniki_customers_main() {
 				'noData':'No past orders',
 				'limit':'5',
 				'moreTxt':'More',
-				'moreFn':'M.ciniki_customers_main.showWineproduction(\'M.ciniki_customers_main.showCustomer();\',M.ciniki_customers_main.customer.customer_id);',
+				'moreFn':'M.startApp(\'ciniki.wineproduction.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
 				},
 			'_notes':{'label':'Notes', 'type':'simpleform', 'fields':{'notes':{'label':'', 'type':'noedit', 'hidelabel':'yes'}}},
 			'_buttons':{'label':'', 'buttons':{
