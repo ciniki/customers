@@ -86,7 +86,7 @@ function ciniki_customers_getModuleData($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['customers']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'722', 'msg'=>'Invalid customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1511', 'msg'=>'Invalid customer'));
 	}
 	$customer = $rc['customers'][0]['customer'];
 	$customer['addresses'] = array();
