@@ -31,7 +31,7 @@
 // company:				(optional) The company the customer works for.
 // department:			(optional) The department at the company the customer works for.
 // title:				(optional) The customers title at the company.
-// address:				(optional) The email address of the customer.
+// email_address:		(optional) The email address of the customer.
 // flags:				(optional) The options for the customer email address.  Default: 0.
 //	
 //						0x01 - The customer is allowed to login to the business website.
@@ -78,7 +78,7 @@ function ciniki_customers_add(&$ciniki) {
         'company'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company'), 
         'department'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Department'), 
         'title'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Title'), 
-        'email'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Email'), 
+        'email_address'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Email Address'), 
         'flags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Email Options'), 
 		'address1'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address'),
         'address2'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address'), 
@@ -189,6 +189,7 @@ function ciniki_customers_add(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) { 
@@ -282,63 +283,20 @@ function ciniki_customers_add(&$ciniki) {
 	// Check if email address was specified, and add to customer emails
 	//
 	$email_id = 0;
-	if( isset($args['address']) && $args['address'] != '' ) {
-		//
-		// Get a new UUID
-		//
-		$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
+	if( isset($args['email_address']) && $args['email_address'] != '' ) {
+		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.email',
+			array('customer_id'=>$customer_id,
+				'email'=>$args['email_address'],
+				'password'=>'',
+				'temp_password'=>'',
+				'temp_password_date'=>'',
+				'flags'=>$args['flags'],
+				), 0x04);
 		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
-		$uuid = $rc['uuid'];
-
-		//
-		// Add the customer email to the database
-		//
-		$strsql = "INSERT INTO ciniki_customer_emails (uuid, business_id, customer_id, email, flags, "
-			. "date_added, last_updated) VALUES ("
-			. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $customer_id) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['address']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['flags']) . "', "
-			. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
-		if( $rc['stat'] != 'ok' ) { 
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			if( $rc['err']['code'] == '73' ) {
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'724', 'msg'=>'Email address already exists'));
-			}
-			return $rc;
-		}
-		if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'720', 'msg'=>'Unable to add customer email'));
-		}
-		$email_id = $rc['insert_id'];
-
-		//
-		// Add the uuid to the history
-		//
-		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-			1, 'ciniki_customer_emails', $email_id, 'uuid', $uuid);
-		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-			1, 'ciniki_customer_emails', $email_id, 'customer_id', $customer_id);
-		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-			1, 'ciniki_customer_emails', $email_id, 'email', $args['address']);
-
-		//
-		// Add all the fields to the change log
-		//
-		$changelog_fields = array(
-			'flags',
-			);
-		foreach($changelog_fields as $field) {
-			if( isset($args[$field]) && $args[$field] != '' ) {
-				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-					1, 'ciniki_customer_emails', $email_id, $field, $args[$field]);
-			}
-		}
+		$email_id = $rc['id'];
 	}
 
 	//
@@ -351,77 +309,22 @@ function ciniki_customers_add(&$ciniki) {
 		|| (isset($args['province']) && $args['province'] != '' )
 		|| (isset($args['postal']) && $args['postal'] != '' )
 		) {
-		//
-		// Get a new UUID
-		//
-		$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
+		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.address',
+			array('customer_id'=>$customer_id,
+				'flags'=>$args['address_flags'],
+				'address1'=>$args['address1'],
+				'address2'=>$args['address2'],
+				'city'=>$args['city'],
+				'province'=>$args['province'],
+				'postal'=>$args['postal'],
+				'country'=>$args['country'],
+				'notes'=>'',
+				), 0x04);
 		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		$uuid = $rc['uuid'];
-
-		//
-		// Add the customer to the database
-		//
-		$strsql = "INSERT INTO ciniki_customer_addresses (uuid, business_id, customer_id, "
-			. "flags, "
-			. "address1, address2, city, province, postal, country, "
-			. "date_added, last_updated) VALUES ("
-			. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $customer_id) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['address_flags']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['address1']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['address2']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['city']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['province']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['postal']) . "', "
-			. "'" . ciniki_core_dbQuote($ciniki, $args['country']) . "', "
-			. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-		$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
-		if( $rc['stat'] != 'ok' ) { 
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
-		if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'375', 'msg'=>'Unable to add customer address'));
-		}
-		$address_id = $rc['insert_id'];
-
-		//
-		// Add the uuid to the history
-		//
-		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-			1, 'ciniki_customer_addresses', $address_id, 'uuid', $uuid);
-		$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-			1, 'ciniki_customer_addresses', $address_id, 'customer_id', $customer_id);
-
-		//
-		// Add all the fields to the change log
-		//
-		$changelog_fields = array(
-			'address1',
-			'address2',
-			'city',
-			'province',
-			'postal',
-			'country',
-			);
-		foreach($changelog_fields as $field) {
-			if( isset($args[$field]) && $args[$field] != '' ) {
-				$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 
-					'ciniki_customer_history', $args['business_id'], 
-					1, 'ciniki_customer_addresses', $address_id, $field, $args[$field]);
-			}
-		}
-		// Address_flags should be addes as flags, but must be passed to this method as address_flags so 
-		// not to be confused with email flags
-		if( isset($args['address_flags']) && $args['address_flags'] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 
-				'ciniki_customer_history', $args['business_id'], 
-				1, 'ciniki_customer_addresses', $address_id, 'flags', $args['address_flags']);
-		}
+		$address_id = $rc['id'];
 	}
 
 	//
@@ -456,12 +359,6 @@ function ciniki_customers_add(&$ciniki) {
 
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 
 		'args'=>array('id'=>$customer_id));
-	if( $email_id > 0 ) {
-		$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.email', 'args'=>array('id'=>$email_id));
-	}
-	if( $address_id > 0 ) {
-		$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.address', 'args'=>array('id'=>$address_id));
-	}
 
 	return array('stat'=>'ok', 'id'=>$customer_id);
 }

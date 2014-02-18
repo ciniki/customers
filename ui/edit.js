@@ -53,7 +53,7 @@ function ciniki_customers_edit() {
 				'phone_fax':{'label':'Fax', 'type':'text'},
 				}},
 			'email':{'label':'Email', 'active':'no', 'fields':{
-				'email':{'label':'Primary', 'type':'text'},
+				'email_address':{'label':'Primary', 'type':'text'},
 				'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
 				}},
 			'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
@@ -106,7 +106,7 @@ function ciniki_customers_edit() {
 				'phone_fax':{'label':'Fax', 'type':'text'},
 				}},
 			'email':{'label':'Email', 'active':'no', 'fields':{
-				'address':{'label':'Primary', 'type':'text'},
+				'email_address':{'label':'Primary', 'type':'text'},
 				'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
 				}},
 			'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
