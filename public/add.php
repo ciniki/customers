@@ -147,20 +147,24 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	// Determine the display name
 	//
-	$space = ' ';
+	$space = '';
 	$person_name = '';
 	if( isset($args['prefix']) && $args['prefix'] != '' ) {
 		$person_name .= $args['prefix'];
 	}
+	if( $space == '' && $person_name != '' ) { $space = ' '; }
 	if( isset($args['first']) && $args['first'] != '' ) {
 		$person_name .= $space . $args['first'];
 	}
+	if( $space == '' && $person_name != '' ) { $space = ' '; }
 	if( isset($args['middle']) && $args['middle'] != '' ) {
 		$person_name .= $space . $args['middle'];
 	}
+	if( $space == '' && $person_name != '' ) { $space = ' '; }
 	if( isset($args['last']) && $args['last'] != '' ) {
 		$person_name .= $space . $args['last'];
 	}
+	if( $space == '' && $person_name != '' ) { $space = ' '; }
 	if( isset($args['suffix']) && $args['suffix'] != '' ) {
 		$person_name .= $space . $args['suffix'];
 	}
