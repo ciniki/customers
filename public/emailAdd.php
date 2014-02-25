@@ -28,7 +28,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
-		'email'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email Address'),
+		'address'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email Address'),
 		'password'=>array('required'=>'no', 'blank'=>'no', 'default'=>'', 'name'=>'Password'),
 		'temp_password'=>array('required'=>'no', 'blank'=>'no', 'default'=>'', 'name'=>'Temporary Password'),
 		'temp_password_date'=>array('required'=>'no', 'blank'=>'no', 'default'=>'', 'name'=>'Temporary Password Date'),
@@ -38,6 +38,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
         return $rc;
     }   
     $args = $rc['args'];
+	$args['email'] = $args['address'];
 
     //  
     // Make sure this module is activated, and

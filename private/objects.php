@@ -18,6 +18,7 @@ function ciniki_customers_objects($ciniki) {
 			'cid'=>array(),
 			'status'=>array(),
 			'type'=>array(),
+			'member_status'=>array(),
 			'prefix'=>array(),
 			'first'=>array(),
 			'middle'=>array(),
@@ -33,6 +34,11 @@ function ciniki_customers_objects($ciniki) {
 			'phone_fax'=>array(),
 			'notes'=>array(),
 			'birthdate'=>array(),
+			'webflags'=>array(),
+			'permalink'=>array(),
+			'primary_image_id'=>array('ref'=>'ciniki.images.image'),
+			'short_bio'=>array(),
+			'full_bio'=>array(),
 			),
 		'history_table'=>'ciniki_customer_history',
 		);
@@ -62,6 +68,31 @@ function ciniki_customers_objects($ciniki) {
 			'temp_password'=>array(),
 			'temp_password_date'=>array(),
 			'flags'=>array(),
+			),
+		'history_table'=>'ciniki_customer_history',
+		);
+	$objects['link'] = array(
+		'name'=>'Customer Link',
+		'table'=>'ciniki_customer_links',
+		'fields'=>array(
+			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'name'=>array(),
+			'url'=>array(),
+			'description'=>array(),
+			'webflags'=>array(),
+			),
+		'history_table'=>'ciniki_customer_history',
+		);
+	$objects['image'] = array(
+		'name'=>'Customer Image',
+		'table'=>'ciniki_customer_images',
+		'fields'=>array(
+			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'name'=>array(),
+			'permalink'=>array(),
+			'webflags'=>array(),
+			'image_id'=>array('ref'=>'ciniki.images.image'),
+			'description'=>array(),
 			),
 		'history_table'=>'ciniki_customer_history',
 		);

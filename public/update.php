@@ -25,6 +25,7 @@ function ciniki_customers_update(&$ciniki) {
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'cid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer ID'), 
         'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer Type'), 
+        'member_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Status'), 
         'prefix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Prefix'), 
         'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'), 
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Middle Name'), 
@@ -38,6 +39,10 @@ function ciniki_customers_update(&$ciniki) {
         'phone_cell'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cell Phone'), 
         'phone_fax'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fax Number'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
+        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'), 
+        'webflags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Webflags'), 
+        'short_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Bio'), 
+        'full_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'birthdate'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
@@ -157,12 +162,18 @@ function ciniki_customers_update(&$ciniki) {
 			$args['display_name'] = $person_name;
 		}
 	}
-    
+   
+   	if( isset($args['display_name']) && $args['display_name'] != '' ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['display_name']);
+	}
+
 	//
 	// Update the customer
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', $args['customer_id'], $args, 0x06);
+	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', 
+		$args['customer_id'], $args, 0x06);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

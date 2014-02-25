@@ -30,13 +30,16 @@ function ciniki_customers_emailUpdate(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email ID'), 
-        'email'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email Address'), 
+        'address'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email Address'), 
         'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
     $args = $rc['args'];
+	if( isset($args['address']) ) {
+		$args['email'] = $args['address'];
+	}
     
     //  
     // Make sure this module is activated, and

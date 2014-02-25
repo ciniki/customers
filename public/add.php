@@ -68,7 +68,9 @@ function ciniki_customers_add(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'cid'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Customer'),
+		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'yes', 'name'=>'Status'),
 		'type'=>array('required'=>'no', 'default'=>'1', 'blank'=>'yes', 'name'=>'Customer Type'),
+        'member_status'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Member Status'), 
 		'name'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Name'),
         'prefix'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Prefix'), 
         'first'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Name'), 
@@ -92,6 +94,10 @@ function ciniki_customers_add(&$ciniki) {
         'phone_cell'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Cell Phone'), 
         'phone_fax'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Fax Number'), 
         'notes'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
+        'primary_image_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Image'), 
+        'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Webflags'), 
+        'short_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Short Bio'), 
+        'full_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'birthdate'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
@@ -184,6 +190,9 @@ function ciniki_customers_add(&$ciniki) {
 	} else {
 		$args['display_name'] = $person_name;
 	}
+
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+	$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['display_name']);
     
 	//  
 	// Turn off autocommit
@@ -203,85 +212,90 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	// Get a new UUID
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
-	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$uuid = $rc['uuid'];
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
+//	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
+//	if( $rc['stat'] != 'ok' ) {
+//		return $rc;
+//	}
+//	$uuid = $rc['uuid'];
 
 	//
 	// Add the customer to the database
 	//
-	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, cid, type, "
-		. "prefix, first, middle, last, suffix, display_name, "
-		. "company, department, title, phone_home, phone_work, phone_cell, phone_fax, notes, birthdate, "
-		. "date_added, last_updated) VALUES ("
-		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-		. "1, "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['cid']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['type']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['prefix']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['first']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['middle']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['last']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['suffix']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['display_name']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['company']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['department']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['title']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_home']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_work']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_cell']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_fax']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['notes']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['birthdate']) . "', "
-		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, cid, type, "
+//		. "prefix, first, middle, last, suffix, display_name, "
+//		. "company, department, title, phone_home, phone_work, phone_cell, phone_fax, notes, birthdate, "
+//		. "date_added, last_updated) VALUES ("
+//		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
+//		. "1, "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['cid']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['type']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['prefix']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['first']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['middle']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['last']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['suffix']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['display_name']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['company']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['department']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['title']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_home']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_work']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_cell']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_fax']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['notes']) . "', "
+//		. "'" . ciniki_core_dbQuote($ciniki, $args['birthdate']) . "', "
+//		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
+//	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
+//	if( $rc['stat'] != 'ok' ) { 
+//		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//		return $rc;
+//	}
+//	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
+//		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'369', 'msg'=>'Unable to add customer'));
+//	}
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.customer', $args, 0x04);
+	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'369', 'msg'=>'Unable to add customer'));
-	}
-	$customer_id = $rc['insert_id'];
+	$customer_id = $rc['id'];
 
 	//
 	// FIXME: Move to array below
 	// Add the uuid to the history
 	//
-	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-		1, 'ciniki_customers', $customer_id, 'uuid', $uuid);
+//	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+//		1, 'ciniki_customers', $customer_id, 'uuid', $uuid);
 
 	//
 	// Add all the fields to the change log
 	//
-	$changelog_fields = array(
-		'cid',
-		'prefix',
-		'first',
-		'middle',
-		'last',
-		'suffix',
-		'company',
-		'department',
-		'title',
-		'phone_home',
-		'phone_work',
-		'phone_cell',
-		'phone_fax',
-		'notes',
-		'birthdate',
-		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) && $args[$field] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-				1, 'ciniki_customers', $customer_id, $field, $args[$field]);
-		}
-	}
+//	$changelog_fields = array(
+//		'cid',
+//		'prefix',
+//		'first',
+//		'middle',
+//		'last',
+//		'suffix',
+//		'company',
+//		'department',
+//		'title',
+//		'phone_home',
+//		'phone_work',
+//		'phone_cell',
+//		'phone_fax',
+//		'notes',
+//		'birthdate',
+//		);
+//	foreach($changelog_fields as $field) {
+//		if( isset($args[$field]) && $args[$field] != '' ) {
+//			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+//				1, 'ciniki_customers', $customer_id, $field, $args[$field]);
+//		}
+//	}
 
 	//
 	// Check if email address was specified, and add to customer emails

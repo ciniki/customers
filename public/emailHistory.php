@@ -41,6 +41,7 @@ function ciniki_customers_emailHistory($ciniki) {
 		return $rc;
 	}
 	$args = $rc['args'];
+	if( $args['field'] == 'address' ) { $args['field'] = 'email'; }
 	
 	//
 	// Check access to business_id as owner, or sys admin

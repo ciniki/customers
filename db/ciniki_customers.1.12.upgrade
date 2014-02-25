@@ -1,0 +1,11 @@
+#
+# This file will upgrade the database table customers to version 1.12.
+#
+ALTER TABLE ciniki_customers ADD COLUMN member_status tinyint unsigned not null AFTER type;
+ALTER TABLE ciniki_customers ADD COLUMN webflags tinyint unsigned not null AFTER birthdate;
+ALTER TABLE ciniki_customers ADD COLUMN permalink varchar(250) not null AFTER webflags;
+ALTER TABLE ciniki_customers ADD COLUMN primary_image_id int not null AFTER permalink;
+ALTER TABLE ciniki_customers ADD COLUMN short_bio varchar(1000) not null AFTER primary_image_id;
+ALTER TABLE ciniki_customers ADD COLUMN full_bio varchar(20000) not null AFTER short_bio;
+ALTER TABLE ciniki_customers COMMENT='v1.12';
+

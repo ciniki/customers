@@ -154,6 +154,13 @@ function ciniki_customers_main() {
 				'addTxt':'Add Address',
 				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_address_id\':\'0\'});',
 				},
+			'links':{'label':'Websites', 'aside':'no', 'type':'simplegrid', 'num_cols':1,
+				'headerValues':null,
+				'cellClasses':['multiline', ''],
+				'noData':'No links',
+				'addTxt':'Add Website',
+				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_link_id\':\'0\'});',
+				},
 			'relationships':{'label':'Relationships', 'aside':'no', 'type':'simplegrid', 'visible':'no', 'num_cols':1,
 				'headerValues':null,
 				'cellClasses':['', ''],
@@ -256,6 +263,13 @@ function ciniki_customers_main() {
 					return v;
 				}
 			}
+			else if( s == 'links' ) {
+				if( d.link.name != '' ) {
+					return '<span class="maintext">' + d.link.name + '</span><span class="subtext">' + d.link.url + '</span>';
+				} else {
+					return d.link.url;
+				}
+			}
 			else if( s == 'services' ) {
 				if( j == 0 ) { return '<span class="maintext clickable">' + d.subscription.name + '</span><span class="subtext">' + d.subscription.date_started + '</span>'; }
 				if( j == 1 ) { 
@@ -352,12 +366,13 @@ function ciniki_customers_main() {
 		};
 		this.customer.rowFn = function(s, i, d) {
 			if( s == 'emails' ) {
-//				return 'M.ciniki_customers_main.showEmailEdit(\'M.ciniki_customers_main.showCustomer();\',M.ciniki_customers_main.customer.customer_id,\'' + d.email.id + '\');';
 				return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_email_id\':\'' + d.email.id + '\'});';
 			}
 			if( s == 'addresses' ) {
 				return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_address_id\':\'' + d.address.id + '\'});';
-//				return 'M.ciniki_customers_main.showAddressEdit(\'M.ciniki_customers_main.showCustomer();\',M.ciniki_customers_main.customer.customer_id,\'' + d.address.id + '\');';
+			}
+			if( s == 'links' ) {
+				return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_link_id\':\'' + d.link.id + '\'});';
 			}
 			if( s == 'invoices' ) {
 				return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'invoice_id\':\'' + d.invoice.id + '\'});';
@@ -383,9 +398,7 @@ function ciniki_customers_main() {
 	//
 	this.start = function(cb, appPrefix, aG) {
 		args = {};
-		if( aG != null ) {
-			args = eval(aG);
-		}
+		if( aG != null ) { args = eval(aG); }
 
 		//
 		// Create the app container if it doesn't exist, and clear it out

@@ -74,12 +74,13 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Get the customer details and emails
 	//
-	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
+	$strsql = "SELECT ciniki_customers.id, cid, type, member_status, "
+		. "prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, "
 		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
-		. "notes "
+		. "notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -87,10 +88,11 @@ function ciniki_customers_getFull($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
+			'fields'=>array('id', 'member_status', 'webflags', 
+				'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'company', 'department', 'title', 
 				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
-				'notes', 'birthdate')),
+				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate')),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
 		));
@@ -118,6 +120,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "address1, address2, city, province, postal, country, flags "
 		. "FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
@@ -129,6 +132,26 @@ function ciniki_customers_getFull($ciniki) {
 	}
 	if( isset($rc['addresses']) ) {
 		$customer['addresses'] = $rc['addresses'];
+	}
+
+	//
+	// Get the customer links
+	//
+	$strsql = "SELECT id, customer_id, "
+		. "name, url "
+		. "FROM ciniki_customer_links "
+		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
+			'fields'=>array('id', 'customer_id', 'name', 'url')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['links']) ) {
+		$customer['links'] = $rc['links'];
 	}
 
 	//
@@ -190,7 +213,9 @@ function ciniki_customers_getFull($ciniki) {
 			. "ciniki_subscriptions.description, ciniki_subscription_customers.status "
 			. "FROM ciniki_subscriptions "
 			. "LEFT JOIN ciniki_subscription_customers ON (ciniki_subscriptions.id = ciniki_subscription_customers.subscription_id "
-				. "AND ciniki_subscription_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "') "
+				. "AND ciniki_subscription_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+				. "AND ciniki_subscription_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") "
 			. "WHERE ciniki_subscriptions.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND status = 10 "
 			. "ORDER BY ciniki_subscriptions.name "

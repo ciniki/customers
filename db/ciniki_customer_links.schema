@@ -1,0 +1,44 @@
+#
+# Description
+# -----------
+# This table stores the links to other websites for a customer.  This allows the business 
+# to know where else the customer is online, and is used when displaying a member page.
+#
+# Fields
+# ------
+# id: 					The ID for each customer link.
+# uuid:					The Universal Unique ID.
+# business_id:			The business the customer link is attached to.
+#
+# customer_id:			The customer the link is attached to.
+#
+# name:					The name/title for the url, if blank the URL will be used.
+# url:					The email address for the customer.
+#					
+# description:			The description for the link.
+#
+# webflags:				Flags to determine how the link is visible on the website.
+#
+#						0x01 - Visible on website/member page
+#						0x02 - 
+#						0x04 - 
+#						0x08 - 
+#
+# date_added:			The UTC date and time the record was added.
+# last_updated:			The UTC date and time the record was last updated.
+#
+create table ciniki_customer_links (
+	id int not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	customer_id int not null,
+	name varchar(150) not null,
+	url varchar(255) not null,
+	description varchar(10000) not null,
+	webflags tinyint unsigned not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index (customer_id),
+	index sync (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

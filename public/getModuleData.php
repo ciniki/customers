@@ -69,7 +69,9 @@ function ciniki_customers_getModuleData($ciniki) {
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "notes "
 		. "FROM ciniki_customers "
-		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
+		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
+			. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -99,6 +101,7 @@ function ciniki_customers_getModuleData($ciniki) {
 		. "address1, address2, city, province, postal, country, flags "
 		. "FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
@@ -110,6 +113,26 @@ function ciniki_customers_getModuleData($ciniki) {
 	}
 	if( isset($rc['addresses']) ) {
 		$customer['addresses'] = $rc['addresses'];
+	}
+
+	//
+	// Get the customer links
+	//
+	$strsql = "SELECT id, customer_id, "
+		. "name, url, webflags "
+		. "FROM ciniki_customer_links "
+		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'links', 'fname'=>'id', 'name'=>'link',
+			'fields'=>array('id', 'name', 'url', 'webflags')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['links']) ) {
+		$customer['links'] = $rc['links'];
 	}
 
 	//
