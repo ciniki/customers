@@ -49,7 +49,7 @@ function ciniki_customers_emailSearch($ciniki) {
 	$strsql = "SELECT id, customer_id, email "
 		. "FROM ciniki_customer_emails "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+//		. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $args['email']) . "' "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
@@ -60,6 +60,7 @@ function ciniki_customers_emailSearch($ciniki) {
 	if( !isset($rc['email']) ) {
 		return array('stat'=>'ok');
 	}
+
 	return array('stat'=>'ok', 'email'=>$rc['email']);
 }
 ?>

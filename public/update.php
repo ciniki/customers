@@ -26,6 +26,9 @@ function ciniki_customers_update(&$ciniki) {
         'cid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer ID'), 
         'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer Type'), 
         'member_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Status'), 
+		'member_lastpaid'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Member Last Paid'),
+		'membership_length'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Length'),
+		'membership_type'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Type'),
         'prefix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Prefix'), 
         'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'), 
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Middle Name'), 
@@ -34,10 +37,6 @@ function ciniki_customers_update(&$ciniki) {
         'company'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Company'), 
         'department'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Company Department'), 
         'title'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Company Title'), 
-        'phone_home'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Home Phone'), 
-        'phone_work'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Work Phone'), 
-        'phone_cell'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cell Phone'), 
-        'phone_fax'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fax Number'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'), 
         'webflags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Webflags'), 
@@ -46,6 +45,7 @@ function ciniki_customers_update(&$ciniki) {
         'birthdate'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
+		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -189,6 +189,20 @@ function ciniki_customers_update(&$ciniki) {
 		$rc = ciniki_subscriptions_updateCustomerSubscriptions($ciniki, $args['business_id'], 
 			$args['customer_id'], $args['subscriptions'], $args['unsubscriptions']);
 		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+	}
+
+	//
+	// Update the categories
+	//
+	if( isset($args['member_categories']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $args['business_id'],
+			'ciniki_customer_tags', 'ciniki_customer_history',
+			'customer_id', $args['customer_id'], 40, $args['member_categories']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
 	}

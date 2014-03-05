@@ -23,6 +23,9 @@
 # temp_password_date:	The UTC date and time the password reset was requested.
 #
 # flags:				0x01 - Customer is allowed to login to website, should be set by default.
+#						0x02 - 
+#						0x04 - 
+#						0x08 - public, visible on website in member profile or other places
 # 						0x10 - Send no emails
 # 						0x20 - Secondary email, use only if first a problem **future**
 #

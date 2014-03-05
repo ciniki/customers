@@ -1,0 +1,8 @@
+#
+# This file will upgrade the database table customers to version 1.13.
+#
+ALTER TABLE ciniki_customers ADD COLUMN member_lastpaid datetime not null AFTER member_status;
+ALTER TABLE ciniki_customers ADD COLUMN membership_length tinyint unsigned not null AFTER member_lastpaid;
+ALTER TABLE ciniki_customers ADD COLUMN membership_type tinyint unsigned not null AFTER membership_length;
+ALTER TABLE ciniki_customers COMMENT='v1.13';
+

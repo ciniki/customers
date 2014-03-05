@@ -19,9 +19,10 @@ function ciniki_customers_customerDetails($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
-		'emails'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'yes', 'name'=>'Emails'),
-		'addresses'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'yes', 'name'=>'Addresses'),
-		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'yes', 'name'=>'Subscriptions'),
+		'phones'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Phones'),
+		'emails'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Emails'),
+		'addresses'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Addresses'),
+		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Subscriptions'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

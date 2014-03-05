@@ -25,7 +25,7 @@
 #					0x01 - shipping (use this address for shipping)
 #					0x02 - billing
 #					0x04 - mailing (use for postal mailings, newsletters)
-#					0x08 - unused
+#					0x08 - public (used on website)
 #					0x10 - home
 #					0x20 - work
 #					0x40 - unused

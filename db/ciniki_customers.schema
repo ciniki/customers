@@ -39,6 +39,22 @@
 #					10 - Active Member
 #					60 - Suspended Member
 #
+# member_lastpaid:	The UTC date and time of the last membership payment.  This is used to know
+#					who is behind or not.
+#
+# membership_length:	The length of membership, which is used to know who is paid up and who is not.
+#
+#					0 - unknown
+#					10 - monthly **future**  
+#					20 - yearly
+#					60 - lifetime (no expiry)
+#
+# membership_type:	The type of membership, if a member, otherwise it will be zero.
+#					
+#					10 - Regular
+#					20 - Complementary
+#					30 - Reciprocal
+#
 # prefix:			Dr. Mr. Ms. Miss. Mrs.
 # first:			The first name(s) of the customer.
 # middle:			The middle name(s) of the customer.
@@ -80,6 +96,9 @@ create table ciniki_customers (
 	status tinyint unsigned not null,
 	type tinyint unsigned not null,
 	member_status tinyint unsigned not null,
+	member_lastpaid datetime not null,
+	membership_length tinyint unsigned not null,
+	membership_type tinyint unsigned not null,
 	prefix varchar(10) not null,
 	first varchar(100) not null,
 	middle varchar(100) not null,
@@ -108,4 +127,4 @@ create table ciniki_customers (
 	index (company),
 	index (cid),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.12';
+) ENGINE='InnoDB', COMMENT='v1.13';

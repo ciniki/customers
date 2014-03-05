@@ -36,19 +36,33 @@ function ciniki_customers_memberList($ciniki) {
         return $ac;
     }   
 
+	//
+	// Get the business settings
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_timezone = $rc['settings']['intl-default-timezone'];
+//	$intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
+//	$intl_currency = $rc['settings']['intl-default-currency'];
+
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
-	$date_format = ciniki_users_dateFormat($ciniki);
-	
+	$date_format = ciniki_users_dateFormat($ciniki, 'php');
+
 	//
 	// Load the list of members for a business
 	//
 	$strsql = "SELECT ciniki_customers.id, "
+		. "ciniki_customers.first, "
+		. "ciniki_customers.last, "
 		. "ciniki_customers.display_name, "
-		. "ciniki_customers.company, "
-		. "ciniki_customers.phone_home, "
-		. "ciniki_customers.phone_work, "
-		. "ciniki_customers.phone_cell, "
-		. "ciniki_customers.phone_fax "
+		. "ciniki_customers.member_status AS member_status_text, "
+		. "ciniki_customers.member_lastpaid, "
+		. "ciniki_customers.membership_length AS membership_length_text, "
+		. "ciniki_customers.membership_type AS membership_type_text, "
+		. "ciniki_customers.company "
 		. "FROM ciniki_customers "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.member_status = 10 "
@@ -57,8 +71,15 @@ function ciniki_customers_memberList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.artclub', array(
 		array('container'=>'members', 'fname'=>'id', 'name'=>'member',
-			'fields'=>array('id', 'display_name', 'company', 
-				'phone_home', 'phone_work', 'phone_cell', 'phone_fax')),
+			'fields'=>array('id', 'first', 'last', 'display_name', 'company',
+				'member_status_text', 'member_lastpaid', 'membership_length_text', 'membership_type_text'),
+			'maps'=>array(
+				'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
+				'membership_length_text'=>array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),
+				'membership_type_text'=>array('10'=>'Regular', '20'=>'Complementary', '30'=>'Reciprocal'),
+				),
+			'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
+			),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

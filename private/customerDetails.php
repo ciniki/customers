@@ -46,6 +46,8 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$date_format = ciniki_users_dateFormat($ciniki);
 
 	//
@@ -53,7 +55,6 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	//
 	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, "
-		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "notes "
@@ -61,12 +62,10 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'company', 'department', 'title', 
-				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
 				'notes', 'birthdate')),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
@@ -136,24 +135,38 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	}
 
 	//
+	// Get the phone numbers for the customer
+	//
+	if( isset($args['phones']) && $args['phones'] == 'yes' ) {
+		$strsql = "SELECT id, phone_label, phone_number, flags "
+			. "FROM ciniki_customer_phones "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'phones', 'fname'=>'id',
+				'fields'=>array('id', 'phone_label', 'phone_number', 'flags')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['phones']) ) {
+			$customer['phones'] = $rc['phones'];
+		}
+	}
+
+	//
 	// Build the details array
 	//
 	$details = array();
 	$details[] = array('detail'=>array('label'=>'Name', 'value'=>$customer['display_name']));
-	if( isset($customer['company']) && $customer['company'] != '' ) {
-		$details[] = array('detail'=>array('label'=>'Company', 'value'=>$customer['company']));
-	}
-	if( isset($customer['phone_home']) && $customer['phone_home'] != '' ) {
-		$details[] = array('detail'=>array('label'=>'Home', 'value'=>$customer['phone_home']));
-	}
-	if( isset($customer['phone_work']) && $customer['phone_work'] != '' ) {
-		$details[] = array('detail'=>array('label'=>'Work', 'value'=>$customer['phone_work']));
-	}
-	if( isset($customer['phone_cell']) && $customer['phone_cell'] != '' ) {
-		$details[] = array('detail'=>array('label'=>'Cell', 'value'=>$customer['phone_cell']));
-	}
-	if( isset($customer['phone_fax']) && $customer['phone_fax'] != '' ) {
-		$details[] = array('detail'=>array('label'=>'Fax', 'value'=>$customer['phone_fax']));
+//	if( isset($customer['company']) && $customer['company'] != '' ) {
+//		$details[] = array('detail'=>array('label'=>'Company', 'value'=>$customer['company']));
+//	}
+	if( isset($customer['phones']) ) {
+		foreach($customer['phones'] as $phone) {
+			$details[] = array('detail'=>array('label'=>$phone['phone_label'], 'value'=>$phone['phone_number']));
+		}
 	}
 	if( isset($customer['emails']) ) {
 		$emails = '';

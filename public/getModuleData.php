@@ -64,7 +64,6 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 	$strsql = "SELECT ciniki_customers.id, cid, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, "
-		. "phone_home, phone_work, phone_cell, phone_fax, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "notes "
@@ -79,7 +78,6 @@ function ciniki_customers_getModuleData($ciniki) {
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'company', 'department', 'title', 
-				'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
 				'notes', 'birthdate')),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
@@ -93,6 +91,25 @@ function ciniki_customers_getModuleData($ciniki) {
 	$customer = $rc['customers'][0]['customer'];
 	$customer['addresses'] = array();
 	$customer['subscriptions'] = array();
+
+	//
+	// Get phones
+	//
+	$strsql = "SELECT id, phone_label, phone_number, flags "
+		. "FROM ciniki_customer_phones "
+		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'phones', 'fname'=>'id', 'name'=>'phone',
+			'fields'=>array('id', 'phone_label', 'phone_number', 'flags')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['phones']) ) {
+		$customer['phones'] = $rc['phones'];
+	}
 
 	//
 	// Get the customer addresses

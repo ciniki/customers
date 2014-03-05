@@ -46,7 +46,6 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
 			'ciniki_customers', 'ciniki_customer_history', 
 			array('uuid', 'cid', 'status', 'type', 'prefix', 'first', 'middle', 'last', 'suffix',
 				'display_name', 'company', 'department', 'title', 
-				'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 
 				'notes', 'birthdate'));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

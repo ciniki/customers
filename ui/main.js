@@ -136,35 +136,42 @@ function ciniki_customers_main() {
 				'cellClasses':['label', ''],
 				'dataMaps':['name', 'value'],
 				},
-			'phones':{'label':'', 'aside':'no', 'type':'simplegrid', 'num_cols':2, 'visible':'no',
+//			'phones':{'label':'', 'aside':'no', 'type':'simplegrid', 'num_cols':2, 'visible':'no',
+//				'headerValues':null,
+//				'cellClasses':['label', ''],
+//				},
+			'phones':{'label':'Phones', 'aside':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
 				'cellClasses':['label', ''],
+//				'noData':'No phones',
+				'addTxt':'Add Phone',
+				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_phone_id\':\'0\'});',
 				},
 			'emails':{'label':'Emails', 'aside':'no', 'type':'simplegrid', 'num_cols':1,
 				'headerValues':null,
 				'cellClasses':['', ''],
-				'noData':'No emails',
+//				'noData':'No emails',
 				'addTxt':'Add Email',
 				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_email_id\':\'0\'});',
 				},
 			'addresses':{'label':'Addresses', 'aside':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
 				'cellClasses':['label', ''],
-				'noData':'No addresses',
+//				'noData':'No addresses',
 				'addTxt':'Add Address',
 				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_address_id\':\'0\'});',
 				},
 			'links':{'label':'Websites', 'aside':'no', 'type':'simplegrid', 'num_cols':1,
 				'headerValues':null,
 				'cellClasses':['multiline', ''],
-				'noData':'No links',
+//				'noData':'No links',
 				'addTxt':'Add Website',
 				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_link_id\':\'0\'});',
 				},
 			'relationships':{'label':'Relationships', 'aside':'no', 'type':'simplegrid', 'visible':'no', 'num_cols':1,
 				'headerValues':null,
 				'cellClasses':['', ''],
-				'noData':'No relationships',
+//				'noData':'No relationships',
 				'addTxt':'Add Relationship',
 				'addFn':'M.startApp(\'ciniki.customers.relationships\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
 				},
@@ -236,9 +243,15 @@ function ciniki_customers_main() {
 			return this.data[i];
 		};
 		this.customer.cellValue = function(s, i, j, d) {
-			if( s == 'details' || s == 'phones' ) {
+			if( s == 'details' ) {
 				if( j == 0 ) { return d.label; }
 				if( j == 1 ) { return d.value; }
+			}
+			else if( s == 'phones' ) {
+				switch(j) {
+					case 0: return d.phone.phone_label;
+					case 1: return d.phone.phone_number;
+				}
 			}
 			else if( s == 'emails' ) {
 				if( j == 0 ) { return d.email.address; }
@@ -250,6 +263,7 @@ function ciniki_customers_main() {
 					if( (d.address.flags&0x01) ) { l += cm + 'shipping'; cm =',<br/>';}
 					if( (d.address.flags&0x02) ) { l += cm + 'billing'; cm =',<br/>';}
 					if( (d.address.flags&0x04) ) { l += cm + 'mailing'; cm =',<br/>';}
+					if( (d.address.flags&0x08) ) { l += cm + 'public'; cm =',<br/>';}
 					return l;
 				} 
 				if( j == 1 ) {
@@ -365,6 +379,9 @@ function ciniki_customers_main() {
 			return '';
 		};
 		this.customer.rowFn = function(s, i, d) {
+			if( s == 'phones' ) {
+				return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_phone_id\':\'' + d.phone.id + '\'});';
+			}
 			if( s == 'emails' ) {
 				return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'edit_email_id\':\'' + d.email.id + '\'});';
 			}
@@ -442,7 +459,7 @@ function ciniki_customers_main() {
 	this.showCustomer = function(cb, cid) {
 		if( cid != null ) { this.customer.customer_id = cid; }
 		// Reset to not showing all sections
-		this.customer.sections.phones.visible = 'no';
+//		this.customer.sections.phones.visible = 'no';
 		this.customer.sections.subscriptions.visible = 'no';
 		this.customer.sections.invoices.visible = 'no';
 		this.customer.sections.appointments.visible = 'no';
@@ -473,7 +490,7 @@ function ciniki_customers_main() {
 //		}
 		if( rsp.customer.type == 2 ) {
 			this.customer.data.details.company = {'label':'Name', 'value':rsp.customer.company};
-			this.customer.data.details.name = {'label':'Contact', 'value':rsp.customer.display_name};
+			this.customer.data.details.name = {'label':'Contact', 'value':rsp.customer.first + ' ' + rsp.customer.last};
 		} else {
 			this.customer.data.details.name = {'label':'Name', 'value':rsp.customer.display_name};
 			if( rsp.customer.company != null &&  rsp.customer.company != '' ) {
@@ -483,23 +500,23 @@ function ciniki_customers_main() {
 				this.customer.data.details.birthdate = {'label':'Birthday', 'value':rsp.customer.birthdate};
 			}
 		}
-		this.customer.data.phones = {};
-		if(  rsp.customer.phone_home != null && rsp.customer.phone_home != '' ) {
-			this.customer.sections.phones.visible = 'yes';
-			this.customer.data.phones.home = {'label':'Home', 'value':rsp.customer.phone_home};
-		}
-		if(  rsp.customer.phone_work != null && rsp.customer.phone_work != '' ) {
-			this.customer.sections.phones.visible = 'yes';
-			this.customer.data.phones.work = {'label':'Work', 'value':rsp.customer.phone_work};
-		}
-		if(  rsp.customer.phone_cell != null && rsp.customer.phone_cell != '' ) {
-			this.customer.sections.phones.visible = 'yes';
-			this.customer.data.phones.cell = {'label':'Cell', 'value':rsp.customer.phone_cell};
-		}
-		if(  rsp.customer.phone_fax != null && rsp.customer.phone_fax != '' ) {
-			this.customer.sections.phones.visible = 'yes';
-			this.customer.data.phones.fax = {'label':'Fax', 'value':rsp.customer.phone_fax};
-		}
+//		this.customer.data.phones = {};
+//		if(  rsp.customer.phone_home != null && rsp.customer.phone_home != '' ) {
+//			this.customer.sections.phones.visible = 'yes';
+//			this.customer.data.phones.home = {'label':'Home', 'value':rsp.customer.phone_home};
+//		}
+//		if(  rsp.customer.phone_work != null && rsp.customer.phone_work != '' ) {
+//			this.customer.sections.phones.visible = 'yes';
+//			this.customer.data.phones.work = {'label':'Work', 'value':rsp.customer.phone_work};
+//		}
+//		if(  rsp.customer.phone_cell != null && rsp.customer.phone_cell != '' ) {
+//			this.customer.sections.phones.visible = 'yes';
+//			this.customer.data.phones.cell = {'label':'Cell', 'value':rsp.customer.phone_cell};
+//		}
+//		if(  rsp.customer.phone_fax != null && rsp.customer.phone_fax != '' ) {
+//			this.customer.sections.phones.visible = 'yes';
+//			this.customer.data.phones.fax = {'label':'Fax', 'value':rsp.customer.phone_fax};
+//		}
 		this.customer.sections._notes.visible=(rsp.customer.notes=='')?'no':'yes';
 
 		if( (rsp.customer.emails != null && rsp.customer.emails.length > 0)

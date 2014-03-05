@@ -19,6 +19,9 @@ function ciniki_customers_objects($ciniki) {
 			'status'=>array(),
 			'type'=>array(),
 			'member_status'=>array(),
+			'member_lastpaid'=>array(),
+			'membership_length'=>array(),
+			'membership_type'=>array(),
 			'prefix'=>array(),
 			'first'=>array(),
 			'middle'=>array(),
@@ -28,10 +31,10 @@ function ciniki_customers_objects($ciniki) {
 			'company'=>array(),
 			'department'=>array(),
 			'title'=>array(),
-			'phone_home'=>array(),
-			'phone_work'=>array(),
-			'phone_cell'=>array(),
-			'phone_fax'=>array(),
+//			'phone_home'=>array(),
+//			'phone_work'=>array(),
+//			'phone_cell'=>array(),
+//			'phone_fax'=>array(),
 			'notes'=>array(),
 			'birthdate'=>array(),
 			'webflags'=>array(),
@@ -71,6 +74,17 @@ function ciniki_customers_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_customer_history',
 		);
+	$objects['phone'] = array(
+		'name'=>'Customer Phone',
+		'table'=>'ciniki_customer_phones',
+		'fields'=>array(
+			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'phone_label'=>array(),
+			'phone_number'=>array(),
+			'flags'=>array(),
+			),
+		'history_table'=>'ciniki_customer_history',
+		);
 	$objects['link'] = array(
 		'name'=>'Customer Link',
 		'table'=>'ciniki_customer_links',
@@ -106,6 +120,17 @@ function ciniki_customers_objects($ciniki) {
 			'date_started'=>array(),
 			'date_ended'=>array(),
 			'notes'=>array(),
+			),
+		'history_table'=>'ciniki_customer_history',
+		);
+	$objects['tag'] = array(
+		'name'=>'Customer Tag',
+		'table'=>'ciniki_customer_tags',
+		'fields'=>array(
+			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'tag_type'=>array(),
+			'tag_name'=>array(),
+			'permalink'=>array(),
 			),
 		'history_table'=>'ciniki_customer_history',
 		);

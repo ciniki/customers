@@ -9,8 +9,21 @@ function ciniki_customers_edit() {
 	this.toggleOptions = {'Off':'Off', 'On':'On'};
 	this.subscriptionOptions = {'60':'Unsubscribed', '10':'Subscribed'};
 	this.memberStatus = {'10':'Active', '60':'Suspended'};
+	this.membershipLength = {'10':'Monthly', '20':'Yearly', '60':'Lifetime'};
+	this.membershipType = {'10':'Regular', '20':'Complementary', '30':'Reciprocal'};
 	this.webFlags = {'1':{'name':'Visible'}};
-	this.addressFlags = {'1':{'name':'Shipping'}, '2':{'name':'Billing'}, '3':{'name':'Mailing'}};
+	this.memberPhoneFlags = {'4':{'name':'Public'}};
+	this.addressFlags = {
+		'1':{'name':'Shipping'}, 
+		'2':{'name':'Billing'}, 
+		'3':{'name':'Mailing'},
+		};
+	this.memberAddressFlags = {
+		'1':{'name':'Shipping'}, 
+		'2':{'name':'Billing'}, 
+		'3':{'name':'Mailing'},
+		'4':{'name':'Public'},
+		};
 	this.emailFlags = {
 		'1':{'name':'Web Login'}, 
 		'5':{'name':'No Emails'},
@@ -37,7 +50,7 @@ function ciniki_customers_edit() {
 			}};
 		this.edit.forms = {};
 		this.edit.forms.person = {
-			'_image':{'label':'', 'aside':'no', 'fields':{
+			'_image':{'label':'', 'active':'no', 'aside':'no', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'name':{'label':'Name', 'fields':{
@@ -49,8 +62,11 @@ function ciniki_customers_edit() {
 				'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
 				'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
 				}},
-			'membership':{'label':'Membership', 'visible':'no', 'fields':{
+			'membership':{'label':'Membership', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
+				'member_lastpaid':{'label':'Last Paid', 'type':'text', 'size':'medium'},
+				'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
+				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.webFlags},
 				}},
 			'business':{'label':'Business', 'fields':{
@@ -58,12 +74,19 @@ function ciniki_customers_edit() {
 				'department':{'label':'Department', 'type':'text'},
 				'title':{'label':'Title', 'type':'text'},
 				}},
-			'phone':{'label':'Phone Numbers', 'fields':{
+			'phone':{'label':'Phone Numbers', 'active':'no', 'fields':{
 				'phone_home':{'label':'Home', 'type':'text'},
 				'phone_work':{'label':'Work', 'type':'text'},
 				'phone_cell':{'label':'Cell', 'type':'text'},
 				'phone_fax':{'label':'Fax', 'type':'text'},
 				}},
+			'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+				'headerValues':null,
+				'cellClasses':['label', ''],
+				'noData':'No phones',
+				'addTxt':'Add Phone',
+				'addFn':'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,0);',
+				},
 			'email':{'label':'Email', 'active':'no', 'fields':{
 				'email_address':{'label':'Primary', 'type':'text'},
 				'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
@@ -82,7 +105,7 @@ function ciniki_customers_edit() {
 				'province':{'label':'Province/State', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
-				'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.addressFlags},
+				'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
@@ -99,10 +122,10 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
-			'_short_bio':{'label':'Short Bio', 'visible':'no', 'fields':{
+			'_short_bio':{'label':'Short Bio', 'active':'no', 'fields':{
 				'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
-			'_full_bio':{'label':'Full Bio', 'visible':'no', 'fields':{
+			'_full_bio':{'label':'Full Bio', 'active':'no', 'fields':{
 				'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
 				}},
 			'_notes':{'label':'Notes', 'fields':{
@@ -127,16 +150,26 @@ function ciniki_customers_edit() {
 				'last':{'label':'Last', 'type':'text', 'livesearch':'yes'},
 				'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
 				}},
-			'membership':{'label':'Membership', 'visible':'no', 'fields':{
+			'membership':{'label':'Membership', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
+				'member_lastpaid':{'label':'Last Paid', 'type':'text', 'size':'medium'},
+				'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
+				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.webFlags},
 				}},
-			'phone':{'label':'Phone Numbers', 'fields':{
+			'phone':{'label':'Phone Numbers', 'active':'no', 'fields':{
 				'phone_home':{'label':'Home', 'type':'text'},
 				'phone_work':{'label':'Work', 'type':'text'},
 				'phone_cell':{'label':'Cell', 'type':'text'},
 				'phone_fax':{'label':'Fax', 'type':'text'},
 				}},
+			'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+				'headerValues':null,
+				'cellClasses':['label', ''],
+				'noData':'No phones',
+				'addTxt':'Add Phone',
+				'addFn':'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,0);',
+				},
 			'email':{'label':'Email', 'active':'no', 'fields':{
 				'email_address':{'label':'Primary', 'type':'text'},
 				'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
@@ -155,7 +188,7 @@ function ciniki_customers_edit() {
 				'province':{'label':'Province/State', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
-				'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.addressFlags},
+				'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
@@ -172,10 +205,10 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
-			'_short_bio':{'label':'Short Bio', 'visible':'no', 'fields':{
+			'_short_bio':{'label':'Short Bio', 'active':'no', 'fields':{
 				'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
-			'_full_bio':{'label':'Full Bio', 'visible':'no', 'fields':{
+			'_full_bio':{'label':'Full Bio', 'active':'no', 'fields':{
 				'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
 				}},
 			'_notes':{'label':'Notes', 'fields':{
@@ -192,6 +225,12 @@ function ciniki_customers_edit() {
 			return this.data[s];
 		};
 		this.edit.cellValue = function(s, i, j, d) {
+			if( s == 'phones' ) {
+				switch (j) {
+					case 0: return d.phone.phone_label;
+					case 1: return d.phone.phone_number;
+				}
+			}
 			if( s == 'emails' ) {
 				if( j == 0 ) { return d.email.address; }
 			}
@@ -224,6 +263,9 @@ function ciniki_customers_edit() {
 			}
 		};
 		this.edit.rowFn = function(s, i, d) { 
+			if( s == 'phones' ) {
+				return 'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.phone.id + '\');';
+			}
 			if( s == 'emails' ) {
 				return 'M.ciniki_customers_edit.showEmailEdit(\'M.ciniki_customers_edit.updateEditEmails();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.email.id + '\');';
 			}
@@ -294,7 +336,7 @@ function ciniki_customers_edit() {
 		this.address = new M.panel('Customer Address',
 			'ciniki_customers_edit', 'address',
 			'mc', 'medium', 'sectioned', 'ciniki.customers.edit.address');
-		this.address.data = {'flags':7};
+		this.address.data = {'flags':15};
 		this.address.customer_id = 0;
 		this.address.address_id = 0;
 		this.address.sections = {
@@ -305,7 +347,7 @@ function ciniki_customers_edit() {
 				'province':{'label':'Province/State', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
-				'flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.addressFlags},
+				'flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'_notes':{'label':'Notes', 'fields':{
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
@@ -373,6 +415,48 @@ function ciniki_customers_edit() {
 
 		this.email.addButton('save', 'Save', 'M.ciniki_customers_edit.saveEmail();');
 		this.email.addClose('cancel');
+
+		//
+		// The form panel to edit an phone for a customer 
+		//
+		this.phone = new M.panel('Customer Phone Number',
+			'ciniki_customers_edit', 'phone',
+			'mc', 'narrow', 'sectioned', 'ciniki.customers.edit.phone');
+		this.phone.data = {'flags':1};
+		this.phone.customer_id = 0;
+		this.phone.phone_id = 0;
+		this.phone.sections = {
+			'_phone':{'label':'Phone', 'fields':{
+				'phone_label':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell, Fax', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+				'phone_number':{'label':'Number', 'type':'text', 'size':'medium'},
+				'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+				}},
+			'_buttons':{'label':'', 'buttons':{
+				'save':{'label':'Save phone', 'fn':'M.ciniki_customers_edit.savePhone();'},
+				'delete':{'label':'Delete phone', 'fn':'M.ciniki_customers_edit.deletePhone();'},
+				}},
+			};
+		this.phone.fieldValue = function(s, i, d) { return this.data[i]; }
+		this.phone.fieldHistoryArgs = function(s, i) {
+			return {'method':'ciniki.customers.phoneHistory', 'args':{'business_id':M.curBusinessID, 
+				'customer_id':this.customer_id, 'phone_id':this.phone_id, 'field':i}};
+		};
+		this.phone.liveSearchCb = function(s, i, value) {
+			M.ciniki_customers_edit.phone.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.phone.panelUID + '_' + i), ['Home','Work','Cell','Fax']);
+		};
+		this.phone.liveSearchResultValue = function(s, f, i, j, d) {
+			return d;
+		};
+		this.phone.liveSearchResultRowFn = function(s, f, i, j, d) { 
+			return 'M.ciniki_customers_edit.phone.updateLabel(\'' + s + '\',\'' + escape(d) + '\');';
+		};
+		this.phone.updateLabel = function(s, l) {
+			M.gE(this.panelUID + '_phone_label').value = l;
+			this.removeLiveSearch(s, 'phone_label');
+		};
+
+		this.phone.addButton('save', 'Save', 'M.ciniki_customers_edit.savePhone();');
+		this.phone.addClose('cancel');
 
 		//
 		// The form panel to edit a link for a customer 
@@ -491,12 +575,29 @@ function ciniki_customers_edit() {
 		} else {
 			this.edit.nextFn = null;
 		}
+		//
+		// Setup the member forms
+		//
 		if( args.member != null && args.member == 'yes' ) {
 			this.edit.memberinfo = 'yes';
+			this.edit.forms.person.address.fields.address_flags.flags = this.memberAddressFlags;
+			this.edit.forms.business.address.fields.address_flags.flags = this.memberAddressFlags;
+			this.address.sections.address.fields.flags.flags = this.memberAddressFlags;
+			this.phone.sections._phone.fields.flags.active = 'yes';
+			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 		} else {
 			this.edit.memberinfo = 'no';
+			this.edit.forms.person.address.fields.address_flags.flags = this.addressFlags;
+			this.edit.forms.business.address.fields.address_flags.flags = this.addressFlags;
+			this.address.sections.address.fields.flags.flags = this.addressFlags;
+			this.phone.sections._phone.fields.flags.active = 'no';
+			this.phone.sections._phone.fields.flags.flags = {};
 		}
-		if( args.edit_email_id != null && args.edit_email_id != '' 
+		if( args.edit_phone_id != null && args.edit_phone_id != '' 
+			&& args.customer_id != null && args.customer_id > 0 ) {
+			this.showPhoneEdit(cb, args.customer_id, args.edit_phone_id);
+		}
+		else if( args.edit_email_id != null && args.edit_email_id != '' 
 			&& args.customer_id != null && args.customer_id > 0 ) {
 			this.showEmailEdit(cb, args.customer_id, args.edit_email_id);
 		}
@@ -520,36 +621,41 @@ function ciniki_customers_edit() {
 		this.edit.formtab_field_id = null;
 
 		if( this.edit.memberinfo == 'yes' ) {
-			this.edit.forms.person._image.visible = 'yes';
-			this.edit.forms.business._image.visible = 'yes';
-			this.edit.forms.person.membership.visible = 'yes';
-			this.edit.forms.business.membership.visible = 'yes';
-			this.edit.forms.person._short_bio.visible = 'yes';
-			this.edit.forms.business._short_bio.visible = 'yes';
-			this.edit.forms.person._full_bio.visible = 'yes';
-			this.edit.forms.business._full_bio.visible = 'yes';
+			this.edit.forms.person._image.active = 'yes';
+			this.edit.forms.business._image.active = 'yes';
+			this.edit.forms.person.membership.active = 'yes';
+			this.edit.forms.business.membership.active = 'yes';
+			this.edit.forms.person._short_bio.active = 'yes';
+			this.edit.forms.business._short_bio.active = 'yes';
+			this.edit.forms.person._full_bio.active = 'yes';
+			this.edit.forms.business._full_bio.active = 'yes';
 		} else {
-			this.edit.forms.person._image.visible = 'no';
-			this.edit.forms.business._image.visible = 'no';
-			this.edit.forms.person.membership.visible = 'no';
-			this.edit.forms.business.membership.visible = 'no';
-			this.edit.forms.person._short_bio.visible = 'no';
-			this.edit.forms.business._short_bio.visible = 'no';
-			this.edit.forms.person._full_bio.visible = 'no';
-			this.edit.forms.business._full_bio.visible = 'no';
+			this.edit.forms.person._image.active = 'no';
+			this.edit.forms.business._image.active = 'no';
+			this.edit.forms.person.membership.active = 'no';
+			this.edit.forms.business.membership.active = 'no';
+			this.edit.forms.person._short_bio.active = 'no';
+			this.edit.forms.business._short_bio.active = 'no';
+			this.edit.forms.person._full_bio.active = 'no';
+			this.edit.forms.business._full_bio.active = 'no';
 		}
 
 		if( this.edit.customer_id > 0 ) {
 			// Edit existing customer
 			this.edit.forms.person.email.active = 'no';
 			this.edit.forms.person.address.active = 'no';
+			this.edit.forms.person.phone.active = 'no';
 			this.edit.forms.person.emails.active = 'yes';
 			this.edit.forms.person.addresses.active = 'yes';
+			this.edit.forms.person.phones.active = 'yes';
 			this.edit.forms.person.links.active = 'yes';
+			// Business form
 			this.edit.forms.business.email.active = 'no';
 			this.edit.forms.business.address.active = 'no';
+			this.edit.forms.business.phone.active = 'no';
 			this.edit.forms.business.emails.active = 'yes';
 			this.edit.forms.business.addresses.active = 'yes';
+			this.edit.forms.business.phones.active = 'yes';
 			this.edit.forms.business.links.active = 'yes';
 			var rsp = M.api.getJSONCb('ciniki.customers.getFull', {'business_id':M.curBusinessID, 
 				'customer_id':this.edit.customer_id}, function(rsp) {
@@ -558,27 +664,45 @@ function ciniki_customers_edit() {
 						return false;
 					}
 					M.ciniki_customers_edit.edit.data = rsp.customer;
-					M.ciniki_customers_edit.edit.data.emails = rsp.customer.emails;
-					M.ciniki_customers_edit.edit.data.addresses = rsp.customer.addresses;
+//					M.ciniki_customers_edit.edit.data.emails = rsp.customer.emails;
+//					M.ciniki_customers_edit.edit.data.addresses = rsp.customer.addresses;
 //					if( rsp.customer.type == 0 || rsp.customer.type == 1 ) {
 //						M.ciniki_customers_edit.edit.formtab = 'person';
 //					}
 					M.ciniki_customers_edit.showEditSubscriptions(cb);
 				});
 		} else {
-			this.edit.data = {'type':'1', 'flags':1, 'address_flags':7};
+			this.edit.data = {'type':'1', 'flags':1, 'address_flags':15,
+				'member_status':'10', 'membership_length':'20', 'membership_type':'10'};
+			this.edit.forms.person.phone.active = 'yes';
 			this.edit.forms.person.email.active = 'yes';
 			this.edit.forms.person.address.active = 'yes';
+			this.edit.forms.person.phones.active = 'no';
 			this.edit.forms.person.emails.active = 'no';
 			this.edit.forms.person.addresses.active = 'no';
 			this.edit.forms.person.links.active = 'no';
+			this.edit.forms.business.phone.active = 'yes';
 			this.edit.forms.business.email.active = 'yes';
 			this.edit.forms.business.address.active = 'yes';
+			this.edit.forms.business.phones.active = 'no';
 			this.edit.forms.business.emails.active = 'no';
 			this.edit.forms.business.addresses.active = 'no';
 			this.edit.forms.business.links.active = 'no';
 			M.ciniki_customers_edit.showEditSubscriptions(cb);
 		}
+	};
+
+	this.updateEditPhones = function() {
+		var rsp = M.api.getJSONCb('ciniki.customers.get', {'business_id':M.curBusinessID, 
+			'customer_id':this.edit.customer_id, 'phones':'yes'}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				M.ciniki_customers_edit.edit.data.phones = rsp.customer.phones;
+				M.ciniki_customers_edit.edit.refreshSection('phones');
+				M.ciniki_customers_edit.edit.show();
+			});
 	};
 
 	this.updateEditEmails = function() {
@@ -593,6 +717,7 @@ function ciniki_customers_edit() {
 				M.ciniki_customers_edit.edit.show();
 			});
 	};
+
 	this.updateEditAddresses = function() {
 		var rsp = M.api.getJSONCb('ciniki.customers.get', {'business_id':M.curBusinessID, 
 			'customer_id':this.edit.customer_id, 'addresses':'yes'}, function(rsp) {
@@ -605,6 +730,7 @@ function ciniki_customers_edit() {
 				M.ciniki_customers_edit.edit.show();
 			});
 	};
+
 	this.updateEditLinks = function() {
 		var rsp = M.api.getJSONCb('ciniki.customers.get', {'business_id':M.curBusinessID, 
 			'customer_id':this.edit.customer_id, 'links':'yes'}, function(rsp) {
@@ -692,7 +818,7 @@ function ciniki_customers_edit() {
 		if( this.edit.customer_id > 0 ) {
 			var c = this.edit.serializeFormSection('no', 'name')
 				+ this.edit.serializeFormSection('no', 'business')
-				+ this.edit.serializeFormSection('no', 'phone')
+//				+ this.edit.serializeFormSection('no', 'phone')
 				+ this.edit.serializeFormSection('no', '_notes');
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('no', '_image')
@@ -960,6 +1086,75 @@ function ciniki_customers_edit() {
 						return false;
 					}
 					M.ciniki_customers_edit.email.close();
+				});
+		}
+	};
+
+	this.showPhoneEdit = function(cb, cid, pid) {
+		if( cid != null ) { this.phone.customer_id = cid; }
+		if( pid != null ) { this.phone.phone_id = pid; }
+		if( this.phone.phone_id > 0 ) {
+			this.phone.sections._buttons.buttons.delete.visible = 'yes';
+			var rsp = M.api.getJSONCb('ciniki.customers.phoneGet', 
+				{'business_id':M.curBusinessID, 'customer_id':this.phone.customer_id, 
+				'phone_id':this.phone.phone_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					M.ciniki_customers_edit.phone.data = rsp.phone;
+					M.ciniki_customers_edit.phone.refresh();
+					M.ciniki_customers_edit.phone.show(cb);
+				});
+		} else {
+			this.phone.data = {'flags':1};
+			this.phone.sections._buttons.buttons.delete.visible = 'no';
+			this.phone.refresh();
+			this.phone.show(cb);
+		}
+	};
+
+	this.savePhone = function() {
+		if( this.phone.phone_id > 0 ) {
+			var c = this.phone.serializeForm('no');
+			if( c != '' ) {
+				var rsp = M.api.postJSONCb('ciniki.customers.phoneUpdate', 
+					{'business_id':M.curBusinessID, 
+					'customer_id':M.ciniki_customers_edit.phone.customer_id,
+					'phone_id':M.ciniki_customers_edit.phone.phone_id}, c, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						} 
+						M.ciniki_customers_edit.phone.close();
+					});
+			} else {
+				M.ciniki_customers_edit.phone.close();
+			}
+		} else {
+			var c = this.phone.serializeForm('yes');
+			var rsp = M.api.postJSONCb('ciniki.customers.phoneAdd', 
+				{'business_id':M.curBusinessID, 
+				'customer_id':M.ciniki_customers_edit.phone.customer_id}, c, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					} 
+					M.ciniki_customers_edit.phone.close();
+				});
+		}
+	};
+
+	this.deletePhone = function(customerID, pid) {
+		if( confirm("Are you sure you want to remove this phone number?") ) {
+			var rsp = M.api.getJSONCb('ciniki.customers.phoneDelete', 
+				{'business_id':M.curBusinessID, 'customer_id':this.phone.customer_id, 
+				'phone_id':this.phone.phone_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					M.ciniki_customers_edit.phone.close();
 				});
 		}
 	};

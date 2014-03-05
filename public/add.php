@@ -56,6 +56,8 @@
 // notes:				(optional) The notes for the customer.
 // birthdate:			(optional) The birthdate of the customer.
 //
+// member_categories:	(optional) The category tags for the member.
+//
 // Returns
 // -------
 // <rsp stat='ok' id='34' />
@@ -71,6 +73,9 @@ function ciniki_customers_add(&$ciniki) {
 		'status'=>array('required'=>'no', 'default'=>'1', 'blank'=>'yes', 'name'=>'Status'),
 		'type'=>array('required'=>'no', 'default'=>'1', 'blank'=>'yes', 'name'=>'Customer Type'),
         'member_status'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Member Status'), 
+		'member_lastpaid'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Member Last Paid'),
+		'membership_length'=>array('required'=>'no', 'default'=>'20', 'blank'=>'no', 'name'=>'Membership Length'),
+		'membership_type'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'name'=>'Membership Type'),
 		'name'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Name'),
         'prefix'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Prefix'), 
         'first'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Name'), 
@@ -101,6 +106,7 @@ function ciniki_customers_add(&$ciniki) {
         'birthdate'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
+		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -209,53 +215,6 @@ function ciniki_customers_add(&$ciniki) {
 		return $rc;
 	}   
 
-	//
-	// Get a new UUID
-	//
-//	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
-//	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
-//	if( $rc['stat'] != 'ok' ) {
-//		return $rc;
-//	}
-//	$uuid = $rc['uuid'];
-
-	//
-	// Add the customer to the database
-	//
-//	$strsql = "INSERT INTO ciniki_customers (uuid, business_id, status, cid, type, "
-//		. "prefix, first, middle, last, suffix, display_name, "
-//		. "company, department, title, phone_home, phone_work, phone_cell, phone_fax, notes, birthdate, "
-//		. "date_added, last_updated) VALUES ("
-//		. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-//		. "1, "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['cid']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['type']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['prefix']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['first']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['middle']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['last']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['suffix']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['display_name']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['company']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['department']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['title']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_home']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_work']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_cell']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['phone_fax']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['notes']) . "', "
-//		. "'" . ciniki_core_dbQuote($ciniki, $args['birthdate']) . "', "
-//		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())";
-//	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
-//	if( $rc['stat'] != 'ok' ) { 
-//		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-//		return $rc;
-//	}
-//	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-//		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-//		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'369', 'msg'=>'Unable to add customer'));
-//	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
 	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.customer', $args, 0x04);
 	if( $rc['stat'] != 'ok' ) {
@@ -264,38 +223,52 @@ function ciniki_customers_add(&$ciniki) {
 	$customer_id = $rc['id'];
 
 	//
-	// FIXME: Move to array below
-	// Add the uuid to the history
+	// Check if phone numbers to add
 	//
-//	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-//		1, 'ciniki_customers', $customer_id, 'uuid', $uuid);
-
-	//
-	// Add all the fields to the change log
-	//
-//	$changelog_fields = array(
-//		'cid',
-//		'prefix',
-//		'first',
-//		'middle',
-//		'last',
-//		'suffix',
-//		'company',
-//		'department',
-//		'title',
-//		'phone_home',
-//		'phone_work',
-//		'phone_cell',
-//		'phone_fax',
-//		'notes',
-//		'birthdate',
-//		);
-//	foreach($changelog_fields as $field) {
-//		if( isset($args[$field]) && $args[$field] != '' ) {
-//			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
-//				1, 'ciniki_customers', $customer_id, $field, $args[$field]);
-//		}
-//	}
+	if( isset($args['phone_home']) && $args['phone_home'] != '' ) {
+		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+			array('customer_id'=>$customer_id,
+				'phone_label'=>'Home',
+				'phone_number'=>$args['phone_home'],
+				'flags'=>0), 0x04);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
+	if( isset($args['phone_work']) && $args['phone_work'] != '' ) {
+		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+			array('customer_id'=>$customer_id,
+				'phone_label'=>'Work',
+				'phone_number'=>$args['phone_work'],
+				'flags'=>0), 0x04);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
+	if( isset($args['phone_cell']) && $args['phone_cell'] != '' ) {
+		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+			array('customer_id'=>$customer_id,
+				'phone_label'=>'Cell',
+				'phone_number'=>$args['phone_cell'],
+				'flags'=>0), 0x04);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
+	if( isset($args['phone_fax']) && $args['phone_fax'] != '' ) {
+		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+			array('customer_id'=>$customer_id,
+				'phone_label'=>'Fax',
+				'phone_number'=>$args['phone_fax'],
+				'flags'=>0), 0x04);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
 
 	//
 	// Check if email address was specified, and add to customer emails
@@ -356,6 +329,20 @@ function ciniki_customers_add(&$ciniki) {
 		$rc = ciniki_subscriptions_updateCustomerSubscriptions($ciniki, $args['business_id'], 
 			$customer_id, $args['subscriptions'], $args['unsubscriptions']);
 		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+	}
+
+	//
+	// Update the categories
+	//
+	if( isset($args['member_categories']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $args['business_id'],
+			'ciniki_customer_tags', 'ciniki_customer_history',
+			'customer_id', $customer_id, 40, $args['member_categories']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
 	}
