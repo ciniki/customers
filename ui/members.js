@@ -153,11 +153,11 @@ function ciniki_customers_members() {
 			if( s == 'phones' ) {
 				switch(j) {
 					case 0: return d.phone.phone_label;
-					case 1: return d.phone.phone_number;
+					case 1: return d.phone.phone_number + ((d.phone.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
 				}
 			}
 			if( s == 'emails' ) {
-				return d.email.address;
+				return d.email.address + ((d.email.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
 			}
 			if( s == 'addresses' ) {
 				if( j == 0 ) { 
@@ -182,9 +182,9 @@ function ciniki_customers_members() {
 			}
 			if( s == 'links' ) {
 				if( d.link.name != '' ) {
-					return '<span class="maintext">' + d.link.name + '</span><span class="subtext">' + d.link.url + '</span>';
+					return '<span class="maintext">' + d.link.name + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + d.link.url + '</span>';
 				} else {
-					return d.link.url;
+					return d.link.url + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
 				}
 			}
 			if( s == 'images' && j == 0 ) { 
