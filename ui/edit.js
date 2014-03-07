@@ -689,7 +689,7 @@ function ciniki_customers_edit() {
 					}
 					var p = M.ciniki_customers_edit.edit;
 					p.data = rsp.customer;
-					if( (M.curBusiness.modules['ciniki.customers'].flags&0x03) > 0 && rsp.member_categories != null ) {
+					if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 && rsp.member_categories != null ) {
 						var tags = [];
 						for(i in rsp.member_categories) {
 							tags.push(rsp.member_categories[i].tag.name);
@@ -721,14 +721,14 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.emails.active = 'no';
 			this.edit.forms.business.addresses.active = 'no';
 			this.edit.forms.business.links.active = 'no';
-			if( (M.curBusiness.modules['ciniki.customers'].flags&0x03) > 0 ) {
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 ) {
 				M.api.getJSONCb('ciniki.customers.tags', {'business_id':M.curBusinessID}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
 					}
 					var p = M.ciniki_customers_edit.edit;
-					if( (M.curBusiness.modules['ciniki.customers'].flags&0x03) > 0 && rsp.member_categories != null ) {
+					if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 && rsp.member_categories != null ) {
 						var tags = [];
 						for(i in rsp.member_categories) {
 							tags.push(rsp.member_categories[i].tag.name);

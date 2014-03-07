@@ -306,13 +306,13 @@ function ciniki_customers_members() {
 					p.data.webvisible = 'Hidden';
 				}
 				
-				if( (M.curBusiness.modules['ciniki.customers'].flags&0x03) > 0 ) {
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 ) {
 					p.sections.membership.list.member_categories.visible = 'yes';
 					if( rsp.customer.member_categories != null && rsp.customer.member_categories != '' ) {
 						p.data.member_categories = rsp.customer.member_categories.replace(/::/g, ', ');
 					}
 				} else {
-					p.sections.membership.list.member_categories.visible = 'yes';
+					p.sections.membership.list.member_categories.visible = 'no';
 				}
 
 				p.sections.notes.visible=(rsp.customer.notes!=null&&rsp.customer.notes!='')?'yes':'no';
