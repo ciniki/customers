@@ -30,6 +30,7 @@ function ciniki_customers_update(&$ciniki) {
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Middle Name'), 
         'last'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Last Name'), 
         'suffix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Suffix'), 
+        'display_name_format'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Display Name Format'), 
         'company'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Company'), 
         'department'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Company Department'), 
         'title'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Company Title'), 
@@ -84,11 +85,12 @@ function ciniki_customers_update(&$ciniki) {
 
 	if( isset($args['prefix']) || isset($args['first']) 
 		|| isset($args['middle']) || isset($args['last']) || isset($args['suffix']) 
-		|| isset($args['company']) || isset($args['type']) ) {
+		|| isset($args['company']) || isset($args['type']) || isset($args['display_name_format']) ) {
 		//
 		// Get the existing customer name
 		//
-		$strsql = "SELECT type, prefix, first, middle, last, suffix, display_name, company "
+		$strsql = "SELECT type, prefix, first, middle, last, suffix, "
+			. "display_name, display_name_format, company "
 			. "FROM ciniki_customers "
 			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -101,6 +103,10 @@ function ciniki_customers_update(&$ciniki) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1467', 'msg'=>'Customer does not exist'));
 		}
 		$customer = $rc['customer'];
+
+		if( isset($args['display_name_format']) ) {
+			$customer['display_name_format'] = $args['display_name_format'];
+		}
 
 		//
 		// Build the persons name
@@ -142,16 +148,25 @@ function ciniki_customers_update(&$ciniki) {
 		$type = (isset($args['type']))?$args['type']:$customer['type'];
 		$company = (isset($args['company']))?$args['company']:$customer['company'];
 		if( $type == 2 && $company != '' ) {
-			if( !isset($settings['display-name-business-format']) 
+			$format = 'company';
+			if( isset($customer['display_name_format']) && $customer['display_name_format'] != '' ) {
+				$format = $customer['display_name_format'];
+			} elseif( !isset($settings['display-name-business-format']) 
 				|| $settings['display-name-business-format'] == 'company' ) {
+				$format = 'company';
+			} elseif( $settings['display-name-business-format'] != '' ) {
+				$format = $settings['display-name-business-format'];
+			}
+			// Format the display_name
+			if( $format == 'company' ) {
 				$args['display_name'] = $company;
-			} elseif( $settings['display-name-business-format'] == 'company - person' ) {
+			} elseif( $format == 'company - person' ) {
 				$args['display_name'] = $company . ' - ' . $person_name;
-			} elseif( $settings['display-name-business-format'] == 'person - company' ) {
+			} elseif( $format == 'person - company' ) {
 				$args['display_name'] = $person_name . ' - ' . $company;
-			} elseif( $settings['display-name-business-format'] == 'company [person]' ) {
+			} elseif( $format == 'company [person]' ) {
 				$args['display_name'] = $company . ' [' . $person_name . ']';
-			} elseif( $settings['display-name-business-format'] == 'person [company]' ) {
+			} elseif( $format == 'person [company]' ) {
 				$args['display_name'] = $person_name . ' [' . $company . ']';
 			}
 		} else {

@@ -28,6 +28,7 @@ function ciniki_customers_objects($ciniki) {
 			'last'=>array(),
 			'suffix'=>array(),
 			'display_name'=>array(),
+			'display_name_format'=>array(),
 			'company'=>array(),
 			'department'=>array(),
 			'title'=>array(),

@@ -91,7 +91,7 @@ function ciniki_customers_getFull($ciniki) {
 	$strsql = "SELECT ciniki_customers.id, cid, type, "
 		. "member_status, member_lastpaid, membership_length, membership_type, "
 		. "prefix, first, middle, last, suffix, "
-		. "display_name, company, department, title, "
+		. "display_name, display_name_format, company, department, title, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "notes, primary_image_id, webflags, short_bio, full_bio "
@@ -104,8 +104,8 @@ function ciniki_customers_getFull($ciniki) {
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'webflags', 
 				'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 
-				'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
-				'company', 'department', 'title', 
+				'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
+				'display_name', 'display_name_format', 'company', 'department', 'title', 
 				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),

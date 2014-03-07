@@ -51,11 +51,11 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
 	}
 	$member = array_pop($rc['members']);
 
-	if( isset($member['company']) && $member['company'] != '' ) {
-		$member['name'] = $member['company'];
-	} else {
+//	if( isset($member['company']) && $member['company'] != '' ) {
+//		$member['name'] = $member['company'];
+//	} else {
 		$member['name'] = $member['member'];
-	}
+//	}
 
 	//
 	// Check for any public addresses for the member

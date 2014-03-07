@@ -63,6 +63,11 @@
 # display_name:		The name to be displayed in lists, invoices, etc.  This can be any combination of
 #					prefix, first, middle, last, suffix, company.  The format settings are in
 #					ciniki_customer_settings.schema.
+# display_name_format:	The format for displaying the display_name field.
+#
+#					company - display only the company name
+#					person - company - display person then company name
+#					company - person - display the company name then the person name
 #
 # company:			The company the customer is associated with.
 # department:		The department within the company.
@@ -108,6 +113,7 @@ create table ciniki_customers (
 	last varchar(100) not null,
 	suffix varchar(100) not null,
 	display_name varchar(250) not null,
+	display_name_format varchar(100) not null,
 	company varchar(100) not null,
 	department varchar(100) not null,
 	title varchar(100) not null,
@@ -131,4 +137,4 @@ create table ciniki_customers (
 	index (company),
 	index (cid),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.13';
+) ENGINE='InnoDB', COMMENT='v1.14';

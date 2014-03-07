@@ -37,6 +37,12 @@ function ciniki_customers_edit() {
 	this.linkFlags = {
 		'1':{'name':'Visible'}, 
 		};
+	this.displayNameFormatOptions = {
+		'':'System Settings',
+		'company':'Company Name',
+		'company - person':'Company Name - Person',
+		'person - company':'Person - Company Name',
+		};
 	this.init = function() {
 		//
 		// The add/edit form
@@ -83,10 +89,19 @@ function ciniki_customers_edit() {
 				'title':{'label':'Title', 'type':'text'},
 				}},
 			'phone':{'label':'Phone Numbers', 'active':'no', 'fields':{
-				'phone_home':{'label':'Home', 'type':'text'},
-				'phone_work':{'label':'Work', 'type':'text'},
-				'phone_cell':{'label':'Cell', 'type':'text'},
-				'phone_fax':{'label':'Fax', 'type':'text'},
+				'phone_label_1':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+				'phone_number_1':{'label':'Number', 'type':'text', 'size':'medium'},
+				'phone_flags_1':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.memberPhoneFlags},
+				'phone_label_2':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+				'phone_number_2':{'label':'Number', 'type':'text', 'size':'medium'},
+				'phone_flags_2':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.memberPhoneFlags},
+				'phone_label_3':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+				'phone_number_3':{'label':'Number', 'type':'text', 'size':'medium'},
+				'phone_flags_3':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.memberPhoneFlags},
+//				'phone_home':{'label':'Home', 'type':'text'},
+//				'phone_work':{'label':'Work', 'type':'text'},
+//				'phone_cell':{'label':'Cell', 'type':'text'},
+//				'phone_fax':{'label':'Fax', 'type':'text'},
 				}},
 			'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
@@ -150,6 +165,7 @@ function ciniki_customers_edit() {
 			'business':{'label':'Business', 'fields':{
 				'cid':{'label':'Customer ID', 'type':'text', 'active':'no'},
 				'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
+				'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
 				}},
 			'name':{'label':'Contact', 'fields':{
 				'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
@@ -169,10 +185,19 @@ function ciniki_customers_edit() {
 				'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
 			'phone':{'label':'Phone Numbers', 'active':'no', 'fields':{
-				'phone_home':{'label':'Home', 'type':'text'},
-				'phone_work':{'label':'Work', 'type':'text'},
-				'phone_cell':{'label':'Cell', 'type':'text'},
-				'phone_fax':{'label':'Fax', 'type':'text'},
+				'phone_label_1':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+				'phone_number_1':{'label':'Number', 'type':'text', 'size':'medium'},
+				'phone_flags_1':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.memberPhoneFlags},
+				'phone_label_2':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+				'phone_number_2':{'label':'Number', 'type':'text', 'size':'medium'},
+				'phone_flags_2':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.memberPhoneFlags},
+				'phone_label_3':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+				'phone_number_3':{'label':'Number', 'type':'text', 'size':'medium'},
+				'phone_flags_3':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.memberPhoneFlags},
+//				'phone_home':{'label':'Home', 'type':'text'},
+//				'phone_work':{'label':'Work', 'type':'text'},
+//				'phone_cell':{'label':'Cell', 'type':'text'},
+//				'phone_fax':{'label':'Fax', 'type':'text'},
 				}},
 			'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
@@ -595,17 +620,28 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.address.fields.address_flags.flags = this.memberAddressFlags;
 			this.edit.forms.person.email.fields.flags.flags = this.memberEmailFlags;
 			this.edit.forms.business.email.fields.flags.flags = this.memberEmailFlags;
+			this.edit.forms.person.phone.fields.phone_flags_1.active = 'yes';
+			this.edit.forms.person.phone.fields.phone_flags_2.active = 'yes';
+			this.edit.forms.person.phone.fields.phone_flags_3.active = 'yes';
+			this.edit.forms.business.phone.fields.phone_flags_1.active = 'yes';
+			this.edit.forms.business.phone.fields.phone_flags_2.active = 'yes';
+			this.edit.forms.business.phone.fields.phone_flags_3.active = 'yes';
 			this.address.sections.address.fields.flags.flags = this.memberAddressFlags;
 			this.phone.sections._phone.fields.flags.active = 'yes';
 			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 			this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
-
 		} else {
 			this.edit.memberinfo = 'no';
 			this.edit.forms.person.address.fields.address_flags.flags = this.addressFlags;
 			this.edit.forms.business.address.fields.address_flags.flags = this.addressFlags;
 			this.edit.forms.person.email.fields.flags.flags = this.emailFlags;
 			this.edit.forms.business.email.fields.flags.flags = this.emailFlags;
+			this.edit.forms.person.phone.fields.phone_flags_1.active = 'no';
+			this.edit.forms.person.phone.fields.phone_flags_2.active = 'no';
+			this.edit.forms.person.phone.fields.phone_flags_3.active = 'no';
+			this.edit.forms.business.phone.fields.phone_flags_1.active = 'no';
+			this.edit.forms.business.phone.fields.phone_flags_2.active = 'no';
+			this.edit.forms.business.phone.fields.phone_flags_3.active = 'no';
 			this.address.sections.address.fields.flags.flags = this.addressFlags;
 			this.phone.sections._phone.fields.flags.active = 'no';
 			this.phone.sections._phone.fields.flags.flags = {};

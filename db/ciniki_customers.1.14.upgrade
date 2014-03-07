@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.14.
+#
+ALTER TABLE ciniki_customers ADD COLUMN display_name_format varchar(100) not null AFTER display_name;
+ALTER TABLE ciniki_customers COMMENT='v1.14';
+

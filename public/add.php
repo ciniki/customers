@@ -28,6 +28,7 @@
 // middle:				(optional) The middle name or initial of the customer.
 // last:				(optional) The last name of the customer.
 // suffix:				(optional) The credentials or degrees for the customer: Ph.D, M.D., Jr., etc.
+// display_name_format:	(optional) The format for building the display_name.
 // company:				(optional) The company the customer works for.
 // department:			(optional) The department at the company the customer works for.
 // title:				(optional) The customers title at the company.
@@ -48,11 +49,21 @@
 //						0x01 - Shipping
 //						0x02 - Billing
 //						0x04 - Mailing
+//						0x08 - Public
 // 
 // phone_home:			(optional) The home phone number for the customer.
 // phone_work:			(optional) The work phone number for the customer.
 // phone_cell:			(optional) The cell phone number for the customer.
 // phone_fax:			(optional) The fax number for the customer.
+// phone_label_1:		(optional) The label for the first phone number.
+// phone_number_1:		(optional) The number for the first phone number.
+// phone_flags_1:		(optional) The flags for the first phone number.
+// phone_label_2:		(optional) The label for the second phone number.
+// phone_number_2:		(optional) The number for the second phone number.
+// phone_flags_2:		(optional) The flags for the second phone number.
+// phone_label_3:		(optional) The label for the third phone number.
+// phone_number_3:		(optional) The number for the third phone number.
+// phone_flags_3:		(optional) The flags for the third phone number.
 // notes:				(optional) The notes for the customer.
 // birthdate:			(optional) The birthdate of the customer.
 //
@@ -82,6 +93,7 @@ function ciniki_customers_add(&$ciniki) {
         'middle'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Middle Name'), 
         'last'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Last Name'), 
         'suffix'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Suffix'), 
+        'display_name_format'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Display Name Format'), 
         'company'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company'), 
         'department'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Department'), 
         'title'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Company Title'), 
@@ -98,6 +110,15 @@ function ciniki_customers_add(&$ciniki) {
         'phone_work'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Work Phone'), 
         'phone_cell'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Cell Phone'), 
         'phone_fax'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Fax Number'), 
+        'phone_label_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Phone Label'), 
+        'phone_number_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Phone Number'), 
+        'phone_flags_1'=>array('required'=>'no', 'default'=>'0', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Phone Number Flags'), 
+        'phone_label_2'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Second Phone Label'), 
+        'phone_number_2'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Second Phone Number'), 
+        'phone_flags_2'=>array('required'=>'no', 'default'=>'0', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Second Phone Number Flags'), 
+        'phone_label_3'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Third Phone Label'), 
+        'phone_number_3'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Third Phone Number'), 
+        'phone_flags_3'=>array('required'=>'no', 'default'=>'0', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Third Phone Number Flags'), 
         'notes'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
         'primary_image_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Image'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Webflags'), 
@@ -182,16 +203,26 @@ function ciniki_customers_add(&$ciniki) {
 		$person_name .= $space . $args['suffix'];
 	}
 	if( $args['type'] == 2 && $args['company'] != '' ) {
-		if( !isset($settings['display-name-business-format']) 
+		// Find the format to use
+		$format = 'company';
+		if( isset($args['display_name_format']) && $args['display_name_format'] != '' ) {
+			$format = $args['display_name_format'];
+		} elseif( !isset($settings['display-name-business-format']) 
 			|| $settings['display-name-business-format'] == 'company' ) {
+			$format = 'company';
+		} elseif( $settings['display-name-business-format'] != '' ) {
+			$format = $settings['display-name-business-format'];
+		}
+		// Format the display_name
+		if( $format == 'company' ) {
 			$args['display_name'] = $args['company'];
-		} elseif( $settings['display-name-business-format'] == 'company - person' ) {
+		} elseif( $format == 'company - person' ) {
 			$args['display_name'] = $args['company'] . ' - ' . $person_name;
-		} elseif( $settings['display-name-business-format'] == 'person - company' ) {
+		} elseif( $format == 'person - company' ) {
 			$args['display_name'] = $person_name . ' - ' . $args['company'];
-		} elseif( $settings['display-name-business-format'] == 'company [person]' ) {
+		} elseif( $format == 'company [person]' ) {
 			$args['display_name'] = $args['company'] . ' [' . $person_name . ']';
-		} elseif( $settings['display-name-business-format'] == 'person [company]' ) {
+		} elseif( $format == 'person [company]' ) {
 			$args['display_name'] = $person_name . ' [' . $args['company'] . ']';
 		}
 	} else {
@@ -223,9 +254,23 @@ function ciniki_customers_add(&$ciniki) {
 	}
 	$customer_id = $rc['id'];
 
+
 	//
 	// Check if phone numbers to add
 	//
+	for($i=1;$i<4;$i++) {
+		if( isset($args["phone_number_$i"]) && $args["phone_number_$i"] != '' ) {
+			$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+				array('customer_id'=>$customer_id,
+					'phone_label'=>$args["phone_label_$i"],
+					'phone_number'=>$args["phone_number_$i"],
+					'flags'=>$args["phone_flags_$i"]), 0x04);
+			if( $rc['stat'] != 'ok' ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+				return $rc;
+			}
+		}
+	}
 	if( isset($args['phone_home']) && $args['phone_home'] != '' ) {
 		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
 			array('customer_id'=>$customer_id,
