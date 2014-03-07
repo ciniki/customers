@@ -20,7 +20,6 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	$date_format = ciniki_users_dateFormat($ciniki);
 
 	if( $format == '' ) {
-		error_log('lookup');
 		$format = 'shortbio';
 		$rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_settings', 'business_id',	$business_id,
 			'ciniki.web', 'settings', 'page-members');
@@ -216,7 +215,6 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	//
 	$desc = '';
 	$fmt = explode('-', $format);
-	error_log("format: $format");
 	foreach($fmt as $piece) {
 		if( isset($pieces[$piece]) && $pieces[$piece] != '' ) {
 			$desc .= ($desc!=''?"\n":'') . $pieces[$piece];
