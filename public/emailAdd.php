@@ -58,6 +58,20 @@ function ciniki_customers_emailAdd(&$ciniki) {
 	// Add the address
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-	return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.email', $args, 0x07);
+	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.email', $args, 0x07);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	//
+	// Update the short_description
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
+	$rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['business_id'], $args['customer_id'], 0x07);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	return array('stat'=>'ok');
 }
 ?>

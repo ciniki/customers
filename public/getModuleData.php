@@ -93,6 +93,32 @@ function ciniki_customers_getModuleData($ciniki) {
 	$customer['subscriptions'] = array();
 
 	//
+	// Get the categories and tags for the post
+	//
+	if( ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
+		$strsql = "SELECT tag_type, tag_name AS lists "
+			. "FROM ciniki_customer_tags "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY tag_type, tag_name "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.blog', array(
+			array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
+				'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['tags']) ) {
+			foreach($rc['tags'] as $tags) {
+				if( $tags['tags']['tag_type'] == 40 ) {
+					$customer['member_categories'] = $tags['tags']['lists'];
+				}
+			}
+		}
+	}
+
+	//
 	// Get phones
 	//
 	$strsql = "SELECT id, phone_label, phone_number, flags "

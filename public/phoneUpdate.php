@@ -48,7 +48,21 @@ function ciniki_customers_phoneUpdate(&$ciniki) {
 	// Update the address
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-	return ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.phone', 
+	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.phone', 
 		$args['phone_id'], $args, 0x07);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	//
+	// Update the short_description
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
+	$rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['business_id'], $args['customer_id'], 0x07);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	return array('stat'=>'ok');
 }
 ?>

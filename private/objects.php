@@ -41,6 +41,7 @@ function ciniki_customers_objects($ciniki) {
 			'permalink'=>array(),
 			'primary_image_id'=>array('ref'=>'ciniki.images.image'),
 			'short_bio'=>array(),
+			'short_description'=>array(),
 			'full_bio'=>array(),
 			),
 		'history_table'=>'ciniki_customer_history',

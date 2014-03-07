@@ -58,6 +58,75 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
 	}
 
 	//
+	// Check for any public addresses for the member
+	//
+	$strsql = "SELECT id, address1, address2, city, province, postal "
+		. "FROM ciniki_customer_addresses "
+		. "WHERE ciniki_customer_addresses.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
+		. "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND (ciniki_customer_addresses.flags&0x08) > 0 "	// Visible on website
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'addresses', 'fname'=>'id', 
+			'fields'=>array('address1', 'address2', 'city', 'province', 'postal')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['addresses']) ) {
+		$member['addresses'] = $rc['addresses'];
+	} else {
+		$member['addresses'] = array();
+	}
+
+	//
+	// Check for any public phone numbers for the member
+	//
+	$strsql = "SELECT id, phone_label, phone_number "
+		. "FROM ciniki_customer_phones "
+		. "WHERE ciniki_customer_phones.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
+		. "AND ciniki_customer_phones.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND (ciniki_customer_phones.flags&0x08) > 0 "	// Visible on website
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'phones', 'fname'=>'id', 
+			'fields'=>array('phone_label', 'phone_number')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['phones']) ) {
+		$member['phones'] = $rc['phones'];
+	} else {
+		$member['phones'] = array();
+	}
+		
+	//
+	// Check for any public email addresses for the member
+	//
+	$strsql = "SELECT id, email  "
+		. "FROM ciniki_customer_emails "
+		. "WHERE ciniki_customer_emails.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
+		. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND (ciniki_customer_emails.flags&0x08) > 0 "	// Visible on website
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'emails', 'fname'=>'id', 
+			'fields'=>array('email')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['emails']) ) {
+		$member['emails'] = $rc['emails'];
+	} else {
+		$member['emails'] = array();
+	}
+		
+	//
 	// Check for any links for the member
 	//
 	$strsql = "SELECT id, name, url, description "

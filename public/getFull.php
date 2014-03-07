@@ -18,6 +18,7 @@ function ciniki_customers_getFull($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
+		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Categories'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -127,6 +128,32 @@ function ciniki_customers_getFull($ciniki) {
 	$customer = $rc['customers'][0]['customer'];
 	$customer['addresses'] = array();
 	$customer['subscriptions'] = array();
+
+	//
+	// Get the categories and tags for the post
+	//
+	if( ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
+		$strsql = "SELECT tag_type, tag_name AS lists "
+			. "FROM ciniki_customer_tags "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY tag_type, tag_name "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.blog', array(
+			array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
+				'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['tags']) ) {
+			foreach($rc['tags'] as $tags) {
+				if( $tags['tags']['tag_type'] == 40 ) {
+					$customer['member_categories'] = $tags['tags']['lists'];
+				}
+			}
+		}
+	}
 
 	//
 	// Get phones
@@ -266,6 +293,25 @@ function ciniki_customers_getFull($ciniki) {
 		}
 	}
 
-	return array('stat'=>'ok', 'customer'=>$customer);
+	//
+	// Check if all available member categories should be returned
+	//
+	$member_categories = array();
+	if( isset($args['member_categories']) && $args['member_categories'] == 'yes' ) {
+		//
+		// Get the available tags
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
+		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
+			'ciniki_customer_tags', 40);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+		}
+		if( isset($rc['tags']) ) {
+			$member_categories = $rc['tags'];
+		}
+	}
+
+	return array('stat'=>'ok', 'customer'=>$customer, 'member_categories'=>$member_categories);
 }
 ?>

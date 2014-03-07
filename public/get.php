@@ -28,6 +28,7 @@ function ciniki_customers_get($ciniki) {
 		'addresses'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Addresses'),
 		'links'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Links'),
 		'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'),
+		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Categories'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -43,6 +44,7 @@ function ciniki_customers_get($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+	$modules = $rc['modules'];
 
 	//
 	// Get the business settings
@@ -145,6 +147,59 @@ function ciniki_customers_get($ciniki) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'370', 'msg'=>'Invalid customer'));
 		}
 		$customer = $rc['customers'][0]['customer'];
+	}
+
+	//
+	// Get the categories and tags for the post
+	//
+	if( ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
+		$strsql = "SELECT tag_type, tag_name AS lists "
+			. "FROM ciniki_customer_tags "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY tag_type, tag_name "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.blog', array(
+			array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
+				'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['tags']) ) {
+			foreach($rc['tags'] as $tags) {
+				if( $tags['tags']['tag_type'] == 40 ) {
+					$customer['member_categories'] = $tags['tags']['lists'];
+				}
+			}
+		}
+	}
+
+	//
+	// Get the categories and tags for the post
+	//
+	if( isset($args['member_categories']) && $args['member_categories'] == 'yes' 
+		&& ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
+		$strsql = "SELECT tag_type, tag_name AS lists "
+			. "FROM ciniki_customer_tags "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY tag_type, tag_name "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.blog', array(
+			array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
+				'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['tags']) ) {
+			foreach($rc['tags'] as $tags) {
+				if( $tags['tags']['tag_type'] == 40 ) {
+					$post['member_categories'] = $tags['tags']['lists'];
+				}
+			}
+		}
 	}
 
 	//
@@ -265,6 +320,25 @@ function ciniki_customers_get($ciniki) {
 		}
 	}
 
-	return array('stat'=>'ok', 'customer'=>$customer);
+	//
+	// Check if all available member categories should be returned
+	//
+	$member_categories = array();
+	if( isset($args['member_categories']) && $args['member_categories'] == 'yes' ) {
+		//
+		// Get the available tags
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
+		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
+			'ciniki_customer_tags', 40);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+		}
+		if( isset($rc['tags']) ) {
+			$member_categories = $rc['tags'];
+		}
+	}
+
+	return array('stat'=>'ok', 'customer'=>$customer, 'member_categories'=>$member_categories);
 }
 ?>

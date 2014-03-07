@@ -3,10 +3,6 @@
 // Description
 // -----------
 //
-// Info
-// ----
-// Status: 			defined
-//
 // Arguments
 // ---------
 // user_id: 		The user making the request
@@ -205,6 +201,16 @@ function ciniki_customers_update(&$ciniki) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
+	}
+
+	//
+	// Update the short_description
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
+	$rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['business_id'], $args['customer_id'], 0x04);
+	if( $rc['stat'] != 'ok' ) {
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+		return $rc;
 	}
 
 	//

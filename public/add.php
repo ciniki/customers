@@ -112,6 +112,7 @@ function ciniki_customers_add(&$ciniki) {
         return $rc;
     }   
     $args = $rc['args'];
+	$args['short_description'] = '';
 
     //  
     // Make sure this module is activated, and
@@ -345,6 +346,16 @@ function ciniki_customers_add(&$ciniki) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
+	}
+
+	//
+	// Update the short_description
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
+	$rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['business_id'], $customer_id, 0x04);
+	if( $rc['stat'] != 'ok' ) {
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+		return $rc;
 	}
 
 	//

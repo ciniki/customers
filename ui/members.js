@@ -63,6 +63,7 @@ function ciniki_customers_members() {
 				'member_status_text':{'label':'Status'},
 				'member_lastpaid':{'label':'Last Paid'},
 				'type':{'label':'Type'},
+				'member_categories':{'label':'Categories', 'visible':'no'},
 				}},
 			'phones':{'label':'Phones', 'aside':'no', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
@@ -255,72 +256,11 @@ function ciniki_customers_members() {
 		};
 		this.member.addButton('edit', 'Edit', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showMember();\',\'mc\',{\'customer_id\':M.ciniki_customers_members.member.customer_id,\'member\':\'yes\'});');
 		this.member.addClose('Back');
-
-		//
-		// The edit panel for member
-		//
-		this.edit = new M.panel('Edit',
-			'ciniki_customers_members', 'edit',
-			'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.members.edit');
-		this.edit.data = {};
-		this.edit.member_id = 0;
-		this.edit.sections = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
-				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
-			}},
-			'name':{'label':'', 'fields':{
-				'first':{'label':'First Name', 'type':'text'},
-				'last':{'label':'Last Name', 'type':'text'},
-				'company':{'label':'Business', 'type':'text'},
-				'webflags':{'label':'Website', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.webFlags},
-				}},
-			'contact':{'label':'Contact Info', 'fields':{
-				'email':{'label':'Email', 'type':'text'},
-				'phone_home':{'label':'Home Phone', 'type':'text'},
-				'phone_work':{'label':'Work Phone', 'type':'text'},
-				'phone_cell':{'label':'Cell Phone', 'type':'text'},
-				'phone_fax':{'label':'Fax Phone', 'type':'text'},
-				'url':{'label':'Website', 'type':'text'},
-				}},
-			'_short_description':{'label':'Brief Description', 'fields':{
-				'short_description':{'label':'', 'hidelabel':'yes', 'size':'small', 'type':'textarea'},
-				}},
-			'_description':{'label':'Bio', 'fields':{
-				'description':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
-				}},
-			'_notes':{'label':'Notes', 'fields':{
-				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
-				}},
-			'_buttons':{'label':'', 'buttons':{
-				'save':{'label':'Save', 'fn':'M.ciniki_customers_members.saveMember();'},
-				'delete':{'label':'Delete', 'fn':'M.ciniki_customers_members.deleteMember();'},
-				}},
-		};
-		this.edit.fieldValue = function(s, i, d) {
-			if( this.data[i] != null ) { return this.data[i]; }
-			return '';
-		};
-		this.edit.fieldHistoryArgs = function(s, i) {
-			return {'method':'ciniki.customers.memberHistory', 'args':{'business_id':M.curBusinessID, 
-				'member_id':M.ciniki_customers_members.edit.member_id, 'field':i}};
-		};
-		this.edit.addDropImage = function(iid) {
-			M.ciniki_customers_members.edit.setFieldValue('primary_image_id', iid);
-			return true;
-		};
-		this.edit.deleteImage = function(fid) {
-			this.setFieldValue(fid, 0);
-			return true;
-		};
-		this.edit.addButton('save', 'Save', 'M.ciniki_customers_members.saveMember();');
-		this.edit.addClose('Cancel');
 	}
 	
 	this.start = function(cb, appPrefix, aG) {
 		args = {};
-		if( aG != null ) {
-			args = eval(aG);
-		}
+		if( aG != null ) { args = eval(aG); }
 
 		//
 		// Create container
@@ -348,42 +288,12 @@ function ciniki_customers_members() {
 			});	
 	};
 
-	//
-	// The edit form takes care of editing existing, or add new.
-	// It can also be used to add the same person to an customers
-	// as an member and sponsor and organizer, etc.
-	//
-	this.showEdit = function(cb, mid) {
-		
-		if( mid != null ) {
-			this.edit.member_id = mid;
-		}
-		if( this.edit.member_id > 0 ) {
-			var rsp = M.api.getJSONCb('ciniki.customers.memberGet',
-				{'business_id':M.curBusinessID, 'member_id':this.edit.member_id}, function(rsp) {
-					if( rsp.stat != 'ok' ) {
-						M.api.err(rsp);
-						return false;
-					}
-					M.ciniki_customers_members.edit.data = rsp.member;
-					M.ciniki_customers_members.edit.refresh();
-					M.ciniki_customers_members.edit.show(cb);
-				});
-		} else {
-			this.edit.data = {};
-			if( this.edit.membership == 'yes' ) {
-				this.edit.data = {'member_status':'10', 'membership_length':'20', 'membership_type':'10'};
-			}
-			this.edit.refresh();
-			this.edit.show(cb);
-		}
-	};
-
 	this.showMember = function(cb, cid) {
 		if( cid != null ) { this.member.customer_id = cid; }
 		var rsp = M.api.getJSONCb('ciniki.customers.get',
 			{'business_id':M.curBusinessID, 'customer_id':this.member.customer_id, 
-				'phones':'yes', 'emails':'yes', 'addresses':'yes', 'links':'yes', 'images':'yes'}, function(rsp) {
+				'member_categories':'yes', 'phones':'yes', 'emails':'yes', 'addresses':'yes', 
+				'links':'yes', 'images':'yes'}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
@@ -394,6 +304,15 @@ function ciniki_customers_members() {
 					p.data.webvisible = 'Visible';
 				} else {
 					p.data.webvisible = 'Hidden';
+				}
+				
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x03) > 0 ) {
+					p.sections.membership.list.member_categories.visible = 'yes';
+					if( rsp.customer.member_categories != null && rsp.customer.member_categories != '' ) {
+						p.data.member_categories = rsp.customer.member_categories.replace(/::/g, ', ');
+					}
+				} else {
+					p.sections.membership.list.member_categories.visible = 'yes';
 				}
 
 				p.sections.notes.visible=(rsp.customer.notes!=null&&rsp.customer.notes!='')?'yes':'no';
@@ -411,54 +330,5 @@ function ciniki_customers_members() {
 				p.refresh();
 				p.show(cb);
 			});
-	};
-
-	this.saveMember = function() {
-		//
-		// Depending on if there was a contact loaded, or member
-		// loaded for editing, determine what should be sent back
-		// to the server
-		//
-		if( this.edit.customer_id > 0 ) {
-			// Update contact
-			var c = this.edit.serializeForm('no');
-			if( c != '' ) {
-				var rsp = M.api.postJSONCb('ciniki.customers.memberUpdate', 
-					{'business_id':M.curBusinessID, 'customer_id':this.edit.customer_id}, c, function(rsp) {
-						if( rsp.stat != 'ok' ) {
-							M.api.err(rsp);
-							return false;
-						} 
-						M.ciniki_customers_members.edit.close();
-					});
-			} else {
-				M.ciniki_customers_members.edit.close();
-			}
-		} else {
-			// Add contact
-			var c = this.edit.serializeForm('yes');
-			var rsp = M.api.postJSONCb('ciniki.customers.memberAdd', 
-				{'business_id':M.curBusinessID}, c, function(rsp) {
-					if( rsp.stat != 'ok' ) {
-						M.api.err(rsp);
-						return false;
-					} 
-					M.ciniki_customers_members.edit.close();
-				});
-		}
-	};
-
-	this.deleteMember = function() {
-		if( confirm('Are you sure you want to delete this member and all their photos?') ) {
-			var rsp = M.api.getJSONCb('ciniki.customers.memberDelete', {'business_id':M.curBusinessID, 
-				'customer_id':this.edit.customer_id}, function(rsp) {
-					if( rsp.stat != 'ok' ) {
-						M.api.err(rsp);
-						return false;
-					}
-					M.ciniki_customers_members.member.close();
-					M.ciniki_customers_members.edit.reset();
-				});
-		}
 	};
 }
