@@ -51,10 +51,6 @@
 //						0x04 - Mailing
 //						0x08 - Public
 // 
-// phone_home:			(optional) The home phone number for the customer.
-// phone_work:			(optional) The work phone number for the customer.
-// phone_cell:			(optional) The cell phone number for the customer.
-// phone_fax:			(optional) The fax number for the customer.
 // phone_label_1:		(optional) The label for the first phone number.
 // phone_number_1:		(optional) The number for the first phone number.
 // phone_flags_1:		(optional) The flags for the first phone number.
@@ -106,10 +102,10 @@ function ciniki_customers_add(&$ciniki) {
         'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Postal Code'), 
         'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Country'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
-        'phone_home'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Home Phone'), 
-        'phone_work'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Work Phone'), 
-        'phone_cell'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Cell Phone'), 
-        'phone_fax'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Fax Number'), 
+//        'phone_home'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Home Phone'), 
+ //       'phone_work'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Work Phone'), 
+  //      'phone_cell'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Cell Phone'), 
+   //     'phone_fax'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Fax Number'), 
         'phone_label_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Phone Label'), 
         'phone_number_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Phone Number'), 
         'phone_flags_1'=>array('required'=>'no', 'default'=>'0', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Phone Number Flags'), 
@@ -271,50 +267,50 @@ function ciniki_customers_add(&$ciniki) {
 			}
 		}
 	}
-	if( isset($args['phone_home']) && $args['phone_home'] != '' ) {
-		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
-			array('customer_id'=>$customer_id,
-				'phone_label'=>'Home',
-				'phone_number'=>$args['phone_home'],
-				'flags'=>0), 0x04);
-		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
-		}
-	}
-	if( isset($args['phone_work']) && $args['phone_work'] != '' ) {
-		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
-			array('customer_id'=>$customer_id,
-				'phone_label'=>'Work',
-				'phone_number'=>$args['phone_work'],
-				'flags'=>0), 0x04);
-		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
-		}
-	}
-	if( isset($args['phone_cell']) && $args['phone_cell'] != '' ) {
-		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
-			array('customer_id'=>$customer_id,
-				'phone_label'=>'Cell',
-				'phone_number'=>$args['phone_cell'],
-				'flags'=>0), 0x04);
-		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
-		}
-	}
-	if( isset($args['phone_fax']) && $args['phone_fax'] != '' ) {
-		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
-			array('customer_id'=>$customer_id,
-				'phone_label'=>'Fax',
-				'phone_number'=>$args['phone_fax'],
-				'flags'=>0), 0x04);
-		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return $rc;
-		}
-	}
+//	if( isset($args['phone_home']) && $args['phone_home'] != '' ) {
+//		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+//			array('customer_id'=>$customer_id,
+//				'phone_label'=>'Home',
+//				'phone_number'=>$args['phone_home'],
+//				'flags'=>0), 0x04);
+//		if( $rc['stat'] != 'ok' ) {
+//			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//			return $rc;
+//		}
+//	}
+//	if( isset($args['phone_work']) && $args['phone_work'] != '' ) {
+//		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+//			array('customer_id'=>$customer_id,
+//				'phone_label'=>'Work',
+//				'phone_number'=>$args['phone_work'],
+//				'flags'=>0), 0x04);
+//		if( $rc['stat'] != 'ok' ) {
+//			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//			return $rc;
+//		}
+//	}
+//	if( isset($args['phone_cell']) && $args['phone_cell'] != '' ) {
+//		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+//			array('customer_id'=>$customer_id,
+//				'phone_label'=>'Cell',
+//				'phone_number'=>$args['phone_cell'],
+//				'flags'=>0), 0x04);
+//		if( $rc['stat'] != 'ok' ) {
+//			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//			return $rc;
+//		}
+//	}
+//	if( isset($args['phone_fax']) && $args['phone_fax'] != '' ) {
+//		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.phone',
+//			array('customer_id'=>$customer_id,
+//				'phone_label'=>'Fax',
+//				'phone_number'=>$args['phone_fax'],
+//				'flags'=>0), 0x04);
+//		if( $rc['stat'] != 'ok' ) {
+//			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+//			return $rc;
+//		}
+//	}
 
 	//
 	// Check if email address was specified, and add to customer emails
