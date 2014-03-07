@@ -233,9 +233,9 @@ function ciniki_customers_edit() {
 				'addTxt':'Add Address',
 				'addFn':'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
-			'links':{'label':'Links', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+			'links':{'label':'Links', 'active':'no', 'type':'simplegrid', 'num_cols':1,
 				'headerValues':null,
-				'cellClasses':['label', ''],
+				'cellClasses':['multiline', ''],
 				'noData':'No links',
 				'addTxt':'Add Link',
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
@@ -264,11 +264,13 @@ function ciniki_customers_edit() {
 			if( s == 'phones' ) {
 				switch (j) {
 					case 0: return d.phone.phone_label;
-					case 1: return d.phone.phone_number;
+					case 1: return d.phone.phone_number + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.phone.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
 				}
 			}
 			if( s == 'emails' ) {
-				if( j == 0 ) { return d.email.address; }
+				if( j == 0 ) { 
+					return d.email.address + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.email.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
+				}
 			}
 			if( s == 'addresses' ) {
 				if( j == 0 ) { 
@@ -277,6 +279,7 @@ function ciniki_customers_edit() {
 					if( (d.address.flags&0x01) ) { l += cm + 'shipping'; cm =',<br/>';}
 					if( (d.address.flags&0x02) ) { l += cm + 'billing'; cm =',<br/>';}
 					if( (d.address.flags&0x04) ) { l += cm + 'mailing'; cm =',<br/>';}
+					if( (d.address.flags&0x08) ) { l += cm + 'public'; cm =',<br/>';}
 					return l;
 				} 
 				if( j == 1 ) {
@@ -292,9 +295,10 @@ function ciniki_customers_edit() {
 			}
 			if( s == 'links' ) {
 				if( d.link.name != '' ) {
-					return '<span class="maintext">' + d.link.name + '</span><span class="subtext">' + d.link.url + '</span>';
+					return '<span class="maintext">' + d.link.name + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + d.link.url + '</span>';
 				} else {
-					return d.link.url;
+//					return d.link.url;
+					return d.link.url + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
 				}
 			}
 		};
@@ -309,7 +313,7 @@ function ciniki_customers_edit() {
 				return 'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.address.id + '\');';
 			}
 			if( s == 'links' ) {
-				return 'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLink();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.link.id + '\');';
+				return 'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.link.id + '\');';
 			}
 			return null;
 		};
@@ -509,9 +513,9 @@ function ciniki_customers_edit() {
 				'url':{'label':'URL', 'type':'text', 'hint':''},
 				'webflags':{'label':'Website', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.linkFlags},
 				}},
-			'_description':{'label':'Description', 'fields':{
-				'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
-				}},
+//			'_description':{'label':'Description', 'fields':{
+//				'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
+//				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save Website', 'fn':'M.ciniki_customers_edit.saveLink();'},
 				'delete':{'label':'Delete Website', 'fn':'M.ciniki_customers_edit.deleteLink();'},

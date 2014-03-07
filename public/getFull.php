@@ -93,6 +93,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "prefix, first, middle, last, suffix, "
 		. "display_name, display_name_format, company, department, title, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
+		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
@@ -110,7 +111,8 @@ function ciniki_customers_getFull($ciniki) {
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
-			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
+			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 
+				'flags'=>'email_flags')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -198,15 +200,14 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Get the customer links
 	//
-	$strsql = "SELECT id, customer_id, "
-		. "name, url "
+	$strsql = "SELECT id, customer_id, name, url, webflags "
 		. "FROM ciniki_customer_links "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-		array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
-			'fields'=>array('id', 'customer_id', 'name', 'url')),
+		array('container'=>'links', 'fname'=>'id', 'name'=>'link',
+			'fields'=>array('id', 'customer_id', 'name', 'url', 'webflags')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

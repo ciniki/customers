@@ -201,7 +201,8 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	if( isset($customer['links']) ) {
 		foreach($customer['links'] as $link) {
 			if( $link['name'] != '' ) {
-				$pieces['links'] .=  ($pieces['links']!=''?"\n":'') . "<a href='" . $link['url'] . "' target='_blank'>" . $link['name'] . "</a>";
+				$rc = ciniki_web_processURL($ciniki, $link['url']);
+				$pieces['links'] .=  ($pieces['links']!=''?"\n":'') . "<a href='" . $rc['url'] . "' target='_blank'>" . $link['name'] . "</a>";
 			} else {
 				$rc = ciniki_web_processURL($ciniki, $link['url']);
 				$pieces['links'] .= ($pieces['links']!=''?"\n":'') . "<a href='" . $rc['url'] . "' target='_blank'>" . $rc['display'] . "</a>";
