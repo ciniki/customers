@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id, $customer_id, $upd=0x04) {
+function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id, $customer_id, $upd=0x04, $format='') {
     
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processURL');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
@@ -18,6 +18,20 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$date_format = ciniki_users_dateFormat($ciniki);
+
+	if( $format == '' ) {
+		error_log('lookup');
+		$format = 'shortbio';
+		$rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_settings', 'business_id',	$business_id,
+			'ciniki.web', 'settings', 'page-members');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		$settings = $rc['settings'];
+		if( isset($settings['page-members-list-format']) && $settings['page-members-list-format'] != '' ) {
+			$format = $settings['page-members-list-format'];
+		}
+	}
 
 	//
 	// Get the customer information for the short description
@@ -119,7 +133,14 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	//
 	// Build the new short description
 	//
-	$desc = $customer['short_bio'];
+	$pieces = array(
+		'shortbio'=>$customer['short_bio'],
+		'addresses'=>'',
+		'townsprovinces'=>'',
+		'phones'=>'',
+		'emails'=>'',
+		'links'=>'',
+		);
 
 	//
 	// Add addresses
@@ -127,6 +148,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	if( isset($customer['addresses']) ) {
 		foreach($customer['addresses'] as $address) {
 			$addr = '';
+			$townprovince = '';
 			if( $address['address1'] != '' ) {
 				$addr .= (($addr!='')?', ':'') . $address['address1'];
 			}
@@ -135,15 +157,20 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 			}
 			if( $address['city'] != '' ) {
 				$addr .= (($addr!='')?', ':'') . $address['city'];
+				$townprovince .= (($townprovince!='')?', ':'') . $address['city'];
 			}
 			if( $address['province'] != '' ) {
 				$addr .= (($addr!='')?', ':'') . $address['province'];
+				$townprovince .= (($townprovince!='')?', ':'') . $address['province'];
 			}
 			if( $address['postal'] != '' ) {
 				$addr .= (($addr!='')?'  ':'') . $address['postal'];
 			}
 			if( $addr != '' ) {
-				$desc .= "\n$addr";
+				$pieces['addresses'] .= ($pieces['addresses']!=''?"\n":'') . "$addr";
+			}
+			if( $townprovince != '' ) {
+				$pieces['townsprovinces'] .= ($pieces['townsprovinces']!=''?"\n":'') . "$townprovince";
 			}
 		}
 	}
@@ -153,7 +180,8 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	//
 	if( isset($customer['phones']) ) {
 		foreach($customer['phones'] as $phone) {
-			$desc .= "\n" . $phone['phone_label'] . ': ' . $phone['phone_number'];
+//			$desc .= "\n" . $phone['phone_label'] . ': ' . $phone['phone_number'];
+			$pieces['phones'] .= ($pieces['phones']!=''?"\n":'') . $phone['phone_label'] . ": " . $phone['phone_number'];
 		}
 	}
 
@@ -162,7 +190,8 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	//
 	if( isset($customer['emails']) ) {
 		foreach($customer['emails'] as $email) {
-			$desc .= "\n" . $email['email'];
+			// $desc .= "\n" . $email['email'];
+			$pieces['emails'] .= ($pieces['emails']!=''?"\n":'') . $email['email'];
 		}
 	}
 
@@ -172,11 +201,24 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	if( isset($customer['links']) ) {
 		foreach($customer['links'] as $link) {
 			if( $link['name'] != '' ) {
-				$desc .= "\n<a href='" . $link['url'] . "' target='_blank'>" . $link['name'] . "</a>";
+				$pieces['links'] .=  ($pieces['links']!=''?"\n":'') . "<a href='" . $link['url'] . "' target='_blank'>" . $link['name'] . "</a>";
 			} else {
 				$rc = ciniki_web_processURL($ciniki, $link['url']);
-				$desc .= "\n<a href='" . $rc['url'] . "' target='_blank'>" . $rc['display'] . "</a>";
+				$pieces['links'] .= ($pieces['links']!=''?"\n":'') . "<a href='" . $rc['url'] . "' target='_blank'>" . $rc['display'] . "</a>";
 			}
+		}
+	}
+
+	//
+	// Build the new description based on requirements.  This will go through the list of elements
+	// from the web setting.
+	//
+	$desc = '';
+	$fmt = explode('-', $format);
+	error_log("format: $format");
+	foreach($fmt as $piece) {
+		if( isset($pieces[$piece]) && $pieces[$piece] != '' ) {
+			$desc .= ($desc!=''?"\n":'') . $pieces[$piece];
 		}
 	}
 
