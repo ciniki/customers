@@ -11,7 +11,21 @@
 //
 function ciniki_customers_web_memberList($ciniki, $settings, $business_id, $args) {
 
+
+	$tag_name = '';
 	if( isset($args['category']) && $args['category'] != '' ) {
+		$strsql = "SELECT tag_name FROM ciniki_customer_tags "
+			. "WHERE permalink = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'tag');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['rows'][0]['tag_name']) ) {
+			$tag_name = $rc['rows'][0]['tag_name'];
+		}
+
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customers.display_name AS title, "
 			. "ciniki_customers.permalink, "
@@ -26,7 +40,7 @@ function ciniki_customers_web_memberList($ciniki, $settings, $business_id, $args
 			// Check the member is visible on the website
 			. "AND ciniki_customers.member_status = 10 "
 			. "AND (ciniki_customers.webflags&0x01) = 1 "
-			. "ORDER BY ciniki_customers.last, ciniki_customers.first, ciniki_customers.company ";
+			. "ORDER BY ciniki_customers.display_name ";
 	} else {
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customers.display_name AS title, "
@@ -39,15 +53,25 @@ function ciniki_customers_web_memberList($ciniki, $settings, $business_id, $args
 			// Check the member is visible on the website
 			. "AND ciniki_customers.member_status = 10 "
 			. "AND (ciniki_customers.webflags&0x01) = 1 "
-			. "ORDER BY ciniki_customers.last, ciniki_customers.first ";
+			. "ORDER BY ciniki_customers.display_name, ciniki_customers.last, ciniki_customers.first ";
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
-		array('container'=>'members', 'fname'=>'id', 
-			'fields'=>array('id', 'title', 'permalink', 'image_id'=>'primary_image_id',
-				'description'=>'short_description', 'is_details')),
-		));
+	if( isset($args['format']) && $args['format'] == '2dlist' ) {
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'members', 'fname'=>'id',
+				'fields'=>array('id', 'name'=>'title')),
+			array('container'=>'list', 'fname'=>'id', 
+				'fields'=>array('id', 'title', 'permalink', 'image_id'=>'primary_image_id',
+					'description'=>'short_description', 'is_details')),
+			));
+	} else {
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'members', 'fname'=>'id', 
+				'fields'=>array('id', 'title', 'permalink', 'image_id'=>'primary_image_id',
+					'description'=>'short_description', 'is_details')),
+			));
+	}
 //	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 //		array('container'=>'members', 'fname'=>'id', 'name'=>'member',
 //			'fields'=>array('id', 'name', 'image_id'=>'primary_image_id', 
@@ -57,8 +81,8 @@ function ciniki_customers_web_memberList($ciniki, $settings, $business_id, $args
 		return $rc;
 	}
 	if( !isset($rc['members']) ) {
-		return array('stat'=>'ok', 'members'=>array());
+		return array('stat'=>'ok', 'tag_name'=>$tag_name, 'members'=>array());
 	}
-	return array('stat'=>'ok', 'members'=>$rc['members']);
+	return array('stat'=>'ok', 'tag_name'=>$tag_name, 'members'=>$rc['members']);
 }
 ?>

@@ -60,6 +60,9 @@
 // phone_label_3:		(optional) The label for the third phone number.
 // phone_number_3:		(optional) The number for the third phone number.
 // phone_flags_3:		(optional) The flags for the third phone number.
+// link_name_1:			(optional) The name for the website link.
+// link_url_1:			(optional) The URL for the website link.
+// link_webflags_1:		(optional) The flags for the website link.
 // notes:				(optional) The notes for the customer.
 // birthdate:			(optional) The birthdate of the customer.
 //
@@ -121,6 +124,9 @@ function ciniki_customers_add(&$ciniki) {
         'short_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Short Bio'), 
         'full_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'birthdate'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
+        'link_name_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website Name'), 
+        'link_url_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website URL'), 
+        'link_webflags_1'=>array('required'=>'no', 'default'=>'0', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website Flags'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
 		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
@@ -358,6 +364,20 @@ function ciniki_customers_add(&$ciniki) {
 			return $rc;
 		}
 		$address_id = $rc['id'];
+	}
+
+	if( isset($args['link_url_1']) && $args['link_url_1'] != '' ) {
+		$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.link',
+			array('customer_id'=>$customer_id,
+				'name'=>$args['link_name_1'],
+				'url'=>$args['link_url_1'],
+				'webflags'=>$args['link_webflags_1'],
+				'description'=>'',
+				), 0x04);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
 	}
 
 	//
