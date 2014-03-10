@@ -37,35 +37,53 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+	$modules = $rc['modules'];
 
 	require($ciniki['config']['core']['lib_dir'] . '/PHPWord/Classes/PHPWord.php');
 
 	$PHPWord = new PHPWord();
+	$h1_size = 20;
 	if( isset($args['heading1_size']) && $args['heading1_size'] != '' ) {
-		$PHPWord->addTitleStyle(1, array('size'=>$args['heading1_size'], 'color'=>'333333', 'bold'=>true));
-	} else {
-		$PHPWord->addTitleStyle(1, array('size'=>20, 'color'=>'333333', 'bold'=>true));
+		$h1_size = $args['heading1_size'];
 	}
+	// 120 = 6pt
+	$PHPWord->addTitleStyle(1, array('size'=>$h1_size, 'color'=>'000000', 'bold'=>true), 
+		array('align'=>'center', 'spaceAfter'=>120));
+	$h2_size = 16;
 	if( isset($args['heading2_size']) && $args['heading2_size'] != '' ) {
-		$PHPWord->addTitleStyle(2, array('size'=>$args['heading1_size'], 'color'=>'333333', 'bold'=>true));
-	} else {
-		$PHPWord->addTitleStyle(2, array('size'=>16, 'color'=>'333333', 'bold'=>true));
+		$h2_size = $args['heading1_size'];
 	}
+	$PHPWord->addTitleStyle(2, array('size'=>$h2_size, 'color'=>'000000', 'bold'=>true), 
+		array('spaceBefore'=>240, 'spaceAfter'=>120));
 
-	$strsql = "SELECT ciniki_customers.id, "
-		. "ciniki_customer_tags.tag_name AS category, "
-		. "ciniki_customers.display_name AS title, "
-		. "ciniki_customers.permalink, "
-		. "ciniki_customers.short_description "
-		. "FROM ciniki_customer_tags, ciniki_customers "
-		. "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customer_tags.tag_type = '40' "
-		. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
-		// Check the member is visible on the website
-		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customers.member_status = 10 "
-		. "AND (ciniki_customers.webflags&0x01) = 1 "
-		. "ORDER BY ciniki_customer_tags.tag_name, ciniki_customers.display_name ";
+
+	if( ($modules['ciniki.customers']['flags']&0x04) > 0 ) {
+		$strsql = "SELECT ciniki_customers.id, "
+			. "ciniki_customer_tags.tag_name AS category, "
+			. "ciniki_customers.display_name AS title, "
+			. "ciniki_customers.permalink, "
+			. "ciniki_customers.short_description "
+			. "FROM ciniki_customer_tags, ciniki_customers "
+			. "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_customer_tags.tag_type = '40' "
+			. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
+			// Check the member is visible on the website
+			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_customers.member_status = 10 "
+			. "AND (ciniki_customers.webflags&0x01) = 1 "
+			. "ORDER BY ciniki_customer_tags.tag_name, ciniki_customers.display_name ";
+	} else {
+		$strsql = "SELECT ciniki_customers.id, "
+			. "'Members' AS category, "
+			. "ciniki_customers.display_name AS title, "
+			. "ciniki_customers.permalink, "
+			. "ciniki_customers.short_description "
+			. "FROM ciniki_customers "
+			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_customers.member_status = 10 "
+			. "AND (ciniki_customers.webflags&0x01) = 1 "
+			. "ORDER BY ciniki_customers.display_name ";
+	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'categories', 'fname'=>'category',
@@ -78,8 +96,18 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
 	}
 	$categories = $rc['categories'];
 	$s_count = 0;
+	$section = $PHPWord->createSection(array(
+		'marginLeft'=>720, 
+		'marginRight'=>720, 
+		'marginTop'=>720, 
+		'marginBottom'=>720, 
+		'pageSizeW'=>12240, 
+		'pageSizeH'=>15840
+		));
 	foreach($categories as $category) {
-		$section = $PHPWord->createSection();
+		if( $s_count > 0 ) {
+			$section->addPageBreak();
+		}
 		$section->addTitle($category['name'], 1);
 		foreach($category['members'] as $member) {
 			$section->addTitle($member['title'], 2);
