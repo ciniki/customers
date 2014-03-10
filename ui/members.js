@@ -62,6 +62,7 @@ function ciniki_customers_members() {
 			}
 		};
 		this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showMenu();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\'});');
+		this.menu.addButton('tools', 'Tools', 'M.startApp(\'ciniki.customers.membertools\',null,\'M.ciniki_customers_members.showMenu();\',\'mc\',{});');
 		this.menu.addClose('Back');
 
 		//

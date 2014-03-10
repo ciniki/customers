@@ -180,7 +180,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	if( isset($customer['phones']) ) {
 		foreach($customer['phones'] as $phone) {
 //			$desc .= "\n" . $phone['phone_label'] . ': ' . $phone['phone_number'];
-			$pieces['phones'] .= ($pieces['phones']!=''?"\n":'') . $phone['phone_label'] . ": " . $phone['phone_number'];
+			$pieces['phones'] .= ($pieces['phones']!=''?"\n":'') . (count($customer['phones'])>1?$phone['phone_label'] . ": ":'') . $phone['phone_number'];
 		}
 	}
 
@@ -202,8 +202,11 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 			if( $link['name'] != '' ) {
 				$rc = ciniki_web_processURL($ciniki, $link['url']);
 				$pieces['links'] .=  ($pieces['links']!=''?"\n":'') . "<a href='" . $rc['url'] . "' target='_blank'>" . $link['name'] . "</a>";
+//				$pieces['links'] .=  $rc['display'];
+				
 			} else {
 				$rc = ciniki_web_processURL($ciniki, $link['url']);
+//				$pieces['links'] .=  $rc['display'];
 				$pieces['links'] .= ($pieces['links']!=''?"\n":'') . "<a href='" . $rc['url'] . "' target='_blank'>" . $rc['display'] . "</a>";
 			}
 		}
@@ -216,7 +219,10 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	$desc = '';
 	$fmt = explode('-', $format);
 	foreach($fmt as $piece) {
-		if( isset($pieces[$piece]) && $pieces[$piece] != '' ) {
+		if( $piece == 'blank' ) {
+			$desc .= $desc!=''?"\n":'';
+		}
+		elseif( isset($pieces[$piece]) && $pieces[$piece] != '' ) {
 			$desc .= ($desc!=''?"\n":'') . $pieces[$piece];
 		}
 	}
