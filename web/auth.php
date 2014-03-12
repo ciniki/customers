@@ -20,7 +20,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	// Get customer information
 	//
 	$strsql = "SELECT ciniki_customers.id, ciniki_customers.first, ciniki_customers.last, "
-		. "ciniki_customer_emails.email "
+		. "ciniki_customer_emails.email, ciniki_customers.member_status "
 		. "FROM ciniki_customer_emails, ciniki_customers "
 		. "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
