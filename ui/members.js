@@ -180,7 +180,7 @@ function ciniki_customers_members() {
 				if( this.data.membership_type != null && this.data.membership_type != '' ) {
 					switch(this.data.membership_type) {
 						case '10': txt += 'Regular'; break;
-						case '20': txt += 'Complementary'; break;
+						case '20': txt += 'Complimentary'; break;
 						case '30': txt += 'Reciprocal'; break;
 					}
 				}

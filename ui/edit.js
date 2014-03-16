@@ -10,7 +10,7 @@ function ciniki_customers_edit() {
 	this.subscriptionOptions = {'60':'Unsubscribed', '10':'Subscribed'};
 	this.memberStatus = {'10':'Active', '60':'Suspended'};
 	this.membershipLength = {'10':'Monthly', '20':'Yearly', '60':'Lifetime'};
-	this.membershipType = {'10':'Regular', '20':'Complementary', '30':'Reciprocal'};
+	this.membershipType = {'10':'Regular', '20':'Complimentary', '30':'Reciprocal'};
 	this.webFlags = {'1':{'name':'Visible'}};
 	this.memberPhoneFlags = {'4':{'name':'Public'}};
 	this.addressFlags = {

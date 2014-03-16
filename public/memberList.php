@@ -96,7 +96,7 @@ function ciniki_customers_memberList($ciniki) {
 			'maps'=>array(
 				'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
 				'membership_length_text'=>array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),
-				'membership_type_text'=>array('10'=>'Regular', '20'=>'Complementary', '30'=>'Reciprocal'),
+				'membership_type_text'=>array('10'=>'Regular', '20'=>'Complimentary', '30'=>'Reciprocal'),
 				),
 			'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 			),
