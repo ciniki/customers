@@ -130,7 +130,6 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
 	header('Cache-Control: max-age=0');
 
 	$objWriter = PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
-	$objWriter->save('/tmp/directory.docx');
 	$objWriter->save('php://output');
 
 	return array('stat'=>'exit');
