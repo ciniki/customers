@@ -202,11 +202,8 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 			if( $link['name'] != '' ) {
 				$rc = ciniki_web_processURL($ciniki, $link['url']);
 				$pieces['links'] .=  ($pieces['links']!=''?"\n":'') . "<a href='" . $rc['url'] . "' target='_blank'>" . $link['name'] . "</a>";
-//				$pieces['links'] .=  $rc['display'];
-				
 			} else {
 				$rc = ciniki_web_processURL($ciniki, $link['url']);
-//				$pieces['links'] .=  $rc['display'];
 				$pieces['links'] .= ($pieces['links']!=''?"\n":'') . "<a href='" . $rc['url'] . "' target='_blank'>" . $rc['display'] . "</a>";
 			}
 		}
