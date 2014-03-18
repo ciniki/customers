@@ -45,10 +45,10 @@ function ciniki_customers_linkDelete(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'link');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1156', 'msg'=>'Unable to get existing link information', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1647', 'msg'=>'Unable to get existing link information', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['link']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1157', 'msg'=>'Unable to get existing link information'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1648', 'msg'=>'Unable to get existing link information'));
 	}
 	$uuid = $rc['link']['uuid'];
 

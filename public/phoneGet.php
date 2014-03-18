@@ -53,10 +53,10 @@ function ciniki_customers_phoneGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'phone');
 	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'105', 'msg'=>'Unable to get phone details', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1638', 'msg'=>'Unable to get phone details', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['phone']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'721', 'msg'=>'Invalid customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1639', 'msg'=>'Invalid customer'));
 	}
 	return array('stat'=>'ok', 'phone'=>$rc['phone']);
 }

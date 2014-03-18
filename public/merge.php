@@ -77,7 +77,7 @@ function ciniki_customers_merge($ciniki) {
 		));
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'765', 'msg'=>'Unable to find customers', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1632', 'msg'=>'Unable to find customers', 'err'=>$rc['err']));
 	}
 
 	$primary = NULL;
@@ -93,11 +93,11 @@ function ciniki_customers_merge($ciniki) {
 
 	if( $primary == NULL ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'756', 'msg'=>'Unable to find customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1633', 'msg'=>'Unable to find customer'));
 	}
 	if( $secondary == NULL ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'757', 'msg'=>'Unable to find customer'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1634', 'msg'=>'Unable to find customer'));
 	}
 
 	//
@@ -157,7 +157,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql_primary, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'758', 'msg'=>'Unable to update customer details', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1635', 'msg'=>'Unable to update customer details', 'err'=>$rc['err']));
 		}
 		$strsql_secondary .= "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
@@ -165,7 +165,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql_secondary, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'766', 'msg'=>'Unable to update customer details', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1636', 'msg'=>'Unable to update customer details', 'err'=>$rc['err']));
 		}
 	}
 
@@ -179,7 +179,7 @@ function ciniki_customers_merge($ciniki) {
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'764', 'msg'=>'Unable to customer phones', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1637', 'msg'=>'Unable to customer phones', 'err'=>$rc['err']));
 	}
 	$phones = $rc['rows'];
 	foreach($phones as $i => $row) {
@@ -191,7 +191,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'759', 'msg'=>'Unable to update customer phones', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1613', 'msg'=>'Unable to update customer phones', 'err'=>$rc['err']));
 		}
 		if( $rc['num_affected_rows'] == 1 ) {
 			// Record update as merge action
@@ -211,7 +211,7 @@ function ciniki_customers_merge($ciniki) {
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'764', 'msg'=>'Unable to customer emails', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1614', 'msg'=>'Unable to customer emails', 'err'=>$rc['err']));
 	}
 	$emails = $rc['rows'];
 	foreach($emails as $i => $row) {
@@ -223,7 +223,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'759', 'msg'=>'Unable to update customer emails', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1615', 'msg'=>'Unable to update customer emails', 'err'=>$rc['err']));
 		}
 		if( $rc['num_affected_rows'] == 1 ) {
 			// Record update as merge action
@@ -243,7 +243,7 @@ function ciniki_customers_merge($ciniki) {
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'763', 'msg'=>'Unable to customer addresses', 'err'=>$rc['err']));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1616', 'msg'=>'Unable to customer addresses', 'err'=>$rc['err']));
 	}
 	$addresses = $rc['rows'];
 	foreach($addresses as $i => $row) {
@@ -255,7 +255,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'760', 'msg'=>'Unable to update customer addresses', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1617', 'msg'=>'Unable to update customer addresses', 'err'=>$rc['err']));
 		}
 		if( $rc['num_affected_rows'] == 1 ) {
 			// Record update as merge action
@@ -283,7 +283,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.subscriptions', 'subscription');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'780', 'msg'=>'Unable to find subscriptions', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1618', 'msg'=>'Unable to find subscriptions', 'err'=>$rc['err']));
 		}
 		$subscriptions = $rc['rows'];
 		foreach($subscriptions as $i => $row) {
@@ -298,7 +298,7 @@ function ciniki_customers_merge($ciniki) {
 					$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
 					if( $rc['stat'] != 'ok' ) {
 						ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'781', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
+						return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1619', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
 					}
 					ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
 						4, 'ciniki_subscription_customers', $row['c2_id'], 'customer_id', $args['customer_id']);
@@ -316,7 +316,7 @@ function ciniki_customers_merge($ciniki) {
 						$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
 						if( $rc['stat'] != 'ok' ) {
 							ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-							return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'782', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
+							return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1621', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
 						}
 						ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
 							4, 'ciniki_subscription_customers', $row['c1_id'], 'status', $row['c2_status']);
@@ -336,7 +336,7 @@ function ciniki_customers_merge($ciniki) {
 						$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
 						if( $rc['stat'] != 'ok' ) {
 							ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-							return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'783', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
+							return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1624', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
 						}
 
 						ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['business_id'],
@@ -373,7 +373,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.wineproductions', 'wineproduction');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'761', 'msg'=>'Unable to find wine production orders', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1625', 'msg'=>'Unable to find wine production orders', 'err'=>$rc['err']));
 		}
 		$wineproductions = $rc['rows'];
 		foreach($wineproductions as $i => $row) {
@@ -386,7 +386,7 @@ function ciniki_customers_merge($ciniki) {
 			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.wineproductions');
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'762', 'msg'=>'Unable to update wine production orders', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1626', 'msg'=>'Unable to update wine production orders', 'err'=>$rc['err']));
 			}
 			if( $rc['num_affected_rows'] == 1 ) {
 				// Record update as merge action
@@ -423,7 +423,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.services', 'services');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'851', 'msg'=>'Unable to find service subscriptions', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1628', 'msg'=>'Unable to find service subscriptions', 'err'=>$rc['err']));
 		}
 		$services = $rc['rows'];
 		foreach($services as $i => $row) {
@@ -436,7 +436,7 @@ function ciniki_customers_merge($ciniki) {
 			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.services');
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'852', 'msg'=>'Unable to update services', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1629', 'msg'=>'Unable to update services', 'err'=>$rc['err']));
 			}
 			if( $rc['num_affected_rows'] == 1 ) {
 				// Record update as merge action
@@ -456,7 +456,7 @@ function ciniki_customers_merge($ciniki) {
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.services', 'services');
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'853', 'msg'=>'Unable to find service subscriptions', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1630', 'msg'=>'Unable to find service subscriptions', 'err'=>$rc['err']));
 		}
 		$services = $rc['rows'];
 		foreach($services as $i => $row) {
@@ -469,7 +469,7 @@ function ciniki_customers_merge($ciniki) {
 			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.services');
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'854', 'msg'=>'Unable to update services', 'err'=>$rc['err']));
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1631', 'msg'=>'Unable to update services', 'err'=>$rc['err']));
 			}
 			if( $rc['num_affected_rows'] == 1 ) {
 				// Record update as merge action

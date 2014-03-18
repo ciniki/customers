@@ -306,7 +306,7 @@ function ciniki_customers_getFull($ciniki) {
 		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
 			'ciniki_customer_tags', 40);
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1651', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
 		}
 		if( isset($rc['tags']) ) {
 			$member_categories = $rc['tags'];
