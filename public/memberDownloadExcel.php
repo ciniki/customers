@@ -94,10 +94,6 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 		return $rc;
 	}
 
-
-
-	error_log(print_r($args['columns'], true));
-
 	$objPHPExcelWorksheet = $objPHPExcel->setActiveSheetIndex(0);
 
 	//
