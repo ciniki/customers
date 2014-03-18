@@ -444,6 +444,7 @@ function ciniki_customers_edit() {
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save email', 'fn':'M.ciniki_customers_edit.saveEmail();'},
+				'password':{'label':'Set Password', 'fn':'M.ciniki_customers_edit.setPassword();'},
 				'delete':{'label':'Delete email', 'fn':'M.ciniki_customers_edit.deleteEmail();'},
 				}},
 			};
@@ -1094,6 +1095,7 @@ function ciniki_customers_edit() {
 		if( eid != null ) { this.email.email_id = eid; }
 		if( this.email.email_id > 0 ) {
 			this.email.sections._buttons.buttons.delete.visible = 'yes';
+			this.email.sections._buttons.buttons.password.visible = 'yes';
 			var rsp = M.api.getJSONCb('ciniki.customers.emailGet', 
 				{'business_id':M.curBusinessID, 'customer_id':this.email.customer_id, 
 				'email_id':this.email.email_id}, function(rsp) {
@@ -1108,6 +1110,7 @@ function ciniki_customers_edit() {
 		} else {
 			this.email.data = {'flags':1};
 			this.email.sections._buttons.buttons.delete.visible = 'no';
+			this.email.sections._buttons.buttons.password.visible = 'no';
 			this.email.refresh();
 			this.email.show(cb);
 		}
@@ -1167,6 +1170,28 @@ function ciniki_customers_edit() {
 					} 
 					M.ciniki_customers_edit.email.close();
 				});
+		}
+	};
+
+	this.setPassword = function() {
+		var np = prompt("Please enter a new password for the customer: ");
+		if( np != null ) {
+			if( np.length < 8 ) {
+				alert("The password must be a minimum of 8 characters long");
+				return false;
+			}
+			else {
+				M.api.postJSONCb('ciniki.customers.customerSetPassword',
+					{'business_id':M.curBusinessID, 'customer_id':this.email.customer_id,
+						'email_id':this.email.email_id}, 'newpassword=' + encodeURIComponent(np), 
+					function(rsp) {
+						if( rsp.stat != 'ok' ) {	
+							M.api.err(rsp);
+							return false;
+						}
+						alert("Password has been set");
+					});
+			}
 		}
 	};
 
