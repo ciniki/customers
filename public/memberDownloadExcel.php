@@ -50,6 +50,7 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 		. "ciniki_customers.member_lastpaid, "
 		. "ciniki_customers.membership_length, "
 		. "ciniki_customers.membership_type, "
+		. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
 		. "CONCAT_WS(': ', ciniki_customer_phones.phone_label, "
 			. "ciniki_customer_phones.phone_number) AS phones, "
 		. "ciniki_customer_emails.email AS emails, "
@@ -79,7 +80,7 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix',
-				'company', 'display_name', 'type', 'status',
+				'company', 'display_name', 'type', 'status', 'visible', 
 				'member_status', 'member_lastpaid', 'membership_length', 'membership_type',
 				'phones', 'emails', 'addresses', 'links'),
 			'maps'=>array(
@@ -112,6 +113,7 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 			case 'company': $value = 'Company'; break;
 			case 'display_name': $value = 'Name'; break;
 			case 'type': $value = 'Type'; break;
+			case 'visible': $value = 'Visible'; break;
 			case 'member_status': $value = 'Status'; break;
 			case 'member_lastpaid': $value = 'Last Paid'; break;
 			case 'membership_length': $value = 'Length'; break;

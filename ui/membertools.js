@@ -36,6 +36,7 @@ function ciniki_customers_membertools() {
 				'suffix':{'label':'Name Suffix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'company':{'label':'Company', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'visible':{'label':'Web Visible', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'member_status':{'label':'Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
 				'member_lastpaid':{'label':'Last Paid Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
