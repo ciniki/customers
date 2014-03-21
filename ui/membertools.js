@@ -103,7 +103,6 @@ function ciniki_customers_membertools() {
 				cols += (cols!=''?'::':'') + i;
 			}
 		}
-		console.log(cols);
 		window.open(M.api.getUploadURL('ciniki.customers.memberDownloadExcel', 
 			{'business_id':M.curBusinessID, 'columns':cols}));
 	};

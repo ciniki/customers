@@ -373,7 +373,6 @@ function ciniki_customers_members() {
 	this.showList = function(cb, c) {
 		if( c != null ) { this.list.category = unescape(c); }
 		// Get the list of existing customers
-		console.log(this.list.category);
 		this.list.sections.members.label = this.list.category;
 		M.api.getJSONCb('ciniki.customers.memberList', 
 			{'business_id':M.curBusinessID, 'category':encodeURIComponent(this.list.category)}, function(rsp) {
