@@ -28,7 +28,8 @@ function ciniki_customers_web_memberList($ciniki, $settings, $business_id, $args
 
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customers.display_name AS title, "
-			. "IF(company<>'',CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
+			. "IF(type=2,CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
+//			. "IF(company<>'',CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
 			. "ciniki_customers.permalink, "
 			. "ciniki_customers.short_description, "
 			. "ciniki_customers.primary_image_id, "
@@ -47,7 +48,8 @@ function ciniki_customers_web_memberList($ciniki, $settings, $business_id, $args
 	} else {
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customers.display_name AS title, "
-			. "IF(company<>'',CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
+			. "IF(type=2,CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
+//			. "IF(company<>'',CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
 			. "ciniki_customers.permalink, "
 			. "ciniki_customers.short_description, "
 			. "ciniki_customers.primary_image_id, "
