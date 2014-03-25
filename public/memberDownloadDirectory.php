@@ -61,6 +61,7 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customer_tags.tag_name AS category, "
 			. "ciniki_customers.display_name AS title, "
+			. "IF(type=2,CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
 			. "ciniki_customers.permalink, "
 			. "ciniki_customers.short_description "
 			. "FROM ciniki_customer_tags, ciniki_customers "
@@ -71,10 +72,11 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
 			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.member_status = 10 "
 			. "AND (ciniki_customers.webflags&0x01) = 1 "
-			. "ORDER BY ciniki_customer_tags.tag_name, ciniki_customers.display_name ";
+			. "ORDER BY ciniki_customer_tags.tag_name, sname ";
 	} else {
 		$strsql = "SELECT ciniki_customers.id, "
 			. "'Members' AS category, "
+			. "IF(type=2,CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
 			. "ciniki_customers.display_name AS title, "
 			. "ciniki_customers.permalink, "
 			. "ciniki_customers.short_description "
@@ -82,7 +84,7 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.member_status = 10 "
 			. "AND (ciniki_customers.webflags&0x01) = 1 "
-			. "ORDER BY ciniki_customers.display_name ";
+			. "ORDER BY sname ";
 	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
