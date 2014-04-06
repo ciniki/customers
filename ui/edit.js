@@ -333,6 +333,10 @@ function ciniki_customers_edit() {
 			M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', iid);
 			return true;
 		};
+		this.edit.deleteImage = function(fid) {
+			this.setFieldValue(fid, 0, null, null);
+			return true;
+		};
 		this.edit.liveSearchCb = function(s, i, value) {
 			if( i == 'city' ) {
 				var rsp = M.api.getJSONBgCb('ciniki.customers.addressSearchQuick', 
