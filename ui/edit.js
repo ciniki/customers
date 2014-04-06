@@ -155,7 +155,7 @@ function ciniki_customers_edit() {
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
 			'_buttons':{'label':'', 'buttons':{
-				'save':{'label':'Save customer', 'fn':'M.ciniki_customers_edit.saveCustomer();'},
+				'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.saveCustomer();'},
 				}},
 			};
 		this.edit.forms.business = {
@@ -251,7 +251,7 @@ function ciniki_customers_edit() {
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
 			'_buttons':{'label':'', 'buttons':{
-				'save':{'label':'Save customer', 'fn':'M.ciniki_customers_edit.saveCustomer();'},
+				'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.saveCustomer();'},
 				}},
 			};
 		this.edit.sectionData = function(s) {
