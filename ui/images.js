@@ -91,7 +91,7 @@ function ciniki_customers_images() {
 		} else {
 			this.edit.reset();
 			this.edit.sections._buttons.buttons.delete.visible = 'no';
-			this.edit.data = {};
+			this.edit.data = {'webflags':1};
 			if( cid != null ) { this.edit.customer_id = cid; }
 			this.edit.refresh();
 			this.edit.show(cb);
