@@ -14,6 +14,7 @@ function ciniki_customers_images() {
 			'mc', 'medium', 'sectioned', 'ciniki.customers.images.edit');
 		this.edit.data = {};
 		this.edit.customer_id = 0;
+		this.edit.customer_image_id = 0;
 		this.edit.sections = {
 			'_image':{'label':'Photo', 'fields':{
 				'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
@@ -72,8 +73,8 @@ function ciniki_customers_images() {
 	}
 
 	this.showEdit = function(cb, iid, cid) {
-		if( cid != null ) { this.edit.customer_id = cid; }
 		if( iid != null ) { this.edit.customer_image_id = iid; }
+		if( cid != null ) { this.edit.customer_id = cid; }
 		if( this.edit.customer_image_id > 0 ) {
 			this.edit.sections._buttons.buttons.delete.visible = 'yes';
 			var rsp = M.api.getJSONCb('ciniki.customers.imageGet', 
@@ -82,9 +83,10 @@ function ciniki_customers_images() {
 						M.api.err(rsp);
 						return false;
 					}
-					M.ciniki_customers_images.edit.data = rsp.image;
-					M.ciniki_customers_images.edit.refresh();
-					M.ciniki_customers_images.edit.show(cb);
+					var p = M.ciniki_customers_images.edit;
+					p.data = rsp.image;
+					p.refresh();
+					p.show(cb);
 				});
 		} else {
 			this.edit.reset();
@@ -99,23 +101,22 @@ function ciniki_customers_images() {
 	this.saveImage = function() {
 		if( this.edit.customer_image_id > 0 ) {
 			var c = this.edit.serializeFormData('no');
-				if( c != '' ) {
-					var rsp = M.api.postJSONFormData('ciniki.customers.imageUpdate', 
-						{'business_id':M.curBusinessID, 
-						'customer_image_id':this.edit.customer_image_id}, c,
-							function(rsp) {
-								if( rsp.stat != 'ok' ) {
-									M.api.err(rsp);
-									return false;
-								} else {
-									M.ciniki_customers_images.edit.close();
-								}
-							});
-				} else {
-					this.edit.close();
-				}
+			if( c != '' ) {
+				M.api.postJSONFormData('ciniki.customers.imageUpdate', 
+					{'business_id':M.curBusinessID, 
+					'customer_image_id':this.edit.customer_image_id}, c,
+						function(rsp) {
+							if( rsp.stat != 'ok' ) {
+								M.api.err(rsp);
+								return false;
+							}
+							M.ciniki_customers_images.edit.close();
+						});
+			} else {
+				this.edit.close();
+			}
 		} else {
-			var c = this.edit.serializeForm('yes');
+			var c = this.edit.serializeFormData('yes');
 			c += '&customer_id=' + encodeURIComponent(this.edit.customer_id);
 			var rsp = M.api.postJSONFormData('ciniki.customers.imageAdd', 
 				{'business_id':M.curBusinessID}, c, function(rsp) {

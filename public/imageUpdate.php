@@ -95,11 +95,11 @@ function ciniki_customers_imageUpdate(&$ciniki) {
 	//
 	// Update the short_description
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
-	$rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['business_id'], $args['customer_id'], 0x07);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
+//	$rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['business_id'], $args['customer_id'], 0x07);
+//	if( $rc['stat'] != 'ok' ) {
+//		return $rc;
+//	}
 
 	return array('stat'=>'ok');
 }
