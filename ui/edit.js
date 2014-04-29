@@ -61,7 +61,7 @@ function ciniki_customers_edit() {
 			}};
 		this.edit.forms = {};
 		this.edit.forms.person = {
-			'_image':{'label':'', 'active':'no', 'aside':'no', 'fields':{
+			'_image':{'label':'', 'active':'no', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'name':{'label':'Name', 'fields':{
@@ -80,7 +80,7 @@ function ciniki_customers_edit() {
 				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.webFlags},
 				}},
-			'_member_categories':{'label':'Categories', 'active':'no', 'aside':'no', 'fields':{
+			'_member_categories':{'label':'Categories', 'active':'no', 'fields':{
 				'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
 			'business':{'label':'Business', 'fields':{
@@ -159,7 +159,7 @@ function ciniki_customers_edit() {
 				}},
 			};
 		this.edit.forms.business = {
-			'_image':{'label':'', 'aside':'no', 'fields':{
+			'_image':{'label':'', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'business':{'label':'Business', 'fields':{
@@ -181,7 +181,7 @@ function ciniki_customers_edit() {
 				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.webFlags},
 				}},
-			'_member_categories':{'label':'Categories', 'active':'no', 'aside':'no', 'fields':{
+			'_member_categories':{'label':'Categories', 'active':'no', 'fields':{
 				'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
 			'phone':{'label':'Phone Numbers', 'active':'no', 'fields':{
