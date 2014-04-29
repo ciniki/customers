@@ -193,6 +193,8 @@ function ciniki_customers_main() {
 				'limit':5,
 				'moreTxt':'More',
 				'moreFn':'M.startApp(\'ciniki.sapos.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
+				'addTxt':'Add',
+				'addFn':'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
 				},
 			'appointments':{'label':'Appointments', 'type':'simplegrid', 'visible':'no', 
 				'num_cols':2, 'class':'dayschedule',
