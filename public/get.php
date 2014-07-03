@@ -365,7 +365,7 @@ function ciniki_customers_get($ciniki) {
 		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
 			'ciniki_customer_tags', 60);
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1790', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
 		}
 		if( isset($rc['tags']) ) {
 			$rsp['dealer_categories'] = $rc['tags'];
@@ -384,7 +384,7 @@ function ciniki_customers_get($ciniki) {
 		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
 			'ciniki_customer_tags', 80);
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1791', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
 		}
 		if( isset($rc['tags']) ) {
 			$rsp['distributor_categories'] = $rc['tags'];
