@@ -22,6 +22,8 @@ function ciniki_customers_objects($ciniki) {
 			'member_lastpaid'=>array(),
 			'membership_length'=>array(),
 			'membership_type'=>array(),
+			'dealer_status'=>array(),
+			'distributor_status'=>array(),
 			'prefix'=>array(),
 			'first'=>array(),
 			'middle'=>array(),

@@ -25,6 +25,8 @@ function ciniki_customers_update(&$ciniki) {
 		'member_lastpaid'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Member Last Paid'),
 		'membership_length'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Length'),
 		'membership_type'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Type'),
+        'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Status'), 
+        'distributor_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Status'), 
         'prefix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Prefix'), 
         'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'), 
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Middle Name'), 
@@ -43,6 +45,8 @@ function ciniki_customers_update(&$ciniki) {
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
 		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
+		'dealer_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Dealer Categories'),
+		'distributor_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Distributor Categories'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -205,13 +209,41 @@ function ciniki_customers_update(&$ciniki) {
 	}
 
 	//
-	// Update the categories
+	// Update the member categories
 	//
 	if( isset($args['member_categories']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
 		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $args['business_id'],
 			'ciniki_customer_tags', 'ciniki_customer_history',
 			'customer_id', $args['customer_id'], 40, $args['member_categories']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
+
+	//
+	// Update the dealer categories
+	//
+	if( isset($args['dealer_categories']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $args['business_id'],
+			'ciniki_customer_tags', 'ciniki_customer_history',
+			'customer_id', $args['customer_id'], 60, $args['dealer_categories']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
+
+	//
+	// Update the distributor categories
+	//
+	if( isset($args['distributor_categories']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $args['business_id'],
+			'ciniki_customer_tags', 'ciniki_customer_history',
+			'customer_id', $args['customer_id'], 80, $args['distributor_categories']);
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;

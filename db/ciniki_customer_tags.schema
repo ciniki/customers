@@ -18,7 +18,11 @@
 #					10 - Customer Category *future*
 #					20 - Customer Tag *future*
 #					40 - Member Category
-#					50 - Member Tags *future*
+#					41 - Member Tags *future*
+#					60 - Dealer Category
+#					61 - Dealer Tags *future*
+#					80 - Distributor Category
+#					81 - Distributor Tags *future*
 #
 # tag_name:			The name of the tag, list or category.
 #

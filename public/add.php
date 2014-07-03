@@ -86,6 +86,8 @@ function ciniki_customers_add(&$ciniki) {
 		'member_lastpaid'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Member Last Paid'),
 		'membership_length'=>array('required'=>'no', 'default'=>'20', 'blank'=>'no', 'name'=>'Membership Length'),
 		'membership_type'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'name'=>'Membership Type'),
+        'dealer_status'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Dealer Status'), 
+        'distributor_status'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Distributor Status'), 
 		'name'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Name'),
         'prefix'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Prefix'), 
         'first'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Name'), 

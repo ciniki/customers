@@ -19,6 +19,8 @@ function ciniki_customers_getFull($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
 		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Categories'),
+		'dealer_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Categories'),
+		'distributor_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Categories'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -90,6 +92,7 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	$strsql = "SELECT ciniki_customers.id, cid, type, "
 		. "member_status, member_lastpaid, membership_length, membership_type, "
+		. "dealer_status, distributor_status, "
 		. "prefix, first, middle, last, suffix, "
 		. "display_name, display_name_format, company, department, title, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
@@ -105,6 +108,7 @@ function ciniki_customers_getFull($ciniki) {
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'webflags', 
 				'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 
+				'dealer_status', 'distributor_status',
 				'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
 				'display_name', 'display_name_format', 'company', 'department', 'title', 
 				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
@@ -134,7 +138,10 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Get the categories and tags for the post
 	//
-	if( ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
+	if( ($modules['ciniki.customers']['flags']&0x03) > 0 
+		|| ($modules['ciniki.customers']['flags']&0x20) > 0 
+		|| ($modules['ciniki.customers']['flags']&0x200) > 0 
+		) {
 		$strsql = "SELECT tag_type, tag_name AS lists "
 			. "FROM ciniki_customer_tags "
 			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -152,6 +159,10 @@ function ciniki_customers_getFull($ciniki) {
 			foreach($rc['tags'] as $tags) {
 				if( $tags['tags']['tag_type'] == 40 ) {
 					$customer['member_categories'] = $tags['tags']['lists'];
+				} elseif( $tags['tags']['tag_type'] == 60 ) {
+					$customer['dealer_categories'] = $tags['tags']['lists'];
+				} elseif( $tags['tags']['tag_type'] == 80 ) {
+					$customer['distributor_categories'] = $tags['tags']['lists'];
 				}
 			}
 		}
@@ -294,14 +305,17 @@ function ciniki_customers_getFull($ciniki) {
 		}
 	}
 
+
+	$rsp = array('stat'=>'ok', 'customer'=>$customer);
+
 	//
 	// Check if all available member categories should be returned
 	//
-	$member_categories = array();
 	if( isset($args['member_categories']) && $args['member_categories'] == 'yes' ) {
 		//
 		// Get the available tags
 		//
+		$rsp['member_categories'] = array();
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
 		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
 			'ciniki_customer_tags', 40);
@@ -309,10 +323,48 @@ function ciniki_customers_getFull($ciniki) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1651', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
 		}
 		if( isset($rc['tags']) ) {
-			$member_categories = $rc['tags'];
+			$rsp['member_categories'] = $rc['tags'];
 		}
 	}
 
-	return array('stat'=>'ok', 'customer'=>$customer, 'member_categories'=>$member_categories);
+	//
+	// Check if all available dealer categories should be returned
+	//
+	if( isset($args['dealer_categories']) && $args['dealer_categories'] == 'yes' ) {
+		//
+		// Get the available tags
+		//
+		$rsp['dealer_categories'] = array();
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
+		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
+			'ciniki_customer_tags', 60);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1651', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+		}
+		if( isset($rc['tags']) ) {
+			$rsp['dealer_categories'] = $rc['tags'];
+		}
+	}
+
+	//
+	// Check if all available distributor categories should be returned
+	//
+	if( isset($args['distributor_categories']) && $args['distributor_categories'] == 'yes' ) {
+		//
+		// Get the available tags
+		//
+		$rsp['distributor_categories'] = array();
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
+		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
+			'ciniki_customer_tags', 40);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1651', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+		}
+		if( isset($rc['tags']) ) {
+			$rsp['distributor_categories'] = $rc['tags'];
+		}
+	}
+
+	return $rsp;
 }
 ?>

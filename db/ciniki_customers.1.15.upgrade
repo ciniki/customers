@@ -1,0 +1,7 @@
+#
+# This file will upgrade the database table customers to version 1.14.
+#
+ALTER TABLE ciniki_customers ADD COLUMN dealer_status tinyint unsigned not null AFTER membership_type;
+ALTER TABLE ciniki_customers ADD COLUMN distributor_status tinyint unsigned not null AFTER dealer_status;
+ALTER TABLE ciniki_customers COMMENT='v1.15';
+

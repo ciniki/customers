@@ -29,6 +29,8 @@ function ciniki_customers_get($ciniki) {
 		'links'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Links'),
 		'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'),
 		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Categories'),
+		'dealer_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Categories'),
+		'distributor_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Categories'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -81,6 +83,8 @@ function ciniki_customers_get($ciniki) {
 			. "type, cid, display_name, "
 			. "member_status, member_status AS member_status_text, "
 			. "member_lastpaid, membership_length, membership_type, "
+			. "dealer_status, dealer_status AS dealer_status_text, "
+			. "distributor_status, distributor_status AS distributor_status_text, "
 			. "prefix, first, middle, last, suffix, company, department, title, "
 			. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 			. "ciniki_customer_emails.email AS emails "
@@ -95,12 +99,15 @@ function ciniki_customers_get($ciniki) {
 			array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 				'fields'=>array('id', 'type', 'display_name', 'primary_image_id', 
 					'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
+					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
 					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes',
 					'emails'),
 				'lists'=>array('emails'),
 				'maps'=>array(
 					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
+					'dealer_status_text'=>array('0'=>'Non-Dealer', '10'=>'Active', '60'=>'Suspended'),
+					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
@@ -116,6 +123,8 @@ function ciniki_customers_get($ciniki) {
 		$strsql = "SELECT id, type, cid, display_name, primary_image_id, "
 			. "member_status, member_status AS member_status_text, "
 			. "member_lastpaid, membership_length, membership_type, "
+			. "dealer_status, dealer_status AS dealer_status_text, "
+			. "distributor_status, distributor_status AS distributor_status_text, "
 			. "prefix, first, middle, last, suffix, company, department, title, "
 			. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 			. "short_bio, full_bio, webflags, "
@@ -132,10 +141,13 @@ function ciniki_customers_get($ciniki) {
 			array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 				'fields'=>array('id', 'type', 'cid', 'display_name', 'primary_image_id', 
 					'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
+					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
 					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes'),
 				'maps'=>array(
 					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
+					'dealer_status_text'=>array('0'=>'Non-Dealer', '10'=>'Active', '60'=>'Suspended'),
+					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
@@ -320,14 +332,16 @@ function ciniki_customers_get($ciniki) {
 		}
 	}
 
+	$rsp = array('stat'=>'ok', 'customer'=>$customer);
+
 	//
 	// Check if all available member categories should be returned
 	//
-	$member_categories = array();
 	if( isset($args['member_categories']) && $args['member_categories'] == 'yes' ) {
 		//
 		// Get the available tags
 		//
+		$rsp['member_categories'] = array();
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
 		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
 			'ciniki_customer_tags', 40);
@@ -335,10 +349,48 @@ function ciniki_customers_get($ciniki) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
 		}
 		if( isset($rc['tags']) ) {
-			$member_categories = $rc['tags'];
+			$rsp['member_categories'] = $rc['tags'];
 		}
 	}
 
-	return array('stat'=>'ok', 'customer'=>$customer, 'member_categories'=>$member_categories);
+	//
+	// Check if all available dealer categories should be returned
+	//
+	if( isset($args['dealer_categories']) && $args['dealer_categories'] == 'yes' ) {
+		//
+		// Get the available tags
+		//
+		$rsp['dealer_categories'] = array();
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
+		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
+			'ciniki_customer_tags', 60);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+		}
+		if( isset($rc['tags']) ) {
+			$rsp['dealer_categories'] = $rc['tags'];
+		}
+	}
+
+	//
+	// Check if all available distributor categories should be returned
+	//
+	if( isset($args['distributor_categories']) && $args['distributor_categories'] == 'yes' ) {
+		//
+		// Get the available tags
+		//
+		$rsp['distributor_categories'] = array();
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
+		$rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
+			'ciniki_customer_tags', 80);
+		if( $rc['stat'] != 'ok' ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+		}
+		if( isset($rc['tags']) ) {
+			$rsp['distributor_categories'] = $rc['tags'];
+		}
+	}
+
+	return $rsp;
 }
 ?>

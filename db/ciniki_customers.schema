@@ -55,6 +55,20 @@
 #					20 - Complimentary
 #					30 - Reciprocal
 #
+# dealer_status:	The dealer status for the customer/dealer.  This is only used if 
+#					the dealers are enabled.
+#
+#					0 - Not a dealer
+#					10 - Dealer
+#					60 - Suspended Dealer
+#
+# distributor_status:	The distributor status for the customer/distributor.  This is only used if 
+#						the distributors are enabled.
+#
+#						0 - Not a distributor
+#						10 - Distributor
+#						60 - Suspended Distributor
+#
 # prefix:			Dr. Mr. Ms. Miss. Mrs.
 # first:			The first name(s) of the customer.
 # middle:			The middle name(s) of the customer.
@@ -83,7 +97,10 @@
 # birthdate:		The birthdate of the customer.
 #
 # webflags:			The flags to determine how the customer is shown within the website.
+#
 #					0x01 - Member Visible (hidden by default without this set)
+#					0x02 - Dealer Visible (hidden by default without this set)
+#					0x04 - Distributor Visible (hidden by default without this set)
 #
 # permalink:		The permalink for the customer/member to be displayed on the website.
 # primary_image_id:	The ID of the main image to show for the member.
@@ -107,6 +124,8 @@ create table ciniki_customers (
 	member_lastpaid datetime not null,
 	membership_length tinyint unsigned not null,
 	membership_type tinyint unsigned not null,
+	dealer_status tinyint unsigned not null,
+	distributor_status tinyint unsigned not null,
 	prefix varchar(10) not null,
 	first varchar(100) not null,
 	middle varchar(100) not null,
@@ -137,4 +156,4 @@ create table ciniki_customers (
 	index (company),
 	index (cid),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.14';
+) ENGINE='InnoDB', COMMENT='v1.15';
