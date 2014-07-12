@@ -20,7 +20,8 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	// Get customer information
 	//
 	$strsql = "SELECT ciniki_customers.id, ciniki_customers.first, ciniki_customers.last, "
-		. "ciniki_customer_emails.email, ciniki_customers.member_status "
+		. "ciniki_customer_emails.email, ciniki_customers.member_status, "
+		. "ciniki_customers.dealer_status, ciniki_customers.distributor_status "
 		. "FROM ciniki_customer_emails, ciniki_customers "
 		. "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -46,6 +47,16 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 //	session_start();
 	$_SESSION['customer'] = $customer;
 	$_SESSION['change_log_id'] = 'web.' . date('ymd.His');
+	$customer['price_flags'] = 0x01;
+	if( $customer['member_status'] == 10 ) {
+		$customer['price_flags'] |= 0x10;
+	}
+	if( $customer['dealer_status'] == 10 ) {
+		$customer['price_flags'] |= 0x20;
+	}
+	if( $customer['distributor_status'] == 10 ) {
+		$customer['price_flags'] |= 0x40;
+	}
 	$ciniki['session']['customer'] = $customer;
 	$ciniki['session']['change_log_id'] = $_SESSION['change_log_id'];
 	$ciniki['session']['user'] = array('id'=>'-2');

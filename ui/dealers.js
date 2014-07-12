@@ -108,7 +108,7 @@ function ciniki_customers_dealers() {
 			'_image':{'label':'', 'aside':'yes', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
-			'info':{'label':'', 'list':{
+			'info':{'label':'', 'aside':'yes', 'list':{
 				'name':{'label':'Name'},
 				'company':{'label':'Company', 'visible':'no'},
 				'webvisible':{'label':'Web Settings'},

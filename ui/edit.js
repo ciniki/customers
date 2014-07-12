@@ -53,7 +53,7 @@ function ciniki_customers_edit() {
 		//
 		this.edit = new M.panel('Customer',
 			'ciniki_customers_edit', 'edit',
-			'mc', 'medium', 'sectioned', 'ciniki.customers.edit');
+			'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.edit');
 		this.edit.subscriptions = null;
 		this.edit.customer_id = 0;
 		this.edit.nextFn = null;
@@ -65,10 +65,10 @@ function ciniki_customers_edit() {
 			}};
 		this.edit.forms = {};
 		this.edit.forms.person = {
-			'_image':{'label':'', 'active':'no', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
-			'name':{'label':'Name', 'fields':{
+			'name':{'label':'Name', 'aside':'yes', 'fields':{
 				'cid':{'label':'Customer ID', 'type':'text', 'active':'no'},
 				'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
 				'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
@@ -77,31 +77,31 @@ function ciniki_customers_edit() {
 				'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
 				'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
 				}},
-			'membership':{'label':'Membership', 'active':'no', 'fields':{
+			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
 				'member_lastpaid':{'label':'Last Paid', 'type':'text', 'size':'medium'},
 				'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
 				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
 				}},
-			'_member_categories':{'label':'Categories', 'active':'no', 'fields':{
+			'_member_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
-			'dealer':{'label':'Dealer', 'active':'no', 'fields':{
+			'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
 				'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.dealerWebFlags},
 				}},
-			'_dealer_categories':{'label':'Categories', 'active':'no', 'fields':{
+			'_dealer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'dealer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
-			'distributor':{'label':'Distributor', 'active':'no', 'fields':{
+			'distributor':{'label':'Distributor', 'aside':'yes', 'active':'no', 'fields':{
 				'distributor_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.distributorStatus},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.distributorWebFlags},
 				}},
-			'_distributor_categories':{'label':'Categories', 'active':'no', 'fields':{
+			'_distributor_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'distributor_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
-			'business':{'label':'Business', 'fields':{
+			'business':{'label':'Business', 'aside':'yes', 'fields':{
 				'company':{'label':'Company', 'type':'text', 'livesearch':'yes'},
 				'department':{'label':'Department', 'type':'text'},
 				'title':{'label':'Title', 'type':'text'},
@@ -177,43 +177,43 @@ function ciniki_customers_edit() {
 				}},
 			};
 		this.edit.forms.business = {
-			'_image':{'label':'', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
-			'business':{'label':'Business', 'fields':{
+			'business':{'label':'Business', 'aside':'yes', 'fields':{
 				'cid':{'label':'Customer ID', 'type':'text', 'active':'no'},
 				'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
 				'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
 				}},
-			'name':{'label':'Contact', 'fields':{
+			'name':{'label':'Contact', 'aside':'yes', 'fields':{
 				'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
 				'first':{'label':'First', 'type':'text', 'livesearch':'yes'},
 				'middle':{'label':'Middle', 'type':'text'},
 				'last':{'label':'Last', 'type':'text', 'livesearch':'yes'},
 				'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
 				}},
-			'membership':{'label':'Membership', 'active':'no', 'fields':{
+			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
 				'member_lastpaid':{'label':'Last Paid', 'type':'text', 'size':'medium'},
 				'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
 				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
 				}},
-			'_member_categories':{'label':'Categories', 'active':'no', 'fields':{
+			'_member_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
-			'dealer':{'label':'Dealer', 'active':'no', 'fields':{
+			'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
 				'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.dealerWebFlags},
 				}},
-			'_dealer_categories':{'label':'Categories', 'active':'no', 'fields':{
+			'_dealer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'dealer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
-			'distributor':{'label':'Distributor', 'active':'no', 'fields':{
+			'distributor':{'label':'Distributor', 'aside':'yes', 'active':'no', 'fields':{
 				'distributor_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.distributorStatus},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.distributorWebFlags},
 				}},
-			'_distributor_categories':{'label':'Categories', 'active':'no', 'fields':{
+			'_distributor_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'distributor_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
 				}},
 			'phone':{'label':'Phone Numbers', 'active':'no', 'fields':{

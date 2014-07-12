@@ -108,7 +108,7 @@ function ciniki_customers_members() {
 			'_image':{'label':'', 'aside':'yes', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
-			'info':{'label':'', 'list':{
+			'info':{'label':'', 'aside':'yes', 'list':{
 				'name':{'label':'Name'},
 				'company':{'label':'Company', 'visible':'no'},
 //				'phone_home':{'label':'Home Phone', 'visible':'no'},
@@ -117,7 +117,7 @@ function ciniki_customers_members() {
 //				'phone_fax':{'label':'Fax', 'visible':'no'},
 				'webvisible':{'label':'Web Settings'},
 				}},
-			'membership':{'label':'Membership', 'list':{
+			'membership':{'label':'Membership', 'aside':'yes', 'list':{
 				'member_status_text':{'label':'Status'},
 				'member_lastpaid':{'label':'Last Paid'},
 				'type':{'label':'Type'},
