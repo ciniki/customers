@@ -45,7 +45,6 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	// Create a session for the customer
 	//
 //	session_start();
-	$_SESSION['customer'] = $customer;
 	$_SESSION['change_log_id'] = 'web.' . date('ymd.His');
 	$customer['price_flags'] = 0x01;
 	if( $customer['member_status'] == 10 ) {
@@ -57,6 +56,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	if( $customer['distributor_status'] == 10 ) {
 		$customer['price_flags'] |= 0x40;
 	}
+	$_SESSION['customer'] = $customer;
 	$ciniki['session']['customer'] = $customer;
 	$ciniki['session']['change_log_id'] = $_SESSION['change_log_id'];
 	$ciniki['session']['user'] = array('id'=>'-2');
