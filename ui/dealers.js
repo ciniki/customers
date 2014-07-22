@@ -321,7 +321,11 @@ function ciniki_customers_dealers() {
 			return false;
 		}
 	
-		this.showMenu(cb);
+		if( args.customer_id != null && args.customer_id > 0 ) {
+			this.showDealer(cb, args.customer_id);
+		} else {
+			this.showMenu(cb);
+		}
 	}
 
 	this.showMenu = function(cb) {

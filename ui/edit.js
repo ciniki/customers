@@ -403,6 +403,17 @@ function ciniki_customers_edit() {
 			M.gE(this.panelUID + '_country').value = country;
 			this.removeLiveSearch(s, 'city');
 		};
+		this.edit.setupStatus = function() {
+			if( this.memberinfo == 'yes' && this.data.member_status == 0 ) {
+				this.setFieldValue('member_status', 10);
+			}
+			if( this.dealerinfo == 'yes' && this.data.dealer_status == 0 ) {
+				this.setFieldValue('dealer_status', 10);
+			}
+			if( this.distributorinfo == 'yes' && this.data.distributor_status == 0 ) {
+				this.setFieldValue('distributor_status', 10);
+			}
+		};
 		this.edit.addButton('save', 'Save', 'M.ciniki_customers_edit.saveCustomer();');
 		this.edit.addClose('cancel');
 
@@ -1043,6 +1054,7 @@ function ciniki_customers_edit() {
 					}
 					p.refresh();
 					p.show(cb);
+					p.setupStatus();
 				});
 		} else {
 			var p = M.ciniki_customers_edit.edit;
@@ -1051,8 +1063,10 @@ function ciniki_customers_edit() {
 			p.forms.business.subscriptions.visible = 'no';
 			p.refresh();
 			p.show(cb);
+			p.setupStatus();
 		}
 	};
+	
 
 	this.saveCustomer = function() {
 		// Build a list of subscriptions subscribed or unsubscribed

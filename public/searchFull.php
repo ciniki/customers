@@ -25,6 +25,7 @@ function ciniki_customers_searchFull($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
         'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'), 
+        'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -59,7 +60,19 @@ function ciniki_customers_searchFull($ciniki) {
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND (first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+		. "";
+	if( isset($args['type']) ) {
+		if( $args['type'] == 'members' ) {
+			$strsql .= "AND ciniki_customers.member_status > 0 ";
+		}
+		elseif( $args['type'] == 'dealers' ) {
+			$strsql .= "AND ciniki_customers.dealer_status > 0 ";
+		}
+		elseif( $args['type'] == 'distributors' ) {
+			$strsql .= "AND ciniki_customers.distributor_status > 0 ";
+		}
+	}
+	$strsql .= "AND (first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

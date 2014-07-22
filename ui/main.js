@@ -108,18 +108,27 @@ function ciniki_customers_main() {
 		//
 		this.search = new M.panel('Search Results',
 			'ciniki_customers_main', 'search',
-			'mc', 'medium', 'sectioned', 'ciniki.customers.search');
+			'mc', 'medium', 'sectioned', 'ciniki.customers.main.search');
+		this.search.search_type = 'customers';
 		this.search.sections = {
-			'main':{'label':'', 'headerValues':[], 'num_cols':1, 'type':'simplegrid', 'sortable':'yes'},
-		};   
-		this.search.noData = function() { return 'No customers found'; }
+			'main':{'label':'', 'headerValues':null, 'num_cols':1, 'type':'simplegrid', 'sortable':'yes'},
+		}
+		this.search.noData = function() { return 'No ' + this.search_type + ' found'; }
 		this.search.sectionData = function(s) { return this.data; }
 		this.search.cellValue = function(s, i, j, d) { 
 			return d.customer.display_name;
 		};
 		this.search.rowFn = function(s, i, d) { 
-			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.searchCustomers(null, M.ciniki_customers_main.search.search_str);\',\'' + d.customer.id + '\');'; 
+			if( M.ciniki_customers_main.search.search_type == 'members' ) {
+				return 'M.startApp(\'ciniki.customers.members\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
+			} else if( M.ciniki_customers_main.search.search_type == 'dealers' ) {
+				return 'M.startApp(\'ciniki.customers.dealers\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
+			} else if( M.ciniki_customers_main.search.search_type == 'distributors' ) {
+				return 'M.startApp(\'ciniki.customers.distributors\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
+			} else {
+				return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.searchCustomers(null, M.ciniki_customers_main.search.search_str);\',\'' + d.customer.id + '\');'; 
 			}
+		}
 		this.search.addClose('Back');
 
 		//
@@ -431,7 +440,7 @@ function ciniki_customers_main() {
 
 		this.cb = cb;
 		if( args.search != null && args.search != '' ) {
-			this.searchCustomers(cb, args.search);
+			this.searchCustomers(cb, args.search, args.type);
 		} else if( args.customer_id != null && args.customer_id > 0 ) {
 			this.showCustomer(cb, args.customer_id);
 		} else {
@@ -606,16 +615,19 @@ function ciniki_customers_main() {
 		this.customer.show(cb);
 	}
 
-	this.searchCustomers = function(cb, search_str) {
-		this.search.search_str = search_str;
-		var rsp = M.api.getJSONBg('ciniki.customers.searchFull', 
-			{'business_id':M.curBusinessID, 'start_needle':search_str, 'limit':100});
-		if( rsp.stat != 'ok' ) {
-			M.api.err(rsp);
-			return false;
-		}
-		this.search.data = rsp.customers;
-		this.search.refresh();
-		this.search.show(cb);
+	this.searchCustomers = function(cb, search_str, type) {
+		if( search_str != null ) { this.search.search_str = search_str; }
+		if( type != null ) { this.search.search_type = type; }
+		M.api.getJSONCb('ciniki.customers.searchFull', {'business_id':M.curBusinessID, 
+			'start_needle':this.search.search_str, 'type':this.search.search_type, 'limit':100}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				var p = M.ciniki_customers_main.search;
+				p.data = rsp.customers;
+				p.refresh();
+				p.show(cb);
+			});
 	}
 }

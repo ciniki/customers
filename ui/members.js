@@ -328,8 +328,12 @@ function ciniki_customers_members() {
 			alert('App Error');
 			return false;
 		}
-	
-		this.showMenu(cb);
+
+		if( args.customer_id != null && args.customer_id > 0 ) {
+			this.showMember(cb, args.customer_id);
+		} else {
+			this.showMenu(cb);
+		}
 	}
 
 	this.showMenu = function(cb) {
