@@ -39,14 +39,16 @@ function ciniki_customers_memberCategories($ciniki) {
 	//
 	// Build the query to get the tags
 	//
-	$strsql = "SELECT ciniki_customer_tags.tag_name, "
-		. "ciniki_customer_tags.permalink, "
+	$strsql = "SELECT IFNULL(ciniki_customer_tags.tag_name, 'Uncategorized') AS tag_name, "
+		. "IFNULL(ciniki_customer_tags.permalink, '') AS permalink, "
 		. "COUNT(ciniki_customers.id) AS num_members "
-		. "FROM ciniki_customer_tags, ciniki_customers "
-		. "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customer_tags.tag_type = '40' "
-		. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
-		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "FROM ciniki_customers "
+		. "LEFT JOIN ciniki_customer_tags ON ("
+			. "ciniki_customers.id = ciniki_customer_tags.customer_id "
+			. "AND ciniki_customer_tags.tag_type = '40' "
+			. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. ") "
+		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.status = 1 "
 		. "AND ciniki_customers.member_status = 10 "
 		. "GROUP BY tag_name "

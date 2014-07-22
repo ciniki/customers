@@ -7,14 +7,14 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:		The ID of the business to get distributors for.
+// business_id:		The ID of the business to get dealers for.
 // type:			The type of participants to get.  Refer to participantAdd for 
 //					more information on types.
 //
 // Returns
 // -------
 //
-function ciniki_customers_distributorCategories($ciniki) {
+function ciniki_customers_dealerCategories($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
@@ -31,7 +31,7 @@ function ciniki_customers_distributorCategories($ciniki) {
     // Check access to business_id as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.distributorCategories', 0);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.dealerCategories', 0);
     if( $ac['stat'] != 'ok' ) { 
         return $ac;
     }   
@@ -39,16 +39,18 @@ function ciniki_customers_distributorCategories($ciniki) {
 	//
 	// Build the query to get the tags
 	//
-	$strsql = "SELECT ciniki_customer_tags.tag_name, "
-		. "ciniki_customer_tags.permalink, "
-		. "COUNT(ciniki_customers.id) AS num_distributors "
-		. "FROM ciniki_customer_tags, ciniki_customers "
-		. "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customer_tags.tag_type = '40' "
-		. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
-		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+	$strsql = "SELECT IFNULL(ciniki_customer_tags.tag_name, 'Uncategorized') AS tag_name, "
+		. "IFNULL(ciniki_customer_tags.permalink, '') AS permalink, "
+		. "COUNT(ciniki_customers.id) AS num_dealers "
+		. "FROM ciniki_customers "
+		. "LEFT JOIN ciniki_customer_tags ON ("
+			. "ciniki_customers.id = ciniki_customer_tags.customer_id "
+			. "AND ciniki_customer_tags.tag_type = '60' "
+			. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. ") "
+		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.status = 1 "
-		. "AND ciniki_customers.distributor_status = 10 "
+		. "AND ciniki_customers.dealer_status = 10 "
 		. "GROUP BY tag_name "
 		. "ORDER BY tag_name "
 		. "";
@@ -58,7 +60,7 @@ function ciniki_customers_distributorCategories($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'categories', 'fname'=>'permalink', 'name'=>'category',
-			'fields'=>array('name'=>'tag_name', 'permalink', 'num_distributors')),
+			'fields'=>array('name'=>'tag_name', 'permalink', 'num_dealers')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

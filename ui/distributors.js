@@ -58,7 +58,7 @@ function ciniki_customers_distributors() {
 			if( s == 'distributors' ) {
 				return 'M.ciniki_customers_distributors.showDistributor(\'M.ciniki_customers_distributors.showMenu();\',\'' + d.distributor.id + '\');'; 
 			} else if( s == 'categories' ) {
-				return 'M.ciniki_customers_distributors.showList(\'M.ciniki_customers_distributors.showMenu();\',\'' + escape(d.category.name) + '\');'; 
+				return 'M.ciniki_customers_distributors.showList(\'M.ciniki_customers_distributors.showMenu();\',\'' + escape(d.category.name) + '\',\'' + d.category.permalink + '\');'; 
 			}
 		};
 		this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_distributors.showMenu();\',\'mc\',{\'customer_id\':0,\'distributor\':\'yes\'});');
@@ -366,12 +366,13 @@ function ciniki_customers_distributors() {
 		}
 	};
 
-	this.showList = function(cb, c) {
+	this.showList = function(cb, c, p) {
 		if( c != null ) { this.list.category = unescape(c); }
+		if( p != null ) { this.list.permalink = p; }
 		// Get the list of existing customers
 		this.list.sections.distributors.label = this.list.category;
 		M.api.getJSONCb('ciniki.customers.distributorList', 
-			{'business_id':M.curBusinessID, 'category':encodeURIComponent(this.list.category)}, function(rsp) {
+			{'business_id':M.curBusinessID, 'category':encodeURIComponent(this.list.permalink)}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;

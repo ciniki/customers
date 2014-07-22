@@ -21,7 +21,7 @@ function ciniki_customers_dealerList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'category'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Category'), 
+		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -65,10 +65,27 @@ function ciniki_customers_dealerList($ciniki) {
 			. "FROM ciniki_customer_tags, ciniki_customers "
 			. "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customer_tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
-			. "AND ciniki_customer_tags.tag_type = '40' "
+			. "AND ciniki_customer_tags.tag_type = '60' "
 			. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
 			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.dealer_status = 10 "
+			. "ORDER BY last, first, company";
+	} elseif( isset($args['category']) && $args['category'] == '' ) {
+		$strsql = "SELECT ciniki_customers.id, "
+			. "ciniki_customers.first, "
+			. "ciniki_customers.last, "
+			. "ciniki_customers.display_name, "
+			. "ciniki_customers.dealer_status AS dealer_status_text, "
+			. "ciniki_customers.company "
+			. "FROM ciniki_customers "
+			. "LEFT JOIN ciniki_customer_tags ON ("
+				. "ciniki_customers.id = ciniki_customer_tags.customer_id "
+				. "AND ciniki_customer_tags.tag_type = '60' "
+				. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") "
+			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_customers.dealer_status = 10 "
+			. "AND ISNULL(ciniki_customer_tags.tag_name) "
 			. "ORDER BY last, first, company";
 	} else {
 		$strsql = "SELECT ciniki_customers.id, "
