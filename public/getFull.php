@@ -98,7 +98,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
-		. "notes, primary_image_id, webflags, short_bio, full_bio "
+		. "pricepoint_id, notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -111,7 +111,7 @@ function ciniki_customers_getFull($ciniki) {
 				'dealer_status', 'distributor_status',
 				'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
 				'display_name', 'display_name_format', 'company', 'department', 'title', 
-				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
+				'pricepoint_id', 'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',

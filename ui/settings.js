@@ -33,6 +33,11 @@ function ciniki_customers_settings() {
 			'name_options':{'label':'Name Format', 'fields':{
 				'display-name-business-format':{'label':'Business', 'type':'select', 'options':this.businessFormats},
 			}},
+			'pricepoints':{'label':'Price Points', 'visible':'no', 'type':'simplegrid',
+				'num_cols':1,
+				'addTxt':'Add Price Point',
+				'addFn':'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',0);',
+			},
 //			'_types':{'label':'Customer Types', 'type':'gridform', 'rows':8, 'cols':3, 
 //				'header':['Name', 'Form', 'Type'],
 //				'fields':[
@@ -63,21 +68,58 @@ function ciniki_customers_settings() {
 //				]],
 //			},
 		};
-
+		this.main.sectionData = function(s) { 
+			if( s == 'pricepoints' ) { return this.data[s]; }
+			return this.data; 
+		}
 		this.main.fieldValue = function(s, i, d) { 
 			if( this.data[i] == null ) { return ''; }
 			return this.data[i];
 		};
-
-		//  
-		// Callback for the field history
-		//  
+		this.main.cellValue = function(s, i, j, d) {
+			if( d.pricepoint.code != null && d.pricepoint.code != '' ) { return d.pricepoint.code + ' - ' + d.pricepoint.name; }
+			return d.pricepoint.name;
+		};
+		this.main.rowFn = function(s, i, d) {
+			return 'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',\'' + d.pricepoint.id + '\');';
+		}
 		this.main.fieldHistoryArgs = function(s, i) {
+			if( s == 'pricepoints' ) {
+				return {'method':'ciniki.customers.pricepointHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
+			}
 			return {'method':'ciniki.customers.getSettingHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
 		};
-
 		this.main.addButton('save', 'Save', 'M.ciniki_customers_settings.saveSettings();');
 		this.main.addClose('Cancel');
+
+		//
+		// The panel to add/edit a price point
+		//
+		this.pricepoint = new M.panel('Price Point',
+			'ciniki_customers_settings', 'pricepoint',
+			'mc', 'medium', 'sectioned', 'ciniki.customers.settings.pricepoint');
+		this.pricepoint.pricepoint_id = 0;
+		this.pricepoint.sections = {
+			'price':{'label':'Price Point', 'fields':{
+				'name':{'label':'Name', 'type':'text'},
+				'code':{'label':'Code', 'type':'text', 'size':'medium'},
+				'sequence':{'label':'Sequence', 'type':'text', 'size':'small'},
+				}},
+			'_buttons':{'label':'', 'buttons':{
+				'save':{'label':'Save', 'fn':'M.ciniki_customers_settings.savePricePoint();'},
+				'delete':{'label':'Delete', 'fn':'M.ciniki_customers_settings.deletePricePoint();'},
+				}},
+		}
+		this.pricepoint.fieldValue = function(s, i, d) { 
+			if( this.data[i] == null ) { return ''; }
+			return this.data[i];
+		};
+		this.pricepoint.fieldHistoryArgs = function(s, i) {
+			return {'method':'ciniki.customers.pricepointHistory', 
+				'args':{'business_id':M.curBusinessID, 'field':i}};
+		};
+		this.pricepoint.addButton('save', 'Save', 'M.ciniki_customers_settings.savePricePoint();');
+		this.pricepoint.addClose('Cancel');
 	}
 
 	//
@@ -86,9 +128,7 @@ function ciniki_customers_settings() {
 	//
 	this.start = function(cb, appPrefix, aG) {
 		args = {};
-		if( aG != null ) {
-			args = eval(aG);
-		}
+		if( aG != null ) { args = eval(aG); }
 
 		//
 		// Create the app container if it doesn't exist, and clear it out
@@ -99,6 +139,12 @@ function ciniki_customers_settings() {
 			alert('App Error');
 			return false;
 		} 
+
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 ) {
+			M.ciniki_customers_settings.main.sections.pricepoints.visible = 'yes';
+		} else {
+			M.ciniki_customers_settings.main.sections.pricepoints.visible = 'no';
+		}
 
 		this.showMain(cb);
 	}
@@ -114,6 +160,9 @@ function ciniki_customers_settings() {
 			}
 			var p = M.ciniki_customers_settings.main;
 			p.data = rsp.settings;
+			if( rsp.pricepoints != null ) {
+				p.data.pricepoints = rsp.pricepoints;
+			}
 			p.refresh();
 			p.show(cb);
 		});
@@ -134,4 +183,70 @@ function ciniki_customers_settings() {
 			this.main.close();
 		}
 	}
+
+	this.editPricePoint = function(cb, pid) {
+		if( pid != null ) { this.pricepoint.pricepoint_id = pid; }
+		if( this.pricepoint.pricepoint_id > 0 ) {
+			this.pricepoint.sections._buttons.buttons.delete.visible = 'yes';
+			M.api.getJSONCb('ciniki.customers.pricepointGet', {'business_id':M.curBusinessID, 
+				'pricepoint_id':this.pricepoint.pricepoint_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					var p = M.ciniki_customers_settings.pricepoint;
+					p.data = rsp.pricepoint;
+					p.refresh();
+					p.show(cb);
+				});
+		} else {
+			this.pricepoint.sections._buttons.buttons.delete.visible = 'no';
+			this.pricepoint.data = {};
+			this.pricepoint.refresh();
+			this.pricepoint.show(cb);
+		}
+	};
+
+	this.savePricePoint = function() {
+		if( this.pricepoint.pricepoint_id > 0 ) {
+			var c = this.pricepoint.serializeForm('no');
+			if( c != '' ) {
+				M.api.postJSONCb('ciniki.customers.pricepointUpdate', 
+					{'business_id':M.curBusinessID, 
+					'pricepoint_id':M.ciniki_customers_settings.pricepoint.pricepoint_id}, c, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						} 
+					M.ciniki_customers_settings.pricepoint.close();
+					});
+			} else {
+				this.pricepoint.close();
+			}
+		} else {
+			var c = this.pricepoint.serializeForm('yes');
+			M.api.postJSONCb('ciniki.customers.pricepointAdd', 
+				{'business_id':M.curBusinessID, 'pricepoint_id':this.pricepoint.pricepoint_id}, c, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					} 
+					M.ciniki_customers_settings.pricepoint.close();
+				});
+		}
+	};
+
+	this.deletePricePoint = function() {
+		if( confirm("Are you sure you want to remove this price point?") ) {
+			M.api.getJSONCb('ciniki.customers.pricepointDelete', 
+				{'business_id':M.curBusinessID, 
+				'pricepoint_id':this.pricepoint.pricepoint_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					M.ciniki_customers_settings.pricepoint.close();	
+				});
+		}
+	};
 }

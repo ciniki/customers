@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.16.
+#
+ALTER TABLE ciniki_customers ADD COLUMN pricepoint_id int not null AFTER birthdate;
+ALTER TABLE ciniki_customers COMMENT='v1.16';
+

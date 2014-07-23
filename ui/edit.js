@@ -76,6 +76,7 @@ function ciniki_customers_edit() {
 				'last':{'label':'Last', 'type':'text', 'livesearch':'yes',},
 				'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
 				'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
+				'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
 				}},
 			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
@@ -184,6 +185,7 @@ function ciniki_customers_edit() {
 				'cid':{'label':'Customer ID', 'type':'text', 'active':'no'},
 				'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
 				'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
+				'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
 				}},
 			'name':{'label':'Contact', 'aside':'yes', 'fields':{
 				'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
@@ -651,12 +653,32 @@ function ciniki_customers_edit() {
 				this.edit.forms.person.name.fields.cid.active = 'no';
 				this.edit.forms.business.business.fields.cid.active = 'no';
 			}
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 
+				&& M.curBusiness.customers.settings.pricepoints != null 
+				) {
+				this.edit.forms.person.name.fields.pricepoint_id.active = 'yes';
+				this.edit.forms.business.business.fields.pricepoint_id.active = 'yes';
+				var pricepoints = {};
+				var s_pp = M.curBusiness.customers.settings.pricepoints;
+				pricepoints[0] = 'None';
+				for(i in s_pp) {
+					pricepoints[s_pp[i].pricepoint.id] = s_pp[i].pricepoint.name;
+				}
+				this.edit.forms.person.name.fields.pricepoint_id.options = pricepoints;
+				this.edit.forms.business.business.fields.pricepoint_id.options = pricepoints;
+			} else {
+				this.edit.forms.person.name.fields.pricepoint_id.active = 'no';
+				this.edit.forms.business.business.fields.pricepoint_id.active = 'no';
+			}
 		} else {
 //			this.edit.formtabs = null;
 			this.edit.sections = this.edit.forms.person;
 			this.edit.forms.person.info.fields.cid.active = 'no';
 			this.edit.forms.business.info.fields.cid.active = 'no';
+			this.edit.forms.person.name.fields.pricepoint_id.active = 'no';
+			this.edit.forms.business.business.fields.pricepoint_id.active = 'no';
 		}
+
 
 		if( args.next != null && args.next != '' ) {
 			this.edit.nextFn = args.next;

@@ -511,6 +511,20 @@ function ciniki_customers_main() {
 				this.customer.data.details.birthdate = {'label':'Birthday', 'value':rsp.customer.birthdate};
 			}
 		}
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 
+			&& M.curBusiness.customers.settings.pricepoints != null
+			) {
+			for(i in M.curBusiness.customers.settings.pricepoints) {
+				if( M.curBusiness.customers.settings.pricepoints[i].pricepoint.id == rsp.customer.pricepoint_id ) {
+					this.customer.data.details.pricepoint_id = {'label':'Price Point', 
+						'value':M.curBusiness.customers.settings.pricepoints[i].pricepoint.name};
+					break;
+				}
+			}
+			if( this.customer.data.details.pricepoint_id == null ) {
+					this.customer.data.details.pricepoint_id = {'label':'Price Point', 'value':'None'};
+			}
+		}
 //		this.customer.data.phones = {};
 //		if(  rsp.customer.phone_home != null && rsp.customer.phone_home != '' ) {
 //			this.customer.sections.phones.visible = 'yes';

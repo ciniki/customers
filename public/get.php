@@ -87,6 +87,7 @@ function ciniki_customers_get($ciniki) {
 			. "distributor_status, distributor_status AS distributor_status_text, "
 			. "prefix, first, middle, last, suffix, company, department, title, "
 			. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
+			. "ciniki_customers.pricepoint_id, "
 			. "ciniki_customer_emails.email AS emails "
 			. "FROM ciniki_customers "
 			. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
@@ -101,7 +102,7 @@ function ciniki_customers_get($ciniki) {
 					'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
 					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
-					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes',
+					'pricepoint_id', 'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes',
 					'emails'),
 				'lists'=>array('emails'),
 				'maps'=>array(

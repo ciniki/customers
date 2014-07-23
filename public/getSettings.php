@@ -35,6 +35,7 @@ function ciniki_customers_getSettings($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+	$modules = $rc['modules'];
 	
 	//
 	// Grab the settings for the business from the database
@@ -44,10 +45,33 @@ function ciniki_customers_getSettings($ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+	$rsp = $rc;	
+
+	//
+	// Grab the list of price points
+	//
+	if( ($modules['ciniki.customers']['flags']&0x1000) > 0 ) {
+		$strsql = "SELECT id, name, code, sequence, flags "
+			. "FROM ciniki_customer_pricepoints "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY sequence, id "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'pricepoints', 'fname'=>'id', 'name'=>'pricepoint',
+				'fields'=>array('id', 'name', 'code', 'sequence', 'flags')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['pricepoints']) ) {
+			$rsp['pricepoints'] = $rc['pricepoints'];
+		}
+	}
 
 	//
 	// Return the response, including colour arrays and todays date
 	//
-	return $rc;
+	return $rsp;
 }
 ?>

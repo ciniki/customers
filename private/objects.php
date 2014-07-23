@@ -40,6 +40,7 @@ function ciniki_customers_objects($ciniki) {
 //			'phone_fax'=>array(),
 			'notes'=>array(),
 			'birthdate'=>array(),
+			'pricepoint_id'=>array(),
 			'webflags'=>array(),
 			'permalink'=>array(),
 			'primary_image_id'=>array('ref'=>'ciniki.images.image'),
@@ -135,6 +136,17 @@ function ciniki_customers_objects($ciniki) {
 			'tag_type'=>array(),
 			'tag_name'=>array(),
 			'permalink'=>array(),
+			),
+		'history_table'=>'ciniki_customer_history',
+		);
+	$objects['pricepoint'] = array(
+		'name'=>'Price Point',
+		'sync'=>'yes',
+		'table'=>'ciniki_customer_pricepoints',
+		'fields'=>array(
+			'name'=>array(),
+			'sequence'=>array(),
+			'flags'=>array(),
 			),
 		'history_table'=>'ciniki_customer_history',
 		);

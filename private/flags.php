@@ -19,6 +19,7 @@ function ciniki_customers_flags($ciniki, $modules) {
 		array('flag'=>array('bit'=>'6', 'name'=>'Dealer Categories')),
 		array('flag'=>array('bit'=>'9', 'name'=>'Distributors')),
 		array('flag'=>array('bit'=>'10', 'name'=>'Distributor Categories')),
+		array('flag'=>array('bit'=>'13', 'name'=>'Price Points')),
 		);
 
 	return array('stat'=>'ok', 'flags'=>$flags);
