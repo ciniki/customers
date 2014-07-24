@@ -79,7 +79,7 @@ function ciniki_customers_searchQuick($ciniki) {
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customers.status = 1 ";
+		. "AND ciniki_customers.status = 10 ";
 	if( isset($args['member_status']) && $args['member_status']	!= '' ) {
 		$strsql .= "AND member_status = '" . ciniki_core_dbQuote($ciniki, $args['member_status']) . "' ";
 	}

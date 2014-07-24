@@ -106,7 +106,7 @@ function ciniki_customers_automergeUploadXLS($ciniki) {
 	//
 	// Update the information in the database
 	//
-	$strsql = "UPDATE ciniki_customer_automerges SET status = 1, cache_name = '" . ciniki_core_dbQuote($ciniki, "automerge_" . $automerge_id) . "' "
+	$strsql = "UPDATE ciniki_customer_automerges SET status = 10, cache_name = '" . ciniki_core_dbQuote($ciniki, "automerge_" . $automerge_id) . "' "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $automerge_id) . "' ";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');

@@ -24,7 +24,7 @@
 #					this field.
 #
 # status:			0 - unknown
-#					1 - active
+#					10 - active
 #					60 - deleted
 #
 # type:				The type of customer, person or business.
