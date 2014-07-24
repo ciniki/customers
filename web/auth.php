@@ -21,7 +21,8 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	//
 	$strsql = "SELECT ciniki_customers.id, ciniki_customers.first, ciniki_customers.last, "
 		. "ciniki_customer_emails.email, ciniki_customers.member_status, "
-		. "ciniki_customers.dealer_status, ciniki_customers.distributor_status "
+		. "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
+		. "ciniki_customers.pricepoint_id "
 		. "FROM ciniki_customer_emails, ciniki_customers "
 		. "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -40,6 +41,29 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'736', 'msg'=>'Unable to update password.'));
 	}
 	$customer = $rc['customer'];
+
+	//
+	// Get the sequence for the customers pricepoint if set
+	//
+	if( $customer['pricepoint_id'] > 0 ) {
+		$strsql = "SELECT sequence "
+			. "FROM ciniki_customer_pricepoints "
+			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer['pricepoint_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'pricepoint');
+		if( $rc['stat'] != 'ok' ) {
+			error_log("WEB: $email pricepoint not found");
+			return $rc;
+		}
+		if( !isset($rc['pricepoint']) ) {
+			error_log("WEB: $email pricepoint not found");
+			$customer['pricepoint_id'] = 0;
+			$customer['pricepoint_sequence'] = 0;
+		} else {
+			$customer['pricepoint_sequence'] = $rc['pricepoint']['sequence'];
+		}
+	}
 
 	//
 	// Create a session for the customer

@@ -5,6 +5,10 @@
 # are initially configured and then customers can be assigned to a level.  Other modules
 # such as products can use this to have different prices for different levels.
 #
+# The lower the sequence number, the higher the price should be.  The first sequence number
+# should be highest amount/MSRP/List Price.  As a customer moves up in price point, they should
+# get a cheaper price.
+#
 # Fields
 # ------
 # id: 				The unique id number for each price point in the database.
