@@ -24,6 +24,8 @@
 #
 # flags:			The options for this price level **future**
 #
+#					0x01 - Find next available price if pricepoint not set.
+#
 # date_added:			The UTC date and time the price was added to the database.
 # last_updated:			The UTC date and time of the last update.
 #

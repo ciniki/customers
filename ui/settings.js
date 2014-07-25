@@ -16,6 +16,9 @@ function ciniki_customers_settings() {
 		'company [person]':'Company [Person]',
 		'person [company]':'Person [Company]',
 	};
+	this.pricepointFlags = {
+		'1':{'name':'Flexible'},
+		};
 
 	this.init = function() {
 		//
@@ -104,6 +107,7 @@ function ciniki_customers_settings() {
 				'name':{'label':'Name', 'type':'text'},
 				'code':{'label':'Code', 'type':'text', 'size':'medium'},
 				'sequence':{'label':'Sequence', 'type':'text', 'size':'small'},
+				'flags':{'label':'Options', 'type':'flags', 'flags':this.pricepointFlags},
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_customers_settings.savePricePoint();'},
