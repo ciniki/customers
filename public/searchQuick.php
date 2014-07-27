@@ -58,7 +58,7 @@ function ciniki_customers_searchQuick($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, status, type, company, cid ";
+	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, status, type, company, eid ";
 //	if( count($types) > 0 ) {
 //		// If there are customer types defined, choose the right name for the customer
 //		// This is required here to be able to sort properly
@@ -93,7 +93,7 @@ function ciniki_customers_searchQuick($ciniki) {
 			. "OR first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-			. "OR cid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+			. "OR eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR company LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR company LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

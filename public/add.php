@@ -13,7 +13,7 @@
 // api_key:
 // auth_token:
 // business_id:			The ID of the business to add the customer to.
-// cid:					The business ID of the customer, not used for internal linking.
+// eid:					The business ID of the customer, not used for internal linking.
 // type:				The type of customer, as specified in customer settings.
 // name:				(optional) The full name of the customer.  If this is specified,
 //						it will be split at the first comma into last, first
@@ -79,7 +79,7 @@ function ciniki_customers_add(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'cid'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Customer'),
+		'eid'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Customer ID'),
 		'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'name'=>'Status'),
 		'type'=>array('required'=>'no', 'default'=>'1', 'blank'=>'yes', 'name'=>'Customer Type'),
         'member_status'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Member Status'), 
@@ -127,6 +127,12 @@ function ciniki_customers_add(&$ciniki) {
         'full_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'birthdate'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
         'pricepoint_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Price Point'), 
+        'salesrep_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Sales Rep'), 
+        'tax_number'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Tax Number'), 
+        'tax_location_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Tax Location'), 
+        'reward_level'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Reward Level'), 
+        'sales_total'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Sales Total'), 
+        'start_date'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Start Date'), 
         'link_name_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website Name'), 
         'link_url_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website URL'), 
         'link_webflags_1'=>array('required'=>'no', 'default'=>'0', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website Flags'), 
@@ -165,6 +171,13 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	if( $args['first'] == '' && $args['last'] == '' && $args['name'] == '' && $args['company'] == '' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'368', 'msg'=>'You must specify a first or last name'));
+	}
+
+	//
+	// Check for a start date, default to now
+	//
+	if( $args['start_date'] == '' ) {
+		$args['start_date'] = gmdate('Y-m-d H:i:s');
 	}
 
 	//

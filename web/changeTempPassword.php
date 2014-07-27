@@ -53,6 +53,10 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	$user = $rc['user'];
 
 	//
+	// FIXME: Put check for active user status < 40
+	//
+
+	//
 	// Perform an extra check to make sure only 1 row was found, other return error
 	//
 	if( $rc['num_rows'] != 1 ) {

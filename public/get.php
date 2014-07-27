@@ -80,7 +80,7 @@ function ciniki_customers_get($ciniki) {
 
 	if( isset($args['emails']) && $args['emails'] == 'list' ) {
 		$strsql = "SELECT ciniki_customers.id, ciniki_customers.primary_image_id, "
-			. "type, cid, display_name, "
+			. "type, eid, display_name, "
 			. "member_status, member_status AS member_status_text, "
 			. "member_lastpaid, membership_length, membership_type, "
 			. "dealer_status, dealer_status AS dealer_status_text, "
@@ -121,7 +121,7 @@ function ciniki_customers_get($ciniki) {
 		}
 		$customer = $rc['customers'][0]['customer'];
 	} else {
-		$strsql = "SELECT id, type, cid, display_name, primary_image_id, "
+		$strsql = "SELECT id, type, eid, display_name, primary_image_id, "
 			. "member_status, member_status AS member_status_text, "
 			. "member_lastpaid, membership_length, membership_type, "
 			. "dealer_status, dealer_status AS dealer_status_text, "
@@ -140,7 +140,7 @@ function ciniki_customers_get($ciniki) {
 //		}
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-				'fields'=>array('id', 'type', 'cid', 'display_name', 'primary_image_id', 
+				'fields'=>array('id', 'type', 'eid', 'display_name', 'primary_image_id', 
 					'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
 					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',

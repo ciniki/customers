@@ -90,7 +90,7 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Get the customer details and emails
 	//
-	$strsql = "SELECT ciniki_customers.id, cid, type, "
+	$strsql = "SELECT ciniki_customers.id, eid, parent_id, type, status, "
 		. "member_status, member_lastpaid, membership_length, membership_type, "
 		. "dealer_status, distributor_status, "
 		. "prefix, first, middle, last, suffix, "
@@ -98,7 +98,8 @@ function ciniki_customers_getFull($ciniki) {
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
-		. "pricepoint_id, notes, primary_image_id, webflags, short_bio, full_bio "
+		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, start_date, "
+		. "notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -106,13 +107,16 @@ function ciniki_customers_getFull($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'webflags', 
+			'fields'=>array('id', 'webflags', 'parent_id', 'status',
 				'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 
 				'dealer_status', 'distributor_status',
-				'cid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
+				'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
 				'display_name', 'display_name_format', 'company', 'department', 'title', 
-				'pricepoint_id', 'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
-				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
+				'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
+				'reward_level', 'sales_total', 'start_date', 
+				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
+			'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+				'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 
@@ -311,7 +315,9 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Check if all available member categories should be returned
 	//
-	if( isset($args['member_categories']) && $args['member_categories'] == 'yes' ) {
+	if( ($modules['ciniki.customers']['flags']&0x04) > 0
+		&& isset($args['member_categories']) && $args['member_categories'] == 'yes' 
+		) {
 		//
 		// Get the available tags
 		//
@@ -330,7 +336,9 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Check if all available dealer categories should be returned
 	//
-	if( isset($args['dealer_categories']) && $args['dealer_categories'] == 'yes' ) {
+	if( ($modules['ciniki.customers']['flags']&0x20) > 0
+		&& isset($args['dealer_categories']) && $args['dealer_categories'] == 'yes' 
+		) {
 		//
 		// Get the available tags
 		//
@@ -349,7 +357,9 @@ function ciniki_customers_getFull($ciniki) {
 	//
 	// Check if all available distributor categories should be returned
 	//
-	if( isset($args['distributor_categories']) && $args['distributor_categories'] == 'yes' ) {
+	if( ($modules['ciniki.customers']['flags']&0x0200) > 0
+		&& isset($args['distributor_categories']) && $args['distributor_categories'] == 'yes' 
+		) {
 		//
 		// Get the available tags
 		//
@@ -362,6 +372,34 @@ function ciniki_customers_getFull($ciniki) {
 		}
 		if( isset($rc['tags']) ) {
 			$rsp['distributor_categories'] = $rc['tags'];
+		}
+	}
+
+	//
+	// Check if we need to return the list of sales reps
+	//
+	if( ($modules['ciniki.customers']['flags']&0x2000) > 0
+		&& isset($args['sales_reps']) && $args['sales_reps'] == 'yes' 
+		) {
+		//
+		// Get the active sales reps
+		//
+		$strsql = "SELECT ciniki_users.id, ciniki_users.display_name "
+			. "FROM ciniki_business_users, ciniki_users "
+			. "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_business_users.permission_group = 'salesreps' "
+			. "AND ciniki_business_users.status < 60 "
+			. "AND ciniki_business_users.user_id = ciniki_users.id "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'salesreps', 'fname'=>'id', 'name'=>'rep',
+				'fields'=>array('id', 'name'=>'display_name')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['salesreps']) ) {
+			$rsp['salesreps'] = $rc['salesreps'];
 		}
 	}
 

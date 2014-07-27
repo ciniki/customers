@@ -56,7 +56,7 @@ function ciniki_customers_searchFull($ciniki) {
 	$date_format = ciniki_users_dateFormat($ciniki);
 
 	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, "
-		. "status, type, company, cid ";
+		. "status, type, company, eid ";
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -76,7 +76,7 @@ function ciniki_customers_searchFull($ciniki) {
 			. "OR first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-			. "OR cid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+			. "OR eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR company LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR company LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

@@ -55,6 +55,10 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	$user = $rc['user'];
 
 	//
+	// FIXME: Put a check for customer status < 40 (active customer)
+	//
+
+	//
 	// Perform an extra check to make sure only 1 row was found, other return error
 	//
 	if( $rc['num_rows'] != 1 ) {

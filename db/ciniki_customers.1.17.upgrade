@@ -1,0 +1,14 @@
+#
+# This file will upgrade the database table customers to version 1.17.
+#
+ALTER TABLE ciniki_customers CHANGE cid eid varchar(50) not null;
+ALTER TABLE ciniki_customers ADD COLUMN parent_id int not null AFTER eid;
+ALTER TABLE ciniki_customers ADD COLUMN salesrep_id int not null AFTER pricepoint_id;
+ALTER TABLE ciniki_customers ADD COLUMN tax_number varchar(50) not null AFTER salesrep_id;
+ALTER TABLE ciniki_customers ADD COLUMN tax_location_id int not null AFTER tax_number;
+ALTER TABLE ciniki_customers ADD COLUMN reward_level varchar(50) not null AFTER tax_location_id;
+ALTER TABLE ciniki_customers ADD COLUMN sales_total varchar(50) not null AFTER reward_level;
+ALTER TABLE ciniki_customers ADD COLUMN start_date datetime not null AFTER sales_total;
+UPDATE ciniki_customers SET start_date = date_added;
+ALTER TABLE ciniki_customers COMMENT='v1.17';
+

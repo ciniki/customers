@@ -34,6 +34,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
 		. "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
+		. "AND ciniki_customers.status < 40 "
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');

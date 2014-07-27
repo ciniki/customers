@@ -38,9 +38,16 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	}
 	if( !isset($rc['customer']) || !is_array($rc['customer']) ) {
 		error_log("WEB: auth $email fail (736)");
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'736', 'msg'=>'Unable to update password.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'736', 'msg'=>'Unable to authenticate.'));
 	}
 	$customer = $rc['customer'];
+
+	//
+	// Check the customer status
+	//
+	if( !isset($customer['status']) || $customer['status'] == 0 || $customer['status'] >= 40 ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1840', 'msg'=>'Login disabled, please contact us to have the problem fixed.'));
+	}
 
 	//
 	// Get the sequence for the customers pricepoint if set
@@ -75,7 +82,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	$_SESSION['change_log_id'] = 'web.' . date('ymd.His');
 	$_SESSION['business_id'] = $ciniki['request']['business_id'];
 	$customer['price_flags'] = 0x01;
-	if( $customer['status'] == 10 ) {
+	if( $customer['status'] < 40 ) {
 		$customer['price_flags'] |= 0x10;
 	}
 	if( $customer['member_status'] == 10 ) {

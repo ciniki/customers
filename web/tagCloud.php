@@ -40,7 +40,7 @@ function ciniki_customers_web_tagCloud($ciniki, $settings, $business_id, $type) 
 		. "AND ciniki_customer_tags.tag_type = '" . ciniki_core_dbQuote($ciniki, $type) . "' "
 		. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
 		. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND ciniki_customers.status = 10 "
+		. "AND ciniki_customers.status < 40 "
 		. "AND ciniki_customers.member_status = 10 "
 		. "AND (ciniki_customers.webflags&0x01) = 1 "
 		. "GROUP BY tag_name "

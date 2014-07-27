@@ -28,11 +28,15 @@ function ciniki_customers_settings() {
 			'ciniki_customers_settings', 'main',
 			'mc', 'medium', 'sectioned', 'ciniki.customers.settings.main');
 		this.main.sections = {
-			'_options':{'label':'Options', 'fields':{
-				'use-cid':{'label':'Customer ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+//			'_options':{'label':'Options', 'fields':{
+//				'use-cid':{'label':'Customer ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 //				'use-relationships':{'label':'Customer Relationships', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'use-birthdate':{'label':'Birthdays', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-			}},
+//				'use-reward-teir':{'label':'Reward Teir', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+//				'use-sales-total':{'label':'Sales Total', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+//				'use-tax-number':{'label':'Tax Number', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+//				'use-tax-location-id':{'label':'Tax Location', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+//				'use-birthdate':{'label':'Birthdays', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+//			}},
 			'name_options':{'label':'Name Format', 'fields':{
 				'display-name-business-format':{'label':'Business', 'type':'select', 'options':this.businessFormats},
 			}},

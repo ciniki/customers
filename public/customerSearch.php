@@ -57,7 +57,7 @@ function ciniki_customers_customerSearch($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, status, type, company, cid ";
+	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, status, type, company, eid ";
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

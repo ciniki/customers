@@ -41,6 +41,11 @@ function ciniki_customers_edit() {
 	this.linkFlags = {
 		'1':{'name':'Visible'}, 
 		};
+	this.customerStatus = {
+		'10':'Active', 
+		'50':'Suspended', 
+		'60':'Deleted', 
+		};
 	this.displayNameFormatOptions = {
 		'':'System Settings',
 		'company':'Company Name',
@@ -69,14 +74,23 @@ function ciniki_customers_edit() {
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'name':{'label':'Name', 'aside':'yes', 'fields':{
-				'cid':{'label':'Customer ID', 'type':'text', 'active':'no'},
+				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
+				'eid':{'label':'Customer ID', 'type':'text', 'active':'no'},
 				'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
 				'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
 				'middle':{'label':'Middle', 'type':'text'},
 				'last':{'label':'Last', 'type':'text', 'livesearch':'yes',},
 				'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
 				'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
+			}},
+			'account':{'label':'', 'aside':'yes', 'fields':{
+				'salesrep_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
 				'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
+				'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
+				'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
+				'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
+				'sales_total':{'label':'Sales Total', 'active':'no', 'type':'text', 'size':'small'},
+				'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
 				}},
 			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
@@ -182,10 +196,19 @@ function ciniki_customers_edit() {
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'business':{'label':'Business', 'aside':'yes', 'fields':{
-				'cid':{'label':'Customer ID', 'type':'text', 'active':'no'},
+				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
+				'eid':{'label':'Customer ID', 'type':'text', 'active':'no'},
 				'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
 				'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
+				}},
+			'account':{'label':'', 'aside':'yes', 'fields':{
+				'salesrep_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
 				'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
+				'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
+				'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
+				'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
+				'sales_total':{'label':'Sales Total', 'active':'no', 'type':'text', 'size':'small'},
+				'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
 				}},
 			'name':{'label':'Contact', 'aside':'yes', 'fields':{
 				'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
@@ -193,6 +216,9 @@ function ciniki_customers_edit() {
 				'middle':{'label':'Middle', 'type':'text'},
 				'last':{'label':'Last', 'type':'text', 'livesearch':'yes'},
 				'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
+				'department':{'label':'Department', 'type':'text'},
+				'title':{'label':'Title', 'type':'text'},
+				'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
 				}},
 			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
@@ -599,17 +625,6 @@ function ciniki_customers_edit() {
 			return false;
 		} 
 
-//		//
-//		// Turn on or off the flag for web login based on if the module is enabled
-//		//
-//		if( M.curBusiness['modules']['ciniki.subscriptions'] != null ) {
-//			this.edit.forms.person.subscriptions.visible = 'yes';
-//			this.edit.forms.business.subscriptions.visible = 'yes';
-//		} else {
-//			this.edit.forms.person.subscriptions.visible = 'no';
-//			this.edit.forms.business.subscriptions.visible = 'no';
-//		}
-
 		//
 		// Turn on or off the flag for web login based on if the module is enabled
 		//
@@ -622,63 +637,95 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.email.fields.flags.active = 'no';
 			this.email.sections._email.fields.flags.active = 'no';
 		}
+	
+		// Birthdate
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x8000) > 0 ) {
+			this.edit.forms.person.name.fields.birthdate.active = 'yes';
+			this.edit.forms.business.name.fields.birthdate.active = 'yes';
+		} else {
+			this.edit.forms.person.name.fields.birthdate.active = 'no';
+			this.edit.forms.business.name.fields.birthdate.active = 'no';
+		}
+		// eid - customer ID
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x10000) > 0 ) {
+			this.edit.forms.person.name.fields.eid.active = 'yes';
+			this.edit.forms.business.business.fields.eid.active = 'yes';
+		} else {
+			this.edit.forms.person.name.fields.eid.active = 'no';
+			this.edit.forms.business.business.fields.eid.active = 'no';
+		}
+		// Tax Number
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x20000) > 0 ) {
+			this.edit.forms.person.account.fields.tax_number.active = 'yes';
+			this.edit.forms.business.account.fields.tax_number.active = 'yes';
+		} else {
+			this.edit.forms.person.account.fields.tax_number.active = 'no';
+			this.edit.forms.business.account.fields.tax_number.active = 'no';
+		}
+		// Rewards Level
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x80000) > 0 ) {
+			this.edit.forms.person.account.fields.reward_level.active = 'yes';
+			this.edit.forms.business.account.fields.reward_level.active = 'yes';
+		} else {
+			this.edit.forms.person.account.fields.reward_level.active = 'no';
+			this.edit.forms.business.account.fields.reward_level.active = 'no';
+		}
+		// Sales Total
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 ) {
+			this.edit.forms.person.account.fields.sales_total.active = 'yes';
+			this.edit.forms.business.account.fields.sales_total.active = 'yes';
+		} else {
+			this.edit.forms.person.account.fields.sales_total.active = 'no';
+			this.edit.forms.business.account.fields.sales_total.active = 'no';
+		}
 
 		if( M.curBusiness.customers != null && M.curBusiness.customers.settings != null ) {
-//			this.edit.formtabs = {'label':'', 'field':'type', 'tabs':{}};
-//			var count=0;
-//			for(i=1;i<9;i++) {
-//				// Setup the form tabs for the customers edit forms
-//				if( M.curBusiness.customers.settings['types-'+i+'-label'] != null && M.curBusiness.customers.settings["types-"+i+"-label"] != '' ) {
-//					count++;
-//					this.edit.formtabs.tabs[i] = {'label':M.curBusiness.customers.settings['types-'+i+'-label'], 'field_id':i, 'form':'person'};
-//					if( M.curBusiness.customers.settings['types-'+i+'-form'] != null && M.curBusiness.customers.settings['types-'+i+'-form'] != '' ) {
-//						this.edit.formtabs.tabs[i].form = M.curBusiness.customers.settings['types-'+i+'-form'];
-//					}
-//				}
-//			}
-//			if( count == 0 ) {
-//				this.edit.formtabs = null;
-//				this.edit.sections = this.edit.forms.person;
-//			}
-			this.edit.forms.person.name.fields.birthdate.active =(M.curBusiness.customers.settings['use-birthdate']=='yes')?'yes':'no';
-//			if( M.curBusiness.customers.settings['use-birthdate'] == 'yes' ) {
-//				this.edit.forms.person.name.fields.birthdate.active = 'yes';
-//			} else {
-//				this.edit.forms.person.name.fields.birthdate.active = 'no';
-//			}
-			if( M.curBusiness.customers.settings['use-cid'] == 'yes' ) {
-				this.edit.forms.person.name.fields.cid.active = 'yes';
-				this.edit.forms.business.business.fields.cid.active = 'yes';
-			} else {
-				this.edit.forms.person.name.fields.cid.active = 'no';
-				this.edit.forms.business.business.fields.cid.active = 'no';
-			}
+			// Pricepoints
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 
 				&& M.curBusiness.customers.settings.pricepoints != null 
 				) {
-				this.edit.forms.person.name.fields.pricepoint_id.active = 'yes';
-				this.edit.forms.business.business.fields.pricepoint_id.active = 'yes';
+				this.edit.forms.person.account.fields.pricepoint_id.active = 'yes';
+				this.edit.forms.business.account.fields.pricepoint_id.active = 'yes';
 				var pricepoints = {};
 				var s_pp = M.curBusiness.customers.settings.pricepoints;
 				pricepoints[0] = 'None';
 				for(i in s_pp) {
 					pricepoints[s_pp[i].pricepoint.id] = s_pp[i].pricepoint.name;
 				}
-				this.edit.forms.person.name.fields.pricepoint_id.options = pricepoints;
-				this.edit.forms.business.business.fields.pricepoint_id.options = pricepoints;
+				this.edit.forms.person.account.fields.pricepoint_id.options = pricepoints;
+				this.edit.forms.business.account.fields.pricepoint_id.options = pricepoints;
 			} else {
-				this.edit.forms.person.name.fields.pricepoint_id.active = 'no';
-				this.edit.forms.business.business.fields.pricepoint_id.active = 'no';
+				this.edit.forms.person.account.fields.pricepoint_id.active = 'no';
+				this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
+			}
+			// Sales Reps - Taken care of on load
+			// Tax Locations
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x40000) > 0 
+				&& M.curBusiness.taxes != null 
+				&& M.curBusiness.taxes.settings != null
+				&& M.curBusiness.taxes.settings.locations != null
+				) {
+				this.edit.forms.person.account.fields.tax_location_id.active = 'yes';
+				this.edit.forms.business.account.fields.tax_location_id.active = 'yes';
+				var locations = {'0':'Use Shipping Address'};
+
+				var locs = M.curBusiness.taxes.settings.locations;
+				for(i in locs) {
+					locations[locs[i].location.id] = locs[i].location.name;
+				}
+				this.edit.forms.person.account.fields.tax_location_id.options = locations;
+				this.edit.forms.business.account.fields.tax_location_id.options = locations;
+			} else {
+				this.edit.forms.person.account.fields.tax_location_id.active = 'no';
+				this.edit.forms.business.account.fields.tax_location_id.active = 'no';
 			}
 		} else {
-//			this.edit.formtabs = null;
 			this.edit.sections = this.edit.forms.person;
-			this.edit.forms.person.info.fields.cid.active = 'no';
-			this.edit.forms.business.info.fields.cid.active = 'no';
-			this.edit.forms.person.name.fields.pricepoint_id.active = 'no';
-			this.edit.forms.business.business.fields.pricepoint_id.active = 'no';
+			this.edit.forms.person.account.fields.pricepoint_id.active = 'no';
+			this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
+			this.edit.forms.person.account.fields.tax_location_id.active = 'no';
+			this.edit.forms.business.account.fields.tax_location_id.active = 'no';
 		}
-
 
 		if( args.next != null && args.next != '' ) {
 			this.edit.nextFn = args.next;
@@ -927,7 +974,9 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.phones.active = 'yes';
 			this.edit.forms.business.links.active = 'yes';
 			var rsp = M.api.getJSONCb('ciniki.customers.getFull', {'business_id':M.curBusinessID, 
-				'customer_id':this.edit.customer_id, 'member_categories':'yes'}, function(rsp) {
+				'customer_id':this.edit.customer_id, 'member_categories':'yes', 
+					'dealer_categories':'yes', 'distributor_categories':'yes',
+					'sales_reps':'yes'}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
@@ -941,6 +990,24 @@ function ciniki_customers_edit() {
 						}
 						p.forms.person._member_categories.fields.member_categories.tags = tags;
 						p.forms.business._member_categories.fields.member_categories.tags = tags;
+					}
+					if( (M.curBusiness.modules['ciniki.customers'].flags&0x2000) > 0 ) {
+						if( rsp.salesreps != null ) {
+							p.forms.person.account.fields.salesrep_id.visible = 'yes';
+							p.forms.business.account.fields.salesrep_id.visible = 'yes';
+							var reps = {'0':'None'};
+							for(i in rsp.salesreps) {
+								reps[rsp.salesreps[i].rep.id] = rsp.salesreps[i].rep.name;
+							}
+							p.forms.person.account.fields.salesrep_id.options = reps;
+							p.forms.business.account.fields.salesrep_id.options = reps;
+						} else {
+							p.forms.person.account.fields.salesrep_id.options = {'0':'None'};
+							p.forms.business.account.fields.salesrep_id.options = {'0':'None'};
+						}
+					} else {
+						p.forms.person.account.fields.salesrep_id.visible = 'no';
+						p.forms.business.account.fields.salesrep_id.visible = 'no';
 					}
 //					M.ciniki_customers_edit.edit.data.emails = rsp.customer.emails;
 //					M.ciniki_customers_edit.edit.data.addresses = rsp.customer.addresses;
@@ -1118,6 +1185,7 @@ function ciniki_customers_edit() {
 		if( this.edit.customer_id > 0 ) {
 			var c = this.edit.serializeFormSection('no', 'name')
 				+ this.edit.serializeFormSection('no', 'business')
+				+ this.edit.serializeFormSection('no', 'account')
 //				+ this.edit.serializeFormSection('no', 'phone')
 				+ this.edit.serializeFormSection('no', '_notes');
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {

@@ -67,6 +67,8 @@ function ciniki_customers_updateSettings(&$ciniki) {
 		'display-name-business-format',
 		'use-cid',
 		'use-relationships',
+		'use-tax-number',
+		'use-tax-location-id',
 		'use-birthdate',
 		);
 	//
