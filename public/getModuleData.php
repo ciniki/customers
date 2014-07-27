@@ -115,21 +115,24 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 	// Get the sales rep
 	//
-	if( isset($customer['salesrep_id']) && $customer['salesrep_id'] > 0 
-		&& ($modules['ciniki.customers']['flags']&0x2000) > 0 
-		) {
-		$strsql = "SELECT display_name "
-			. "FROM ciniki_business_users, ciniki_users "
-			. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $customer['salesrep_id']) . "' "
-			. "AND ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND ciniki_business_users.user_id = ciniki_users.id "
-			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( isset($rc['user']) ) {
-			$customer['salesrep_id_text'] = $rc['user']['display_name'];
+	if( ($modules['ciniki.customers']['flags']&0x2000) > 0 ) {
+		$customer['salesrep_id_text'] = '';
+		if( isset($customer['salesrep_id']) && $customer['salesrep_id'] > 0 ) {
+			$strsql = "SELECT display_name "
+				. "FROM ciniki_business_users, ciniki_users "
+				. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $customer['salesrep_id']) . "' "
+				. "AND ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND ciniki_business_users.package = 'ciniki' "
+				. "AND ciniki_business_users.permission_group = 'salesreps' "
+				. "AND ciniki_business_users.user_id = ciniki_users.id "
+				. "";
+			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			if( isset($rc['user']) ) {
+				$customer['salesrep_id_text'] = $rc['user']['display_name'];
+			}
 		}
 	}
 

@@ -551,7 +551,7 @@ function ciniki_customers_main() {
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x40000) > 0 ) {
 			var rates = ((rsp.customer.tax_location_id_rates!=null&&rsp.customer.tax_location_id_rates!='')?' <span class="subdue">'+rsp.customer.tax_location_id_rates+'</span>':'');
 			this.customer.sections.account.visible = 'yes';
-			this.customer.data.account.tax_location_id = {'label':'Taxes', 'value':rsp.customer.tax_location_id_text + rates};
+			this.customer.data.account.tax_location_id = {'label':'Taxes', 'value':(rsp.customer.tax_location_id_text!=null?rsp.customer.tax_location_id_text:'Use Shipping Address') + rates};
 		}
 		// Reward Level
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x80000) > 0 

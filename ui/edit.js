@@ -84,7 +84,7 @@ function ciniki_customers_edit() {
 				'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
 			}},
 			'account':{'label':'', 'aside':'yes', 'fields':{
-				'salesrep_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
+				'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
 				'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
 				'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
 				'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
@@ -202,7 +202,7 @@ function ciniki_customers_edit() {
 				'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
 				}},
 			'account':{'label':'', 'aside':'yes', 'fields':{
-				'salesrep_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
+				'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
 				'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
 				'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
 				'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
@@ -983,6 +983,7 @@ function ciniki_customers_edit() {
 					}
 					var p = M.ciniki_customers_edit.edit;
 					p.data = rsp.customer;
+					// Member Categories
 					if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 && rsp.member_categories != null ) {
 						var tags = [];
 						for(i in rsp.member_categories) {
@@ -991,13 +992,14 @@ function ciniki_customers_edit() {
 						p.forms.person._member_categories.fields.member_categories.tags = tags;
 						p.forms.business._member_categories.fields.member_categories.tags = tags;
 					}
+					// Sales Reps
 					if( (M.curBusiness.modules['ciniki.customers'].flags&0x2000) > 0 ) {
 						if( rsp.salesreps != null ) {
-							p.forms.person.account.fields.salesrep_id.visible = 'yes';
-							p.forms.business.account.fields.salesrep_id.visible = 'yes';
+							p.forms.person.account.fields.salesrep_id.active = 'yes';
+							p.forms.business.account.fields.salesrep_id.active = 'yes';
 							var reps = {'0':'None'};
 							for(i in rsp.salesreps) {
-								reps[rsp.salesreps[i].rep.id] = rsp.salesreps[i].rep.name;
+								reps[rsp.salesreps[i].user.id] = rsp.salesreps[i].user.name;
 							}
 							p.forms.person.account.fields.salesrep_id.options = reps;
 							p.forms.business.account.fields.salesrep_id.options = reps;
@@ -1006,8 +1008,8 @@ function ciniki_customers_edit() {
 							p.forms.business.account.fields.salesrep_id.options = {'0':'None'};
 						}
 					} else {
-						p.forms.person.account.fields.salesrep_id.visible = 'no';
-						p.forms.business.account.fields.salesrep_id.visible = 'no';
+						p.forms.person.account.fields.salesrep_id.active = 'no';
+						p.forms.business.account.fields.salesrep_id.active = 'no';
 					}
 //					M.ciniki_customers_edit.edit.data.emails = rsp.customer.emails;
 //					M.ciniki_customers_edit.edit.data.addresses = rsp.customer.addresses;

@@ -21,6 +21,7 @@ function ciniki_customers_getFull($ciniki) {
 		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Categories'),
 		'dealer_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Categories'),
 		'distributor_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Categories'),
+		'sales_reps'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sales Reps'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -387,12 +388,13 @@ function ciniki_customers_getFull($ciniki) {
 		$strsql = "SELECT ciniki_users.id, ciniki_users.display_name "
 			. "FROM ciniki_business_users, ciniki_users "
 			. "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_business_users.package = 'ciniki' "
 			. "AND ciniki_business_users.permission_group = 'salesreps' "
 			. "AND ciniki_business_users.status < 60 "
 			. "AND ciniki_business_users.user_id = ciniki_users.id "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-			array('container'=>'salesreps', 'fname'=>'id', 'name'=>'rep',
+			array('container'=>'salesreps', 'fname'=>'id', 'name'=>'user',
 				'fields'=>array('id', 'name'=>'display_name')),
 			));
 		if( $rc['stat'] != 'ok' ) {
@@ -400,6 +402,8 @@ function ciniki_customers_getFull($ciniki) {
 		}
 		if( isset($rc['salesreps']) ) {
 			$rsp['salesreps'] = $rc['salesreps'];
+		} else {
+			$rsp['salesreps'] = array();
 		}
 	}
 
