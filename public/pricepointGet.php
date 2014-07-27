@@ -38,7 +38,7 @@ function ciniki_customers_pricepointGet(&$ciniki) {
 	//
 	// Get the details about a tax
 	//
-	$strsql = "SELECT id, name, sequence, flags "
+	$strsql = "SELECT id, name, code, sequence, flags "
 		. "FROM ciniki_customer_pricepoints "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['pricepoint_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -46,7 +46,7 @@ function ciniki_customers_pricepointGet(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'pricepoints', 'fname'=>'id', 'name'=>'pricepoint',
-			'fields'=>array('id', 'name', 'sequence', 'flags')),
+			'fields'=>array('id', 'name', 'code', 'sequence', 'flags')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

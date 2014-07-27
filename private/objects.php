@@ -151,6 +151,7 @@ function ciniki_customers_objects($ciniki) {
 		'table'=>'ciniki_customer_pricepoints',
 		'fields'=>array(
 			'name'=>array(),
+			'code'=>array(),
 			'sequence'=>array(),
 			'flags'=>array(),
 			),
