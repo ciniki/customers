@@ -142,7 +142,7 @@ function ciniki_customers_getModuleData($ciniki) {
 		&& ($modules['ciniki.customers']['flags']&0x2000) > 0 
 		) {
 		$strsql = "SELECT ciniki_tax_locations.id, ciniki_tax_locations.code, ciniki_tax_locations.name, "
-			. "ciniki_tax_rates.id AS rate_id, ciniki_tax_rates.name AS tax_rate "
+			. "ciniki_tax_rates.id AS rate_id, ciniki_tax_rates.name AS rate_name "
 			. "FROM ciniki_tax_locations "
 			. "LEFT JOIN ciniki_tax_rates ON ( "
 				. "ciniki_tax_locations.id = ciniki_tax_rates.location_id "
@@ -167,9 +167,9 @@ function ciniki_customers_getModuleData($ciniki) {
 		if( isset($rc['taxes'][$customer['tax_location_id']]) ) {
 			$tax = $rc['taxes'][$customer['tax_location_id']];
 			$customer['tax_location_id_text'] = '';
-			if( ($modules['ciniki.taxes']['flags']&0x02) && $tax['code'] != '' ) {
-				$customer['tax_location_id_text'] = $tax['code'] . ' - ';
-			}
+//			if( ($modules['ciniki.taxes']['flags']&0x02) && $tax['code'] != '' ) {
+//				$customer['tax_location_id_text'] = $tax['code'] . ' - ';
+//			}
 			$customer['tax_location_id_text'] .= $tax['name'];
 			$customer['tax_location_id_rates'] = '';
 			if( isset($tax['rates']) ) {

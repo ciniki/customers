@@ -711,7 +711,7 @@ function ciniki_customers_edit() {
 
 				var locs = M.curBusiness.taxes.settings.locations;
 				for(i in locs) {
-					locations[locs[i].location.id] = locs[i].location.name;
+					locations[locs[i].location.id] = locs[i].location.name + ' [' + (locs[i].location.rates!=null?locs[i].location.rates:'None') + ']';
 				}
 				this.edit.forms.person.account.fields.tax_location_id.options = locations;
 				this.edit.forms.business.account.fields.tax_location_id.options = locations;
