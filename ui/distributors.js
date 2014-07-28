@@ -321,6 +321,27 @@ function ciniki_customers_distributors() {
 			return false;
 		}
 	
+		// Setup ui labels
+		var slabel = 'Distributor';
+		var plabel = 'Distributors';
+		if( M.curBusiness.customers != null ) {
+			if( M.curBusiness.customers.settings['ui-labels-distributor'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-distributor'] != ''
+				) {
+				slabel = M.curBusiness.customers.settings['ui-labels-distributor'];
+			}
+			if( M.curBusiness.customers.settings['ui-labels-distributors'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-distributors'] != ''
+				) {
+				plabel = M.curBusiness.customers.settings['ui-labels-distributors'];
+			}
+		}
+		this.menu.title = plabel;
+		this.list.title = plabel;
+		this.distributor.title = slabel;
+		this.menu.sections.distributors.addTxt = 'Add ' + slabel;
+		this.list.sections.distributors.addTxt = 'Add ' + slabel;
+
 		if( args.customer_id != null && args.customer_id > 0 ) {
 			this.showDistributor(cb, args.customer_id);
 		} else {

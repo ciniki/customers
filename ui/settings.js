@@ -45,6 +45,16 @@ function ciniki_customers_settings() {
 				'addTxt':'Add Price Point',
 				'addFn':'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',0);',
 			},
+			'ui_labels':{'label':'UI Labels', 'visible':'no', 'fields':{
+				'ui-labels-customer':{'label':'Customer Name', 'type':'text', 'hint':'Customer'},
+				'ui-labels-customers':{'label':'Customer Plural', 'type':'text', 'hint':'Customers'},
+				'ui-labels-member':{'label':'Member Name', 'type':'text', 'hint':'Member'},
+				'ui-labels-members':{'label':'Member Plural', 'type':'text', 'hint':'Members'},
+				'ui-labels-dealer':{'label':'Dealer Name', 'type':'text', 'hint':'Dealer'},
+				'ui-labels-dealers':{'label':'Dealer Plural', 'type':'text', 'hint':'Dealers'},
+				'ui-labels-distributor':{'label':'Distributor Name', 'type':'text', 'hint':'Distributor'},
+				'ui-labels-distributors':{'label':'Distributor Plural', 'type':'text', 'hint':'Distributors'},
+			}},
 //			'_types':{'label':'Customer Types', 'type':'gridform', 'rows':8, 'cols':3, 
 //				'header':['Name', 'Form', 'Type'],
 //				'fields':[
@@ -152,6 +162,40 @@ function ciniki_customers_settings() {
 			M.ciniki_customers_settings.main.sections.pricepoints.visible = 'yes';
 		} else {
 			M.ciniki_customers_settings.main.sections.pricepoints.visible = 'no';
+		}
+		
+		M.ciniki_customers_settings.main.sections.ui_labels.visible = 'no';
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x01) > 0 ) {
+			M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customer'].active = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customers'].active = 'yes';
+		} else {
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customer'].active = 'no';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customers'].active = 'no';
+		}
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02) > 0 ) {
+			M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-member'].active = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-members'].active = 'yes';
+		} else {
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-member'].active = 'no';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-members'].active = 'no';
+		}
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x10) > 0 ) {
+			M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealer'].active = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealers'].active = 'yes';
+		} else {
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealer'].active = 'no';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealers'].active = 'no';
+		}
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x0100) > 0 ) {
+			M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributor'].active = 'yes';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributors'].active = 'yes';
+		} else {
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributor'].active = 'no';
+			M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributors'].active = 'no';
 		}
 
 		this.showMain(cb);

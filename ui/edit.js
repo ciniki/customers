@@ -93,7 +93,7 @@ function ciniki_customers_edit() {
 				'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
 				}},
 			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
-				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
+				'member_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
 				'member_lastpaid':{'label':'Last Paid', 'type':'text', 'size':'medium'},
 				'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
 				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
@@ -738,15 +738,44 @@ function ciniki_customers_edit() {
 		if( args.member != null && args.member == 'yes' ) {
 			this.edit.memberinfo = 'yes';
 			this.edit.dealerinfo = 'no';
+			this.edit.title = 'Member';
+			if( M.curBusiness.customers != null 
+				&& M.curBusiness.customers.settings['ui-labels-member'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-member'] != '' 
+				) {
+				this.edit.title = M.curBusiness.customers.settings['ui-labels-member'];
+			}
 			this.edit.distributorinfo = 'no';
 			this.edit.forms.person.membership.active = 'yes';
 			this.edit.forms.business.membership.active = 'yes';
+			this.edit.forms.person.account.active = 'no';
+			this.edit.forms.business.account.active = 'no';
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 ) {
 				this.edit.forms.person._member_categories.active = 'yes';
 				this.edit.forms.business._member_categories.active = 'yes';
 			} else {
 				this.edit.forms.person._member_categories.active = 'no';
 				this.edit.forms.business._member_categories.active = 'no';
+			}
+			// Check if membership info collected
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
+				this.edit.forms.person.membership.label = 'Membership';
+				this.edit.forms.person.membership.fields.member_lastpaid.active = 'yes';
+				this.edit.forms.person.membership.fields.membership_length.active = 'yes';
+				this.edit.forms.person.membership.fields.membership_type.active = 'yes';
+				this.edit.forms.business.membership.label = 'Membership';
+				this.edit.forms.business.membership.fields.member_lastpaid.active = 'yes';
+				this.edit.forms.business.membership.fields.membership_length.active = 'yes';
+				this.edit.forms.business.membership.fields.membership_type.active = 'yes';
+			} else {
+				this.edit.forms.person.membership.label = 'Status';
+				this.edit.forms.person.membership.fields.member_lastpaid.active = 'no';
+				this.edit.forms.person.membership.fields.membership_length.active = 'no';
+				this.edit.forms.person.membership.fields.membership_type.active = 'no';
+				this.edit.forms.business.membership.label = 'Status';
+				this.edit.forms.business.membership.fields.member_lastpaid.active = 'no';
+				this.edit.forms.business.membership.fields.membership_length.active = 'no';
+				this.edit.forms.business.membership.fields.membership_type.active = 'no';
 			}
 			this.edit.forms.person.dealer.active = 'no';
 			this.edit.forms.business.dealer.active = 'no';
@@ -771,11 +800,20 @@ function ciniki_customers_edit() {
 			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 			this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
 		} else if( args.dealer != null && args.dealer == 'yes' ) {
+			this.edit.title = 'Dealer';
+			if( M.curBusiness.customers != null 
+				&& M.curBusiness.customers.settings['ui-labels-dealer'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-dealer'] != '' 
+				) {
+				this.edit.title = M.curBusiness.customers.settings['ui-labels-dealer'];
+			}
 			this.edit.memberinfo = 'no';
 			this.edit.dealerinfo = 'yes';
 			this.edit.distributorinfo = 'no';
 			this.edit.forms.person._image.active = 'yes';
 			this.edit.forms.business._image.active = 'yes';
+			this.edit.forms.person.account.active = 'yes';
+			this.edit.forms.business.account.active = 'yes';
 			this.edit.forms.person.membership.active = 'no';
 			this.edit.forms.business.membership.active = 'no';
 			this.edit.forms.person._member_categories.active = 'no';
@@ -808,11 +846,20 @@ function ciniki_customers_edit() {
 			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 			this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
 		} else if( args.distributor != null && args.distributor == 'yes' ) {
+			this.edit.title = 'Distributor';
+			if( M.curBusiness.customers != null 
+				&& M.curBusiness.customers.settings['ui-labels-distributor'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-distributor'] != '' 
+				) {
+				this.edit.title = M.curBusiness.customers.settings['ui-labels-distributor'];
+			}
 			this.edit.memberinfo = 'no';
 			this.edit.dealerinfo = 'no';
 			this.edit.distributorinfo = 'yes';
 			this.edit.forms.person._image.active = 'yes';
 			this.edit.forms.business._image.active = 'yes';
+			this.edit.forms.person.account.active = 'yes';
+			this.edit.forms.business.account.active = 'yes';
 			this.edit.forms.person.membership.active = 'no';
 			this.edit.forms.business.membership.active = 'no';
 			this.edit.forms.person._member_categories.active = 'no';
@@ -845,11 +892,20 @@ function ciniki_customers_edit() {
 			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 			this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
 		} else {
+			this.edit.title = 'Customer';
+			if( M.curBusiness.customers != null 
+				&& M.curBusiness.customers.settings['ui-labels-customer'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-customer'] != '' 
+				) {
+				this.edit.title = M.curBusiness.customers.settings['ui-labels-customer'];
+			}
 			this.edit.memberinfo = 'no';
 			this.edit.dealerinfo = 'no';
 			this.edit.distributorinfo = 'no';
 			this.edit.forms.person._image.active = 'no';
 			this.edit.forms.business._image.active = 'no';
+			this.edit.forms.person.account.active = 'yes';
+			this.edit.forms.business.account.active = 'yes';
 			this.edit.forms.person.membership.active = 'no';
 			this.edit.forms.business.membership.active = 'no';
 			this.edit.forms.person._member_categories.active = 'no';

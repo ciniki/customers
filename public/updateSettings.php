@@ -65,11 +65,19 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	$db_updated = 0;
 	$changelog_fields = array(
 		'display-name-business-format',
-		'use-cid',
-		'use-relationships',
-		'use-tax-number',
-		'use-tax-location-id',
-		'use-birthdate',
+		'ui-labels-customer',
+		'ui-labels-customers',
+		'ui-labels-member',
+		'ui-labels-members',
+		'ui-labels-dealer',
+		'ui-labels-dealers',
+		'ui-labels-distributor',
+		'ui-labels-distributors',
+//		'use-cid',
+//		'use-relationships',
+//		'use-tax-number',
+//		'use-tax-location-id',
+//		'use-birthdate',
 		);
 	//
 	// Check each valid setting and see if a new value was passed in the arguments for it.

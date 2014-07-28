@@ -19,7 +19,7 @@ function ciniki_customers_members() {
 				'headerValues':null,
 				'cellClasses':['multiline', 'multiline'],
 				'noData':'No members',
-				'addTxt':'Add Member',
+				'addTxt':'Add',
 				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showMenu();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\'});',
 				},
 			'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1},
@@ -77,7 +77,7 @@ function ciniki_customers_members() {
 				'headerValues':null,
 				'cellClasses':['multiline', 'multiline'],
 				'noData':'No members',
-				'addTxt':'Add Member',
+				'addTxt':'Add',
 				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showList();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\'});',
 				},
 			};
@@ -117,7 +117,7 @@ function ciniki_customers_members() {
 //				'phone_fax':{'label':'Fax', 'visible':'no'},
 				'webvisible':{'label':'Web Settings'},
 				}},
-			'membership':{'label':'Membership', 'aside':'yes', 'list':{
+			'membership':{'label':'Status', 'aside':'yes', 'list':{
 				'member_status_text':{'label':'Status'},
 				'member_lastpaid':{'label':'Last Paid'},
 				'type':{'label':'Type'},
@@ -327,6 +327,36 @@ function ciniki_customers_members() {
 		if( appContainer == null ) {
 			alert('App Error');
 			return false;
+		}
+
+		// Setup ui labels
+		var slabel = 'Member';
+		var plabel = 'Members';
+		if( M.curBusiness.customers != null ) {
+			if( M.curBusiness.customers.settings['ui-labels-member'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-member'] != ''
+				) {
+				slabel = M.curBusiness.customers.settings['ui-labels-member'];
+			}
+			if( M.curBusiness.customers.settings['ui-labels-members'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-members'] != ''
+				) {
+				plabel = M.curBusiness.customers.settings['ui-labels-members'];
+			}
+		}
+		this.menu.title = plabel;
+		this.list.title = plabel;
+		this.member.title = slabel;
+		this.menu.sections.members.addTxt = 'Add ' + slabel;
+		this.list.sections.members.addTxt = 'Add ' + slabel;
+
+		// Decide what's visible
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
+			this.member.sections.membership.list.member_lastpaid.visible = 'yes';
+			this.member.sections.membership.list.type.visible = 'yes';
+		} else {
+			this.member.sections.membership.list.member_lastpaid.visible = 'no';
+			this.member.sections.membership.list.type.visible = 'no';
 		}
 
 		if( args.customer_id != null && args.customer_id > 0 ) {

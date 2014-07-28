@@ -3,7 +3,7 @@ function ciniki_customers_main() {
 	//
 	// Panels
 	//
-	this.main = null;
+	this.menu = null;
 
 	this.cb = null;
 	this.toggleOptions = {'Off':'Off', 'On':'On'};
@@ -30,59 +30,59 @@ function ciniki_customers_main() {
 		//
 		// The main panel, which lists the options for production
 		//
-		this.main = new M.panel('Customers',
-			'ciniki_customers_main', 'main',
-			'mc', 'medium', 'sectioned', 'ciniki.customers.main');
-		this.main.data = {};
-		this.main.sections = {
+		this.menu = new M.panel('Customers',
+			'ciniki_customers_main', 'menu',
+			'mc', 'medium', 'sectioned', 'ciniki.customers.main.menu');
+		this.menu.data = {};
+		this.menu.sections = {
 			'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1, 'hint':'customer name', 'noData':'No customers found',
 				},
 //			'tools':{'label':'Tools', 'list':{
-//				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.main.show();\');'},
-//				'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.main.show();\');'},
+//				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.menu.show();\');'},
+//				'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //				}},
 			'recent':{'label':'Recently Updated', 'num_cols':1, 'type':'simplegrid', 
 				'headerValues':null,
 				'noData':'No customers',
 				},
 			};
-		this.main.liveSearchCb = function(s, i, value) {
+		this.menu.liveSearchCb = function(s, i, value) {
 			if( s == 'search' && value != '' ) {
 				M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':'10'}, 
 					function(rsp) { 
-						M.ciniki_customers_main.main.liveSearchShow('search', null, M.gE(M.ciniki_customers_main.main.panelUID + '_' + s), rsp.customers); 
+						M.ciniki_customers_main.menu.liveSearchShow('search', null, M.gE(M.ciniki_customers_main.menu.panelUID + '_' + s), rsp.customers); 
 					});
 				return true;
 			}
 		};
-		this.main.liveSearchResultValue = function(s, f, i, j, d) {
+		this.menu.liveSearchResultValue = function(s, f, i, j, d) {
 			if( s == 'search' ) { 
 				return d.customer.display_name;
 			}
 			return '';
 		}
-		this.main.liveSearchResultRowFn = function(s, f, i, j, d) { 
-			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMain();\',\'' + d.customer.id + '\');'; 
+		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
+			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMenu();\',\'' + d.customer.id + '\');'; 
 		};
-		this.main.liveSearchSubmitFn = function(s, search_str) {
-			M.ciniki_customers_main.searchCustomers('M.ciniki_customers_main.showMain();', search_str);
+		this.menu.liveSearchSubmitFn = function(s, search_str) {
+			M.ciniki_customers_main.searchCustomers('M.ciniki_customers_main.showMenu();', search_str);
 		};
-		this.main.sectionData = function(s) {
+		this.menu.sectionData = function(s) {
 			if( s == 'recent' ) {	
 				return this.data[s];
 			}
 		};
-		this.main.noData = function(s) { return 'No customers'; }
-		this.main.cellValue = function(s, i, j, d) {
+		this.menu.noData = function(s) { return 'No customers'; }
+		this.menu.cellValue = function(s, i, j, d) {
 			return d.customer.display_name;
 		};
-		this.main.rowFn = function(s, i, d) { 
-			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMain();\',\'' + d.customer.id + '\');'; 
+		this.menu.rowFn = function(s, i, d) { 
+			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMenu();\',\'' + d.customer.id + '\');'; 
 		};
 
-		this.main.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showMain();\',\'mc\',{\'customer_id\':0});');
-		this.main.addButton('tools', 'Tools', 'M.ciniki_customers_main.tools.show(\'M.ciniki_customers_main.showMain();\');');
-		this.main.addClose('Back');
+		this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showMenu();\',\'mc\',{\'customer_id\':0});');
+		this.menu.addButton('tools', 'Tools', 'M.ciniki_customers_main.tools.show(\'M.ciniki_customers_main.showMenu();\');');
+		this.menu.addClose('Back');
 
 		//
 		// The tools available to work on customer records
@@ -97,7 +97,7 @@ function ciniki_customers_main() {
 				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
 			}},
 //			'import':{'label':'Import', 'list':{
-//				'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.main.show();\');'},
+//				'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //			}},
 			};
 		this.tools.addClose('Back');
@@ -443,20 +443,38 @@ function ciniki_customers_main() {
 			return false;
 		} 
 
+		// Setup ui labels
+		var slabel = 'Customer';
+		var plabel = 'Customers';
+		if( M.curBusiness.customers != null ) {
+			if( M.curBusiness.customers.settings['ui-labels-customer'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-customer'] != ''
+				) {
+				slabel = M.curBusiness.customers.settings['ui-labels-customer'];
+			}
+			if( M.curBusiness.customers.settings['ui-labels-customers'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-customers'] != ''
+				) {
+				plabel = M.curBusiness.customers.settings['ui-labels-customers'];
+			}
+		}
+		this.menu.title = plabel;
+		this.customer.title = slabel;
+
 		this.cb = cb;
 		if( args.search != null && args.search != '' ) {
 			this.searchCustomers(cb, args.search, args.type);
 		} else if( args.customer_id != null && args.customer_id > 0 ) {
 			this.showCustomer(cb, args.customer_id);
 		} else {
-			this.showMain(cb);
+			this.showMenu(cb);
 		}
 	}
 
 	//
 	// Grab the stats for the business from the database and present the list of customers.
 	//
-	this.showMain = function(cb) {
+	this.showMenu = function(cb) {
 		//
 		// Grab list of recently updated customers
 		//
@@ -465,7 +483,7 @@ function ciniki_customers_main() {
 				M.api.err(rsp);
 				return false;
 			} 
-			var p = M.ciniki_customers_main.main;
+			var p = M.ciniki_customers_main.menu;
 			p.data.recent = rsp.customers;	
 			p.refresh();
 			p.show(cb);
