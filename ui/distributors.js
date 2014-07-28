@@ -115,6 +115,11 @@ function ciniki_customers_distributors() {
 				'distributor_status_text':{'label':'Status'},
 				'distributor_categories':{'label':'Categories', 'visible':'no'},
 				}},
+			'account':{'label':'', 'aside':'yes', 'visible':'yes', 'type':'simplegrid', 'num_cols':2,
+				'headerValues':null,
+				'cellClasses':['label', ''],
+				'dataMaps':['name', 'value'],
+				},
 			'phones':{'label':'Phones', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
 				'cellClasses':['label', ''],
@@ -200,6 +205,10 @@ function ciniki_customers_distributors() {
 			return this.data[i];
 		};
 		this.distributor.cellValue = function(s, i, j, d) {
+			if( s == 'account' ) {
+				if( j == 0 ) { return d.label; }
+				if( j == 1 ) { return d.value; }
+			}
 			if( s == 'phones' ) {
 				switch(j) {
 					case 0: return d.phone.phone_label;
@@ -430,6 +439,65 @@ function ciniki_customers_distributors() {
 					}
 				} else {
 					p.sections.info.list.distributor_categories.visible = 'no';
+				}
+
+				p.data.account = {};
+				// Sales Rep
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x2000) > 0 
+					&& rsp.customer.salesrep_id_text != null && rsp.customer.salesrep_id_text != ''
+					) {
+					p.sections.account.visible = 'yes';
+					p.data.account.salesrep_id = {'label':'Sales Rep', 'value':rsp.customer.salesrep_id_text};
+				}
+				// Pricepoint
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 
+					&& M.curBusiness.customers.settings.pricepoints != null
+					) {
+					p.sections.account.visible = 'yes';
+					for(i in M.curBusiness.customers.settings.pricepoints) {
+						if( M.curBusiness.customers.settings.pricepoints[i].pricepoint.id == rsp.customer.pricepoint_id ) {
+							p.data.account.pricepoint_id = {'label':'Price Point', 
+								'value':M.curBusiness.customers.settings.pricepoints[i].pricepoint.name};
+							break;
+						}
+					}
+					if( p.data.account.pricepoint_id == null ) {
+						p.data.account.pricepoint_id = {'label':'Price Point', 'value':'None'};
+					}
+				}
+				// Tax Number
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x20000) > 0 
+					&& rsp.customer.tax_number != null && rsp.customer.tax_number != ''
+					) {
+					p.sections.account.visible = 'yes';
+					p.data.account.tax_number = {'label':'Tax Number', 'value':rsp.customer.tax_number};
+				}
+				// Tax Location
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x40000) > 0 ) {
+					var rates = ((rsp.customer.tax_location_id_rates!=null&&rsp.customer.tax_location_id_rates!='')?' <span class="subdue">'+rsp.customer.tax_location_id_rates+'</span>':'');
+					p.sections.account.visible = 'yes';
+					p.data.account.tax_location_id = {'label':'Taxes', 'value':(rsp.customer.tax_location_id_text!=null?rsp.customer.tax_location_id_text:'Use Shipping Address') + rates};
+				}
+				// Reward Level
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x80000) > 0 
+					&& rsp.customer.reward_level != null && rsp.customer.reward_level != ''
+					) {
+					p.sections.account.visible = 'yes';
+					p.data.account.reward_level = {'label':'Reward Teir', 'value':rsp.customer.reward_level};
+				}
+				// Sales Total
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 
+					&& rsp.customer.sales_total != null && rsp.customer.sales_total != ''
+					) {
+					p.sections.account.visible = 'yes';
+					p.data.account.sales_total = {'label':'Sales Total', 'value':rsp.customer.sales_total};
+				}
+				// Start Date
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 
+					&& rsp.customer.sales_total != null && rsp.customer.sales_total != ''
+					) {
+					p.sections.account.visible = 'yes';
+					p.data.account.sales_total = {'label':'Sales Total', 'value':rsp.customer.sales_total};
 				}
 
 				p.sections.notes.visible=(rsp.customer.notes!=null&&rsp.customer.notes!='')?'yes':'no';

@@ -87,7 +87,9 @@ function ciniki_customers_get($ciniki) {
 			. "distributor_status, distributor_status AS distributor_status_text, "
 			. "prefix, first, middle, last, suffix, company, department, title, "
 			. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
-			. "ciniki_customers.pricepoint_id, "
+			. "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
+			. "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
+			. "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.start_date, "
 			. "ciniki_customer_emails.email AS emails "
 			. "FROM ciniki_customers "
 			. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
@@ -102,7 +104,9 @@ function ciniki_customers_get($ciniki) {
 					'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
 					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
-					'pricepoint_id', 'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes',
+					'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
+					'reward_level', 'sales_total', 'start_date', 
+					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes',
 					'emails'),
 				'lists'=>array('emails'),
 				'maps'=>array(
@@ -129,6 +133,9 @@ function ciniki_customers_get($ciniki) {
 			. "prefix, first, middle, last, suffix, company, department, title, "
 			. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 			. "short_bio, full_bio, webflags, "
+			. "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
+			. "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
+			. "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.start_date, "
 			. "notes "
 			. "FROM ciniki_customers "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -144,6 +151,8 @@ function ciniki_customers_get($ciniki) {
 					'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
 					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
+					'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
+					'reward_level', 'sales_total', 'start_date', 
 					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes'),
 				'maps'=>array(
 					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
@@ -163,7 +172,75 @@ function ciniki_customers_get($ciniki) {
 	}
 
 	//
-	// Get the categories and tags for the post
+	// Get the sales rep
+	//
+	if( ($modules['ciniki.customers']['flags']&0x2000) > 0 ) {
+		$customer['salesrep_id_text'] = '';
+		if( isset($customer['salesrep_id']) && $customer['salesrep_id'] > 0 ) {
+			$strsql = "SELECT display_name "
+				. "FROM ciniki_business_users, ciniki_users "
+				. "WHERE ciniki_business_users.user_id = '" . ciniki_core_dbQuote($ciniki, $customer['salesrep_id']) . "' "
+				. "AND ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND ciniki_business_users.package = 'ciniki' "
+				. "AND ciniki_business_users.permission_group = 'salesreps' "
+				. "AND ciniki_business_users.user_id = ciniki_users.id "
+				. "";
+			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			if( isset($rc['user']) ) {
+				$customer['salesrep_id_text'] = $rc['user']['display_name'];
+			}
+		}
+	}
+
+	//
+	// Get the tax location
+	//
+	if( isset($customer['tax_location_id']) && $customer['tax_location_id'] > 0 
+		&& isset($modules['ciniki.taxes'])
+		&& ($modules['ciniki.taxes']['flags']&0x01) > 0
+		&& ($modules['ciniki.customers']['flags']&0x2000) > 0 
+		) {
+		$strsql = "SELECT ciniki_tax_locations.id, ciniki_tax_locations.code, ciniki_tax_locations.name, "
+			. "ciniki_tax_rates.id AS rate_id, ciniki_tax_rates.name AS rate_name "
+			. "FROM ciniki_tax_locations "
+			. "LEFT JOIN ciniki_tax_rates ON ( "
+				. "ciniki_tax_locations.id = ciniki_tax_rates.location_id "
+				. "AND ciniki_tax_rates.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND ciniki_tax_rates.start_date < UTC_TIMESTAMP() "
+				. "AND (ciniki_tax_rates.end_date = '0000-00-00 00:00:00' "
+					. "OR ciniki_tax_rates.end_date > UTC_TIMESTAMP()) "
+				. ") "
+			. "WHERE ciniki_tax_locations.id = '" . ciniki_core_dbQuote($ciniki, $customer['tax_location_id']) . "' "
+			. "AND ciniki_tax_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.taxes', array(
+			array('container'=>'taxes', 'fname'=>'id',
+				'fields'=>array('id', 'code', 'name')),
+			array('container'=>'rates', 'fname'=>'rate_id',
+				'fields'=>array('name'=>'rate_name')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['taxes'][$customer['tax_location_id']]) ) {
+			$tax = $rc['taxes'][$customer['tax_location_id']];
+			$customer['tax_location_id_text'] = '';
+			$customer['tax_location_id_text'] .= $tax['name'];
+			$customer['tax_location_id_rates'] = '';
+			if( isset($tax['rates']) ) {
+				foreach($tax['rates'] as $rid => $rate) {
+					$customer['tax_location_id_rates'] .= ($customer['tax_location_id_rates']!=''?', ':'') . $rate['name'];
+				}
+			}
+		}
+	}
+
+	//
+	// Get the categories and tags for the customer
 	//
 	if( ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
 		$strsql = "SELECT tag_type, tag_name AS lists "
