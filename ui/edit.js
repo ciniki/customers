@@ -1075,9 +1075,19 @@ function ciniki_customers_edit() {
 					M.ciniki_customers_edit.showEditSubscriptions(cb);
 				});
 		} else {
-			this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15,
-				'member_status':'10', 'membership_length':'20', 'membership_type':'10'};
-			if( category != null ) { this.edit.data.member_categories = category; }
+			this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15};
+			if( this.edit.memberinfo == 'yes' ) {
+				this.edit.data.member_status = 10;
+				this.edit.data.membership_length = 20;
+				this.edit.data.membership_type = 10;
+				if( category != null ) { this.edit.data.member_categories = category; }
+			} else if( this.edit.dealerinfo == 'yes' ) {
+				this.edit.data.dealer_status = 10;
+				if( category != null ) { this.edit.data.dealer_categories = category; }
+			} else if( this.edit.distributorinfo == 'yes' ) {
+				this.edit.data.distributor_status = 10;
+				if( category != null ) { this.edit.data.distributor_categories = category; }
+			}
 			this.edit.forms.person.phone.active = 'yes';
 			this.edit.forms.person.email.active = 'yes';
 			this.edit.forms.person.address.active = 'yes';
