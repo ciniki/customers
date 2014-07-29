@@ -1265,6 +1265,7 @@ function ciniki_customers_edit() {
 			} else if( this.edit.dealerinfo != null && this.edit.dealerinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('no', '_image')
 					+ this.edit.serializeFormSection('no', 'dealer')
+					+ this.edit.serializeFormSection('no', '_dealer_categories')
 					+ this.edit.serializeFormSection('no', '_short_bio')
 					+ this.edit.serializeFormSection('no', '_full_bio');
 				if( (M.curBusiness.modules['ciniki.customers'].flags&0x200) > 0 ) {
@@ -1273,6 +1274,7 @@ function ciniki_customers_edit() {
 			} else if( this.edit.distributorinfo != null && this.edit.distributorinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('no', '_image')
 					+ this.edit.serializeFormSection('no', 'distributor')
+					+ this.edit.serializeFormSection('no', '_distributor_categories')
 					+ this.edit.serializeFormSection('no', '_short_bio')
 					+ this.edit.serializeFormSection('no', '_full_bio');
 				if( (M.curBusiness.modules['ciniki.customers'].flags&0x200) > 0 ) {
@@ -1310,19 +1312,19 @@ function ciniki_customers_edit() {
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('yes', '_image')
 					+ this.edit.serializeFormSection('yes', 'membership')
-					+ this.edit.serializeFormSection('no', '_member_categories')
+					+ this.edit.serializeFormSection('yes', '_member_categories')
 					+ this.edit.serializeFormSection('yes', '_short_bio')
 					+ this.edit.serializeFormSection('yes', '_full_bio');
 			} else if( this.edit.dealerinfo != null && this.edit.dealerinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('yes', '_image')
 					+ this.edit.serializeFormSection('yes', 'dealer')
-					+ this.edit.serializeFormSection('no', '_dealer_categories')
+					+ this.edit.serializeFormSection('yes', '_dealer_categories')
 					+ this.edit.serializeFormSection('yes', '_short_bio')
 					+ this.edit.serializeFormSection('yes', '_full_bio');
 			} else if( this.edit.distributorinfo != null && this.edit.distributorinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('yes', '_image')
 					+ this.edit.serializeFormSection('yes', 'distributor')
-					+ this.edit.serializeFormSection('no', '_distributor_categories')
+					+ this.edit.serializeFormSection('yes', '_distributor_categories')
 					+ this.edit.serializeFormSection('yes', '_short_bio')
 					+ this.edit.serializeFormSection('yes', '_full_bio');
 			} else {
@@ -1331,6 +1333,7 @@ function ciniki_customers_edit() {
 			if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
 			if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
 			c += 'type=' + type + '&';
+			console.log(c);
 			var rsp = M.api.postJSONCb('ciniki.customers.add', 
 				{'business_id':M.curBusinessID}, c, function(rsp) {
 					if( rsp.stat != 'ok' ) {
