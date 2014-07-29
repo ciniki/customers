@@ -812,8 +812,8 @@ function ciniki_customers_edit() {
 			this.edit.distributorinfo = 'no';
 			this.edit.forms.person._image.active = 'yes';
 			this.edit.forms.business._image.active = 'yes';
-			this.edit.forms.person.account.active = 'yes';
-			this.edit.forms.business.account.active = 'yes';
+			this.edit.forms.person.account.active = 'no';
+			this.edit.forms.business.account.active = 'no';
 			this.edit.forms.person.membership.active = 'no';
 			this.edit.forms.business.membership.active = 'no';
 			this.edit.forms.person._member_categories.active = 'no';
@@ -858,8 +858,8 @@ function ciniki_customers_edit() {
 			this.edit.distributorinfo = 'yes';
 			this.edit.forms.person._image.active = 'yes';
 			this.edit.forms.business._image.active = 'yes';
-			this.edit.forms.person.account.active = 'yes';
-			this.edit.forms.business.account.active = 'yes';
+			this.edit.forms.person.account.active = 'no';
+			this.edit.forms.business.account.active = 'no';
 			this.edit.forms.person.membership.active = 'no';
 			this.edit.forms.business.membership.active = 'no';
 			this.edit.forms.person._member_categories.active = 'no';
@@ -1243,7 +1243,6 @@ function ciniki_customers_edit() {
 		if( this.edit.customer_id > 0 ) {
 			var c = this.edit.serializeFormSection('no', 'name')
 				+ this.edit.serializeFormSection('no', 'business')
-				+ this.edit.serializeFormSection('no', 'account')
 //				+ this.edit.serializeFormSection('no', 'phone')
 				+ this.edit.serializeFormSection('no', '_notes');
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
@@ -1268,6 +1267,8 @@ function ciniki_customers_edit() {
 				if( (M.curBusiness.modules['ciniki.customers'].flags&0x200) > 0 ) {
 					c += this.edit.serializeFormSection('no', '_distributor_categories');
 				}
+			} else {
+				c += this.edit.serializeFormSection('no', 'account');
 			}
 			if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
 			if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
@@ -1301,13 +1302,20 @@ function ciniki_customers_edit() {
 					+ this.edit.serializeFormSection('no', '_member_categories')
 					+ this.edit.serializeFormSection('yes', '_short_bio')
 					+ this.edit.serializeFormSection('yes', '_full_bio');
-			}
-			if( this.edit.dealerinfo != null && this.edit.dealerinfo == 'yes' ) {
+			} else if( this.edit.dealerinfo != null && this.edit.dealerinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('yes', '_image')
 					+ this.edit.serializeFormSection('yes', 'dealer')
 					+ this.edit.serializeFormSection('no', '_dealer_categories')
 					+ this.edit.serializeFormSection('yes', '_short_bio')
 					+ this.edit.serializeFormSection('yes', '_full_bio');
+			} else if( this.edit.distributorinfo != null && this.edit.distributorinfo == 'yes' ) {
+				c += this.edit.serializeFormSection('yes', '_image')
+					+ this.edit.serializeFormSection('yes', 'distributor')
+					+ this.edit.serializeFormSection('no', '_distributor_categories')
+					+ this.edit.serializeFormSection('yes', '_short_bio')
+					+ this.edit.serializeFormSection('yes', '_full_bio');
+			} else {
+				c += this.edit.serializeFormSection('no', 'account');
 			}
 			if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
 			if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
