@@ -78,7 +78,7 @@ function ciniki_customers_members() {
 				'cellClasses':['multiline', 'multiline'],
 				'noData':'No members',
 				'addTxt':'Add',
-				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showList();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\'});',
+				'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showList();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\',\'category\':M.ciniki_customers_members.list.category});',
 				},
 			};
 		this.list.sectionData = function(s) { return this.data[s]; }
@@ -93,7 +93,7 @@ function ciniki_customers_members() {
 		this.list.rowFn = function(s, i, d) { 
 			return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showList();\',\'' + d.member.id + '\');'; 
 		};
-		this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showList();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\'});');
+		this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showList();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\',\'category\':M.ciniki_customers_members.list.category});');
 		this.list.addClose('Back');
 
 		//
