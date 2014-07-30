@@ -73,8 +73,8 @@ function ciniki_customers_edit() {
 			'_image':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
-			'_image_caption':{'label':'Caption', 'aside':'yes', 'active':'no', 'fields':{
-				'primary_image_caption':{'label':'', 'type':'text', 'hidelabel':'yes'},
+			'_image_caption':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
+				'primary_image_caption':{'label':'Caption', 'type':'text'},
 				}},
 			'name':{'label':'Name', 'aside':'yes', 'fields':{
 				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
@@ -198,8 +198,8 @@ function ciniki_customers_edit() {
 			'_image':{'label':'', 'aside':'yes', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
-			'_image_caption':{'label':'Caption', 'aside':'yes', 'active':'no', 'fields':{
-				'primary_image_caption':{'label':'', 'type':'text', 'hidelabel':'yes'},
+			'_image_caption':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
+				'primary_image_caption':{'label':'Caption', 'type':'text'},
 				}},
 			'business':{'label':'Business', 'aside':'yes', 'fields':{
 				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
