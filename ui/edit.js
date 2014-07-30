@@ -181,10 +181,10 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
-			'_short_bio':{'label':'Short Bio', 'active':'no', 'fields':{
+			'_short_bio':{'label':'Synopsis', 'active':'no', 'fields':{
 				'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
-			'_full_bio':{'label':'Full Bio', 'active':'no', 'fields':{
+			'_full_bio':{'label':'Biography', 'active':'no', 'fields':{
 				'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
 				}},
 			'_notes':{'label':'Notes', 'fields':{
@@ -307,11 +307,11 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
-			'_short_bio':{'label':'Short Bio', 'active':'no', 'fields':{
+			'_short_bio':{'label':'Synopsis', 'active':'no', 'fields':{
 				'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
-			'_full_bio':{'label':'Full Bio', 'active':'no', 'fields':{
-				'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+			'_full_bio':{'label':'Biography', 'active':'no', 'fields':{
+				'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
 				}},
 			'_notes':{'label':'Notes', 'fields':{
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
