@@ -125,6 +125,7 @@ function ciniki_customers_update(&$ciniki) {
 		//
 		$space = '';
 		$person_name = '';
+		$sort_person_name = '';
 		if( isset($args['prefix']) && $args['prefix'] != '' ) {
 			$person_name .= $args['prefix'];
 		} elseif( !isset($args['prefix']) && $customer['prefix'] != '' ) {
@@ -145,14 +146,22 @@ function ciniki_customers_update(&$ciniki) {
 		if( $space == '' && $person_name != '' ) { $space = ' '; }
 		if( isset($args['last']) && $args['last'] != '' ) {
 			$person_name .= $space . $args['last'];
+			$sort_person_name = $args['last'];
 		} elseif( !isset($args['last']) && $customer['last'] != '' ) {
 			$person_name .= $space . $customer['last'];
+			$sort_person_name = $customer['last'];
 		}
 		if( $space == '' && $person_name != '' ) { $space = ' '; }
 		if( isset($args['suffix']) && $args['suffix'] != '' ) {
 			$person_name .= $space . $args['suffix'];
 		} elseif( !isset($args['suffix']) && $customer['suffix'] != '' ) {
 			$person_name .= $space . $customer['suffix'];
+		}
+
+		if( isset($args['first']) && $args['first'] != '' ) {
+			$person_name .= ($sort_person_name!=''?$sort_person_name.', ':'') . $args['first'];
+		} elseif( !isset($args['first']) && $customer['first'] != '' ) {
+			$person_name .= ($sort_person_name!=''?$sort_person_name.', ':'') . $customer['first'];
 		}
 		//
 		// Build the display_name
@@ -172,17 +181,27 @@ function ciniki_customers_update(&$ciniki) {
 			// Format the display_name
 			if( $format == 'company' ) {
 				$args['display_name'] = $company;
-			} elseif( $format == 'company - person' ) {
+				$args['sort_name'] = $company;
+			} 
+			elseif( $format == 'company - person' ) {
 				$args['display_name'] = $company . ' - ' . $person_name;
-			} elseif( $format == 'person - company' ) {
+				$args['sort_name'] = $company;
+			} 
+			elseif( $format == 'person - company' ) {
 				$args['display_name'] = $person_name . ' - ' . $company;
-			} elseif( $format == 'company [person]' ) {
+				$args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $company;
+			} 
+			elseif( $format == 'company [person]' ) {
 				$args['display_name'] = $company . ' [' . $person_name . ']';
-			} elseif( $format == 'person [company]' ) {
+				$args['sort_name'] = $company;
+			} 
+			elseif( $format == 'person [company]' ) {
 				$args['display_name'] = $person_name . ' [' . $company . ']';
+				$args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $company;
 			}
 		} else {
 			$args['display_name'] = $person_name;
+			$args['sort_name'] = $sort_person_name;
 		}
 	}
    

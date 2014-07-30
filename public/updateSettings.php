@@ -115,10 +115,12 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 		$format = $ciniki['request']['args']['display-name-business-format'];
-		$strsql = "SELECT id, uuid, display_name, company, "
-			. "REPLACE(TRIM(CONCAT_WS(' ', prefix, first, middle, last, suffix)),'  ', ' ') AS person_name "
+		$strsql = "SELECT id, uuid, display_name, display_name_format, company, "
+			. "REPLACE(TRIM(CONCAT_WS(' ', prefix, first, middle, last, suffix)),'  ', ' ') AS person_name, "
+			. "TRIM(CONCAT_WS(', ', last, first)) AS sort_person_name "
 			. "FROM ciniki_customers "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND display_name_format = '' "	// Only select customer that don't have override set
 			. "AND type = 2 "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -134,16 +136,25 @@ function ciniki_customers_updateSettings(&$ciniki) {
 			foreach($customers AS $cid => $customer) {
 				if( $format == 'company - person' ) {
 					$display_name = $customer['company'] . ' - ' . $customer['person_name'];
-				} elseif( $format == 'person - company' ) {
+					$sort_name = $customer['company'];
+				} 
+				elseif( $format == 'person - company' ) {
 					$display_name = $customer['person_name'] . ' - ' . $customer['company'];
-				} elseif( $format == 'company [person]' ) {
+					$sort_name = $customer['sort_person_name'] . $customer['company'];
+				} 
+				elseif( $format == 'company [person]' ) {
 					$display_name = $customer['company'] . ' [' . $customer['person_name'] . ']';
-				} elseif( $format == 'person [company]' ) {
+					$sort_name = $customer['company'];
+				} 
+				elseif( $format == 'person [company]' ) {
 					$display_name = $customer['person_name'] . ' [' . $customer['company'] . ']';
-				} else {
+					$sort_name = $customer['sort_person_name'] . $customer['company'];
+				} 
+				else {
 					$display_name = $customer['company'];
+					$sort_name = $customer['company'];
 				}
-				$customer_args = array('display_name'=>$display_name);
+				$customer_args = array('display_name'=>$display_name, 'sort_name'=>$sort_name);
 				$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', 
 					$customer['id'], $customer_args, 0x06);
 				if( $rc['stat'] != 'ok' ) {

@@ -201,6 +201,7 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	$space = '';
 	$person_name = '';
+	$args['sort_name'] = '';
 	if( isset($args['prefix']) && $args['prefix'] != '' ) {
 		$person_name .= $args['prefix'];
 	}
@@ -220,6 +221,13 @@ function ciniki_customers_add(&$ciniki) {
 	if( isset($args['suffix']) && $args['suffix'] != '' ) {
 		$person_name .= $space . $args['suffix'];
 	}
+	$sort_person_name = '';
+	if( isset($args['last']) && $args['last'] != '' ) {
+		$sort_person_name = $args['last'];
+	}
+	if( isset($args['first']) && $args['first'] != '' ) {
+		$sort_person_name = ($sort_person_name!=''?$sort_person_name.', ':'') . $args['first'];
+	}
 	if( $args['type'] == 2 && $args['company'] != '' ) {
 		// Find the format to use
 		$format = 'company';
@@ -234,17 +242,27 @@ function ciniki_customers_add(&$ciniki) {
 		// Format the display_name
 		if( $format == 'company' ) {
 			$args['display_name'] = $args['company'];
-		} elseif( $format == 'company - person' ) {
+			$args['sort_name'] = $args['company'];
+		} 
+		elseif( $format == 'company - person' ) {
 			$args['display_name'] = $args['company'] . ' - ' . $person_name;
-		} elseif( $format == 'person - company' ) {
+			$args['sort_name'] = $args['company'];
+		} 
+		elseif( $format == 'person - company' ) {
 			$args['display_name'] = $person_name . ' - ' . $args['company'];
-		} elseif( $format == 'company [person]' ) {
+			$args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $args['company'];
+		} 
+		elseif( $format == 'company [person]' ) {
 			$args['display_name'] = $args['company'] . ' [' . $person_name . ']';
-		} elseif( $format == 'person [company]' ) {
+			$args['sort_name'] = $args['company'];
+		} 
+		elseif( $format == 'person [company]' ) {
 			$args['display_name'] = $person_name . ' [' . $args['company'] . ']';
+			$args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $args['company'];
 		}
 	} else {
 		$args['display_name'] = $person_name;
+		$args['sort_name'] = $sort_person_name;
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');

@@ -31,6 +31,7 @@ function ciniki_customers_objects($ciniki) {
 			'suffix'=>array(),
 			'display_name'=>array(),
 			'display_name_format'=>array(),
+			'sort_name'=>array(),
 			'company'=>array(),
 			'department'=>array(),
 			'title'=>array(),
