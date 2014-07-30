@@ -159,9 +159,9 @@ function ciniki_customers_update(&$ciniki) {
 		}
 
 		if( isset($args['first']) && $args['first'] != '' ) {
-			$person_name .= ($sort_person_name!=''?$sort_person_name.', ':'') . $args['first'];
+			$sort_person_name .= ($sort_person_name!=''?', ':'') . $args['first'];
 		} elseif( !isset($args['first']) && $customer['first'] != '' ) {
-			$person_name .= ($sort_person_name!=''?$sort_person_name.', ':'') . $customer['first'];
+			$sort_person_name .= ($sort_person_name!=''?', ':'') . $customer['first'];
 		}
 		//
 		// Build the display_name

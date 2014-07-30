@@ -226,7 +226,7 @@ function ciniki_customers_add(&$ciniki) {
 		$sort_person_name = $args['last'];
 	}
 	if( isset($args['first']) && $args['first'] != '' ) {
-		$sort_person_name = ($sort_person_name!=''?$sort_person_name.', ':'') . $args['first'];
+		$sort_person_name .= ($sort_person_name!=''?', ':'') . $args['first'];
 	}
 	if( $args['type'] == 2 && $args['company'] != '' ) {
 		// Find the format to use
