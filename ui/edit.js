@@ -182,7 +182,7 @@ function ciniki_customers_edit() {
 				'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
 			'_full_bio':{'label':'Full Bio', 'active':'no', 'fields':{
-				'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+				'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
 				}},
 			'_notes':{'label':'Notes', 'fields':{
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},

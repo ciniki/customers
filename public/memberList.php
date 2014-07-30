@@ -72,7 +72,7 @@ function ciniki_customers_memberList($ciniki) {
 			. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
 			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.member_status = 10 "
-			. "ORDER BY last, first, company";
+			. "ORDER BY sort_name, last, first, company";
 	} elseif( isset($args['category']) && $args['category'] == '' ) {
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customers.first, "
@@ -92,7 +92,7 @@ function ciniki_customers_memberList($ciniki) {
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.member_status = 10 "
 			. "AND ISNULL(ciniki_customer_tags.tag_name) "
-			. "ORDER BY last, first, company";
+			. "ORDER BY sort_name, last, first, company";
 	} else {
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customers.first, "
@@ -106,7 +106,7 @@ function ciniki_customers_memberList($ciniki) {
 			. "FROM ciniki_customers "
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.member_status = 10 "
-			. "ORDER BY last, first, company";
+			. "ORDER BY sort_name, last, first, company";
 	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.artclub', array(

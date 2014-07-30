@@ -45,10 +45,11 @@ function ciniki_customers_members() {
 		};
 		this.menu.cellValue = function(s, i, j, d) {
 			if( s == 'members' && j == 0 ) {
-				if( d.member.company != null && d.member.company != '' ) {
-					return '<span class="maintext">' + d.member.first + ' ' + d.member.last + '</span><span class="subtext">' + d.member.company + '</span>';
-				} 
-				return '<span class="maintext">' + d.member.display_name + '</span>';
+				return d.member.display_name;
+//				if( d.member.company != null && d.member.company != '' ) {
+//					return '<span class="maintext">' + d.member.first + ' ' + d.member.last + '</span><span class="subtext">' + d.member.company + '</span>';
+//				} 
+//				return '<span class="maintext">' + d.member.display_name + '</span>';
 			}
 			else if( s == 'categories' && j == 0 ) {
 				return d.category.name + '<span class="count">' + d.category.num_members + '</span>';
@@ -84,10 +85,11 @@ function ciniki_customers_members() {
 		this.list.sectionData = function(s) { return this.data[s]; }
 		this.list.cellValue = function(s, i, j, d) {
 			if( j == 0 ) {
-				if( d.member.company != null && d.member.company != '' ) {
-					return '<span class="maintext">' + d.member.first + ' ' + d.member.last + '</span><span class="subtext">' + d.member.company + '</span>';
-				} 
-				return '<span class="maintext">' + d.member.display_name + '</span>';
+				return d.member.display_name;
+//				if( d.member.company != null && d.member.company != '' ) {
+//					return '<span class="maintext">' + d.member.first + ' ' + d.member.last + '</span><span class="subtext">' + d.member.company + '</span>';
+//				} 
+//				return '<span class="maintext">' + d.member.display_name + '</span>';
 			}
 		};
 		this.list.rowFn = function(s, i, d) { 
