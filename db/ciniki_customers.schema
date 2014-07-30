@@ -90,6 +90,8 @@
 #					person - company - display person then company name
 #					company - person - display the company name then the person name
 #
+# sort_name:		The name to be used for sorting purposes.
+#
 # company:			The company the customer is associated with.
 # department:		The department within the company.
 # title:			The title in that department.
@@ -157,6 +159,7 @@ create table ciniki_customers (
 	suffix varchar(100) not null,
 	display_name varchar(250) not null,
 	display_name_format varchar(100) not null,
+	sort_name varchar(250) not null,
 	company varchar(100) not null,
 	department varchar(100) not null,
 	title varchar(100) not null,

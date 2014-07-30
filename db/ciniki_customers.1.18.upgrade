@@ -1,0 +1,7 @@
+#
+# This file will upgrade the database table customers to version 1.18.
+#
+ALTER TABLE ciniki_customers ADD COLUMN sort_name varchar(250) not null AFTER display_name_format;
+UPDATE ciniki_customers SET sort_name = IF(type=2 AND display_name_format <> 'person - company',CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first));
+ALTER TABLE ciniki_customers COMMENT='v1.18';
+
