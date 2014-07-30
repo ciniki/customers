@@ -190,4 +190,4 @@ create table ciniki_customers (
 	index (company),
 	index (eid),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.17';
+) ENGINE='InnoDB', COMMENT='v1.18';
