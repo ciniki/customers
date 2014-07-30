@@ -39,6 +39,7 @@ function ciniki_customers_update(&$ciniki) {
         'title'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Company Title'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'), 
+        'primary_image_caption'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image Caption'), 
         'webflags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Webflags'), 
         'short_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Bio'), 
         'full_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'), 

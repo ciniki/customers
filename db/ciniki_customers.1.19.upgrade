@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.19.
+#
+ALTER TABLE ciniki_customers ADD COLUMN primary_image_caption varchar(250) not null AFTER primary_image_id;
+ALTER TABLE ciniki_customers COMMENT='v1.19';
+

@@ -51,6 +51,7 @@ function ciniki_customers_objects($ciniki) {
 			'webflags'=>array(),
 			'permalink'=>array(),
 			'primary_image_id'=>array('ref'=>'ciniki.images.image'),
+			'primary_image_caption'=>array(),
 			'short_bio'=>array(),
 			'short_description'=>array(),
 			'full_bio'=>array(),
