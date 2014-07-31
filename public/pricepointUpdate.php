@@ -42,15 +42,9 @@ function ciniki_customers_pricepointUpdate(&$ciniki) {
     }
 	$modules = $rc['modules'];
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-
+	//
+	// Check if sequence is being adjusted, get the old sequence number
+	//
 	if( isset($args['sequence']) ) {
 		$strsql = "SELECT id, sequence "
 			. "FROM ciniki_customer_pricepoints "
@@ -68,12 +62,25 @@ function ciniki_customers_pricepointUpdate(&$ciniki) {
 	}
 
 	//
+	// Start the transaction
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	//
 	// Update the price point
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.pricepoint', 
 		$args['pricepoint_id'], $args, 0x04);
 	if( $rc['stat'] != 'ok' ) {
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return $rc;
 	}
 
@@ -85,6 +92,7 @@ function ciniki_customers_pricepointUpdate(&$ciniki) {
 		$rc = ciniki_customers_pricepointUpdateSequences($ciniki, $args['business_id'], 
 			$args['sequence'], $old_sequence);
 		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
 	}

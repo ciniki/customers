@@ -76,7 +76,7 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return $rc;
 	}
-	$location_id = $rc['id'];
+	$pricepoint_id = $rc['id'];
 
 	//
 	// Update the sequence
@@ -86,6 +86,7 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
 		$rc = ciniki_customers_pricepointUpdateSequences($ciniki, $args['business_id'], 
 			$args['sequence'], -1);
 		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
 	}
@@ -105,6 +106,6 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	return array('stat'=>'ok', 'id'=>$location_id);
+	return array('stat'=>'ok', 'id'=>$pricepoint_id);
 }
 ?>
