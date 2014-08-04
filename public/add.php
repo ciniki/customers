@@ -79,6 +79,7 @@ function ciniki_customers_add(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'parent_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Parent'), 
 		'eid'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Customer ID'),
 		'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'name'=>'Status'),
 		'type'=>array('required'=>'no', 'default'=>'1', 'blank'=>'yes', 'name'=>'Customer Type'),
@@ -179,6 +180,30 @@ function ciniki_customers_add(&$ciniki) {
 	//
 	if( $args['start_date'] == '' ) {
 		$args['start_date'] = gmdate('Y-m-d H:i:s');
+	}
+
+	//
+	// Check if trying to make a child customer
+	//
+	if( isset($args['parent_id']) && $args['parent_id'] > 0 ) {
+		// 
+		// Check to make sure the parent is not a child
+		//
+		$strsql = "SELECT id, parent_id "
+			. "FROM ciniki_customers "
+			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( !isset($rc['parent']) ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1899', 'msg'=>'The parent does not exist.'));
+		}
+		if( isset($rc['parent']) && $rc['parent']['parent_id'] > 0 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1899', 'msg'=>'The parent is already a child.'));
+		}
 	}
 
 	//

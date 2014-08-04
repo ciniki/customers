@@ -19,6 +19,7 @@ function ciniki_customers_update(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+        'parent_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Parent'), 
         'eid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer ID'), 
 		'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer Type'), 
@@ -81,6 +82,46 @@ function ciniki_customers_update(&$ciniki) {
 		return $rc;
 	}
 	$settings = $rc['settings'];
+
+	//
+	// Check if trying to make a child customer
+	//
+	if( isset($args['parent_id']) && $args['parent_id'] > 0 ) {
+		// 
+		// Check to make sure the parent is not a child
+		//
+		$strsql = "SELECT id, parent_id "
+			. "FROM ciniki_customers "
+			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( !isset($rc['parent']) ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1901', 'msg'=>'The parent does not exist.'));
+		}
+		if( isset($rc['parent']) && $rc['parent']['parent_id'] > 0 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1902', 'msg'=>'The parent is already a child.'));
+		}
+		// 
+		// Check to make sure the customer does not have any children
+		//
+		$strsql = "SELECT 'children', COUNT(*) AS num_children  "
+			. "FROM ciniki_customers "
+			. "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['num']['children']) && $rc['num']['children'] > 0 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1904', 'msg'=>'This customer already has children and cannot become a parent.'));
+		}
+	}
 
 	//  
 	// Turn off autocommit

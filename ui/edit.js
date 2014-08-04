@@ -69,6 +69,7 @@ function ciniki_customers_edit() {
 			'business':{'label':'Business', 'field_id':2, 'form':'business'},
 			}};
 		this.edit.forms = {};
+		this.edit.parent_id = 0;
 		this.edit.forms.person = {
 			'_image':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
@@ -961,13 +962,14 @@ function ciniki_customers_edit() {
 			&& args.customer_id != null && args.customer_id > 0 ) {
 			this.showLinkEdit(cb, args.customer_id, args.edit_link_id);
 		} else {
-			this.showEdit(cb, args.customer_id, args.category);
+			this.showEdit(cb, args.customer_id, args.category, (args.parent_id!=null?args.parent_id:0));
 		}
 
 		return false;
 	}
 
-	this.showEdit = function(cb, cid, category) {
+	this.showEdit = function(cb, cid, category, pid) {
+		if( pid != null ) { this.edit.parent_id = pid; }
 		if( cid != null ) { this.edit.customer_id = cid; }
 		this.edit.formtab = null;
 		this.edit.formtab_field_id = null;
@@ -1276,6 +1278,11 @@ function ciniki_customers_edit() {
 				+ this.edit.serializeFormSection('no', 'business')
 //				+ this.edit.serializeFormSection('no', 'phone')
 				+ this.edit.serializeFormSection('no', '_notes');
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 
+				&& this.edit.parent_id != this.edit.data.parent_id
+				) {
+				c += '&parent_id=' + this.edit.parent_id;
+			}
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('no', '_image')
 					+ this.edit.serializeFormSection('no', '_image_caption')
@@ -1332,6 +1339,9 @@ function ciniki_customers_edit() {
 				+ this.edit.serializeFormSection('yes', 'email')
 				+ this.edit.serializeFormSection('yes', 'address')
 				+ this.edit.serializeFormSection('yes', '_notes');
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 ) {
+				c += '&parent_id=' + this.edit.parent_id;
+			}
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('yes', '_image')
 					+ this.edit.serializeFormSection('yes', '_image_caption')
@@ -1359,7 +1369,6 @@ function ciniki_customers_edit() {
 			if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
 			if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
 			c += 'type=' + type + '&';
-			console.log(c);
 			var rsp = M.api.postJSONCb('ciniki.customers.add', 
 				{'business_id':M.curBusinessID}, c, function(rsp) {
 					if( rsp.stat != 'ok' ) {

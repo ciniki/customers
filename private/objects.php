@@ -15,6 +15,7 @@ function ciniki_customers_objects($ciniki) {
 		'name'=>'Customer',
 		'table'=>'ciniki_customers',
 		'fields'=>array(
+			'parent_id'=>array('ref'=>'ciniki.customers.customer'),
 			'eid'=>array(),
 			'status'=>array(),
 			'type'=>array(),

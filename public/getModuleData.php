@@ -319,6 +319,29 @@ function ciniki_customers_getModuleData($ciniki) {
 		}
 	}
 
+	//
+	// Get any child customers
+	//
+	if( ($modules['ciniki.customers']['flags']&0x200000) > 0 ) {
+		$strsql = "SELECT ciniki_customers.id, ciniki_customers.display_name "
+			. "FROM ciniki_customers "
+			. "WHERE ciniki_customers.parent_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'children', 'fname'=>'id', 'name'=>'customer',
+				'fields'=>array('id', 'display_name')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['children']) ) {
+			$customer['children'] = $rc['children'];
+		} else {
+			$customer['children'] = array();
+		}
+	}
+
 	// 
 	// Get customer subscriptions if module is enabled
 	//

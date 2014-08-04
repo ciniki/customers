@@ -95,6 +95,27 @@ function ciniki_customers_delete(&$ciniki) {
 	}
 
 	//
+	// Check if any modules are currently using this customer
+	//
+	foreach($modules as $module => $m) {
+		list($pkg, $mod) = explode('.', $module);
+		$rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'checkObjectUsed');
+		if( $rc['stat'] == 'ok' ) {
+			$fn = $rc['function_call'];
+			$rc = $fn($ciniki, $args['business_id'], array(
+				'object'=>'ciniki.customers.customer', 
+				'object_id'=>$args['customer_id'],
+				));
+			if( $rc['stat'] != 'ok' ) {
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1905', 'msg'=>'Unable to check if customer is still being used.', 'err'=>$rc['err']));
+			}
+			if( $rc['used'] != 'no' ) {
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1906', 'msg'=>"The customer is still in use. " . $rc['msg']));
+			}
+		}
+	}
+
+	//
 	// Check for subscriptions
 	//
 	if( isset($modules['ciniki.subscriptions']) ) {
@@ -111,55 +132,6 @@ function ciniki_customers_delete(&$ciniki) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'773', 'msg'=>'Unable to delete, subscriptions still exist for this customer.'));
 		}
 	}
-
-	//
-	// Check for wine production orders
-	//
-	if( isset($modules['ciniki.wineproductions']) ) {
-		$strsql = "SELECT 'wineproductions', COUNT(*) "
-			. "FROM ciniki_wineproductions "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-			. "";
-		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
-		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'774', 'msg'=>'Unable to check for wine orders', 'err'=>$rc['err']));
-		}
-		if( isset($rc['num']['wineproductions']) && $rc['num']['wineproductions'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'775', 'msg'=>'Unable to delete, wine orders still exist for this customer.'));
-		}
-	}
-
-	//
-	// Check for service subscriptions and service_jobs
-	//
-	if( isset($modules['ciniki.services']) ) {
-		$strsql = "SELECT 'subscriptions', COUNT(*) "
-			. "FROM ciniki_service_subscriptions "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-			. "";
-		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
-		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'198', 'msg'=>'Unable to check for services', 'err'=>$rc['err']));
-		}
-		if( isset($rc['num']['subscriptions']) && $rc['num']['subscriptions'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'199', 'msg'=>'Unable to delete, services still exist for this customer.'));
-		}
-		$strsql = "SELECT 'jobs', COUNT(*) "
-			. "FROM ciniki_service_jobs "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-			. "";
-		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
-		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'222', 'msg'=>'Unable to check for service jobs', 'err'=>$rc['err']));
-		}
-		if( isset($rc['num']['subscriptions']) && $rc['num']['subscriptions'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'224', 'msg'=>'Unable to delete, service jobs still exist for this customer.'));
-		}
-	}
-
 
 	//  
 	// Turn off autocommit
