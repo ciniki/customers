@@ -46,6 +46,10 @@ function ciniki_customers_settings() {
 				'addFn':'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',0);',
 			},
 			'ui_labels':{'label':'UI Labels', 'visible':'no', 'fields':{
+				'ui-labels-parent':{'label':'Parent Name', 'type':'text', 'hint':'Parent'},
+				'ui-labels-parents':{'label':'Parent Plural', 'type':'text', 'hint':'Parents'},
+				'ui-labels-child':{'label':'Child Name', 'type':'text', 'hint':'Child'},
+				'ui-labels-children':{'label':'Child Name Plural', 'type':'text', 'hint':'Children'},
 				'ui-labels-customer':{'label':'Customer Name', 'type':'text', 'hint':'Customer'},
 				'ui-labels-customers':{'label':'Customer Plural', 'type':'text', 'hint':'Customers'},
 				'ui-labels-member':{'label':'Member Name', 'type':'text', 'hint':'Member'},

@@ -207,7 +207,7 @@ function ciniki_customers_main() {
 				'addTxt':'Add Service',
 				'addFn':'M.startApp(\'ciniki.services.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});'
 				},
-			'children':{'label':'', 'type':'simplegrid', 'visible':'no', 'num_cols':1,
+			'children':{'label':'Children', 'type':'simplegrid', 'visible':'no', 'num_cols':1,
 				'headerValues':null,
 				'cellClasses':[''],
 				'addTxt':'Add',
@@ -464,7 +464,19 @@ function ciniki_customers_main() {
 		// Setup ui labels
 		this.slabel = 'Customer';
 		this.plabel = 'Customers';
+		this.childlabel = 'Child';
+		this.childrenlabel = 'Children';
 		if( M.curBusiness.customers != null ) {
+			if( M.curBusiness.customers.settings['ui-labels-child'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-child'] != ''
+				) {
+				this.childlabel = M.curBusiness.customers.settings['ui-labels-child'];
+			}
+			if( M.curBusiness.customers.settings['ui-labels-children'] != null 
+				&& M.curBusiness.customers.settings['ui-labels-children'] != ''
+				) {
+				this.childrenlabel = M.curBusiness.customers.settings['ui-labels-children'];
+			}
 			if( M.curBusiness.customers.settings['ui-labels-customer'] != null 
 				&& M.curBusiness.customers.settings['ui-labels-customer'] != ''
 				) {
@@ -479,6 +491,9 @@ function ciniki_customers_main() {
 		this.menu.title = this.plabel;
 		this.customer.title = this.slabel;
 		this.customer.sections._buttons.buttons.delete.label = 'Delete ' + this.slabel;
+		this.customer.sections._tabs.tabs['children'].label = this.childrenlabel;
+		this.customer.sections.children.label = this.childrenlabel;
+		this.customer.sections.children.addTxt = 'Add ' + this.childlabel;
 
 		this.cb = cb;
 		if( args.search != null && args.search != '' ) {
@@ -745,8 +760,14 @@ function ciniki_customers_main() {
 
 		if( pt_count > 1 ) {
 			this.customer.sections._tabs.visible = 'yes';
+			this.customer.sections.children.label = '';
+			this.customer.sections.subscriptions.label = '';
+			this.customer.sections.invoices.label = '';
 		} else {
 			this.customer.sections._tabs.visible = 'no';
+			this.customer.sections.children.label = this.childrenlabel;
+			this.customer.sections.subscriptions.label = 'Subscriptions';
+			this.customer.sections.invoices.label = 'Invoices';
 		}
 		M.ciniki_customers_main.showCustomerTab(cb, paneltab, 'no');
 	}
