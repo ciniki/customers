@@ -1279,6 +1279,7 @@ function ciniki_customers_edit() {
 //				+ this.edit.serializeFormSection('no', 'phone')
 				+ this.edit.serializeFormSection('no', '_notes');
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 
+				&& this.edit.parent_id > 0
 				&& this.edit.parent_id != this.edit.data.parent_id
 				) {
 				c += '&parent_id=' + this.edit.parent_id;
@@ -1319,6 +1320,7 @@ function ciniki_customers_edit() {
 				c += 'type=' + type + '&';
 			}
 			if( c != '' ) {
+				console.log(c);
 				var rsp = M.api.postJSONCb('ciniki.customers.update', 
 					{'business_id':M.curBusinessID, 
 					'customer_id':M.ciniki_customers_edit.edit.customer_id}, c, function(rsp) {

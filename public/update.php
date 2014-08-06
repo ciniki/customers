@@ -51,7 +51,7 @@ function ciniki_customers_update(&$ciniki) {
         'tax_location_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tax Location'), 
         'reward_level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Reward Level'), 
         'sales_total'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sales Total'), 
-        'start_date'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Date'), 
+        'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Start Date'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
 		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
@@ -82,6 +82,25 @@ function ciniki_customers_update(&$ciniki) {
 		return $rc;
 	}
 	$settings = $rc['settings'];
+
+	//
+	// Check to make sure eid is unique if specified
+	//
+	if( isset($args['eid']) && $args['eid'] != '' ) {
+		$strsql = "SELECT id "
+			. "FROM ciniki_customers "
+			. "WHERE eid = '" . ciniki_core_dbQuote($ciniki, $args['eid']) . "' "
+			. "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'eid');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( $rc['num_rows'] > 0 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1908', 'msg'=>'The customer ID already exists.'));
+		}
+	}
 
 	//
 	// Check if trying to make a child customer
@@ -226,19 +245,19 @@ function ciniki_customers_update(&$ciniki) {
 				$args['sort_name'] = $company;
 			} 
 			elseif( $format == 'company - person' ) {
-				$args['display_name'] = $company . ' - ' . $person_name;
+				$args['display_name'] = $company . ($person_name!=''?' - ' . $person_name:'');
 				$args['sort_name'] = $company;
 			} 
 			elseif( $format == 'person - company' ) {
-				$args['display_name'] = $person_name . ' - ' . $company;
+				$args['display_name'] = ($person_name!=''?$person_name . ' - ':'') . $company;
 				$args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $company;
 			} 
 			elseif( $format == 'company [person]' ) {
-				$args['display_name'] = $company . ' [' . $person_name . ']';
+				$args['display_name'] = $company . ($person_name!=''?' [' . $person_name . ']':'');
 				$args['sort_name'] = $company;
 			} 
 			elseif( $format == 'person [company]' ) {
-				$args['display_name'] = $person_name . ' [' . $company . ']';
+				$args['display_name'] = ($person_name!=''?$person_name . ' [' . $company . ']':$company);
 				$args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $company;
 			}
 		} else {

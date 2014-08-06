@@ -17,7 +17,8 @@ function ciniki_customers_getModuleData($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
+		'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
+		'eid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer ID'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -29,11 +30,19 @@ function ciniki_customers_getModuleData($ciniki) {
     // check permission to run this function for this business
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.getModuleData', $args['customer_id']); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.getModuleData', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 	$modules = $rc['modules'];
+
+	//
+	// Check either ID or code has been specified
+	//
+	if( (!isset($args['customer_id']) || $args['customer_id'] == '')
+		&& (!isset($args['eid']) || $args['eid'] == '') ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1907', 'msg'=>'You must specify either a customer or ID'));
+	}
 
 	//
 	// Get the business settings
@@ -72,7 +81,7 @@ function ciniki_customers_getModuleData($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
-	$date_format = ciniki_users_dateFormat($ciniki);
+	$date_format = ciniki_users_dateFormat($ciniki, 'php');
 
 	//
 	// Get the customer details and emails
@@ -80,6 +89,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	$strsql = "SELECT ciniki_customers.id, eid, parent_id, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
+		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, "
 		. "reward_level, sales_total, start_date, "
@@ -89,24 +99,31 @@ function ciniki_customers_getModuleData($ciniki) {
 			. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
+		. "";
+	if( isset($args['customer_id']) && $args['customer_id'] != '' ) {
+		$strsql .= "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
+	} elseif( isset($args['eid']) && $args['eid'] != '' ) {
+		$strsql .= "AND ciniki_customers.eid = '" . ciniki_core_dbQuote($ciniki, $args['eid']) . "' ";
+	} else {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1906', 'msg'=>'You must specify either a customer or ID'));
+	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'eid', 'parent_id', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'company', 'department', 'title', 
 				'notes', 'birthdate', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-				'reward_level', 'sales_total', 'start_date')),
+				'reward_level', 'sales_total', 'start_date'),
+			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format))),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
-			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email'),
-			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)),
+			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 'flags'=>'email_flags'),
 			),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
 	if( !isset($rc['customers']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1511', 'msg'=>'Invalid customer'));
+		return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'1511', 'msg'=>'Invalid customer'));
 	}
 	$customer = $rc['customers'][0]['customer'];
 	$customer['addresses'] = array();
@@ -189,7 +206,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	if( ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
 		$strsql = "SELECT tag_type, tag_name AS lists "
 			. "FROM ciniki_customer_tags "
-			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "ORDER BY tag_type, tag_name "
 			. "";
@@ -214,7 +231,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 	$strsql = "SELECT id, phone_label, phone_number, flags "
 		. "FROM ciniki_customer_phones "
-		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -234,7 +251,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	$strsql = "SELECT id, customer_id, "
 		. "address1, address2, city, province, postal, country, flags "
 		. "FROM ciniki_customer_addresses "
-		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -255,7 +272,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	$strsql = "SELECT id, customer_id, "
 		. "name, url, webflags "
 		. "FROM ciniki_customer_links "
-		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -276,20 +293,20 @@ function ciniki_customers_getModuleData($ciniki) {
 		$strsql = "SELECT ciniki_customer_relationships.id, relationship_type AS type, "
 			. "relationship_type AS type_name, "
 			. "ciniki_customer_relationships.customer_id, ciniki_customer_relationships.related_id, "
-//			. "IF(customer_id='" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "', related_id, customer_id) AS related_id, "
+//			. "IF(customer_id='" . ciniki_core_dbQuote($ciniki, $customer['id']) . "', related_id, customer_id) AS related_id, "
 			. "date_started, date_ended, ciniki_customers.display_name, ciniki_customers.company "
 			. "";
 		$strsql .= "FROM ciniki_customer_relationships "
 			. "LEFT JOIN ciniki_customers ON ("
-				. "(ciniki_customer_relationships.customer_id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+				. "(ciniki_customer_relationships.customer_id <> '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 				. "AND ciniki_customer_relationships.customer_id = ciniki_customers.id "
 				. ") OR ("
-				. "ciniki_customer_relationships.related_id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+				. "ciniki_customer_relationships.related_id <> '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 				. "AND ciniki_customer_relationships.related_id = ciniki_customers.id "
 				. ")) "
 			. "WHERE ciniki_customer_relationships.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND (ciniki_customer_relationships.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-				. "OR ciniki_customer_relationships.related_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND (ciniki_customer_relationships.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+				. "OR ciniki_customer_relationships.related_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 				. ") "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -308,7 +325,7 @@ function ciniki_customers_getModuleData($ciniki) {
 				//
 				// Check if this relationship needs to be reversed
 				//
-				if( $relationship['related_id'] == $args['customer_id'] ) {
+				if( $relationship['related_id'] == $customer['id'] ) {
 					if( isset($relationship_types[-$relationship['type']]) ) {
 						$customer['relationships'][$rid]['relationship']['type_name'] = $relationship_types[-$relationship['type']];
 					}
@@ -323,14 +340,14 @@ function ciniki_customers_getModuleData($ciniki) {
 	// Get any child customers
 	//
 	if( ($modules['ciniki.customers']['flags']&0x200000) > 0 ) {
-		$strsql = "SELECT ciniki_customers.id, ciniki_customers.display_name "
+		$strsql = "SELECT id, eid, display_name "
 			. "FROM ciniki_customers "
-			. "WHERE ciniki_customers.parent_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "WHERE ciniki_customers.parent_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'children', 'fname'=>'id', 'name'=>'customer',
-				'fields'=>array('id', 'display_name')),
+				'fields'=>array('id', 'eid', 'display_name')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
@@ -351,7 +368,7 @@ function ciniki_customers_getModuleData($ciniki) {
 			. "ciniki_subscriptions.description, ciniki_subscription_customers.status "
 			. "FROM ciniki_subscriptions "
 			. "LEFT JOIN ciniki_subscription_customers ON (ciniki_subscriptions.id = ciniki_subscription_customers.subscription_id "
-				. "AND ciniki_subscription_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "') "
+				. "AND ciniki_subscription_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "') "
 			. "WHERE ciniki_subscriptions.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_subscription_customers.status = 10 "
 			. "ORDER BY ciniki_subscriptions.name "
@@ -374,7 +391,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	if( isset($modules['ciniki.wineproduction']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'wineproduction', 'private', 'appointments');
 		$rc = ciniki_wineproduction__appointments($ciniki, $args['business_id'], array(
-			'customer_id'=>$args['customer_id'],
+			'customer_id'=>$customer['id'],
 			'status'=>'unbottled',
 			));
 		if( $rc['stat'] != 'ok' ) {
@@ -403,7 +420,7 @@ function ciniki_customers_getModuleData($ciniki) {
 			. "LEFT JOIN ciniki_products ON (ciniki_wineproductions.product_id = ciniki_products.id "
 				. "AND ciniki_products.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. ") "
-			. "WHERE ciniki_wineproductions.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "WHERE ciniki_wineproductions.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 			. "AND ciniki_wineproductions.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_wineproductions.status < 60 "
 			. "ORDER BY ciniki_wineproductions.order_date DESC "
@@ -447,7 +464,7 @@ function ciniki_customers_getModuleData($ciniki) {
 			. "LEFT JOIN ciniki_products ON (ciniki_wineproductions.product_id = ciniki_products.id "
 				. "AND ciniki_products.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. ") "
-			. "WHERE ciniki_wineproductions.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "WHERE ciniki_wineproductions.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 			. "AND ciniki_wineproductions.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_wineproductions.status = 60 "
 			. "ORDER BY ciniki_wineproductions.order_date DESC "
@@ -479,7 +496,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 	if( isset($modules['ciniki.sapos']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'customerInvoices');
-		$rc = ciniki_sapos_customerInvoices($ciniki, $args['business_id'], $args['customer_id'], 11);
+		$rc = ciniki_sapos_customerInvoices($ciniki, $args['business_id'], $customer['id'], 11);
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}

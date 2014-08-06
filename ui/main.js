@@ -396,7 +396,7 @@ function ciniki_customers_main() {
 				return d.order[this.sections[s].dataMaps[j]];
 			}
 			else if( s == 'children' ) {
-				return d.customer.display_name;
+				return (d.customer.eid!=null&&d.customer.eid!=''?d.customer.eid+' - ':'') + d.customer.display_name;
 			}
 			return this.data[s][i];
 		};
