@@ -34,6 +34,9 @@ function ciniki_customers_main() {
 			'ciniki_customers_main', 'menu',
 			'mc', 'medium', 'sectioned', 'ciniki.customers.main.menu');
 		this.menu.data = {};
+		this.menu.country = null;
+		this.menu.province = null;
+		this.menu.city = null;
 		this.menu.sections = {
 			'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1, 'hint':'customer name', 'noData':'No customers found',
 				},
@@ -41,6 +44,13 @@ function ciniki_customers_main() {
 //				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //				'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //				}},
+			'places':{'label':'Countries', 'type':'simplegrid', 'num_cols':1,
+				'headerValues':null,
+				'noData':'No customers',
+				'limit':5,
+				'moreTxt':'more',
+				'moreFn':'M.startApp(\'ciniki.customers.places\',null,\'M.ciniki_customers_main.showMenu();\',\'mc\',{\'country\':M.ciniki_customers_main.menu.country,\'province\':M.ciniki_customers_main.menu.province});',
+				},
 			'recent':{'label':'Recently Updated', 'num_cols':1, 'type':'simplegrid', 
 				'headerValues':null,
 				'noData':'No customers',
@@ -68,16 +78,30 @@ function ciniki_customers_main() {
 			M.ciniki_customers_main.searchCustomers('M.ciniki_customers_main.showMenu();', search_str);
 		};
 		this.menu.sectionData = function(s) {
-			if( s == 'recent' ) {	
-				return this.data[s];
-			}
+			return this.data[s];
 		};
 		this.menu.noData = function(s) { return 'No customers'; }
 		this.menu.cellValue = function(s, i, j, d) {
-			return d.customer.display_name;
+			if( s == 'places' ) {
+				if( d.place.city != null ) {
+					return (d.place.city==''?'No city':d.place.city) + ' <span class="count">' + d.place.num_customers + '</span>';
+				} else if( d.place.province != null ) {
+					return (d.place.province==''?'No province/state':d.place.province) + ' <span class="count">' + d.place.num_customers + '</span>';
+				} else {
+					return (d.place.country==''?'No Country':d.place.country) + ' <span class="count">' + d.place.num_customers + '</span>';
+				}
+			}
+			if( s == 'recent' ) {
+				return d.customer.display_name;
+			}
 		};
 		this.menu.rowFn = function(s, i, d) { 
-			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMenu();\',\'' + d.customer.id + '\');'; 
+			if( s == 'places' ) {
+				return 'M.startApp(\'ciniki.customers.places\',null,\'M.ciniki_customers_main.showMenu();\',\'mc\',{\'country\':\'' + escape(d.place.country) + '\'' + (d.place.province!=null?',\'province\':\'' + escape(d.place.province)+'\'':'') + (d.place.city!=null?',\'city\':\''+escape(d.place.city)+'\'':'') + '});';
+			}
+			if( s == 'recent' ) {
+				return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMenu();\',\'' + d.customer.id + '\');'; 
+			}
 		};
 
 		this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showMenu();\',\'mc\',{\'customer_id\':0});');
@@ -299,6 +323,7 @@ function ciniki_customers_main() {
 					if( d.address.address2 != '' ) { v += d.address.address2 + '<br/>'; }
 					if( d.address.city != '' ) { v += d.address.city + ''; }
 					if( d.address.province != '' ) { v += ', ' + d.address.province + '<br/>'; }
+					else { v += '<br/>'; }
 					if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
 					if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
 					return v;
@@ -512,13 +537,35 @@ function ciniki_customers_main() {
 		//
 		// Grab list of recently updated customers
 		//
-		var rsp = M.api.getJSONCb('ciniki.customers.recent', {'business_id':M.curBusinessID}, function(rsp) {
+		var rsp = M.api.getJSONCb('ciniki.customers.overview', {'business_id':M.curBusinessID}, function(rsp) {
 			if( rsp.stat != 'ok' ) {
 				M.api.err(rsp);
 				return false;
 			} 
 			var p = M.ciniki_customers_main.menu;
-			p.data.recent = rsp.customers;	
+			p.data = {};
+			if( rsp.places != null ) {
+				p.sections.places.visible = 'yes';
+				p.data.places = rsp.places;
+				p.place_level = rsp.place_level;
+				switch(rsp.place_level) {
+					case 'country': p.sections.places.label = 'Countries'; 
+						p.country = null;
+						p.province = null;
+						p.city = null;
+						break;
+					case 'province': p.sections.places.label = 'Provinces/States'; 
+						p.province = null;
+						p.city = null;
+						break;
+					case 'city': p.sections.places.label = 'Cities'; 
+						p.city = null;
+						break;
+				}
+			} else {
+				p.sections.places.visible = 'no';
+			}
+			p.data.recent = rsp.recent;	
 			p.refresh();
 			p.show(cb);
 		});
@@ -591,7 +638,8 @@ function ciniki_customers_main() {
 				if( d.address.address1 != '' ) { v += d.address.address1 + '<br/>'; }
 				if( d.address.address2 != '' ) { v += d.address.address2 + '<br/>'; }
 				if( d.address.city != '' ) { v += d.address.city + ''; }
-				if( d.address.province != '' ) { v += ', ' + d.address.province + '<br/>'; }
+				if( d.address.province != '' ) { v += ', ' + d.address.province + '  '; }
+				else if( d.address.city != '' ) { v += '  '; }
 				if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
 				if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
 				

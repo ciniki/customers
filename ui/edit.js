@@ -354,7 +354,8 @@ function ciniki_customers_edit() {
 					if( d.address.address1 != '' ) { v += d.address.address1 + '<br/>'; }
 					if( d.address.address2 != '' ) { v += d.address.address2 + '<br/>'; }
 					if( d.address.city != '' ) { v += d.address.city + ''; }
-					if( d.address.province != '' ) { v += ', ' + d.address.province + '<br/>'; }
+					if( d.address.province != '' ) { v += ', ' + d.address.province + '  '; }
+					else if( d.address.city != '' ) { v += '  '; }
 					if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
 					if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
 					return v;
