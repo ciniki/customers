@@ -217,7 +217,7 @@ function ciniki_customers_add(&$ciniki) {
 			return $rc;
 		}
 		if( !isset($rc['parent']) ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1899', 'msg'=>'The parent does not exist.'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1898', 'msg'=>'The parent does not exist.'));
 		}
 		if( isset($rc['parent']) && $rc['parent']['parent_id'] > 0 ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1899', 'msg'=>'The parent is already a child.'));
