@@ -193,6 +193,7 @@ function ciniki_customers_edit() {
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.saveCustomer();'},
+				'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
 				}},
 			};
 		this.edit.forms.business = {
@@ -319,6 +320,7 @@ function ciniki_customers_edit() {
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.saveCustomer();'},
+				'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
 				}},
 			};
 		this.edit.sectionData = function(s) {
@@ -974,6 +976,8 @@ function ciniki_customers_edit() {
 		if( cid != null ) { this.edit.customer_id = cid; }
 		this.edit.formtab = null;
 		this.edit.formtab_field_id = null;
+		this.edit.forms.person._buttons.buttons.delete.visible = 'no';
+		this.edit.forms.business._buttons.buttons.delete.visible = 'no';
 
 		if( this.edit.memberinfo == 'yes' ) {
 			this.edit.forms.person._image.active = 'yes';
@@ -1033,6 +1037,10 @@ function ciniki_customers_edit() {
 			this.edit.forms.business._short_bio.active = 'no';
 			this.edit.forms.person._full_bio.active = 'no';
 			this.edit.forms.business._full_bio.active = 'no';
+			if( this.edit.customer_id > 0 ) {
+				this.edit.forms.person._buttons.buttons.delete.visible = 'yes';
+				this.edit.forms.business._buttons.buttons.delete.visible = 'yes';
+			}
 		}
 
 		if( this.edit.customer_id > 0 ) {
@@ -1422,16 +1430,18 @@ function ciniki_customers_edit() {
 ////		}
 //	};
 
-	this.deleteCustomer = function(cid) {
-		if( cid != null && cid > 0 ) {
-			if( confirm("Are you sure you want to remove this customer?") ) {
-				var rsp = M.api.postJSONCb('ciniki.customers.delete', {'business_id':M.curBusinessID, 'customer_id':cid}, function(rsp) {
-					if( rsp.stat != 'ok' ) {
-						M.api.err(rsp);
-						return false;
-					}
-					M.ciniki_customers_edit.customer.close();
-				});
+	this.deleteCustomer = function() {
+		if( this.edit.customer_id > 0 ) {
+			if( confirm("Are you sure you want to remove this customer?  This will remove all subscriptions, phone numbers, email addresses, addresses and websites.") ) {
+				M.api.getJSONCb('ciniki.customers.delete', {'business_id':M.curBusinessID, 
+					'customer_id':this.edit.customer_id}, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						}
+						M.ciniki_customers_edit.edit.destroy();
+						M.ciniki_customers_main.customer.close();
+					});
 			}
 		}
 	}

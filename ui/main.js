@@ -271,7 +271,7 @@ function ciniki_customers_main() {
 				},
 			'_buttons':{'label':'', 'buttons':{
 //				'edit':{'label':'Edit', 'fn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});'},
-				'delete':{'label':'Delete', 'visible':'no', 'fn':'M.ciniki_customers_main.deleteCustomer(M.ciniki_customers_main.customer.customer_id);'},
+//				'delete':{'label':'Delete', 'visible':'no', 'fn':'M.ciniki_customers_main.deleteCustomer(M.ciniki_customers_main.customer.customer_id);'},
 				}},
 			};
 		this.customer.noData = function(s) {
@@ -515,7 +515,7 @@ function ciniki_customers_main() {
 		}
 		this.menu.title = this.plabel;
 		this.customer.title = this.slabel;
-		this.customer.sections._buttons.buttons.delete.label = 'Delete ' + this.slabel;
+//		this.customer.sections._buttons.buttons.delete.label = 'Delete ' + this.slabel;
 		this.customer.sections._tabs.tabs['children'].label = this.childrenlabel;
 		this.customer.sections.children.label = this.childrenlabel;
 		this.customer.sections.children.addTxt = 'Add ' + this.childlabel;
@@ -580,7 +580,7 @@ function ciniki_customers_main() {
 		this.customer.sections.appointments.visible = 'no';
 		this.customer.sections.currentwineproduction.visible = 'no';
 		this.customer.sections.pastwineproduction.visible = 'no';
-		this.customer.sections._buttons.buttons.delete.visible = 'yes';
+//		this.customer.sections._buttons.buttons.delete.visible = 'yes';
 
 		M.api.getJSONCb('ciniki.customers.getModuleData', 
 			{'business_id':M.curBusinessID, 
@@ -729,14 +729,14 @@ function ciniki_customers_main() {
 //		}
 		this.customer.sections._notes.visible=(rsp.customer.notes=='')?'no':'yes';
 
-		if( (rsp.customer.emails != null && rsp.customer.emails.length > 0)
-			|| (rsp.customer.addresses != null && rsp.customer.addresses.length > 0)
-			|| (rsp.customer.subscriptions != null && rsp.customer.subscriptions.length > 0)
-			|| (rsp.customer.services != null && rsp.customer.services.length > 0)
-			|| (rsp.customer.relationships != null && rsp.customer.relationships.length > 0)
-			) {
-			this.customer.sections._buttons.buttons.delete.visible = 'no';
-		}
+//		if( (rsp.customer.emails != null && rsp.customer.emails.length > 0)
+//			|| (rsp.customer.addresses != null && rsp.customer.addresses.length > 0)
+//			|| (rsp.customer.subscriptions != null && rsp.customer.subscriptions.length > 0)
+//			|| (rsp.customer.services != null && rsp.customer.services.length > 0)
+//			|| (rsp.customer.relationships != null && rsp.customer.relationships.length > 0)
+//			) {
+//			this.customer.sections._buttons.buttons.delete.visible = 'no';
+//		}
 
 		//
 		// make subscriptions available
@@ -766,7 +766,7 @@ function ciniki_customers_main() {
 		if( rsp.customer.parent_id == 0 && ((rsp.customer.children != null && rsp.customer.children.length > 0)
 			|| (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0) ) {
 			this.customer.sections._tabs.tabs['children'].visible = 'yes';
-			this.customer.sections._buttons.buttons.delete.visible = 'no';
+//			this.customer.sections._buttons.buttons.delete.visible = 'no';
 			paneltab = 'children';
 			pt_count++;
 		} else {
@@ -776,7 +776,7 @@ function ciniki_customers_main() {
 		if( rsp.customer.invoices != null && rsp.customer.invoices.length > 0 ) {
 //			this.customer.sections.invoices.visible = 'yes';
 			this.customer.sections._tabs.tabs['invoices'].visible = 'yes';
-			this.customer.sections._buttons.buttons.delete.visible = 'no';
+//			this.customer.sections._buttons.buttons.delete.visible = 'no';
 			paneltab = 'invoices';
 			pt_count++;
 		} else {
@@ -797,7 +797,7 @@ function ciniki_customers_main() {
 				|| (rsp.pastwineproduction != null && rsp.pastwineproduction.length > 0)
 				|| (rsp.appointments != null && rsp.appointments.length > 0)
 				) {
-				this.customer.sections._buttons.buttons.delete.visible = 'no';
+//				this.customer.sections._buttons.buttons.delete.visible = 'no';
 			}
 			paneltab = 'wine';
 		} else {
