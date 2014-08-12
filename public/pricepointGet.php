@@ -30,7 +30,7 @@ function ciniki_customers_pricepointGet(&$ciniki) {
     // check permission to run this function for this business
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.taxes.pricepointGet', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.pricepointGet', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }

@@ -34,7 +34,7 @@ function ciniki_customers_placeDetails($ciniki) {
     // check permission to run this function for this business
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.overview', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.placeDetails', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
