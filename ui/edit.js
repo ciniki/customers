@@ -1329,7 +1329,6 @@ function ciniki_customers_edit() {
 				c += 'type=' + type + '&';
 			}
 			if( c != '' ) {
-				console.log(c);
 				var rsp = M.api.postJSONCb('ciniki.customers.update', 
 					{'business_id':M.curBusinessID, 
 					'customer_id':M.ciniki_customers_edit.edit.customer_id}, c, function(rsp) {
