@@ -104,7 +104,7 @@ function ciniki_customers_distributorList($ciniki) {
 		array('container'=>'distributors', 'fname'=>'id', 'name'=>'distributor',
 			'fields'=>array('id', 'first', 'last', 'display_name', 'company', 'distributor_status_text'),
 			'maps'=>array(
-				'distributor_status_text'=>array('0'=>'Non-Dealer', '10'=>'Active', '60'=>'Suspended'),
+				'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 				),
 			),
 		));

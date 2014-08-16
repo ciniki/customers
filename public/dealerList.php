@@ -84,7 +84,7 @@ function ciniki_customers_dealerList($ciniki) {
 				. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. ") "
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND ciniki_customers.dealer_status = 10 "
+			. "AND ciniki_customers.dealer_status > 0 AND ciniki_customers.dealer_status < 60 "
 			. "AND ISNULL(ciniki_customer_tags.tag_name) "
 			. "ORDER BY last, first, company";
 	} else {
@@ -104,7 +104,7 @@ function ciniki_customers_dealerList($ciniki) {
 		array('container'=>'dealers', 'fname'=>'id', 'name'=>'dealer',
 			'fields'=>array('id', 'first', 'last', 'display_name', 'company', 'dealer_status_text'),
 			'maps'=>array(
-				'dealer_status_text'=>array('0'=>'Non-Dealer', '10'=>'Active', '60'=>'Suspended'),
+				'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
 				),
 			),
 		));

@@ -13,7 +13,7 @@ function ciniki_customers_edit() {
 	this.membershipType = {'10':'Regular', '20':'Complimentary', '30':'Reciprocal'};
 	this.memberWebFlags = {'1':{'name':'Visible'}};
 	this.memberPhoneFlags = {'4':{'name':'Public'}};
-	this.dealerStatus = {'10':'Active', '60':'Suspended'};
+	this.dealerStatus = {'5':'Prospect', '10':'Active', '60':'Suspended'};
 	this.dealerWebFlags = {'2':{'name':'Visible'}};
 	this.distributorStatus = {'10':'Active', '60':'Suspended'};
 	this.distributorWebFlags = {'3':{'name':'Visible'}};

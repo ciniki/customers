@@ -111,7 +111,7 @@ function ciniki_customers_get($ciniki) {
 				'lists'=>array('emails'),
 				'maps'=>array(
 					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
-					'dealer_status_text'=>array('0'=>'Non-Dealer', '10'=>'Active', '60'=>'Suspended'),
+					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
 					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
@@ -156,7 +156,7 @@ function ciniki_customers_get($ciniki) {
 					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes'),
 				'maps'=>array(
 					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
-					'dealer_status_text'=>array('0'=>'Non-Dealer', '10'=>'Active', '60'=>'Suspended'),
+					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
 					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
