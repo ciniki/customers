@@ -201,9 +201,9 @@ function ciniki_customers_getModuleData($ciniki) {
 	}
 
 	//
-	// Get the categories and tags for the post
+	// Get the categories and tags for the customer
 	//
-	if( ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
+	if( ($modules['ciniki.customers']['flags']&0xC00224) > 0 ) {
 		$strsql = "SELECT tag_type, tag_name AS lists "
 			. "FROM ciniki_customer_tags "
 			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
@@ -219,8 +219,20 @@ function ciniki_customers_getModuleData($ciniki) {
 		}
 		if( isset($rc['tags']) ) {
 			foreach($rc['tags'] as $tags) {
+				if( $tags['tags']['tag_type'] == 10 ) {
+					$customer['customer_categories'] = $tags['tags']['lists'];
+				}
+				if( $tags['tags']['tag_type'] == 20 ) {
+					$customer['customer_tags'] = $tags['tags']['lists'];
+				}
 				if( $tags['tags']['tag_type'] == 40 ) {
 					$customer['member_categories'] = $tags['tags']['lists'];
+				}
+				if( $tags['tags']['tag_type'] == 60 ) {
+					$customer['dealer_categories'] = $tags['tags']['lists'];
+				}
+				if( $tags['tags']['tag_type'] == 80 ) {
+					$customer['distributor_categories'] = $tags['tags']['lists'];
 				}
 			}
 		}

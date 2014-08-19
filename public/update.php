@@ -54,7 +54,9 @@ function ciniki_customers_update(&$ciniki) {
         'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Start Date'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),
-		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
+		'customer_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Customer Categories'),
+		'customer_tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Customer Tags'),
+		'member_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Member Categories'),
 		'dealer_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Dealer Categories'),
 		'distributor_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Distributor Categories'),
         )); 
@@ -292,6 +294,34 @@ function ciniki_customers_update(&$ciniki) {
 		$rc = ciniki_subscriptions_updateCustomerSubscriptions($ciniki, $args['business_id'], 
 			$args['customer_id'], $args['subscriptions'], $args['unsubscriptions']);
 		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+	}
+
+	//
+	// Update the customer categories
+	//
+	if( isset($args['customer_categories']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $args['business_id'],
+			'ciniki_customer_tags', 'ciniki_customer_history',
+			'customer_id', $args['customer_id'], 10, $args['customer_categories']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
+
+	//
+	// Update the customer tags
+	//
+	if( isset($args['customer_tags']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $args['business_id'],
+			'ciniki_customer_tags', 'ciniki_customer_history',
+			'customer_id', $args['customer_id'], 20, $args['customer_tags']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 			return $rc;
 		}
 	}

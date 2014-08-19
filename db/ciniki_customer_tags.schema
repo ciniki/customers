@@ -15,8 +15,8 @@
 #					these tags to be used for multiple purposes.
 #	
 #					0 - unknown
-#					10 - Customer Category *future*
-#					20 - Customer Tag *future*
+#					10 - Customer Category 
+#					20 - Customer Tag 
 #					40 - Member Category
 #					41 - Member Tags *future*
 #					60 - Dealer Category

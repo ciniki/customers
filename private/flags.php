@@ -20,12 +20,12 @@ function ciniki_customers_flags($ciniki, $modules) {
 		// 0x0010
 		array('flag'=>array('bit'=>'5', 'name'=>'Dealers')),
 		array('flag'=>array('bit'=>'6', 'name'=>'Dealer Categories')),
-//		array('flag'=>array('bit'=>'7', 'name'=>'')),
-//		array('flag'=>array('bit'=>'8', 'name'=>'')),
+//		array('flag'=>array('bit'=>'7', 'name'=>'Dealer Tags')),
+//		array('flag'=>array('bit'=>'8', 'name'=>'Member Tags')),
 		// 0x0100
 		array('flag'=>array('bit'=>'9', 'name'=>'Distributors')),
 		array('flag'=>array('bit'=>'10', 'name'=>'Distributor Categories')),
-//		array('flag'=>array('bit'=>'11', 'name'=>'')),
+//		array('flag'=>array('bit'=>'11', 'name'=>'Distributor Tags')),
 //		array('flag'=>array('bit'=>'12', 'name'=>'')),
 		// 0x1000
 		array('flag'=>array('bit'=>'13', 'name'=>'Price Points')),
@@ -40,8 +40,8 @@ function ciniki_customers_flags($ciniki, $modules) {
 		// 0x00100000
 		array('flag'=>array('bit'=>'21', 'name'=>'Sales Total')),
 		array('flag'=>array('bit'=>'22', 'name'=>'Children')),
-//		array('flag'=>array('bit'=>'23', 'name'=>'')),
-//		array('flag'=>array('bit'=>'24', 'name'=>'')),
+		array('flag'=>array('bit'=>'23', 'name'=>'Customer Categories')),
+		array('flag'=>array('bit'=>'24', 'name'=>'Customer Tags')),
 		);
 
 	return array('stat'=>'ok', 'flags'=>$flags);

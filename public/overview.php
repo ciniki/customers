@@ -35,6 +35,7 @@ function ciniki_customers_overview($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+	$modules = $rc['modules'];
 
 	$rsp = array('stat'=>'ok', 'recent'=>array());
 
@@ -49,6 +50,31 @@ function ciniki_customers_overview($ciniki) {
 	if( isset($rc['places']) ) {
 		$rsp['places'] = $rc['places'];
 		$rsp['place_level'] = $rc['place_level'];
+	}
+
+	//
+	// Get the list of categories if specified
+	//
+	if( ($modules['ciniki.customers']['flags']&0xC00000) > 0 ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsByType');
+		$rc = ciniki_core_tagsByType($ciniki, 'ciniki.customers', $args['business_id'], 'ciniki_customer_tags', array());
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['types']) ) {
+			foreach($rc['types'] as $tid => $tag_type) {
+				if( $tag_type['type']['tag_type'] == 10 
+					&& ($modules['ciniki.customers']['flags']&0x400000) > 0 
+					) {
+					$rsp['customer_categories'] = $tag_type['type']['tags'];
+				}
+				elseif( $tag_type['type']['tag_type'] == 20 
+					&& ($modules['ciniki.customers']['flags']&0x800000) > 0 
+					) {
+					$rsp['customer_tags'] = $tag_type['type']['tags'];
+				}
+			}
+		}
 	}
 
 	//
