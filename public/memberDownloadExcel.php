@@ -43,14 +43,19 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 	$objPHPExcel = new PHPExcel();
 
 	$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
-		. "company, display_name, "
+		. "company, department, title, display_name, "
 		. "ciniki_customers.type, "
 		. "ciniki_customers.status, "
 		. "ciniki_customers.member_status, "
 		. "ciniki_customers.member_lastpaid, "
 		. "ciniki_customers.membership_length, "
 		. "ciniki_customers.membership_type, "
+		. "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
+		. "ciniki_customers.primary_image_caption, "
+		. "ciniki_customers.short_description, "
+		. "ciniki_customers.full_bio, "
 		. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
+		. "ciniki_customer_tags.tag_name AS member_categories, "
 		. "CONCAT_WS(': ', ciniki_customer_phones.phone_label, "
 			. "ciniki_customer_phones.phone_number) AS phones, "
 		. "ciniki_customer_emails.email AS emails, "
@@ -61,6 +66,11 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 			. "ciniki_customer_addresses.postal) AS addresses, "
 		. "ciniki_customer_links.url AS links "
 		. "FROM ciniki_customers "
+		. "LEFT JOIN ciniki_customer_tags ON ("
+			. "ciniki_customers.id = ciniki_customer_tags.customer_id "
+			. "AND ciniki_customer_tags.tag_type = 40 "
+			. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. ") "
 		. "LEFT JOIN ciniki_customer_phones ON (ciniki_customers.id = ciniki_customer_phones.customer_id "
 			. "AND ciniki_customer_phones.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
@@ -82,14 +92,16 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 			'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix',
 				'company', 'display_name', 'type', 'status', 'visible', 
 				'member_status', 'member_lastpaid', 'membership_length', 'membership_type',
-				'phones', 'emails', 'addresses', 'links'),
+				'member_categories',
+				'phones', 'emails', 'addresses', 'links',
+				'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
 			'maps'=>array(
 				'type'=>array('1'=>'Individual', '2'=>'Business'),
 				'member_status'=>array('10'=>'Active', '60'=>'Former'),
 				'membership_length'=>array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),
 				'membership_type'=>array('10'=>'Regular', '20'=>'Complimentary', '30'=>'Reciprocal'),
 				),
-			'dlists'=>array('phones'=>', ', 'emails'=>', ', 'addresses'=>' - ', 'links'=>', ')),
+			'dlists'=>array('phones'=>', ', 'emails'=>', ', 'addresses'=>' - ', 'links'=>', ', 'member_categories'=>', ')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -111,6 +123,8 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 			case 'last': $value = 'Last'; break;
 			case 'suffix': $value = 'Suffix'; break;
 			case 'company': $value = 'Company'; break;
+			case 'department': $value = 'Department'; break;
+			case 'title': $value = 'Title'; break;
 			case 'display_name': $value = 'Name'; break;
 			case 'type': $value = 'Type'; break;
 			case 'visible': $value = 'Visible'; break;
@@ -118,16 +132,23 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 			case 'member_lastpaid': $value = 'Last Paid'; break;
 			case 'membership_length': $value = 'Length'; break;
 			case 'membership_type': $value = 'Type'; break;
+			case 'member_categories': $value = 'Categories'; break;
 			case 'phones': $value = 'Phones'; break;
 			case 'emails': $value = 'Emails'; break;
 			case 'addresses': $value = 'Addresses'; break;
 			case 'links': $value = 'Websites'; break;
 			case 'notes': $value = 'Notes'; break;
-			case 'short_bio': $value = 'Short Bio'; break;
+			case 'primary_image': $value = 'Image'; break;
+			case 'primary_image_caption': $value = 'Image Caption'; break;
+			case 'short_description': $value = 'Short Bio'; break;
+			case 'full_bio': $value = 'Full Bio'; break;
 		}
 		$objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $value, false);
 		$col++;
 	}
+	$objPHPExcelWorksheet->getStyle('A1:' . chr(65+$col-1) . '1')->getFont()->setBold(true);
+	$objPHPExcelWorksheet->freezePane('A2');
+
 	$row++;
 
 	foreach($rc['customers'] as $customer) {
