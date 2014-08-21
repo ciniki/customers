@@ -169,6 +169,13 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 		$row++;
 	}
 
+	$col = 0;
+	PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
+	foreach($args['columns'] as $column) {
+		$objPHPExcelWorksheet->getColumnDimension(chr(65+$col))->setAutoSize(true);
+		$col++;
+	}
+
 	//
 	// Redirect output to a client’s web browser (Excel)
 	//

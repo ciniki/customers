@@ -28,7 +28,7 @@ function ciniki_customers_membertools() {
 			'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.membertools.memberlist');
 		this.memberlist.data = {};
 		this.memberlist.sections = {
-			'options':{'label':'Data to include', 'fields':{
+			'options':{'label':'Data to include', 'aside':'yes', 'fields':{
 				'prefix':{'label':'Name Prefix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'first':{'label':'First Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
 				'middle':{'label':'Middle Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},

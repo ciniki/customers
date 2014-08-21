@@ -90,7 +90,11 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 		$col++;
 	}
 
-	$objPHPExcelWorksheet->getStyle('A1:' . chr(65+$col-1) . '1')->getFont()->setBold(true);
+	if( $col > 26 ) {
+		$objPHPExcelWorksheet->getStyle('A1:A' . chr(65+$col-27) . '1')->getFont()->setBold(true);
+	} else {
+		$objPHPExcelWorksheet->getStyle('A1:' . chr(65+$col-1) . '1')->getFont()->setBold(true);
+	}
 	$objPHPExcelWorksheet->freezePane('A2');
 
 	$row++;
@@ -218,6 +222,17 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 			$col++;
 		}
 		$row++;
+	}
+
+	$col = 0;
+	PHPExcel_Shared_Font::setAutoSizeMethod(PHPExcel_Shared_Font::AUTOSIZE_METHOD_EXACT);
+	foreach($args['columns'] as $column) {
+		if( $col > 25 ) {
+			$objPHPExcelWorksheet->getColumnDimension('A'.chr(65+$col-26))->setAutoSize(true);
+		} else {
+			$objPHPExcelWorksheet->getColumnDimension(chr(65+$col))->setAutoSize(true);
+		}
+		$col++;
 	}
 
 	//
