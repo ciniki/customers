@@ -20,22 +20,26 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	$date_format = ciniki_users_dateFormat($ciniki);
 
 	if( $format == '' ) {
-		$format = 'shortbio';
 		$rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_settings', 'business_id',	$business_id,
-			'ciniki.web', 'settings', 'page-members');
+			'ciniki.web', 'settings', 'page');
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
 		$settings = $rc['settings'];
+		$member_format = 'shortbio';
 		if( isset($settings['page-members-list-format']) && $settings['page-members-list-format'] != '' ) {
-			$format = $settings['page-members-list-format'];
+			$member_format = $settings['page-members-list-format'];
+		}
+		$dealer_format = 'shortbio';
+		if( isset($settings['page-dealers-list-format']) && $settings['page-dealers-list-format'] != '' ) {
+			$dealer_format = $settings['page-dealers-list-format'];
 		}
 	}
 
 	//
 	// Get the customer information for the short description
 	//
-	$strsql = "SELECT id, short_bio, short_description "
+	$strsql = "SELECT id, member_status, dealer_status, short_bio, short_description "
 		. "FROM ciniki_customers "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -48,6 +52,16 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1606', 'msg'=>'Unable to find customer'));
 	}
 	$customer = $rc['customer'];
+
+	if( $format == '' ) {
+		if( $customer['member_status'] == 10 ) {
+			$format = $member_format;
+		} elseif( $customer['dealer_status'] == 10 ) {
+			$format = $dealer_format;
+		} else {
+			$format = 'shortbio';
+		}
+	}
 
 	//
 	// Get the public addresses

@@ -20,12 +20,15 @@
 // province:		(optional) The province or state of the address.
 // postal:			(optional) The postal code or zip code of the address.
 // country:			(optional) The country of the address.
+// latitude:		(optional) The latitude of the address.
+// longitude:		(optional) The longitude of the address.
 // flags:			(optional) The options for the address, specifing what the 
 //					address should be used for.
 //				
 //					0x01 - Shipping
 //					0x02 - Billing
 //					0x04 - Mailing
+//					0x08 - Public, visible on website
 //
 // address_flags:	(optional) Same as flags, just allows for alternate name.
 //
@@ -49,6 +52,8 @@ function ciniki_customers_addressAdd(&$ciniki) {
         'province'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Province/State'), 
         'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Postal/Zip Code'), 
         'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Country'), 
+        'latitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Latitude'), 
+        'longitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Longitude'), 
         'flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'notes'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 
@@ -78,6 +83,26 @@ function ciniki_customers_addressAdd(&$ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+
+	//
+	// Lookup the latitude/longitude
+	//
+	// FIXME: This is broken, need to figure out google api from php.
+/*	if( $args['latitude'] == '' && $args['longitude'] == '' ) {
+		$address = '';
+		$address .= ($args['address1']!=''?($address!=''?', ':'').$args['address1']:'');
+		$address .= ($args['address2']!=''?($address!=''?', ':'').$args['address2']:'');
+		$address .= ($args['city']!=''?($address!=''?', ':'').$args['city']:'');
+		$address .= ($args['province']!=''?($address!=''?', ':'').$args['province']:'');
+		$address .= ($args['country']!=''?($address!=''?', ':'').$args['country']:'');
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'geocodeAddressLookupLatLong');
+		$rc = ciniki_core_geocodeAddressLookupLatLong($ciniki, $address);
+		if( $rc['stat'] == 'ok' ) {
+			$args['latitude'] = $rc['latitude'];
+			$args['longitude'] = $rc['longitude'];
+		}
+	}
+*/
 
 	//
 	// Add the address

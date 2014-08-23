@@ -4,6 +4,7 @@ function ciniki_customers_edit() {
 	// Panels
 	//
 	this.main = null;
+	this.dealerinfo = 'yes';
 
 	this.cb = null;
 	this.toggleOptions = {'Off':'Off', 'On':'On'};
@@ -486,6 +487,13 @@ function ciniki_customers_edit() {
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
 				'flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
+			'_latlong_buttons':{'label':'', 'buttons':{
+				'_latlong':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_customers_edit.lookupLatLong();'},
+				}},
+			'_latlong':{'label':'', 'fields':{
+				'latitude':{'label':'Latitude', 'type':'text'},
+				'longitude':{'label':'Longitude', 'type':'text'},
+				}},
 			'_notes':{'label':'Notes', 'fields':{
 				'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
@@ -837,6 +845,7 @@ function ciniki_customers_edit() {
 			}
 			this.edit.memberinfo = 'no';
 			this.edit.dealerinfo = 'yes';
+			this.dealerinfo = 'yes';
 			this.edit.distributorinfo = 'no';
 //			this.edit.forms.person._image.active = 'yes';
 //			this.edit.forms.business._image.active = 'yes';
@@ -1538,6 +1547,14 @@ function ciniki_customers_edit() {
 	this.showAddressEdit = function(cb, cid, aid) {
 		if( cid != null ) { this.address.customer_id = cid; }
 		if( aid != null ) { this.address.address_id = aid; }
+		if( this.dealerinfo == 'yes' ) { 
+			this.address.sections._latlong_buttons.visible = 'yes';
+			this.address.sections._latlong.visible = 'yes';
+		} else {
+			this.address.sections._latlong_buttons.visible = 'no';
+			this.address.sections._latlong.visible = 'no';
+		}
+
 		if( this.address.address_id > 0 ) {
 			this.address.sections._buttons.buttons.delete.visible = 'yes';
 			var rsp = M.api.getJSONCb('ciniki.customers.addressGet', 
@@ -1860,5 +1877,36 @@ function ciniki_customers_edit() {
 					M.ciniki_customers_edit.link.close();
 				});
 		}
+	};
+
+	this.lookupLatLong = function() {
+		M.startLoad();
+		if( document.getElementById('googlemaps_js') == null) {
+			var script = document.createElement("script");
+			script.id = 'googlemaps_js';
+			script.type = "text/javascript";
+			script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curBusiness.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_customers_edit.lookupGoogleLatLong";
+			document.body.appendChild(script);
+		} else {
+			this.lookupGoogleLatLong();
+		}
+	};
+
+	this.lookupGoogleLatLong = function() {
+		var address = M.ciniki_customers_edit.address.formFieldValue(M.ciniki_customers_edit.address.sections.address.fields.address1, 'address1')
+			+ ', ' + M.ciniki_customers_edit.address.formFieldValue(M.ciniki_customers_edit.address.sections.address.fields.address2, 'address2')
+			+ ', ' + M.ciniki_customers_edit.address.formFieldValue(M.ciniki_customers_edit.address.sections.address.fields.city, 'city')
+			+ ', ' + M.ciniki_customers_edit.address.formFieldValue(M.ciniki_customers_edit.address.sections.address.fields.province, 'province')
+			+ ', ' + M.ciniki_customers_edit.address.formFieldValue(M.ciniki_customers_edit.address.sections.address.fields.country, 'country');
+		var geocoder = new google.maps.Geocoder();
+		geocoder.geocode( { 'address': address}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				M.ciniki_customers_edit.address.setFieldValue('latitude', results[0].geometry.location.lat());
+				M.ciniki_customers_edit.address.setFieldValue('longitude', results[0].geometry.location.lng());
+			} else {
+				alert('Geocode was not successful for the following reason: ' + status);
+			}
+		});	
+		M.stopLoad();
 	};
 }

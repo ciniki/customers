@@ -1,0 +1,6 @@
+#
+#
+ALTER TABLE ciniki_customer_addresses ADD COLUMN latitude decimal(18,12) not null AFTER country;
+ALTER TABLE ciniki_customer_addresses ADD COLUMN longitude decimal(18,12) not null AFTER latitude;
+ALTER TABLE ciniki_customer_addresses COMMENT='v1.05';
+

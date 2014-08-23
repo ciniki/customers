@@ -47,6 +47,8 @@ function ciniki_customers_addressUpdate(&$ciniki) {
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province/State'), 
         'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal/Zip Code'), 
         'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'), 
+        'latitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Latitude'), 
+        'longitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Longitude'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
@@ -76,7 +78,16 @@ function ciniki_customers_addressUpdate(&$ciniki) {
 	//
 	// Check the address ID belongs to the requested customer
 	//
-	$strsql = "SELECT ciniki_customer_addresses.id, customer_id "
+	$strsql = "SELECT ciniki_customer_addresses.id, customer_id, "
+		. "ciniki_customer_addresses.address1, "
+		. "ciniki_customer_addresses.address2, "
+		. "ciniki_customer_addresses.city, "
+		. "ciniki_customer_addresses.province, "
+		. "ciniki_customer_addresses.postal, "
+		. "ciniki_customer_addresses.country, "
+		. "ciniki_customer_addresses.latitude, "
+		. "ciniki_customer_addresses.longitude, "
+		. "ciniki_customer_addresses.flags "
 		. "FROM ciniki_customers, ciniki_customer_addresses "
 		. "WHERE ciniki_customer_addresses.id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
 		. "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -90,6 +101,59 @@ function ciniki_customers_addressUpdate(&$ciniki) {
 	if( !isset($rc['address']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'741', 'msg'=>'Access denied'));
 	}
+	$item = $rc['address'];
+
+	$old_address = '';
+	$old_address .= ($item['address1']!=''?($old_address!=''?', ':'').$item['address1']:'');
+	$old_address .= ($item['address2']!=''?($old_address!=''?', ':'').$item['address2']:'');
+	$old_address .= ($item['city']!=''?($old_address!=''?', ':'').$item['city']:'');
+	$old_address .= ($item['province']!=''?($old_address!=''?', ':'').$item['province']:'');
+	$old_address .= ($item['country']!=''?($old_address!=''?', ':'').$item['country']:'');
+
+	$new_address = '';
+	if( isset($args['address1']) ) {
+		$new_address .= ($args['address1']!=''?($new_address!=''?', ':'').$args['address1']:'');
+	} else {
+		$new_address .= ($item['address1']!=''?($new_address!=''?', ':'').$item['address1']:'');
+	}
+	if( isset($args['address2']) ) {
+		$new_address .= ($args['address2']!=''?($new_address!=''?', ':'').$args['address2']:'');
+	} else {
+		$new_address .= ($item['address2']!=''?($new_address!=''?', ':'').$item['address2']:'');
+	}
+	if( isset($args['city']) ) {
+		$new_address .= ($args['city']!=''?($new_address!=''?', ':'').$args['city']:'');
+	} else {
+		$new_address .= ($item['city']!=''?($new_address!=''?', ':'').$item['city']:'');
+	}
+	if( isset($args['province']) ) {
+		$new_address .= ($args['province']!=''?($new_address!=''?', ':'').$args['province']:'');
+	} else {
+		$new_address .= ($item['province']!=''?($new_address!=''?', ':'').$item['province']:'');
+	}
+	if( isset($args['country']) ) {
+		$new_address .= ($args['country']!=''?($new_address!=''?', ':'').$args['country']:'');
+	} else {
+		$new_address .= ($item['country']!=''?($new_address!=''?', ':'').$item['country']:'');
+	}
+
+	//
+	// If the address has changed, and the latitude and longitude were not also updated,
+	// then lookup the new address
+	//
+	// FIXME: This is broken, need to figure out google api from php.
+/*	if( $new_address != $old_address 
+		&& (!isset($args['latitude']) || $args['latitude'] == $item['latitude'])
+		&& (!isset($args['longitude']) || $args['longitude'] == $item['longitude'])
+		) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'geocodeAddressLookupLatLong');
+		$rc = ciniki_core_geocodeAddressLookupLatLong($ciniki, $new_address);
+		if( $rc['stat'] == 'ok' ) {
+			$args['latitude'] = $rc['latitude'];
+			$args['longitude'] = $rc['longitude'];
+		}
+	}
+*/
 
 	//
 	// Update the address

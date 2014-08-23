@@ -38,6 +38,9 @@
 # province:			The province or state for the address.
 # postal:			The postal or zip code for the address.
 # country:			The country the address is located in.
+#
+# latitude:			The latitude coordinate of the address.
+# longitude:		The longitude coordinate of the address.
 #					
 # date_added:		The date and time the record was added.
 # last_updated:		The date and time the record was last updated.
@@ -54,6 +57,8 @@ create table ciniki_customer_addresses (
 	province varchar(100) not null, 
 	postal varchar(10) not null,
 	country varchar(50) not null,
+	latitude decimal(18,12) not null,
+	longitude decimal(18,12) not null,
 	notes varchar(6000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
@@ -62,4 +67,4 @@ create table ciniki_customer_addresses (
 	index (city, province, country),
 	index (postal),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

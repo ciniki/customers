@@ -33,6 +33,27 @@ function ciniki_customers_web_settingChange($ciniki, $business_id, $field, $fiel
 		}
 	}
 
+	if( $field == 'page-dealers-list-format' ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
+		$strsql = "SELECT id "
+			. "FROM ciniki_customers "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "AND dealer_status > 0 "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		$dealers = $rc['rows'];
+
+		foreach($dealers as $dealer) {
+			$rc = ciniki_customers_customerUpdateShortDescription($ciniki, $business_id, $dealer['id'], 0x04, $field_value);
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+		}
+	}
+
 	return array('stat'=>'ok');
 }
 ?>

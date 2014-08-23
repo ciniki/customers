@@ -71,6 +71,8 @@ function ciniki_customers_objects($ciniki) {
 			'province'=>array(),
 			'postal'=>array(),
 			'country'=>array(),
+			'latitude'=>array(),
+			'longitude'=>array(),
 			'notes'=>array(),
 			),
 		'history_table'=>'ciniki_customer_history',
