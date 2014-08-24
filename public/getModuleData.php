@@ -92,7 +92,7 @@ function ciniki_customers_getModuleData($ciniki) {
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, "
-		. "reward_level, sales_total, start_date, "
+		. "reward_level, sales_total, start_date, webflags, "
 		. "notes "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
@@ -113,7 +113,7 @@ function ciniki_customers_getModuleData($ciniki) {
 			'fields'=>array('id', 'eid', 'parent_id', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'company', 'department', 'title', 
 				'notes', 'birthdate', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-				'reward_level', 'sales_total', 'start_date'),
+				'reward_level', 'sales_total', 'start_date', 'webflags'),
 			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format))),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 'flags'=>'email_flags'),
