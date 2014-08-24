@@ -832,6 +832,8 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.phone.fields.phone_flags_2.active = 'yes';
 			this.edit.forms.business.phone.fields.phone_flags_3.active = 'yes';
 			this.address.sections.address.fields.flags.flags = this.memberAddressFlags;
+			this.address.sections._latlong_buttons.visible = 'no';
+			this.address.sections._latlong.visible = 'no';
 			this.phone.sections._phone.fields.flags.active = 'yes';
 			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 			this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
@@ -874,6 +876,8 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.phone.fields.phone_flags_2.active = 'yes';
 			this.edit.forms.business.phone.fields.phone_flags_3.active = 'yes';
 			this.address.sections.address.fields.flags.flags = this.memberAddressFlags;
+			this.address.sections._latlong_buttons.visible = 'yes';
+			this.address.sections._latlong.visible = 'yes';
 			this.phone.sections._phone.fields.flags.active = 'yes';
 			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 			this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
@@ -915,6 +919,8 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.phone.fields.phone_flags_2.active = 'yes';
 			this.edit.forms.business.phone.fields.phone_flags_3.active = 'yes';
 			this.address.sections.address.fields.flags.flags = this.memberAddressFlags;
+			this.address.sections._latlong_buttons.visible = 'yes';
+			this.address.sections._latlong.visible = 'yes';
 			this.phone.sections._phone.fields.flags.active = 'yes';
 			this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 			this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
@@ -960,6 +966,8 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.phone.fields.phone_flags_2.active = 'no';
 			this.edit.forms.business.phone.fields.phone_flags_3.active = 'no';
 			this.address.sections.address.fields.flags.flags = this.addressFlags;
+			this.address.sections._latlong_buttons.visible = 'no';
+			this.address.sections._latlong.visible = 'no';
 			this.phone.sections._phone.fields.flags.active = 'no';
 			this.phone.sections._phone.fields.flags.flags = {};
 			this.email.sections._email.fields.flags.flags = this.emailFlags;
@@ -1547,13 +1555,13 @@ function ciniki_customers_edit() {
 	this.showAddressEdit = function(cb, cid, aid) {
 		if( cid != null ) { this.address.customer_id = cid; }
 		if( aid != null ) { this.address.address_id = aid; }
-		if( this.dealerinfo == 'yes' ) { 
-			this.address.sections._latlong_buttons.visible = 'yes';
-			this.address.sections._latlong.visible = 'yes';
-		} else {
-			this.address.sections._latlong_buttons.visible = 'no';
-			this.address.sections._latlong.visible = 'no';
-		}
+//		if( this.dealerinfo == 'yes' ) { 
+//			this.address.sections._latlong_buttons.visible = 'yes';
+//			this.address.sections._latlong.visible = 'yes';
+//		} else {
+//			this.address.sections._latlong_buttons.visible = 'no';
+//			this.address.sections._latlong.visible = 'no';
+//		}
 
 		if( this.address.address_id > 0 ) {
 			this.address.sections._buttons.buttons.delete.visible = 'yes';
