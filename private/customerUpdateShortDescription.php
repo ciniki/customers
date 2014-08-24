@@ -149,6 +149,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	$pieces = array(
 		'shortbio'=>$customer['short_bio'],
 		'addresses'=>'',
+		'addressesnl'=>'',
 		'townsprovinces'=>'',
 		'phones'=>'',
 		'emails'=>'',
@@ -161,26 +162,39 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	if( isset($customer['addresses']) ) {
 		foreach($customer['addresses'] as $address) {
 			$addr = '';
+			$addrnl = '';
 			$townprovince = '';
 			if( $address['address1'] != '' ) {
 				$addr .= (($addr!='')?', ':'') . $address['address1'];
+				$addrnl .= (($addrnl!='')?"\n":'') . $address['address1'];
 			}
 			if( $address['address2'] != '' ) {
 				$addr .= (($addr!='')?', ':'') . $address['address2'];
+				$addrnl .= (($addrnl!='')?"\n":'') . $address['address2'];
 			}
+			$address3 = '';
 			if( $address['city'] != '' ) {
 				$addr .= (($addr!='')?', ':'') . $address['city'];
+				$address3 .= (($address3!='')?'':'') . $address['city'];
 				$townprovince .= (($townprovince!='')?', ':'') . $address['city'];
 			}
 			if( $address['province'] != '' ) {
 				$addr .= (($addr!='')?', ':'') . $address['province'];
+				$address3 .= (($address3!='')?', ':'') . $address['province'];
 				$townprovince .= (($townprovince!='')?', ':'') . $address['province'];
+			}
+			if( $address3 != '' ) {
+				$addrnl .= (($addrnl!='')?"\n":'') . $address3;
 			}
 			if( $address['postal'] != '' ) {
 				$addr .= (($addr!='')?'  ':'') . $address['postal'];
+				$address3 .= (($address3!='')?"\n":'') . $address['postal'];
 			}
 			if( $addr != '' ) {
 				$pieces['addresses'] .= ($pieces['addresses']!=''?"\n":'') . "$addr";
+			}
+			if( $addrnl != '' ) {
+				$pieces['addressesnl'] .= ($pieces['addressesnl']!=''?"\n":'') . "$addrnl";
 			}
 			if( $townprovince != '' ) {
 				$pieces['townsprovinces'] .= ($pieces['townsprovinces']!=''?"\n":'') . "$townprovince";

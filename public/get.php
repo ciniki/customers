@@ -339,7 +339,7 @@ function ciniki_customers_get($ciniki) {
 	//
 	if( isset($args['addresses']) && $args['addresses'] == 'yes' ) {
 		$strsql = "SELECT id, "
-			. "address1, address2, city, province, postal, country, flags "
+			. "address1, address2, city, province, postal, country, flags, latitude, longitude "
 			. "FROM ciniki_customer_addresses "
 			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -347,7 +347,7 @@ function ciniki_customers_get($ciniki) {
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
 				'fields'=>array('id', 'address1', 'address2', 'city', 'province', 'postal', 
-					'country', 'flags')),
+					'country', 'flags', 'latitude', 'longitude')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
