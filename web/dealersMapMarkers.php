@@ -22,6 +22,7 @@ function ciniki_customers_web_dealersMapMarkers($ciniki, $settings, $business_id
 		. "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customer_addresses.latitude <> 0 "
 		. "AND ciniki_customer_addresses.longitude <> 0 "
+		. "AND (ciniki_customer_addresses.flags&0x08) > 0 "
 		. "AND ciniki_customer_addresses.customer_id = ciniki_customers.id "
 		// Check the dealer is visible on the website
 		. "AND ciniki_customers.dealer_status = 10 "
