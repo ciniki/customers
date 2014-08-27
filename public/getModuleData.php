@@ -507,13 +507,40 @@ function ciniki_customers_getModuleData($ciniki) {
 	// Check for invoices for the customer
 	//
 	if( isset($modules['ciniki.sapos']) ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'customerInvoices');
-		$rc = ciniki_sapos_customerInvoices($ciniki, $args['business_id'], $customer['id'], 11);
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'customerInvoices');
+		$rc = ciniki_sapos_hooks_customerInvoices($ciniki, $args['business_id'], array(
+			'customer_id'=>$customer['id'], 
+			'limit'=>11));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
-		if( isset($rc['invoices']) ) {
-			$customer['invoices'] = $rc['invoices'];
+		if( isset($rc['types']) ) {
+			foreach($rc['types'] as $tid => $type) {
+				if( $type['type']['type'] == '10' ) {
+					$customer['invoices'] = $type['type']['invoices'];
+				} elseif( $type['type']['type'] == '20' ) {
+					$customer['carts'] = $type['type']['invoices'];
+				} elseif( $type['type']['type'] == '30' ) {
+					$customer['pos'] = $type['type']['invoices'];
+				} elseif( $type['type']['type'] == '40' ) {
+					$customer['orders'] = $type['type']['invoices'];
+				}
+			}
+		}
+		//
+		// Make sure at least a blank array exist for each type of invoice
+		//
+		if( ($modules['ciniki.sapos']['flags']&0x01) && !isset($customer['invoices']) ) {
+			$customer['invoices'] = array();
+		}
+		if( ($modules['ciniki.sapos']['flags']&0x08) && !isset($customer['carts']) ) {
+			$customer['carts'] = array();
+		}
+		if( ($modules['ciniki.sapos']['flags']&0x10) && !isset($customer['pos']) ) {
+			$customer['pos'] = array();
+		}
+		if( ($modules['ciniki.sapos']['flags']&0x20) && !isset($customer['orders']) ) {
+			$customer['orders'] = array();
 		}
 	}
 

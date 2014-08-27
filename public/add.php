@@ -107,6 +107,8 @@ function ciniki_customers_add(&$ciniki) {
         'province'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Province'), 
         'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Postal Code'), 
         'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Country'), 
+        'latitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Latitude'), 
+        'longitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Longitude'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
 //        'phone_home'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Home Phone'), 
  //       'phone_work'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Work Phone'), 
@@ -443,6 +445,8 @@ function ciniki_customers_add(&$ciniki) {
 				'province'=>$args['province'],
 				'postal'=>$args['postal'],
 				'country'=>$args['country'],
+				'latitude'=>$args['latitude'],
+				'longitude'=>$args['longitude'],
 				'notes'=>'',
 				), 0x04);
 		if( $rc['stat'] != 'ok' ) {
