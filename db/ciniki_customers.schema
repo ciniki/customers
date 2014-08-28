@@ -66,6 +66,7 @@
 #					the dealers are enabled.
 #
 #					0 - Not a dealer
+#					5 - Prospect
 #					10 - Dealer
 #					60 - Suspended Dealer
 #
