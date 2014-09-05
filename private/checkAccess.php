@@ -17,7 +17,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_checkAccess($ciniki, $business_id, $method, $req_id) {
+function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) {
 	//
 	// Check if the business is active and the module is enabled
 	//

@@ -74,6 +74,7 @@ function ciniki_customers_update(&$ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+	$modules = $rc['modules'];
 
 	//
 	// Get the current settings
@@ -280,7 +281,27 @@ function ciniki_customers_update(&$ciniki) {
 	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', 
 		$args['customer_id'], $args, 0x06);
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2009', 'msg'=>'Unable to updated customer', 'err'=>$rc['err']));
+	}
+
+	//
+	// Hook into other modules when updating status incase orders or other items should be changed
+	//
+	if( isset($args['status']) && $args['status'] != '' ) {
+		foreach($modules as $module => $m) {
+			list($pkg, $mod) = explode('.', $module);
+			$rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'customerStatusUpdate');
+			if( $rc['stat'] == 'ok' ) {
+				$fn = $rc['function_call'];
+				$rc = $fn($ciniki, $args['business_id'], array(
+					'customer_id'=>$args['customer_id'], 
+					'status'=>$args['status'],
+					));
+				if( $rc['stat'] != 'ok' ) {
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2007', 'msg'=>'Unable to update customer status.', 'err'=>$rc['err']));
+				}
+			}
+		}
 	}
 
 	//

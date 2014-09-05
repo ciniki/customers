@@ -44,6 +44,7 @@ function ciniki_customers_edit() {
 		};
 	this.customerStatus = {
 		'10':'Active', 
+		'40':'On Hold', 
 		'50':'Suspended', 
 		'60':'Deleted', 
 		};
