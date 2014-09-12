@@ -54,7 +54,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	// Get the customer details and emails
 	//
 	$strsql = "SELECT ciniki_customers.id, eid, type, prefix, first, middle, last, suffix, "
-		. "display_name, company, department, title, "
+		. "display_name, company, department, title, salesrep_id, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 		. "pricepoint_id, notes "
@@ -65,7 +65,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
-				'company', 'department', 'title', 'pricepoint_id',
+				'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
 				'notes', 'birthdate')),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
