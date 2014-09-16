@@ -36,7 +36,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
 	// Sysadmins are allowed full access
 	//
 	if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
-		return array('stat'=>'ok', 'modules'=>$modules);
+		return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>0xFFFF);
 	}
 
 	//
@@ -51,11 +51,64 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
 	//
 	if( $business_id <= 0 ) {
 		// If no business_id specified, then fail
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'376', 'msg'=>'Access denied'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2031', 'msg'=>'Access denied'));
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
+	//
+	// Get the list of permission_groups the user is a part of
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	$strsql = "SELECT permission_group FROM ciniki_business_users "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+		. "AND package = 'ciniki' "
+		. "AND status = 10 "	// Active user
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+	$rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.businesses', 'groups', 'permission_group');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( !isset($rc['groups']) ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2022', 'msg'=>'Access denied'));
+	}
+	$groups = $rc['groups'];
+
+	$perms = 0;
+	if( in_array('owners', $groups) ) { $perms |= 0x01; }
+	if( in_array('employees', $groups) ) { $perms |= 0x02; }
+	if( in_array('salesreps', $groups) ) { $perms |= 0x04; }
+	$ciniki['business']['user']['perms'] = $perms;
+
+	// 
+	// Owners and Employees have access to everything
+	//
+	if( ($perms&0x3) > 0 ) {
+		return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>$perms);
+	}
+
+	//
+	// If the user is part of the salesreps, ensure they have access to request method
+	//
+	$salesreps_methods = array(
+		'ciniki.customers.overview',
+		'ciniki.customers.placeDetails',
+		'ciniki.customers.getModuleData',
+		'ciniki.customers.searchQuick',
+		);
+	if( in_array($method, $salesreps_methods) && ($perms&0x04) == 0x04 ) {
+		return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>$perms);
+	}
+
+	//
+	// By default, deny access
+	//
+	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2032', 'msg'=>'Access denied'));
+
+
+/* OLD CODE
 	//
 	// Find any users which are owners of the requested business_id
 	//
@@ -135,5 +188,6 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
 	// All checks passed, return ok
 	//
 	return array('stat'=>'ok', 'modules'=>$modules);
+	*/
 }
 ?>

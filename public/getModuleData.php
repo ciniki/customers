@@ -90,7 +90,7 @@ function ciniki_customers_getModuleData($ciniki) {
 		. "display_name, company, department, title, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
-		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
+		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
 		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, "
 		. "reward_level, sales_total, start_date, webflags, "
 		. "notes "
@@ -100,6 +100,9 @@ function ciniki_customers_getModuleData($ciniki) {
 			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
+	if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+		$strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+	}
 	if( isset($args['customer_id']) && $args['customer_id'] != '' ) {
 		$strsql .= "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
 	} elseif( isset($args['eid']) && $args['eid'] != '' ) {

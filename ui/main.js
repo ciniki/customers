@@ -5,7 +5,6 @@ function ciniki_customers_main() {
 	//
 	this.menu = null;
 
-	this.cb = null;
 	this.toggleOptions = {'Off':'Off', 'On':'On'};
 	this.subscriptionOptions = {'60':'Unsubscribed', '10':'Subscribed'};
 	this.addressFlags = {'1':{'name':'Shipping'}, '2':{'name':'Billing'}, '3':{'name':'Mailing'}};
@@ -119,8 +118,6 @@ function ciniki_customers_main() {
 			}
 		};
 
-		this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showMenu();\',\'mc\',{\'customer_id\':0});');
-		this.menu.addButton('tools', 'Tools', 'M.ciniki_customers_main.tools.show(\'M.ciniki_customers_main.showMenu();\');');
 		this.menu.addClose('Back');
 
 		//
@@ -508,7 +505,6 @@ function ciniki_customers_main() {
 			}
 			return d.Fn;
 		};
-		this.customer.addButton('edit', 'Edit', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});');
 		this.customer.addClose('Back');
 	}
 
@@ -563,8 +559,18 @@ function ciniki_customers_main() {
 		this.customer.sections._tabs.tabs['children'].label = this.childrenlabel;
 		this.customer.sections.children.label = this.childrenlabel;
 		this.customer.sections.children.addTxt = 'Add ' + this.childlabel;
+	
+		//
+		// Setup the buttons based on who is asking
+		//
+		this.menu.rightbuttons = {};
+		this.customer.rightbuttons = {};
+		if( M.curBusiness.permissions.owners != null || M.curBusiness.permissions.employees != null ) {
+			this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showMenu();\',\'mc\',{\'customer_id\':0});');
+			this.menu.addButton('tools', 'Tools', 'M.ciniki_customers_main.tools.show(\'M.ciniki_customers_main.showMenu();\');');
+			this.customer.addButton('edit', 'Edit', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});');
+		} 
 
-		this.cb = cb;
 		if( args.search != null && args.search != '' ) {
 			this.searchCustomers(cb, args.search, args.type);
 		} else if( args.customer_id != null && args.customer_id > 0 ) {

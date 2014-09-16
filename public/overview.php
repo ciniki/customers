@@ -32,10 +32,11 @@ function ciniki_customers_overview($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
     $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.overview', 0); 
-    if( $rc['stat'] != 'ok' ) { 
+    if( $rc['stat'] != 'ok' && $rc['stat'] != 'restricted' ) { 
         return $rc;
     }   
 	$modules = $rc['modules'];
+	$perms = $rc['perms'];
 
 	$rsp = array('stat'=>'ok', 'recent'=>array());
 
@@ -84,7 +85,11 @@ function ciniki_customers_overview($ciniki) {
 		. "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND status = 10 "
-		. "ORDER BY last_updated DESC, last, first DESC ";
+		. "";
+	if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+		$strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+	}
+	$strsql .= "ORDER BY last_updated DESC, last, first DESC ";
 	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
 		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";	// is_numeric verified
 	} else {

@@ -46,7 +46,11 @@ function ciniki_customers__locationStats($ciniki, $business_id, $args) {
 				. ") "
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customers.status = 10 "
-			. "GROUP BY _country "
+			. "";
+		if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+			$strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+		}
+		$strsql .= "GROUP BY _country "
 			. "ORDER BY sorta, num DESC "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -95,6 +99,9 @@ function ciniki_customers__locationStats($ciniki, $business_id, $args) {
 				. ") "
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customers.status = 10 ";
+		if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+			$strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+		}
 		if( !isset($args['country']) || $args['country'] != 'No Address' ) {
 			$strsql .= "AND NOT ISNULL(ciniki_customer_addresses.province) ";
 		}
@@ -153,8 +160,11 @@ function ciniki_customers__locationStats($ciniki, $business_id, $args) {
 		$strsql .= "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 				. ") "
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND ciniki_customers.status = 10 "
-			. "AND NOT ISNULL(city) "
+			. "AND ciniki_customers.status = 10 ";
+		if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+			$strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+		}
+		$strsql .= "AND NOT ISNULL(city) "
 			. "GROUP BY country, province, _city "
 			. "ORDER BY country, province, city, num DESC "
 			. "";
