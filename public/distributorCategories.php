@@ -49,7 +49,7 @@ function ciniki_customers_distributorCategories($ciniki) {
 			. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customers.status = 10 "
+		. "AND ciniki_customers.status < 50 "
 		. "AND ciniki_customers.distributor_status = 10 "
 		. "GROUP BY tag_name "
 		. "ORDER BY tag_name "

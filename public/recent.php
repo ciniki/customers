@@ -62,7 +62,7 @@ function ciniki_customers_recent($ciniki) {
 //	}
 	$strsql .= "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND status = 10 "
+		. "AND status < 50 "
 		. "ORDER BY last_updated DESC, last, first DESC ";
 	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
 		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";	// is_numeric verified

@@ -69,7 +69,7 @@ function ciniki_customers_placeDetails($ciniki) {
 			$strsql .= "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. ") "
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND ciniki_customers.status = 10 ";
+			. "AND ciniki_customers.status < 50 ";
 		if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
 			$strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
 		}

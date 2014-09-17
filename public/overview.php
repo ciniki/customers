@@ -84,7 +84,7 @@ function ciniki_customers_overview($ciniki) {
 	$strsql = "SELECT id, display_name, status, type, company, eid "
 		. "FROM ciniki_customers "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND status = 10 "
+		. "AND status < 50 "
 		. "";
 	if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x04) > 0 ) {
 		$strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
