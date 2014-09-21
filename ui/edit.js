@@ -81,7 +81,7 @@ function ciniki_customers_edit() {
 				}},
 			'name':{'label':'Name', 'aside':'yes', 'fields':{
 				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
-				'eid':{'label':'Customer ID', 'type':'text', 'active':'no'},
+				'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
 				'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
 				'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
 				'middle':{'label':'Middle', 'type':'text'},
@@ -213,7 +213,7 @@ function ciniki_customers_edit() {
 				}},
 			'business':{'label':'Business', 'aside':'yes', 'fields':{
 				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
-				'eid':{'label':'Customer ID', 'type':'text', 'active':'no'},
+				'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
 				'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
 				'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
 				}},
@@ -428,7 +428,7 @@ function ciniki_customers_edit() {
 						M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp['cities']); 
 					});
 			}
-			if( i == 'first' || i == 'last' || i == 'company' ) {
+			if( i == 'eid' || i == 'first' || i == 'last' || i == 'company' ) {
 				var rsp = M.api.getJSONBgCb('ciniki.customers.customerSearch', 
 					{'business_id':M.curBusinessID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
 						M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp.customers); 
@@ -437,12 +437,17 @@ function ciniki_customers_edit() {
 			}
 		};
 		this.edit.liveSearchResultValue = function(s, f, i, j, d) {
-			if( f == 'first' || f == 'last' || f == 'company' ) { return d.customer.display_name; }
+			if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
+				if( d.customer.eid != null && d.customer.eid != '' ) {
+					return d.customer.eid + ' - ' + d.customer.display_name; 
+				}
+				return d.customer.display_name; 
+			}
 			if( f == 'city') { return d.city.name + ',' + d.city.province; }
 			return '';
 		};
 		this.edit.liveSearchResultRowFn = function(s, f, i, j, d) { 
-			if( f == 'first' || f == 'last' || f == 'company' ) { 
+			if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
 				return 'M.ciniki_customers_edit.showEdit(null,' + d.customer.id + ');';
 			}
 			if( f == 'city' ) {
@@ -1184,6 +1189,13 @@ function ciniki_customers_edit() {
 				});
 		} else {
 			this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15};
+			if( M.curBusiness.customers.settings != null 
+				&& M.curBusiness.customers.settings['defaults-edit-form'] != null
+				&& M.curBusiness.customers.settings['defaults-edit-form'] == 'business' ) {
+				this.edit.data.type = 2;
+			} else {
+				this.edit.data.type = 1;
+			}
 			if( this.edit.memberinfo == 'yes' ) {
 				this.edit.data.member_status = 10;
 				this.edit.data.membership_length = 20;

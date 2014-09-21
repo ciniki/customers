@@ -65,6 +65,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	$db_updated = 0;
 	$changelog_fields = array(
 		'display-name-business-format',
+		'defaults-edit-form',
 		'ui-labels-parent',
 		'ui-labels-parents',
 		'ui-labels-child',

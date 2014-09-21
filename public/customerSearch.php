@@ -25,7 +25,7 @@ function ciniki_customers_customerSearch($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field',
-			'validlist'=>array('name', 'first', 'last', 'company')), 
+			'validlist'=>array('eid', 'name', 'first', 'last', 'company')), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -57,7 +57,7 @@ function ciniki_customers_customerSearch($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, status, type, company, eid ";
+	$strsql = "SELECT DISTINCT ciniki_customers.id, eid, display_name, status, type, company, eid ";
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

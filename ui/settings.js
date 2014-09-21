@@ -45,6 +45,9 @@ function ciniki_customers_settings() {
 				'addTxt':'Add Price Point',
 				'addFn':'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',0);',
 			},
+			'defaults':{'label':'Defaults', 'visible':'yes', 'fields':{
+				'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Business'}},
+			}},
 			'ui_labels':{'label':'UI Labels', 'visible':'no', 'fields':{
 				'ui-labels-parent':{'label':'Parent Name', 'type':'text', 'hint':'Parent'},
 				'ui-labels-parents':{'label':'Parent Plural', 'type':'text', 'hint':'Parents'},
