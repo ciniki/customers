@@ -88,6 +88,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 	$strsql = "SELECT ciniki_customers.id, eid, parent_id, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, "
+		. "status, dealer_status, distributor_status, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
@@ -114,6 +115,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'eid', 'parent_id', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
+				'status', 'dealer_status', 'distributor_status', 
 				'company', 'department', 'title', 
 				'notes', 'birthdate', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
 				'reward_level', 'sales_total', 'start_date', 'webflags'),
