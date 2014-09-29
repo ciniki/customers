@@ -43,6 +43,16 @@ function ciniki_customers_searchFull($ciniki) {
     }   
 
 	//
+	// Load maps
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+	$rc = ciniki_customers_maps($ciniki);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$maps = $rc['maps'];
+
+	//
 	// Get the types of customers available for this business
 	//
 //	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
@@ -55,8 +65,13 @@ function ciniki_customers_searchFull($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
 	$date_format = ciniki_users_dateFormat($ciniki);
 
-	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, "
-		. "status, type, company, eid ";
+	$strsql = "SELECT DISTINCT ciniki_customers.id, "
+		. "display_name, "
+		. "status, "
+		. "status AS status_text, "
+		. "type, "
+		. "company, "
+		. "eid ";
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -88,8 +103,21 @@ function ciniki_customers_searchFull($ciniki) {
 		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";	// is_numeric verified
 	}
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQuery');
-	return ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer', array('stat'=>'ok', 'customers'=>array()));
 
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
+			'fields'=>array('id', 'display_name', 'status', 'status_text', 'type', 'company', 'eid'),
+			'maps'=>array('status_text'=>$maps['customer']['status']),
+			),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( !isset($rc['customers']) ) {
+		return array('stat'=>'ok', 'customers'=>array());
+	}
+
+	return array('stat'=>'ok', 'customers'=>$rc['customers']);
 }
 ?>

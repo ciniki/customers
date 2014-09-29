@@ -147,12 +147,15 @@ function ciniki_customers_main() {
 			'mc', 'medium', 'sectioned', 'ciniki.customers.main.search');
 		this.search.search_type = 'customers';
 		this.search.sections = {
-			'main':{'label':'', 'headerValues':null, 'num_cols':1, 'type':'simplegrid', 'sortable':'yes'},
-		}
+			'main':{'label':'', 'type':'simplegrid', 'num_cols':2, 
+				'headerValues':['Name', 'Status'], 
+				'dataMaps':['display_name', 'status_text'],
+				'sortable':'yes'},
+		};
 		this.search.noData = function() { return 'No ' + this.search_type + ' found'; }
 		this.search.sectionData = function(s) { return this.data; }
 		this.search.cellValue = function(s, i, j, d) { 
-			return d.customer.display_name;
+			return d.customer[this.sections[s].dataMaps[j]];
 		};
 		this.search.rowFn = function(s, i, d) { 
 			if( M.ciniki_customers_main.search.search_type == 'members' ) {
@@ -559,6 +562,16 @@ function ciniki_customers_main() {
 		this.customer.sections._tabs.tabs['children'].label = this.childrenlabel;
 		this.customer.sections.children.label = this.childrenlabel;
 		this.customer.sections.children.addTxt = 'Add ' + this.childlabel;
+
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x010000) > 0 ) {
+			this.search.sections.main.num_cols = 3;
+			this.search.sections.main.headerValues = ['ID', 'Name', 'Status'];
+			this.search.sections.main.dataMaps = ['eid', 'display_name', 'status_text'];
+		} else {
+			this.search.sections.main.num_cols = 2;
+			this.search.sections.main.headerValues = ['Name', 'Status'];
+			this.search.sections.main.dataMaps = ['display_name', 'status_text'];
+		}
 	
 		//
 		// Setup the buttons based on who is asking
