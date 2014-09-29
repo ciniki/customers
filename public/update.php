@@ -75,6 +75,7 @@ function ciniki_customers_update(&$ciniki) {
         return $rc;
     }   
 	$modules = $rc['modules'];
+	$perms = $rc['perms'];
 
 	//
 	// Get the current settings
@@ -85,6 +86,34 @@ function ciniki_customers_update(&$ciniki) {
 		return $rc;
 	}
 	$settings = $rc['settings'];
+
+	//
+	// Get the existing customer name
+	//
+	$strsql = "SELECT status, type, prefix, first, middle, last, suffix, "
+		. "display_name, display_name_format, company "
+		. "FROM ciniki_customers "
+		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( !isset($rc['customer']) ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1467', 'msg'=>'Customer does not exist'));
+	}
+	$customer = $rc['customer'];
+
+	//
+	// Only allow owners to change status of customer to/from suspend/delete
+	//
+	if( isset($args['status']) 
+		&& ($args['status'] >= 50 || $customer['status'] >= 50) ) {
+		if( !isset($perms) || ($perms&0x01) != 1 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2053', 'msg'=>'You do not have permissions to change the customer status.'));
+		}
+	}
 
 	//
 	// Check to make sure eid is unique if specified
@@ -162,23 +191,6 @@ function ciniki_customers_update(&$ciniki) {
 	if( isset($args['prefix']) || isset($args['first']) 
 		|| isset($args['middle']) || isset($args['last']) || isset($args['suffix']) 
 		|| isset($args['company']) || isset($args['type']) || isset($args['display_name_format']) ) {
-		//
-		// Get the existing customer name
-		//
-		$strsql = "SELECT type, prefix, first, middle, last, suffix, "
-			. "display_name, display_name_format, company "
-			. "FROM ciniki_customers "
-			. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
-		if( $rc['stat'] != 'ok' ) {
-			return $rc;
-		}
-		if( !isset($rc['customer']) ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1467', 'msg'=>'Customer does not exist'));
-		}
-		$customer = $rc['customer'];
 
 		if( isset($args['display_name_format']) ) {
 			$customer['display_name_format'] = $args['display_name_format'];
