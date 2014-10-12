@@ -19,7 +19,8 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	//
 	// Get customer information
 	//
-	$strsql = "SELECT ciniki_customers.id, ciniki_customers.first, ciniki_customers.last, "
+	$strsql = "SELECT ciniki_customers.id, "
+		. "ciniki_customers.first, ciniki_customers.last, ciniki_customers.display_name, "
 		. "ciniki_customer_emails.email, ciniki_customers.status, ciniki_customers.member_status, "
 		. "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
 		. "ciniki_customers.pricepoint_id "
