@@ -41,6 +41,7 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['email']) . "' "
 		. "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $oldpassword) . "') "
+		. "AND (flags&0x01) = 0x01 "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
@@ -48,11 +49,14 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (" . $rc['err']['code'] . ")");
 		return $rc;
 	}
-	if( !isset($rc['user']) || !is_array($rc['user']) ) {
+//	if( !isset($rc['user']) || !is_array($rc['user']) ) {
+	if( !isset($rc['rows']) || count($rc['rows']) < 1 ) {	
 		error_log("WEB: changePassword " . $ciniki['session']['customer']['email'] . " fail (751)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'751', 'msg'=>'Unable to update password.'));
 	}
-	$user = $rc['user'];
+//	}
+//	$user = $rc['user'];
+	$users = $rc['rows'];
 
 	//
 	// FIXME: Put a check for customer status < 40 (active customer)
@@ -80,11 +84,16 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	//
 	// Update the password, but only if the temporary one matches
 	//
-	$strsql = "UPDATE ciniki_customer_emails SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $newpassword) . "'), "
+	$strsql = "UPDATE ciniki_customer_emails "
+		. "SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $newpassword) . "'), "
 		. "temp_password = '', "
 		. "last_updated = UTC_TIMESTAMP() "
-		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
-		. "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $oldpassword) . "') ";
+//		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND email = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['email']) . "' "
+		. "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $oldpassword) . "') "
+		. "AND (flags&0x01) = 0x01 "
+		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {

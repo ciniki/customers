@@ -33,12 +33,14 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	//
 	// Check temp password
 	// Must change password within 2 hours (7200 seconds)
+	//
 	$strsql = "SELECT id, email "
 		. "FROM ciniki_customer_emails "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
 		. "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') "
 		. "AND (UNIX_TIMESTAMP(UTC_TIMESTAMP()) - UNIX_TIMESTAMP(temp_password_date)) < 7200 "
+		. "AND (flags&0x01) = 0x01 "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
@@ -79,11 +81,14 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	//
 	// Update the password, but only if the temporary one matches
 	//
-	$strsql = "UPDATE ciniki_customer_emails SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $newpassword) . "'), "
+	$strsql = "UPDATE ciniki_customer_emails "
+		. "SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $newpassword) . "'), "
 		. "temp_password = '', "
 		. "last_updated = UTC_TIMESTAMP() "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
-		. "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') ";
+		. "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') "
+		. "AND (flags&0x01) = 0x01 "
+		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {

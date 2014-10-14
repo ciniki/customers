@@ -32,12 +32,12 @@ function ciniki_customers_flags($ciniki, $modules) {
 		array('flag'=>array('bit'=>'14', 'name'=>'Sales Reps')),
 //		array('flag'=>array('bit'=>'15', 'name'=>'Relationships')),
 		array('flag'=>array('bit'=>'16', 'name'=>'Birthdate')),
-		// 0x00010000
+		// 0x010000
 		array('flag'=>array('bit'=>'17', 'name'=>'External ID')),
 		array('flag'=>array('bit'=>'18', 'name'=>'Tax Number')),
 		array('flag'=>array('bit'=>'19', 'name'=>'Tax Locations')),
 		array('flag'=>array('bit'=>'20', 'name'=>'Reward Levels')),
-		// 0x00100000
+		// 0x100000
 		array('flag'=>array('bit'=>'21', 'name'=>'Sales Total')),
 		array('flag'=>array('bit'=>'22', 'name'=>'Children')),
 		array('flag'=>array('bit'=>'23', 'name'=>'Customer Categories')),

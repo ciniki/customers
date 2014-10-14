@@ -213,6 +213,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
 			if( $city != '' ) {
 				$joined_address .= $city . "\n";
 			}
+			$customer['addresses'][$a]['address']['joined'] = $joined_address;
 			$details[] = array('detail'=>array('label'=>$label, 'value'=>$joined_address));
 		}
 	}

@@ -36,6 +36,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
 		. "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
 		. "AND ciniki_customers.status < 40 "
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
+		. "AND (flags&0x01) = 0x01 "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -63,11 +64,13 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
 	//
 	// Set the new temporary password
 	//
-	$strsql = "UPDATE ciniki_customer_emails SET temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "'), "
+	$strsql = "UPDATE ciniki_customer_emails "
+		. "SET temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "'), "
 		. "temp_password_date = UTC_TIMESTAMP(), "
 		. "last_updated = UTC_TIMESTAMP() "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+		. "AND (flags&0x01) = 0x01 "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');

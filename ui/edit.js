@@ -1670,22 +1670,22 @@ function ciniki_customers_edit() {
 			return false;
 		}
 		// Check if email address changed
-		if( e != this.email.fieldValue('emails', 'address', this.email.sections._email.fields.address) ) {
-			var rsp = M.api.getJSONCb('ciniki.customers.emailSearch', {'business_id':M.curBusinessID, 
-				'customer_id':M.ciniki_customers_edit.email.customer_id, 'email':e}, function(rsp) {
-					if( rsp.stat != 'ok' ) {
-						M.api.err(rsp);
-						return false;
-					} 
-					if( rsp.email != null ) {
-						alert("Email address already exists");
-						return false;
-					}
-					M.ciniki_customers_edit.saveEmailFinish();
-				});
-		} else {
+//		if( e != this.email.fieldValue('emails', 'address', this.email.sections._email.fields.address) ) {
+//			var rsp = M.api.getJSONCb('ciniki.customers.emailSearch', {'business_id':M.curBusinessID, 
+//				'customer_id':M.ciniki_customers_edit.email.customer_id, 'email':e}, function(rsp) {
+//					if( rsp.stat != 'ok' ) {
+//						M.api.err(rsp);
+//						return false;
+//					} 
+//					if( rsp.email != null ) {
+//						alert("Email address already exists");
+//						return false;
+//					}
+//					M.ciniki_customers_edit.saveEmailFinish();
+//				});
+//		} else {
 			this.saveEmailFinish();
-		}
+//		}
 	};
 
 	this.saveEmailFinish = function() {
