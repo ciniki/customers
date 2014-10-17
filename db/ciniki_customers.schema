@@ -31,7 +31,7 @@
 #
 #					0 - unknown
 #					10 - Active
-#					20 - On Hold
+#					40 - On Hold
 #					50 - Suspended (show in lists, quick searches, etc)
 #					60 - Deleted (Don't show by default, need to do advanced search to find
 #

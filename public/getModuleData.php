@@ -60,6 +60,16 @@ function ciniki_customers_getModuleData($ciniki) {
 	$date_format = ciniki_users_dateFormat($ciniki, 'php');
 
 	//
+	// Load maps
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+	$rc = ciniki_customers_maps($ciniki);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$maps = $rc['maps'];
+
+	//
 	// Get the settings for customer module
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
@@ -88,7 +98,9 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 	$strsql = "SELECT ciniki_customers.id, eid, parent_id, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, "
-		. "status, dealer_status, distributor_status, "
+		. "status, status AS status_text, "
+		. "dealer_status, dealer_status AS dealer_status_text, "
+		. "distributor_status, distributor_status AS distributor_status_text, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
@@ -115,10 +127,15 @@ function ciniki_customers_getModuleData($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'eid', 'parent_id', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
-				'status', 'dealer_status', 'distributor_status', 
+				'status', 'status_text',
+				'dealer_status', 'dealer_status_text',
+				'distributor_status', 'distributor_status_text',
 				'company', 'department', 'title', 
 				'notes', 'birthdate', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
 				'reward_level', 'sales_total', 'start_date', 'webflags'),
+			'maps'=>array('status_text'=>$maps['customer']['status'],
+				'dealer_status_text'=>$maps['customer']['dealer_status'],
+				'distributor_status_text'=>$maps['customer']['distributor_status']),
 			'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format))),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 'flags'=>'email_flags'),

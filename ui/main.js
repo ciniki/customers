@@ -508,6 +508,12 @@ function ciniki_customers_main() {
 			}
 			return d.Fn;
 		};
+		this.customer.rowStyle = function(s, i, d) {
+			if( s == 'details' && d.style != null ) {
+				return d.style;
+			}
+			return '';
+		};
 		this.customer.addClose('Back');
 	}
 
@@ -678,6 +684,15 @@ function ciniki_customers_main() {
 //		if( M.curBusiness.customers != null && M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label'] != null ) {
 //			this.customer.data.details.type = {'label':'Type', 'value':M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label']};
 //		}
+		if( rsp.customer.status_text != null ) {
+			this.customer.data.details.status_text = {'label':'Status', 'value':rsp.customer.status_text};
+			if( rsp.customer.status > 10 ) {
+				this.customer.data.details.status_text.style = 'background: #FFD0D0;';
+			}
+		}
+		if( rsp.customer.dealer_status_text != null ) {
+			this.customer.data.details.dealer_status_text = {'label':'Dealer Status', 'value':rsp.customer.dealer_status_text};
+		}
 		if( rsp.customer.type == 2 ) {
 			this.customer.data.details.company = {'label':'Name', 'value':rsp.customer.company};
 			this.customer.data.details.name = {'label':'Contact', 'value':rsp.customer.first + ' ' + rsp.customer.last};
