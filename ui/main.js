@@ -76,7 +76,6 @@ function ciniki_customers_main() {
 		};
 		this.menu.liveSearchResultValue = function(s, f, i, j, d) {
 			if( s == 'search' ) { 
-				console.log(j);
 				switch(j) {
 					case 0: return d.customer.display_name;
 					case 1: return d.customer.status_text;
