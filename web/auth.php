@@ -184,7 +184,8 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	$_SESSION['change_log_id'] = 'web.' . date('ymd.His');
 	$_SESSION['business_id'] = $ciniki['request']['business_id'];
 	$customer['price_flags'] = 0x01;
-	if( $customer['status'] < 40 ) {
+	if( $customer['status'] < 50 ) {
+		// they can see prices if not suspended/deleted
 		$customer['price_flags'] |= 0x10;
 	}
 	if( $customer['member_status'] == 10 ) {
@@ -198,7 +199,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	}
 	foreach($customers as $cid => $cust) {
 		$customers[$cid]['price_flags'] = 0x01;
-		if( $cust['status'] < 40 ) {
+		if( $cust['status'] < 50 ) {
 			$customers[$cid]['price_flags'] |= 0x10;
 		}
 		if( $cust['member_status'] == 10 ) {

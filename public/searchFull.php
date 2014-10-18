@@ -76,6 +76,9 @@ function ciniki_customers_searchFull($ciniki) {
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
+	if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
+		$strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+	}
 	if( isset($args['type']) ) {
 		if( $args['type'] == 'members' ) {
 			$strsql .= "AND ciniki_customers.member_status > 0 ";

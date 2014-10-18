@@ -81,6 +81,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
 		'ciniki.customers.placeDetails',
 		'ciniki.customers.getModuleData',
 		'ciniki.customers.searchQuick',
+		'ciniki.customers.searchFull',
 		);
 	if( in_array($method, $salesreps_methods) && ($perms&0x04) == 0x04 ) {
 		return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>$perms);

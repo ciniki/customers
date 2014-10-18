@@ -31,13 +31,15 @@ function ciniki_customers_main() {
 		//
 		this.menu = new M.panel('Customers',
 			'ciniki_customers_main', 'menu',
-			'mc', 'medium', 'sectioned', 'ciniki.customers.main.menu');
+			'mc', 'medium mediumflex', 'sectioned', 'ciniki.customers.main.menu');
 		this.menu.data = {};
 		this.menu.country = null;
 		this.menu.province = null;
 		this.menu.city = null;
 		this.menu.sections = {
-			'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1, 'hint':'customer name', 'noData':'No customers found',
+			'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':2, 
+				'hint':'customer name', 'noData':'No customers found',
+				'headerValues':['Customer', 'Status'],
 				},
 //			'tools':{'label':'Tools', 'list':{
 //				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.menu.show();\');'},
@@ -74,12 +76,21 @@ function ciniki_customers_main() {
 		};
 		this.menu.liveSearchResultValue = function(s, f, i, j, d) {
 			if( s == 'search' ) { 
-				return d.customer.display_name;
+				console.log(j);
+				switch(j) {
+					case 0: return d.customer.display_name;
+					case 1: return d.customer.status_text;
+				}
 			}
 			return '';
-		}
+		};
 		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
 			return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showMenu();\',\'' + d.customer.id + '\');'; 
+		};
+		this.menu.liveSearchResultRowStyle = function(s, f, i, d) {
+			if( M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
+				return 'background: ' + M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status];
+			}
 		};
 		this.menu.liveSearchSubmitFn = function(s, search_str) {
 			M.ciniki_customers_main.searchCustomers('M.ciniki_customers_main.showMenu();', search_str);
@@ -166,6 +177,11 @@ function ciniki_customers_main() {
 				return 'M.startApp(\'ciniki.customers.distributors\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
 			} else {
 				return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.searchCustomers(null, M.ciniki_customers_main.search.search_str);\',\'' + d.customer.id + '\');'; 
+			}
+		}
+		this.search.rowStyle = function(s, i, d) {
+			if( M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
+				return 'background: ' + M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status];
 			}
 		}
 		this.search.addClose('Back');
@@ -686,9 +702,12 @@ function ciniki_customers_main() {
 //		}
 		if( rsp.customer.status_text != null ) {
 			this.customer.data.details.status_text = {'label':'Status', 'value':rsp.customer.status_text};
-			if( rsp.customer.status > 10 ) {
-				this.customer.data.details.status_text.style = 'background: #FFD0D0;';
+			if( M.curBusiness.customers.settings['ui-colours-customer-status-' + rsp.customer.status] != null ) {
+				this.customer.data.details.status_text.style = 'background: ' + M.curBusiness.customers.settings['ui-colours-customer-status-' + rsp.customer.status];
 			}
+//			if( rsp.customer.status > 10 ) {
+//				this.customer.data.details.status_text.style = 'background: #FFD0D0;';
+//			}
 		}
 		if( rsp.customer.dealer_status_text != null ) {
 			this.customer.data.details.dealer_status_text = {'label':'Dealer Status', 'value':rsp.customer.dealer_status_text};
@@ -867,6 +886,22 @@ function ciniki_customers_main() {
 			pt_count++;
 		} else {
 			this.customer.sections._tabs.tabs['children'].visible = 'no';
+		}
+
+		if( rsp.customer.status > 10 
+			&& M.curBusiness.permissions.salesreps != null
+			&& M.curBusiness.permissions.owners == null
+			&& M.curBusiness.permissions.employees == null
+			) {
+			this.customer.sections.invoices.addTxt = '';
+			this.customer.sections.orders.addTxt = '';
+			this.customer.sections.carts.addTxt = '';
+			this.customer.sections.pos.addTxt = '';
+		} else {
+			this.customer.sections.invoices.addTxt = 'Add Invoice';
+			this.customer.sections.orders.addTxt = 'Add Order';
+			this.customer.sections.carts.addTxt = 'Add Cart';
+			this.customer.sections.pos.addTxt = 'Add';
 		}
 
 		if( rsp.customer.carts != null ) {

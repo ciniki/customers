@@ -48,7 +48,7 @@ function ciniki_customers_settings() {
 			'defaults':{'label':'Defaults', 'visible':'yes', 'fields':{
 				'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Business'}},
 			}},
-			'ui_labels':{'label':'UI Labels', 'visible':'no', 'fields':{
+			'ui_labels':{'label':'Labels', 'visible':'no', 'fields':{
 				'ui-labels-parent':{'label':'Parent Name', 'type':'text', 'hint':'Parent'},
 				'ui-labels-parents':{'label':'Parent Plural', 'type':'text', 'hint':'Parents'},
 				'ui-labels-child':{'label':'Child Name', 'type':'text', 'hint':'Child'},
@@ -61,6 +61,12 @@ function ciniki_customers_settings() {
 				'ui-labels-dealers':{'label':'Dealer Plural', 'type':'text', 'hint':'Dealers'},
 				'ui-labels-distributor':{'label':'Distributor Name', 'type':'text', 'hint':'Distributor'},
 				'ui-labels-distributors':{'label':'Distributor Plural', 'type':'text', 'hint':'Distributors'},
+			}},
+			'ui_colours':{'label':'Status Colours', 'visible':'yes', 'fields':{
+				'ui-colours-customer-status-10':{'label':'Active', 'type':'colour'},
+				'ui-colours-customer-status-40':{'label':'On Hold', 'type':'colour'},
+				'ui-colours-customer-status-50':{'label':'Suspended', 'type':'colour'},
+				'ui-colours-customer-status-60':{'label':'Deleted', 'type':'colour'},
 			}},
 //			'_types':{'label':'Customer Types', 'type':'gridform', 'rows':8, 'cols':3, 
 //				'header':['Name', 'Form', 'Type'],
@@ -97,7 +103,10 @@ function ciniki_customers_settings() {
 			return this.data; 
 		}
 		this.main.fieldValue = function(s, i, d) { 
-			if( this.data[i] == null ) { return ''; }
+			if( this.data[i] == null ) { 	
+				if( s == 'ui_colours' ) { return '#FFFFFF'; }
+				return ''; 
+			}
 			return this.data[i];
 		};
 		this.main.cellValue = function(s, i, j, d) {

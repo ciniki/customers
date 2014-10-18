@@ -45,6 +45,15 @@ function ciniki_customers_searchQuick($ciniki) {
     }   
 
 	//
+	// Load maps
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+	$rc = ciniki_customers_maps($ciniki);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$maps = $rc['maps'];
+	//
 	// Get the types of customers available for this business
 	//
 //	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
@@ -58,7 +67,9 @@ function ciniki_customers_searchQuick($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, status, type, company, eid ";
+	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, "
+		. "status, status AS status_text, "
+		. "type, company, eid ";
 //	if( count($types) > 0 ) {
 //		// If there are customer types defined, choose the right name for the customer
 //		// This is required here to be able to sort properly
@@ -111,7 +122,16 @@ function ciniki_customers_searchQuick($ciniki) {
 		$strsql .= "LIMIT 25 ";
 	}
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQuery');
-	return ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer', array('stat'=>'ok', 'customers'=>array()));
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
+			'fields'=>array('id', 'eid', 'display_name', 'status', 'status_text',
+				'type', 'company'),
+			'maps'=>array('status_text'=>$maps['customer']['status'])),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	return $rc;
 }
 ?>
