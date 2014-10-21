@@ -1043,6 +1043,11 @@ function ciniki_customers_edit() {
 				this.edit.forms.person._member_categories.active = 'yes';
 				this.edit.forms.business._member_categories.active = 'yes';
 			}
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x0113) == 0x02 // Member only
+				&& this.edit.customer_id > 0 ) {
+				this.edit.forms.person._buttons.buttons.delete.visible = 'yes';
+				this.edit.forms.business._buttons.buttons.delete.visible = 'yes';
+			}
 		} else if( this.edit.dealerinfo == 'yes' ) {
 			this.edit.forms.person._image.active = 'yes';
 			this.edit.forms.business._image.active = 'yes';
@@ -1558,8 +1563,13 @@ function ciniki_customers_edit() {
 							M.api.err(rsp);
 							return false;
 						}
-						M.ciniki_customers_edit.edit.destroy();
-						M.ciniki_customers_main.customer.close();
+						if( M.ciniki_customers_edit.edit.cb.match(/ciniki_customers_members/) ) {
+							M.ciniki_customers_edit.edit.destroy();
+							M.ciniki_customers_members.member.close();
+						} else {
+							M.ciniki_customers_edit.edit.destroy();
+							M.ciniki_customers_main.customer.close();
+						}
 					});
 			}
 		}
