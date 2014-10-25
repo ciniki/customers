@@ -605,6 +605,21 @@ function ciniki_customers_main() {
 			this.customer.addButton('edit', 'Edit', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});');
 		} 
 
+		//
+		// Setup the menu buttons to make this the home screen,
+		// if the main business menu had only one menu option available.
+		// This is used for sales reps when they login and can only see customers
+		//
+		this.menu.leftbuttons = {};
+		this.menu.rightbuttons = {};
+		if( M.ciniki_businesses_main.menu.autoopen == 'skipped' ) {
+			M.menuHome = this.menu;
+			this.menu.leftbuttons = M.ciniki_businesses_main.menu.leftbuttons;
+			this.menu.rightbuttons = M.ciniki_businesses_main.menu.rightbuttons;
+		} else {
+			this.menu.addClose('Back');
+		}
+
 		if( args.search != null && args.search != '' ) {
 			this.searchCustomers(cb, args.search, args.type);
 		} else if( args.customer_id != null && args.customer_id > 0 ) {
@@ -612,6 +627,8 @@ function ciniki_customers_main() {
 		} else {
 			this.showMenu(cb);
 		}
+
+
 	}
 
 	//
