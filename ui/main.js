@@ -599,7 +599,10 @@ function ciniki_customers_main() {
 		//
 		this.menu.rightbuttons = {};
 		this.customer.rightbuttons = {};
-		if( M.curBusiness.permissions.owners != null || M.curBusiness.permissions.employees != null ) {
+		if( M.curBusiness.permissions.owners != null 
+			|| M.curBusiness.permissions.employees != null 
+			|| M.userPerms&0x01 == 1	// sysadmins
+			) {
 			this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showMenu();\',\'mc\',{\'customer_id\':0});');
 			this.menu.addButton('tools', 'Tools', 'M.ciniki_customers_main.tools.show(\'M.ciniki_customers_main.showMenu();\');');
 			this.customer.addButton('edit', 'Edit', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});');
@@ -610,9 +613,9 @@ function ciniki_customers_main() {
 		// if the main business menu had only one menu option available.
 		// This is used for sales reps when they login and can only see customers
 		//
-		this.menu.leftbuttons = {};
-		this.menu.rightbuttons = {};
 		if( M.ciniki_businesses_main.menu.autoopen == 'skipped' ) {
+			this.menu.leftbuttons = {};
+			this.menu.rightbuttons = {};
 			M.menuHome = this.menu;
 			this.menu.leftbuttons = M.ciniki_businesses_main.menu.leftbuttons;
 			this.menu.rightbuttons = M.ciniki_businesses_main.menu.rightbuttons;
