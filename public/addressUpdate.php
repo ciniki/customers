@@ -49,7 +49,7 @@ function ciniki_customers_addressUpdate(&$ciniki) {
         'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'), 
         'latitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Latitude'), 
         'longitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Longitude'), 
-        'phones'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Phone'), 
+        'phone'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Phone'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
