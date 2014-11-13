@@ -138,6 +138,11 @@ function ciniki_customers_main() {
 			'mc', 'narrow', 'sectioned', 'ciniki.customers.main.tools');
 		this.tools.data = {};
 		this.tools.sections = {
+			'reports':{'label':'Reports', 'list':{
+				'onhold':{'label':'On Hold', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'40\'});'},
+				'suspended':{'label':'Suspended', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'50\'});'},
+				'deleted':{'label':'Deleted', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'60\'});'},
+				}},
 			'tools':{'label':'Cleanup', 'list':{
 				'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_main.tools.show();\');'},
 				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
