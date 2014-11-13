@@ -73,6 +73,7 @@ function ciniki_customers_objects($ciniki) {
 			'country'=>array(),
 			'latitude'=>array(),
 			'longitude'=>array(),
+			'phone'=>array(),
 			'notes'=>array(),
 			),
 		'history_table'=>'ciniki_customer_history',

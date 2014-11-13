@@ -22,6 +22,7 @@
 // country:			(optional) The country of the address.
 // latitude:		(optional) The latitude of the address.
 // longitude:		(optional) The longitude of the address.
+// phone:			(optional) The phone number to assist in deliveries.
 // flags:			(optional) The options for the address, specifing what the 
 //					address should be used for.
 //				
@@ -54,6 +55,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
         'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Country'), 
         'latitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Latitude'), 
         'longitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Longitude'), 
+        'phones'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Phone'), 
         'flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'notes'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Notes'), 

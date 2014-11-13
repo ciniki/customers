@@ -173,6 +173,7 @@ function ciniki_customers_edit() {
 				'province':{'label':'Province/State', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
+				'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
 				'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
@@ -306,6 +307,7 @@ function ciniki_customers_edit() {
 				'province':{'label':'Province/State', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
+				'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
 				'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
@@ -374,6 +376,7 @@ function ciniki_customers_edit() {
 					else if( d.address.city != '' ) { v += '  '; }
 					if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
 					if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
+					if( d.address.phone != '' ) { v += 'Phone: ' + d.address.phone + '<br/>'; }
 					return v;
 				}
 			}
@@ -491,6 +494,7 @@ function ciniki_customers_edit() {
 				'province':{'label':'Province/State', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
+				'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
 				'flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'_latlong_buttons':{'label':'', 'buttons':{

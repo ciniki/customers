@@ -1,0 +1,5 @@
+#
+#
+ALTER TABLE ciniki_customer_addresses ADD COLUMN phone varchar(50) not null AFTER longitude;
+ALTER TABLE ciniki_customer_addresses COMMENT='v1.06';
+

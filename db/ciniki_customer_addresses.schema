@@ -39,6 +39,8 @@
 # postal:			The postal or zip code for the address.
 # country:			The country the address is located in.
 #
+# phone:			The phone number used to assist in deliveries if required.
+#
 # latitude:			The latitude coordinate of the address.
 # longitude:		The longitude coordinate of the address.
 #					
@@ -59,6 +61,7 @@ create table ciniki_customer_addresses (
 	country varchar(50) not null,
 	latitude decimal(18,12) not null,
 	longitude decimal(18,12) not null,
+	phone varchar(50) not null,
 	notes varchar(6000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
@@ -67,4 +70,4 @@ create table ciniki_customer_addresses (
 	index (city, province, country),
 	index (postal),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

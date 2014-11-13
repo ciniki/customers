@@ -50,6 +50,7 @@
 //						0x02 - Billing
 //						0x04 - Mailing
 //						0x08 - Public
+// phone:				(optional) The phone number to assist in deliveries.
 // 
 // phone_label_1:		(optional) The label for the first phone number.
 // phone_number_1:		(optional) The number for the first phone number.
@@ -107,6 +108,7 @@ function ciniki_customers_add(&$ciniki) {
         'province'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Province'), 
         'postal'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Postal Code'), 
         'country'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Country'), 
+        'phone'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Phone'), 
         'latitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Latitude'), 
         'longitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Longitude'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
@@ -447,6 +449,7 @@ function ciniki_customers_add(&$ciniki) {
 				'country'=>$args['country'],
 				'latitude'=>$args['latitude'],
 				'longitude'=>$args['longitude'],
+				'phone'=>$args['phone'],
 				'notes'=>'',
 				), 0x04);
 		if( $rc['stat'] != 'ok' ) {
@@ -514,7 +517,7 @@ function ciniki_customers_add(&$ciniki) {
 	}
 
 	//
-	// Update the categories
+	// Update the member categories
 	//
 	if( isset($args['member_categories']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
@@ -528,7 +531,7 @@ function ciniki_customers_add(&$ciniki) {
 	}
 
 	//
-	// Update the categories
+	// Update the dealer categories
 	//
 	if( isset($args['dealer_categories']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
@@ -542,7 +545,7 @@ function ciniki_customers_add(&$ciniki) {
 	}
 
 	//
-	// Update the categories
+	// Update the distributor categories
 	//
 	if( isset($args['distributor_categories']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');

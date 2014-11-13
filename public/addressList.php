@@ -42,7 +42,7 @@ function ciniki_customers_addressList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
 	$strsql = "SELECT id, customer_id, "
-		. "address1, address2, city, province, postal, country, "
+		. "address1, address2, city, province, postal, country, phone, "
 		. "ELT(((flags&0x01))+1,'Off','On') AS shipping, "
 		. "ELT(((flags&0x02)>>1)+1,'Off','On') AS billing, "
 		. "ELT(((flags&0x04)>>2)+1,'Off','On') AS mailing "

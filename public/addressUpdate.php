@@ -49,6 +49,7 @@ function ciniki_customers_addressUpdate(&$ciniki) {
         'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'), 
         'latitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Latitude'), 
         'longitude'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Longitude'), 
+        'phones'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Phone'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
         'address_flags'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Flags'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
@@ -87,6 +88,7 @@ function ciniki_customers_addressUpdate(&$ciniki) {
 		. "ciniki_customer_addresses.country, "
 		. "ciniki_customer_addresses.latitude, "
 		. "ciniki_customer_addresses.longitude, "
+		. "ciniki_customer_addresses.phone, "
 		. "ciniki_customer_addresses.flags "
 		. "FROM ciniki_customers, ciniki_customer_addresses "
 		. "WHERE ciniki_customer_addresses.id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
@@ -109,6 +111,7 @@ function ciniki_customers_addressUpdate(&$ciniki) {
 	$old_address .= ($item['city']!=''?($old_address!=''?', ':'').$item['city']:'');
 	$old_address .= ($item['province']!=''?($old_address!=''?', ':'').$item['province']:'');
 	$old_address .= ($item['country']!=''?($old_address!=''?', ':'').$item['country']:'');
+	$old_address .= ($item['phone']!=''?($old_address!=''?', ':'').$item['phone']:'');
 
 	$new_address = '';
 	if( isset($args['address1']) ) {
@@ -135,6 +138,11 @@ function ciniki_customers_addressUpdate(&$ciniki) {
 		$new_address .= ($args['country']!=''?($new_address!=''?', ':'').$args['country']:'');
 	} else {
 		$new_address .= ($item['country']!=''?($new_address!=''?', ':'').$item['country']:'');
+	}
+	if( isset($args['phone']) ) {
+		$new_address .= ($args['phone']!=''?($new_address!=''?', ':'').$args['phone']:'');
+	} else {
+		$new_address .= ($item['phone']!=''?($new_address!=''?', ':'').$item['phone']:'');
 	}
 
 	//

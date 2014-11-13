@@ -390,6 +390,7 @@ function ciniki_customers_main() {
 					else { v += '<br/>'; }
 					if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
 					if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
+					if( d.address.phone != '' ) { v += 'Phone: ' + d.address.country + '<br/>'; }
 					return v;
 				}
 			}
@@ -775,6 +776,7 @@ function ciniki_customers_main() {
 				else if( d.address.city != '' ) { v += '  '; }
 				if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
 				if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
+				if( d.address.phone != '' ) { v += 'Phone: ' + d.address.country + '<br/>'; }
 				
 				this.customer.data.details['address-'+i] = {'label':l, 'value':v};
 			}

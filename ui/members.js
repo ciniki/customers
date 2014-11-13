@@ -237,6 +237,7 @@ function ciniki_customers_members() {
 					if( d.address.province != '' ) { v += ', ' + d.address.province + '<br/>'; }
 					if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
 					if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
+					if( d.address.phone != '' ) { v += 'Phone: ' + d.address.phone + '<br/>'; }
 					return v;
 				}
 			}
