@@ -494,7 +494,7 @@ function ciniki_customers_edit() {
 				'province':{'label':'Province/State', 'type':'text', 'size':'small'},
 				'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
 				'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
-				'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
+				'phone':{'label':'Phone', 'active':'no', 'type':'text', 'hint':'Helpful for deliveries'},
 				'flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'_latlong_buttons':{'label':'', 'buttons':{
@@ -717,6 +717,12 @@ function ciniki_customers_edit() {
 		} else {
 			this.edit.forms.person.account.fields.sales_total.active = 'no';
 			this.edit.forms.business.account.fields.sales_total.active = 'no';
+		}
+		// Display the address phone number
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x01000000) > 0 ) {
+			this.address.sections.address.fields.phone.active = 'yes';
+		} else {
+			this.address.sections.address.fields.phone.active = 'no';
 		}
 
 		if( M.curBusiness.customers != null && M.curBusiness.customers.settings != null ) {
