@@ -198,7 +198,7 @@ function ciniki_customers_getFull($ciniki) {
 	// Get the customer addresses
 	//
 	$strsql = "SELECT id, customer_id, "
-		. "address1, address2, city, province, postal, country, flags "
+		. "address1, address2, city, province, postal, country, flags, phone "
 		. "FROM ciniki_customer_addresses "
 		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -206,7 +206,7 @@ function ciniki_customers_getFull($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'addresses', 'fname'=>'id', 'name'=>'address',
 			'fields'=>array('id', 'customer_id', 'address1', 'address2', 'city', 'province', 'postal', 
-				'country', 'flags')),
+				'country', 'flags', 'phone')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
