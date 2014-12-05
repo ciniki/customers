@@ -11,7 +11,7 @@
 #
 # customer_id:			The customer the address is attached to.
 #
-# label:				The label for the phone number, determined by the business.
+# phone_label:			The label for the phone number, determined by the business.
 #					
 # phone_number:			The phone number for the customer.
 #

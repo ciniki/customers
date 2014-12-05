@@ -41,6 +41,8 @@
 #
 # phone:			The phone number used to assist in deliveries if required.
 #
+# notes:			The notes for the address.
+#
 # latitude:			The latitude coordinate of the address.
 # longitude:		The longitude coordinate of the address.
 #					
