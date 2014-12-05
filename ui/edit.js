@@ -721,8 +721,12 @@ function ciniki_customers_edit() {
 		// Display the address phone number
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x01000000) > 0 ) {
 			this.address.sections.address.fields.phone.active = 'yes';
+			this.edit.forms.person.address.fields.phone.active = 'yes';
+			this.edit.forms.business.address.fields.phone.active = 'yes';
 		} else {
 			this.address.sections.address.fields.phone.active = 'no';
+			this.edit.forms.person.address.fields.phone.active = 'no';
+			this.edit.forms.business.address.fields.phone.active = 'no';
 		}
 
 		if( M.curBusiness.customers != null && M.curBusiness.customers.settings != null ) {
