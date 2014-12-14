@@ -195,9 +195,6 @@ function ciniki_customers_members() {
 				}
 				return txt;
 			}
-			if( i == 'url' && this.data[i] != '' ) {
-				return '<a target="_blank" href="http://' + this.data[i] + '">' + this.data[i] + '</a>';
-			}
 			if( i == 'name' ) {
 				return this.data.first + ' ' + this.data.last;
 			}
@@ -217,7 +214,7 @@ function ciniki_customers_members() {
 				}
 			}
 			if( s == 'emails' ) {
-				return d.email.address + ((d.email.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
+				return M.linkEmail(d.email.address) + ((d.email.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
 			}
 			if( s == 'addresses' ) {
 				if( j == 0 ) { 
@@ -243,9 +240,9 @@ function ciniki_customers_members() {
 			}
 			if( s == 'links' ) {
 				if( d.link.name != '' ) {
-					return '<span class="maintext">' + d.link.name + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + d.link.url + '</span>';
+					return '<span class="maintext">' + d.link.name + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + M.hyperlink(d.link.url) + '</span>';
 				} else {
-					return d.link.url + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
+					return M.hyperlink(d.link.url) + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
 				}
 			}
 			if( s == 'images' && j == 0 ) { 

@@ -354,7 +354,7 @@ function ciniki_customers_edit() {
 			}
 			if( s == 'emails' ) {
 				if( j == 0 ) { 
-					return d.email.address + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.email.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
+					return M.linkEmail(d.email.address) + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.email.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
 				}
 			}
 			if( s == 'addresses' ) {
@@ -382,10 +382,9 @@ function ciniki_customers_edit() {
 			}
 			if( s == 'links' ) {
 				if( d.link.name != '' ) {
-					return '<span class="maintext">' + d.link.name + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + d.link.url + '</span>';
+					return '<span class="maintext">' + d.link.name + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + M.hyperlink(d.link.url) + '</span>';
 				} else {
-//					return d.link.url;
-					return d.link.url + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
+					return M.hyperlink(d.link.url) + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
 				}
 			}
 		};

@@ -369,7 +369,7 @@ function ciniki_customers_main() {
 				}
 			}
 			else if( s == 'emails' ) {
-				if( j == 0 ) { return d.email.address; }
+				if( j == 0 ) { return M.linkEmail(d.email.address); }
 			}
 			else if( s == 'addresses' ) {
 				if( j == 0 ) { 
@@ -396,9 +396,9 @@ function ciniki_customers_main() {
 			}
 			else if( s == 'links' ) {
 				if( d.link.name != '' ) {
-					return '<span class="maintext">' + d.link.name + '</span><span class="subtext">' + d.link.url + '</span>';
+					return '<span class="maintext">' + d.link.name + '</span><span class="subtext">' + M.hyperlink(d.link.url) + '</span>';
 				} else {
-					return d.link.url;
+					return M.hyperlink(d.link.url);
 				}
 			}
 			else if( s == 'services' ) {
@@ -756,7 +756,7 @@ function ciniki_customers_main() {
 		}
 		if( rsp.customer.emails != null ) {
 			for(i in rsp.customer.emails) {
-				this.customer.data.details['email-'+i] = {'label':'Email', 'value':rsp.customer.emails[i].email.address};
+				this.customer.data.details['email-'+i] = {'label':'Email', 'value':M.linkEmail(rsp.customer.emails[i].email.address)};
 			}
 		}
 		if( rsp.customer.addresses != null ) {
@@ -783,7 +783,8 @@ function ciniki_customers_main() {
 		}
 		if( rsp.customer.links != null ) {
 			for(i in rsp.customer.links) {
-				this.customer.data.details['link-'+i] = {'label':'Website', 'value':(rsp.customer.links[i].link.name!=''?rsp.customer.links[i].link.name + ' <span class="subdue">' + rsp.customer.links[i].link.url + '</span>':rsp.customer.links[i].link.url)};
+				var url = M.hyperlink(rsp.customer.links[i].link.url);
+				this.customer.data.details['link-'+i] = {'label':'Website', 'value':(rsp.customer.links[i].link.name!=''?rsp.customer.links[i].link.name + ' <span class="subdue">' + url + '</span>':url)};
 			}
 		}
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x400000) > 0 ) {
