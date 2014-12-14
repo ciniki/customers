@@ -39,9 +39,12 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
     }   
 	$modules = $rc['modules'];
 
-	require($ciniki['config']['core']['lib_dir'] . '/PHPWord/Classes/PHPWord.php');
+	require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Autoloader.php');
+	\PhpOffice\PhpWord\Autoloader::register();
+	require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/PhpWord.php');
 
-	$PHPWord = new PHPWord();
+//	$PHPWord = new PhpWord();
+	$PHPWord = new \PhpOffice\PhpWord\PhpWord();
 	$h1_size = 20;
 	if( isset($args['heading1_size']) && $args['heading1_size'] != '' ) {
 		$h1_size = $args['heading1_size'];
@@ -131,7 +134,8 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
 	header('Content-Disposition: attachment;filename="directory.docx"');
 	header('Cache-Control: max-age=0');
 
-	$objWriter = PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+//	$objWriter = PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+	$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($PHPWord, 'Word2007');
 	$objWriter->save('php://output');
 
 	return array('stat'=>'exit');
