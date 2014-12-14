@@ -90,8 +90,8 @@ function ciniki_customers_getModuleData($ciniki) {
 	$relationship_types = $rc['types'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
-	$date_format = ciniki_users_dateFormat($ciniki, 'php');
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+//	$date_format = ciniki_users_dateFormat($ciniki, 'php');
 
 	//
 	// Get the customer details and emails

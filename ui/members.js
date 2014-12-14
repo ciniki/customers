@@ -13,6 +13,7 @@ function ciniki_customers_members() {
 		this.menu.data = {};
 		this.menu.sections = {
 			'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1, 
+				'cellClasses':['multiline','multiline'],
 				'hint':'name, company or email', 'noData':'No members found',
 				},
 			'members':{'label':'', 'type':'simplegrid', 'num_cols':1,
@@ -36,7 +37,13 @@ function ciniki_customers_members() {
 		};
 		this.menu.liveSearchResultValue = function(s, f, i, j, d) {
 			if( s == 'search' ) { 
-				return d.customer.display_name;
+				switch(j) {
+					case 0: return d.customer.display_name;
+					case 1: if( d.customer.membership_type == '20' ) {
+							return d.customer.membership_type_text;
+						} 
+						return '<span class="maintext">' + d.customer.membership_type_text + '</span><span class="subtext">Paid: ' + d.customer.member_lastpaid + '</span>';
+				}
 			}
 			return '';
 		}
@@ -45,11 +52,13 @@ function ciniki_customers_members() {
 		};
 		this.menu.cellValue = function(s, i, j, d) {
 			if( s == 'members' && j == 0 ) {
-				return d.member.display_name;
-//				if( d.member.company != null && d.member.company != '' ) {
-//					return '<span class="maintext">' + d.member.first + ' ' + d.member.last + '</span><span class="subtext">' + d.member.company + '</span>';
-//				} 
-//				return '<span class="maintext">' + d.member.display_name + '</span>';
+				switch(j) {
+					case 0: return d.member.display_name;
+					case 1: if( d.member.membership_type == '20' ) {
+							return d.member.membership_type_text;
+						} 
+						return '<span class="maintext">' + d.member.membership_type_text + '</span><span class="subtext">Paid: ' + d.member.member_lastpaid + '</span>';
+				}
 			}
 			else if( s == 'categories' && j == 0 ) {
 				return d.category.name + '<span class="count">' + d.category.num_members + '</span>';
@@ -84,12 +93,12 @@ function ciniki_customers_members() {
 			};
 		this.list.sectionData = function(s) { return this.data[s]; }
 		this.list.cellValue = function(s, i, j, d) {
-			if( j == 0 ) {
-				return d.member.display_name;
-//				if( d.member.company != null && d.member.company != '' ) {
-//					return '<span class="maintext">' + d.member.first + ' ' + d.member.last + '</span><span class="subtext">' + d.member.company + '</span>';
-//				} 
-//				return '<span class="maintext">' + d.member.display_name + '</span>';
+			switch(j) {
+				case 0: return d.member.display_name;
+				case 1: if( d.member.membership_type == '20' ) {
+						return d.member.membership_type_text;
+					} 
+					return '<span class="maintext">' + d.member.membership_type_text + '</span><span class="subtext">Paid: ' + d.member.member_lastpaid + '</span>';
 			}
 		};
 		this.list.rowFn = function(s, i, d) { 
@@ -354,9 +363,17 @@ function ciniki_customers_members() {
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
 			this.member.sections.membership.list.member_lastpaid.visible = 'yes';
 			this.member.sections.membership.list.type.visible = 'yes';
+			this.menu.sections.search.livesearchcols = 2;
+			this.menu.sections.members.num_cols = 2;
+			this.list.sections.members.num_cols = 2;
+			this.list.sections.members.headerValues = ['Member', 'Membership'];
 		} else {
 			this.member.sections.membership.list.member_lastpaid.visible = 'no';
 			this.member.sections.membership.list.type.visible = 'no';
+			this.menu.sections.search.livesearchcols = 1;
+			this.menu.sections.members.num_cols = 1;
+			this.list.sections.members.num_cols = 1;
+			this.list.sections.members.headerValues = null;
 		}
 
 		if( args.customer_id != null && args.customer_id > 0 ) {

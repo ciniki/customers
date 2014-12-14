@@ -30,6 +30,18 @@ function ciniki_customers_maps($ciniki) {
 			'10'=>'Distributor',
 			'60'=>'Suspended Distributor',
 			),
+		'membership_length'=>array(
+			'0'=>'',
+			'10'=>'Monthly',
+			'20'=>'Yearly',
+			'60'=>'Lifetime',
+			),
+		'membership_type'=>array(
+			'0'=>'',
+			'10'=>'Regular',
+			'20'=>'Complimentary',
+			'60'=>'Reciprocal',
+			),
 		);
 	
 	return array('stat'=>'ok', 'maps'=>$maps);

@@ -62,7 +62,9 @@ function ciniki_customers_memberList($ciniki) {
 			. "ciniki_customers.display_name, "
 			. "ciniki_customers.member_status AS member_status_text, "
 			. "ciniki_customers.member_lastpaid, "
+			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
 			. "ciniki_customers.membership_length AS membership_length_text, "
+			. "ciniki_customers.membership_type, "
 			. "ciniki_customers.membership_type AS membership_type_text, "
 			. "ciniki_customers.company "
 			. "FROM ciniki_customer_tags, ciniki_customers "
@@ -80,7 +82,9 @@ function ciniki_customers_memberList($ciniki) {
 			. "ciniki_customers.display_name, "
 			. "ciniki_customers.member_status AS member_status_text, "
 			. "ciniki_customers.member_lastpaid, "
+			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
 			. "ciniki_customers.membership_length AS membership_length_text, "
+			. "ciniki_customers.membership_type, "
 			. "ciniki_customers.membership_type AS membership_type_text, "
 			. "ciniki_customers.company "
 			. "FROM ciniki_customers "
@@ -100,7 +104,9 @@ function ciniki_customers_memberList($ciniki) {
 			. "ciniki_customers.display_name, "
 			. "ciniki_customers.member_status AS member_status_text, "
 			. "ciniki_customers.member_lastpaid, "
+			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
 			. "ciniki_customers.membership_length AS membership_length_text, "
+			. "ciniki_customers.membership_type, "
 			. "ciniki_customers.membership_type AS membership_type_text, "
 			. "ciniki_customers.company "
 			. "FROM ciniki_customers "
@@ -111,8 +117,9 @@ function ciniki_customers_memberList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.artclub', array(
 		array('container'=>'members', 'fname'=>'id', 'name'=>'member',
-			'fields'=>array('id', 'first', 'last', 'display_name', 'company',
-				'member_status_text', 'member_lastpaid', 'membership_length_text', 'membership_type_text'),
+			'fields'=>array('id', 'first', 'last', 'display_name', 'company', 
+				'member_status_text', 'member_lastpaid', 'member_lastpaid_age', 'membership_length_text', 
+				'membership_type', 'membership_type_text'),
 			'maps'=>array(
 				'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
 				'membership_length_text'=>array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),

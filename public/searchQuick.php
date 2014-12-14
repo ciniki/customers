@@ -44,6 +44,9 @@ function ciniki_customers_searchQuick($ciniki) {
         return $rc;
     }   
 
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+	$date_format = ciniki_users_dateFormat($ciniki);
+
 	//
 	// Load maps
 	//
@@ -69,7 +72,14 @@ function ciniki_customers_searchQuick($ciniki) {
 	//
 	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, "
 		. "status, status AS status_text, "
-		. "type, company, eid ";
+		. "type, company, eid, "
+		. "DATE_FORMAT(member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS member_lastpaid, "
+		. "member_status, "
+		. "membership_type, "
+		. "membership_type AS membership_type_text, "
+		. "membership_length, "
+		. "membership_length AS membership_length_text "
+		. "";
 //	if( count($types) > 0 ) {
 //		// If there are customer types defined, choose the right name for the customer
 //		// This is required here to be able to sort properly
@@ -126,8 +136,12 @@ function ciniki_customers_searchQuick($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'eid', 'display_name', 'status', 'status_text',
-				'type', 'company'),
-			'maps'=>array('status_text'=>$maps['customer']['status'])),
+				'type', 'company', 'member_lastpaid', 'member_status', 
+				'membership_type', 'membership_type_text', 'membership_length', 'membership_length_text'),
+			'maps'=>array('status_text'=>$maps['customer']['status'],
+				'membership_type_text'=>$maps['customer']['membership_type'],
+				'member_length_text'=>$maps['customer']['membership_length'],
+				)),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
