@@ -16,6 +16,7 @@ function ciniki_customers_members() {
 				'cellClasses':['multiline','multiline'],
 				'hint':'name, company or email', 'noData':'No members found',
 				},
+			'seasons':{'label':'Seasons', 'visible':'no', 'list':{}},
 			'members':{'label':'', 'type':'simplegrid', 'num_cols':1,
 				'headerValues':null,
 				'cellClasses':['multiline', 'multiline'],
@@ -25,7 +26,10 @@ function ciniki_customers_members() {
 				},
 			'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1},
 			};
-		this.menu.sectionData = function(s) { return this.data[s]; }
+		this.menu.sectionData = function(s) { 
+			if( s == 'seasons' ) { return this.sections[s].list; }
+			return this.data[s]; 
+		}
 		this.menu.liveSearchCb = function(s, i, value) {
 			if( s == 'search' && value != '' ) {
 				M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':'10'}, 
@@ -50,6 +54,12 @@ function ciniki_customers_members() {
 		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
 			return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showMenu();\',\'' + d.customer.id + '\');'; 
 		};
+		this.menu.listValue = function(s, i, d) {
+			return d.label;
+		}
+		this.menu.listFn = function(s, i, d) {
+			return d.fn;
+		}
 		this.menu.cellValue = function(s, i, j, d) {
 			if( s == 'members' && j == 0 ) {
 				switch(j) {
@@ -106,6 +116,41 @@ function ciniki_customers_members() {
 		};
 		this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showList();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\',\'category\':M.ciniki_customers_members.list.category});');
 		this.list.addClose('Back');
+
+		//
+		// Display the information and stats for a season
+		//
+		this.season = new M.panel('Season',
+			'ciniki_customers_members', 'season',
+			'mc', 'medium mediumflex', 'sectioned', 'ciniki.customers.members.season');
+		this.season.data = {};
+		this.season.sections = {
+			'tabs':{'label':'', 'selected':'unattached', 'type':'paneltabs', 'tabs':{
+				'unattached':{'label':'Unpaid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'unattached\');'},
+				'regular':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'regular\');'},
+				'complimentary':{'label':'Complementary', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'complimentary\');'},
+				'reciprocal':{'label':'Reciprocal', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'reciprocal\');'},
+				}},
+			'members':{'label':'', 'type':'simplegrid', 'num_cols':4,
+				'headerValues':['Member', 'Type', 'Status', 'Date Paid'],
+				'cellClasses':['', '', ''],
+				'noData':'No members',
+				},
+			};
+		this.season.sectionData = function(s) { return this.data[s]; }
+		this.season.cellValue = function(s, i, j, d) {
+			switch(j) {
+				case 0: return d.member.display_name;
+				case 1: return d.member.membership_type_text;
+				case 2: return d.member.member_season_status_text;
+				case 3: return d.member.date_paid;
+			}
+		};
+		this.season.rowFn = function(s, i, d) { 
+//			return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showSeason();\',\'' + d.member.id + '\');'; 
+			return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'customer_id\':\'' + d.member.id + '\',\'member\':\'yes\'});';
+		};
+		this.season.addClose('Back');
 
 		//
 		// The member panel will show the information for a member/sponsor/organizer
@@ -376,6 +421,26 @@ function ciniki_customers_members() {
 			this.list.sections.members.headerValues = null;
 		}
 
+		// Season Memberships
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
+			&& M.curBusiness.modules['ciniki.customers'].settings != null
+			&& M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+			) {
+			this.menu.sections.seasons.visible = 'yes';
+			this.menu.sections.seasons.list = {};
+			for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
+				var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
+				if( season.open == 'yes' ) {
+					this.menu.sections.seasons.list['season-' + season.id] = {
+						'label':season.name, 
+						'fn':'M.ciniki_customers_members.showSeason(\'M.ciniki_customers_members.showMenu()\',\'' + season.id + '\',\'unattached\');'
+						};
+				}
+			}
+		} else {
+			this.menu.sections.seasons.visible = 'no';
+		}
+
 		if( args.customer_id != null && args.customer_id > 0 ) {
 			this.showMember(cb, args.customer_id);
 		} else {
@@ -395,6 +460,7 @@ function ciniki_customers_members() {
 					}
 					var p = M.ciniki_customers_members.menu;
 					p.data = {'categories':rsp.categories};
+					p.sections.search.visible = 'yes';
 					p.refresh();
 					p.show(cb);
 				});	
@@ -439,12 +505,35 @@ function ciniki_customers_members() {
 			});	
 	};
 
+	this.showSeason = function(cb, sid, list, name) {
+		if( sid != null ) { this.season.season_id = sid }
+		if( list != null ) { this.season.sections.tabs.selected = list; }
+		if( name != null ) { this.season.title = unescape(name); }
+		// Get the list of existing customers
+		M.api.getJSONCb('ciniki.customers.seasonInfo', 
+			{'business_id':M.curBusinessID, 'season_id':this.season.season_id, 
+				'list':this.season.sections.tabs.selected}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					var p = M.ciniki_customers_members.season;
+					p.sections.tabs.tabs.unattached.label = 'Unpaid (' + rsp.unattached + ')';
+					p.sections.tabs.tabs.regular.label = 'Regular (' + rsp.regular + ')';
+					p.sections.tabs.tabs.complimentary.label = 'Complimentary (' + rsp.complimentary + ')';
+					p.sections.tabs.tabs.reciprocal.label = 'Reciprocal (' + rsp.reciprocal + ')';
+					p.data = rsp;
+					p.refresh();
+					p.show(cb);
+			});	
+	};
+
 	this.showMember = function(cb, cid) {
 		if( cid != null ) { this.member.customer_id = cid; }
 		var rsp = M.api.getJSONCb('ciniki.customers.get',
 			{'business_id':M.curBusinessID, 'customer_id':this.member.customer_id, 
 				'member_categories':'yes', 'phones':'yes', 'emails':'yes', 'addresses':'yes', 
-				'links':'yes', 'images':'yes'}, function(rsp) {
+				'links':'yes', 'images':'yes', 'seasons':'yes'}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;

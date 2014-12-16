@@ -393,6 +393,37 @@ function ciniki_customers_getModuleData($ciniki) {
 		}
 	}
 
+	//
+	// Get any membership seasons
+	//
+	if( ($modules['ciniki.customers']['flags']&0x02000000) > 0 ) {
+		$strsql = "SELECT ciniki_customer_seasons.id, "
+			. "ciniki_customer_seasons.name, "
+			. "ciniki_customer_seasons.flags, "
+			. "IFNULL(ciniki_customer_season_members.id, 0) AS season_member_id, "
+			. "IFNULL(ciniki_customer_season_members.status, '') AS status, "
+			. "IFNULL(ciniki_customer_season_members.date_paid, '') AS date_paid "
+			. "FROM ciniki_customer_season_members, ciniki_customer_seasons "
+			. "WHERE ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND (ciniki_customer_seasons.flags&0x02) > 0 "
+			. "AND ciniki_customer_seasons.id = ciniki_customer_season_members.season_id "
+			. "AND ciniki_customer_season_members.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY ciniki_customer_seasons.start_date DESC "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'seasons', 'fname'=>'id', 'name'=>'season',
+				'fields'=>array('id', 'name', 'flags', 'season_member_id', 'status', 'date_paid')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['seasons']) ) {	
+			$customer['seasons'] = $rc['seasons'];
+		}
+	}
+
+
 	// 
 	// Get customer subscriptions if module is enabled
 	//

@@ -19,6 +19,10 @@ function ciniki_customers_maps($ciniki) {
 			'50'=>'Suspended',
 			'60'=>'Deleted',
 			),
+		'member_status'=>array(
+			'10'=>'Active',
+			'60'=>'Suspended Member',
+			),
 		'dealer_status'=>array(
 			'0'=>'',
 			'5'=>'Prospect',
@@ -41,6 +45,12 @@ function ciniki_customers_maps($ciniki) {
 			'10'=>'Regular',
 			'20'=>'Complimentary',
 			'60'=>'Reciprocal',
+			),
+		);
+	$maps['season_member'] = array(
+		'status'=>array(
+			'10'=>'Active',
+			'60'=>'Inactive',
 			),
 		);
 	

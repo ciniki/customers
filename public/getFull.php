@@ -84,6 +84,7 @@ function ciniki_customers_getFull($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
 	$date_format = ciniki_users_dateFormat($ciniki, 'php');
+	$mysql_date_format = ciniki_users_dateFormat($ciniki);
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 //	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
@@ -99,7 +100,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "display_name, display_name_format, company, department, title, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
-		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
+		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "'), '') AS birthdate, "
 		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, start_date, "
 		. "notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
@@ -280,6 +281,40 @@ function ciniki_customers_getFull($ciniki) {
 					$customer['relationships'][$rid]['relationship']['type'] = -$relationship['type'];
 					$customer['relationships'][$rid]['relationship']['related_id'] = $relationship['customer_id'];
 				}
+			}
+		}
+	}
+
+	//
+	// Get the membership seasons
+	//
+	if( ($modules['ciniki.customers']['flags']&0x02000000) > 0 ) {
+		$strsql = "SELECT ciniki_customer_seasons.id, "
+			. "ciniki_customer_seasons.name, "
+			. "ciniki_customer_seasons.flags, "
+			. "IFNULL(ciniki_customer_season_members.id, 0) AS season_member_id, "
+			. "IFNULL(ciniki_customer_season_members.status, '') AS status, "
+			. "DATE_FORMAT(IFNULL(ciniki_customer_season_members.date_paid, ''), '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS date_paid "
+			. "FROM ciniki_customer_season_members, ciniki_customer_seasons "
+			. "WHERE ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND (ciniki_customer_seasons.flags&0x02) > 0 "
+			. "AND ciniki_customer_seasons.id = ciniki_customer_season_members.season_id "
+			. "AND ciniki_customer_season_members.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY ciniki_customer_seasons.start_date DESC "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'seasons', 'fname'=>'id',
+				'fields'=>array('id', 'name', 'flags', 'season_member_id', 'status', 'date_paid')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['seasons']) ) { 
+			foreach($rc['seasons'] as $season_id => $season) {
+				$customer['season-' . $season_id . '-status'] = $season['status'];
+				$customer['season-' . $season_id . '-date_paid'] = $season['date_paid'];
 			}
 		}
 	}

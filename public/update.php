@@ -412,6 +412,18 @@ function ciniki_customers_update(&$ciniki) {
 	}
 
 	//
+	// Update the season membership
+	//
+	if( ($modules['ciniki.customers']['flags']&0x02000000) > 0 ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateSeasons');
+		$rc = ciniki_customers_customerUpdateSeasons($ciniki, $args['business_id'], $args['customer_id']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
+	}
+
+	//
 	// Commit the database changes
 	//
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');

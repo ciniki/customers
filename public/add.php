@@ -165,6 +165,7 @@ function ciniki_customers_add(&$ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+	$modules = $rc['modules'];
 
 	//
 	// Get the current settings
@@ -566,6 +567,18 @@ function ciniki_customers_add(&$ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
 		return $rc;
+	}
+
+	//
+	// Update the season membership
+	//
+	if( ($modules['ciniki.customers']['flags']&0x02000000) > 0 ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateSeasons');
+		$rc = ciniki_customers_customerUpdateSeasons($ciniki, $args['business_id'], $customer_id);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+			return $rc;
+		}
 	}
 
 	//

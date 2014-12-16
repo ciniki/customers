@@ -19,6 +19,10 @@ function ciniki_customers_settings() {
 	this.pricepointFlags = {
 		'1':{'name':'Flexible'},
 		};
+	this.seasonFlags = {
+		'1':{'name':'Current'},
+		'2':{'name':'Active'},
+		};
 
 	this.init = function() {
 		//
@@ -62,6 +66,11 @@ function ciniki_customers_settings() {
 				'ui-labels-distributor':{'label':'Distributor Name', 'type':'text', 'hint':'Distributor'},
 				'ui-labels-distributors':{'label':'Distributor Plural', 'type':'text', 'hint':'Distributors'},
 			}},
+			'seasons':{'label':'Membership Seasons', 'visible':'no', 'type':'simplegrid',
+				'num_cols':1,
+				'addTxt':'Add Seasons',
+				'addFn':'M.ciniki_customers_settings.editSeason(\'M.ciniki_customers_settings.showMain();\',0);',
+			},
 			'ui_colours':{'label':'Status Colours', 'visible':'yes', 'fields':{
 				'ui-colours-customer-status-10':{'label':'Active', 'type':'colour'},
 				'ui-colours-customer-status-40':{'label':'On Hold', 'type':'colour'},
@@ -100,6 +109,7 @@ function ciniki_customers_settings() {
 		};
 		this.main.sectionData = function(s) { 
 			if( s == 'pricepoints' ) { return this.data[s]; }
+			if( s == 'seasons' ) { return this.data[s]; }
 			return this.data; 
 		}
 		this.main.fieldValue = function(s, i, d) { 
@@ -110,15 +120,27 @@ function ciniki_customers_settings() {
 			return this.data[i];
 		};
 		this.main.cellValue = function(s, i, j, d) {
-			if( d.pricepoint.code != null && d.pricepoint.code != '' ) { return d.pricepoint.code + ' - ' + d.pricepoint.name; }
-			return d.pricepoint.name;
+			if( s == 'pricepoints' ) {
+				if( d.pricepoint.code != null && d.pricepoint.code != '' ) { return d.pricepoint.code + ' - ' + d.pricepoint.name; }
+				return d.pricepoint.name;
+			} 
+			else if( s == 'seasons' ) {
+				return d.season.name + ((d.season.flags&0x02)>0?' <span class="subdue">[Active]</span>':'');
+			}
 		};
 		this.main.rowFn = function(s, i, d) {
-			return 'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',\'' + d.pricepoint.id + '\');';
+			if( s == 'pricepoints' ) {
+				return 'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',\'' + d.pricepoint.id + '\');';
+			} else if( s == 'seasons' ) {
+				return 'M.ciniki_customers_settings.editSeason(\'M.ciniki_customers_settings.showMain();\',\'' + d.season.id + '\');';
+			}
 		}
 		this.main.fieldHistoryArgs = function(s, i) {
 			if( s == 'pricepoints' ) {
 				return {'method':'ciniki.customers.pricepointHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
+			}
+			if( s == 'seasons' ) {
+				return {'method':'ciniki.customers.seasonHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
 			}
 			return {'method':'ciniki.customers.getSettingHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
 		};
@@ -154,6 +176,36 @@ function ciniki_customers_settings() {
 		};
 		this.pricepoint.addButton('save', 'Save', 'M.ciniki_customers_settings.savePricePoint();');
 		this.pricepoint.addClose('Cancel');
+
+		//
+		// The panel to add/edit a season
+		//
+		this.season = new M.panel('Membership Season',
+			'ciniki_customers_settings', 'season',
+			'mc', 'medium', 'sectioned', 'ciniki.customers.settings.season');
+		this.season.pricepoint_id = 0;
+		this.season.sections = {
+			'season':{'label':'Season', 'fields':{
+				'name':{'label':'Name', 'type':'text'},
+				'start_date':{'label':'Start Date', 'type':'date'},
+				'end_date':{'label':'End Date', 'type':'date'},
+				'flags':{'label':'Options', 'type':'flags', 'flags':this.seasonFlags},
+				}},
+			'_buttons':{'label':'', 'buttons':{
+				'save':{'label':'Save', 'fn':'M.ciniki_customers_settings.saveSeason();'},
+				'delete':{'label':'Delete', 'fn':'M.ciniki_customers_settings.deleteSeason();'},
+				}},
+		}
+		this.season.fieldValue = function(s, i, d) { 
+			if( this.data[i] == null ) { return ''; }
+			return this.data[i];
+		};
+		this.season.fieldHistoryArgs = function(s, i) {
+			return {'method':'ciniki.customers.seasonHistory', 
+				'args':{'business_id':M.curBusinessID, 'field':i}};
+		};
+		this.season.addButton('save', 'Save', 'M.ciniki_customers_settings.saveSeason();');
+		this.season.addClose('Cancel');
 	}
 
 	//
@@ -178,6 +230,12 @@ function ciniki_customers_settings() {
 			M.ciniki_customers_settings.main.sections.pricepoints.visible = 'yes';
 		} else {
 			M.ciniki_customers_settings.main.sections.pricepoints.visible = 'no';
+		}
+		
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 ) {
+			M.ciniki_customers_settings.main.sections.seasons.visible = 'yes';
+		} else {
+			M.ciniki_customers_settings.main.sections.seasons.visible = 'no';
 		}
 		
 		M.ciniki_customers_settings.main.sections.ui_labels.visible = 'no';
@@ -230,6 +288,9 @@ function ciniki_customers_settings() {
 			p.data = rsp.settings;
 			if( rsp.pricepoints != null ) {
 				p.data.pricepoints = rsp.pricepoints;
+			}
+			if( rsp.seasons != null ) {
+				p.data.seasons = rsp.seasons;
 			}
 			p.refresh();
 			p.show(cb);
@@ -314,6 +375,72 @@ function ciniki_customers_settings() {
 						return false;
 					}
 					M.ciniki_customers_settings.pricepoint.close();	
+				});
+		}
+	};
+
+	this.editSeason = function(cb, pid) {
+		if( pid != null ) { this.season.season_id = pid; }
+		if( this.season.season_id > 0 ) {
+			this.season.sections._buttons.buttons.delete.visible = 'yes';
+			M.api.getJSONCb('ciniki.customers.seasonGet', {'business_id':M.curBusinessID, 
+				'season_id':this.season.season_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					var p = M.ciniki_customers_settings.season;
+					p.data = rsp.season;
+					p.refresh();
+					p.show(cb);
+				});
+		} else {
+			this.season.sections._buttons.buttons.delete.visible = 'no';
+			this.season.data = {};
+			this.season.refresh();
+			this.season.show(cb);
+		}
+	};
+
+	this.saveSeason = function() {
+		if( this.season.season_id > 0 ) {
+			var c = this.season.serializeForm('no');
+			if( c != '' ) {
+				M.api.postJSONCb('ciniki.customers.seasonUpdate', 
+					{'business_id':M.curBusinessID, 
+					'season_id':M.ciniki_customers_settings.season.season_id}, c, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						} 
+					M.ciniki_customers_settings.season.close();
+					});
+			} else {
+				this.season.close();
+			}
+		} else {
+			var c = this.season.serializeForm('yes');
+			M.api.postJSONCb('ciniki.customers.seasonAdd', 
+				{'business_id':M.curBusinessID, 'season_id':this.season.season_id}, c, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					} 
+					M.ciniki_customers_settings.season.close();
+				});
+		}
+	};
+
+	this.deleteSeason = function() {
+		if( confirm("Are you sure you want to remove this season?") ) {
+			M.api.getJSONCb('ciniki.customers.seasonDelete', 
+				{'business_id':M.curBusinessID, 
+				'season_id':this.season.season_id}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					M.ciniki_customers_settings.season.close();	
 				});
 		}
 	};

@@ -45,6 +45,26 @@ function ciniki_customers_uiSettings($ciniki, $modules, $business_id) {
 		}
 	}
 
+	//
+	// Get the membership seasons
+	//
+	if( isset($modules['ciniki.customers']['flags']) && ($modules['ciniki.customers']['flags']&0x02000000) > 0 ) {
+		$strsql = "SELECT id, name, if((flags&0x02)=2,'yes','no') AS open "
+			. "FROM ciniki_customer_seasons "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "AND (flags&0x02) = 2 "
+			. "ORDER BY start_date DESC "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'seasons', 'fname'=>'id', 'name'=>'season',
+				'fields'=>array('id', 'name', 'open')),
+			));
+		if( $rc['stat'] == 'ok' && isset($rc['seasons']) ) {
+			$settings['seasons'] = $rc['seasons'];
+		}
+	}
+
 	return array('stat'=>'ok', 'settings'=>$settings);	
 }
 ?>

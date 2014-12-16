@@ -151,6 +151,29 @@ function ciniki_customers_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_customer_history',
 		);
+	$objects['season'] = array(
+		'name'=>'Membership Season',
+		'table'=>'ciniki_customer_seasons',
+		'fields'=>array(
+			'name'=>array(),
+			'start_date'=>array(),
+			'end_date'=>array(),
+			'flags'=>array(),
+			),
+		'history_table'=>'ciniki_customer_history',
+		);
+	$objects['season_member'] = array(
+		'name'=>'Season Member',
+		'table'=>'ciniki_customer_season_members',
+		'fields'=>array(
+			'season_id'=>array('ref'=>'ciniki.customers.season'),
+			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'status'=>array(),
+			'date_paid'=>array(),
+			'notes'=>array(),
+			),
+		'history_table'=>'ciniki_customer_history',
+		);
 	$objects['pricepoint'] = array(
 		'name'=>'Price Point',
 		'sync'=>'yes',

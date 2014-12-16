@@ -44,7 +44,7 @@ function ciniki_customers_flags($ciniki, $modules) {
 		array('flag'=>array('bit'=>'24', 'name'=>'Customer Tags')),
 		// 0x01000000
 		array('flag'=>array('bit'=>'25', 'name'=>'Address Phone Numbers')),
-//		array('flag'=>array('bit'=>'26', 'name'=>'')),
+		array('flag'=>array('bit'=>'26', 'name'=>'Membership Seasons')),
 //		array('flag'=>array('bit'=>'27', 'name'=>'')),
 //		array('flag'=>array('bit'=>'28', 'name'=>'')),
 		// 0x10000000

@@ -17,6 +17,7 @@ function ciniki_customers_edit() {
 	this.dealerStatus = {'5':'Prospect', '10':'Active', '60':'Suspended'};
 	this.dealerWebFlags = {'2':{'name':'Visible'}};
 	this.distributorStatus = {'10':'Active', '60':'Suspended'};
+	this.seasonStatus = {'10':'Active', '60':'Inactive'};
 	this.distributorWebFlags = {'3':{'name':'Visible'}};
 	this.addressFlags = {
 		'1':{'name':'Shipping'}, 
@@ -106,10 +107,12 @@ function ciniki_customers_edit() {
 				}},
 			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
 				'member_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
-				'member_lastpaid':{'label':'Last Paid', 'type':'text', 'size':'medium'},
+				'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
 				'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
 				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
+				}},
+			'_seasons':{'label':'Seasons', 'aside':'yes', 'active':'no', 'fields':{
 				}},
 			'_member_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
@@ -245,10 +248,12 @@ function ciniki_customers_edit() {
 				}},
 			'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
 				'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
-				'member_lastpaid':{'label':'Last Paid', 'type':'text', 'size':'medium'},
+				'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
 				'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
 				'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
 				'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
+				}},
+			'_seasons':{'label':'Seasons', 'aside':'yes', 'active':'no', 'fields':{
 				}},
 			'_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
 				'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
@@ -727,7 +732,6 @@ function ciniki_customers_edit() {
 			this.edit.forms.person.address.fields.phone.active = 'no';
 			this.edit.forms.business.address.fields.phone.active = 'no';
 		}
-
 		if( M.curBusiness.customers != null && M.curBusiness.customers.settings != null ) {
 			// Pricepoints
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 
@@ -991,6 +995,37 @@ function ciniki_customers_edit() {
 			this.phone.sections._phone.fields.flags.flags = {};
 			this.email.sections._email.fields.flags.flags = this.emailFlags;
 		}
+
+		// Season Memberships
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
+			&& M.curBusiness.modules['ciniki.customers'].settings != null
+			&& M.curBusiness.modules['ciniki.customers'].settings['seasons'] != null
+			&& this.edit.memberinfo == 'yes'
+			) {
+			this.edit.forms.person._seasons.active = 'yes';
+			this.edit.forms.business._seasons.active = 'yes';
+			this.edit.forms.person._seasons.fields = {};
+			this.edit.forms.business._seasons.fields = {};
+			this.edit.forms.person.membership.fields.member_lastpaid.active = 'no';
+			this.edit.forms.business.membership.fields.member_lastpaid.active = 'no';
+			for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
+				var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
+				if( season.open == 'yes' ) {
+					this.edit.forms.person._seasons.fields['season-' + season.id + '-status'] = {
+						'label':season.name, 'type':'toggle', 'default':'60', 'toggles':this.seasonStatus};
+					this.edit.forms.person._seasons.fields['season-' + season.id + '-date_paid'] = {
+						'label':'Paid', 'type':'date'};
+					this.edit.forms.business._seasons.fields['season-' + season.id + '-status'] = {
+						'label':season.name, 'type':'toggle', 'default':'60', 'toggles':this.seasonStatus};
+					this.edit.forms.business._seasons.fields['season-' + season.id + '-date_paid'] = {
+						'label':'Paid', 'type':'date'};
+				}
+			}
+		} else {
+			this.edit.forms.person._seasons.active = 'no';
+			this.edit.forms.business._seasons.active = 'no';
+		}
+
 		if( args.edit_phone_id != null && args.edit_phone_id != '' 
 			&& args.customer_id != null && args.customer_id > 0 ) {
 			this.showPhoneEdit(cb, args.customer_id, args.edit_phone_id);
@@ -1426,6 +1461,9 @@ function ciniki_customers_edit() {
 					+ this.edit.serializeFormSection('no', '_member_categories')
 					+ this.edit.serializeFormSection('no', '_short_bio')
 					+ this.edit.serializeFormSection('no', '_full_bio');
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 ) {
+					c += this.edit.serializeFormSection('yes', '_seasons');
+				}
 			} else if( this.edit.dealerinfo != null && this.edit.dealerinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('no', '_image')
 					+ this.edit.serializeFormSection('no', '_image_caption')
@@ -1491,6 +1529,9 @@ function ciniki_customers_edit() {
 					+ this.edit.serializeFormSection('yes', '_member_categories')
 					+ this.edit.serializeFormSection('yes', '_short_bio')
 					+ this.edit.serializeFormSection('yes', '_full_bio');
+				if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 ) {
+					c += this.edit.serializeFormSection('yes', '_seasons');
+				}
 			} else if( this.edit.dealerinfo != null && this.edit.dealerinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('yes', '_image')
 					+ this.edit.serializeFormSection('yes', '_image_caption')
