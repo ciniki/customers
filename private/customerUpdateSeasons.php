@@ -51,7 +51,6 @@ function ciniki_customers_customerUpdateSeasons(&$ciniki, $business_id, $custome
 	// Check the args for season status
 	//
 	foreach($seasons as $season_id => $season) {
-		error_log(print_r($ciniki['request']['args'], true));
 		$args = array();
 		if( isset($ciniki['request']['args']['season-' . $season_id . '-status']) ) {
 			if( $ciniki['request']['args']['season-' . $season_id . '-status'] != $season['status'] ) {
