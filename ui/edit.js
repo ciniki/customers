@@ -74,12 +74,6 @@ function ciniki_customers_edit() {
 		this.edit.forms = {};
 		this.edit.parent_id = 0;
 		this.edit.forms.person = {
-			'_image':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
-				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
-				}},
-			'_image_caption':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
-				'primary_image_caption':{'label':'Caption', 'type':'text'},
-				}},
 			'name':{'label':'Name', 'aside':'yes', 'fields':{
 				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
 				'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
@@ -194,6 +188,12 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
+			'_image':{'label':'', 'active':'no', 'fields':{
+				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+				}},
+			'_image_caption':{'label':'', 'active':'no', 'fields':{
+				'primary_image_caption':{'label':'Caption', 'type':'text'},
+				}},
 			'_short_bio':{'label':'Synopsis', 'active':'no', 'fields':{
 				'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
@@ -209,12 +209,6 @@ function ciniki_customers_edit() {
 				}},
 			};
 		this.edit.forms.business = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
-				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
-				}},
-			'_image_caption':{'label':'', 'aside':'yes', 'active':'no', 'fields':{
-				'primary_image_caption':{'label':'Caption', 'type':'text'},
-				}},
 			'business':{'label':'Business', 'aside':'yes', 'fields':{
 				'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
 				'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
@@ -330,6 +324,12 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
+			'_image':{'label':'', 'fields':{
+				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+				}},
+			'_image_caption':{'label':'', 'active':'no', 'fields':{
+				'primary_image_caption':{'label':'Caption', 'type':'text'},
+				}},
 			'_short_bio':{'label':'Synopsis', 'active':'no', 'fields':{
 				'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 				}},
