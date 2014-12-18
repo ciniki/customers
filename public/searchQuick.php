@@ -73,7 +73,7 @@ function ciniki_customers_searchQuick($ciniki) {
 	$strsql = "SELECT DISTINCT ciniki_customers.id, display_name, "
 		. "status, status AS status_text, "
 		. "type, company, eid, "
-		. "DATE_FORMAT(member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS member_lastpaid, "
+		. "IFNULL(DATE_FORMAT(member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS member_lastpaid, "
 		. "member_status, "
 		. "membership_type, "
 		. "membership_type AS membership_type_text, "

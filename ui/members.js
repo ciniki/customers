@@ -46,7 +46,8 @@ function ciniki_customers_members() {
 					case 1: if( d.customer.membership_type == '20' ) {
 							return d.customer.membership_type_text;
 						} 
-						return '<span class="maintext">' + d.customer.membership_type_text + '</span><span class="subtext">Paid: ' + d.customer.member_lastpaid + '</span>';
+						return '<span class="maintext">' + d.customer.membership_type_text + '</span>' 
+							+ (d.customer.member_lastpaid!=''?'<span class="subtext">Paid: ' + d.customer.member_lastpaid + '</span>':'');
 				}
 			}
 			return '';
@@ -137,6 +138,8 @@ function ciniki_customers_members() {
 				}},
 			'members':{'label':'', 'type':'simplegrid', 'num_cols':4,
 				'headerValues':['Member', 'Type', 'Status', 'Date Paid'],
+				'sortable':'yes',
+				'sortTypes':['text', 'text', 'text', 'date'],
 				'cellClasses':['', '', ''],
 				'noData':'No members',
 				},
