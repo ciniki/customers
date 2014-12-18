@@ -125,6 +125,10 @@ function ciniki_customers_members() {
 			'mc', 'medium mediumflex', 'sectioned', 'ciniki.customers.members.season');
 		this.season.data = {};
 		this.season.sections = {
+			'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':2, 
+				'cellClasses':['multiline','multiline'],
+				'hint':'name, company or email', 'noData':'No members found',
+				},
 			'tabs':{'label':'', 'selected':'unattached', 'type':'paneltabs', 'tabs':{
 				'unattached':{'label':'Unpaid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'unattached\');'},
 				'regular':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'regular\');'},
@@ -138,6 +142,27 @@ function ciniki_customers_members() {
 				},
 			};
 		this.season.sectionData = function(s) { return this.data[s]; }
+		this.season.liveSearchCb = function(s, i, value) {
+			if( s == 'search' && value != '' ) {
+				M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':'10'}, 
+					function(rsp) { 
+						M.ciniki_customers_members.season.liveSearchShow('search', null, M.gE(M.ciniki_customers_members.season.panelUID + '_' + s), rsp.customers); 
+					});
+				return true;
+			}
+		};
+		this.season.liveSearchResultValue = function(s, f, i, j, d) {
+			if( s == 'search' ) { 
+				switch(j) {
+					case 0: return d.customer.display_name;
+					case 1: return d.customer.membership_type_text;
+				}
+			}
+			return '';
+		}
+		this.season.liveSearchResultRowFn = function(s, f, i, j, d) { 
+			return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\',\'member\':\'yes\'});';
+		};
 		this.season.cellValue = function(s, i, j, d) {
 			switch(j) {
 				case 0: return d.member.display_name;
