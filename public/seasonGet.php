@@ -58,7 +58,7 @@ function ciniki_customers_seasonGet(&$ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['seasons']) || !isset($rc['seasons'][0]['season']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1832', 'msg'=>'Unable to find the season'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2115', 'msg'=>'Unable to find the season'));
 	}
 	$season = $rc['seasons'][0]['season'];
 
