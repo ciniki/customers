@@ -49,6 +49,7 @@ function ciniki_customers_maps($ciniki) {
 		);
 	$maps['season_member'] = array(
 		'status'=>array(
+			'0'=>'Unknown',
 			'10'=>'Active',
 			'60'=>'Inactive',
 			),

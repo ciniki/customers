@@ -68,13 +68,13 @@ function ciniki_customers_seasonInfo($ciniki) {
 	//
 	// Setup the return array
 	//
-	$rsp = array('stat'=>'ok', 'unattached'=>0, 'regular'=>0, 'complimentary'=>0, 'reciprocal'=>0, 'members'=>array());
+	$rsp = array('stat'=>'ok', 'unattached'=>0, 'inactive'=>0, 'regular'=>0, 'complimentary'=>0, 'reciprocal'=>0, 'members'=>array());
 
 	//
 	// Get the stats of the season
 	//
 	$strsql = "SELECT ciniki_customers.membership_type, "
-		. "IFNULL(ciniki_customer_season_members.status, '60') AS status, "
+		. "IFNULL(ciniki_customer_season_members.status, '0') AS status, "
 		. "COUNT(ciniki_customers.id) AS num_customers "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_season_members ON ("
@@ -94,8 +94,11 @@ function ciniki_customers_seasonInfo($ciniki) {
 	}
 	if( isset($rc['rows']) ) {
 		foreach($rc['rows'] as $rid => $row) {
-			if( $row['status'] == '60' ) {
+			if( $row['status'] == '0' ) {
 				$rsp['unattached'] += $row['num_customers'];
+			}
+			if( $row['status'] == '60' ) {
+				$rsp['inactive'] += $row['num_customers'];
 			}
 			if( $row['status'] == '10' && $row['membership_type'] == '10' ) {
 				$rsp['regular'] += $row['num_customers'];
@@ -124,8 +127,8 @@ function ciniki_customers_seasonInfo($ciniki) {
 			. "ciniki_customers.membership_type, "
 			. "ciniki_customers.membership_type AS membership_type_text, "
 			. "ciniki_customers.company, "
-			. "IFNULL(ciniki_customer_season_members.status, '60') AS member_season_status, "
-			. "IFNULL(ciniki_customer_season_members.status, '60') AS member_season_status_text, "
+			. "IFNULL(ciniki_customer_season_members.status, '0') AS member_season_status, "
+			. "IFNULL(ciniki_customer_season_members.status, '0') AS member_season_status_text, "
 			. "IFNULL(DATE_FORMAT(ciniki_customer_season_members.date_paid, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "'), '') AS date_paid "
 			. "";
 			if( $args['list'] == 'unattached' ) {
@@ -138,7 +141,16 @@ function ciniki_customers_seasonInfo($ciniki) {
 					. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 					. "AND ciniki_customers.member_status = 10 "		// Active member
 					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
-					. "HAVING member_season_status <> 10 "	// Not in season_members or not active status
+					. "HAVING member_season_status = 0 "	// Not in season_members or not active status
+					. "";
+			} elseif( $args['list'] == 'inactive' ) {
+				$strsql .= "FROM ciniki_customer_season_members, ciniki_customers "
+					. "WHERE ciniki_customer_season_members.season_id = '" . ciniki_core_dbQuote($ciniki, $args['season_id']) . "' "
+					. "AND ciniki_customer_season_members.status = 60 "
+					. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customer_season_members.customer_id = ciniki_customers.id "
+					. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
 					. "";
 			} elseif( $args['list'] == 'regular' ) {
 				$strsql .= "FROM ciniki_customer_season_members, ciniki_customers "

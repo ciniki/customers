@@ -131,7 +131,8 @@ function ciniki_customers_members() {
 				'hint':'name, company or email', 'noData':'No members found',
 				},
 			'tabs':{'label':'', 'selected':'unattached', 'type':'paneltabs', 'tabs':{
-				'unattached':{'label':'Unpaid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'unattached\');'},
+				'unattached':{'label':'Unknown', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'unattached\');'},
+				'inactive':{'label':'Inactive', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'inactive\');'},
 				'regular':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'regular\');'},
 				'complimentary':{'label':'Complementary', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'complimentary\');'},
 				'reciprocal':{'label':'Reciprocal', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'reciprocal\');'},
@@ -546,7 +547,8 @@ function ciniki_customers_members() {
 						return false;
 					}
 					var p = M.ciniki_customers_members.season;
-					p.sections.tabs.tabs.unattached.label = 'Unpaid (' + rsp.unattached + ')';
+					p.sections.tabs.tabs.unattached.label = 'Unknown (' + rsp.unattached + ')';
+					p.sections.tabs.tabs.inactive.label = 'Inactive (' + rsp.inactive + ')';
 					p.sections.tabs.tabs.regular.label = 'Regular (' + rsp.regular + ')';
 					p.sections.tabs.tabs.complimentary.label = 'Complimentary (' + rsp.complimentary + ')';
 					p.sections.tabs.tabs.reciprocal.label = 'Reciprocal (' + rsp.reciprocal + ')';

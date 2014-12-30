@@ -17,7 +17,7 @@ function ciniki_customers_edit() {
 	this.dealerStatus = {'5':'Prospect', '10':'Active', '60':'Suspended'};
 	this.dealerWebFlags = {'2':{'name':'Visible'}};
 	this.distributorStatus = {'10':'Active', '60':'Suspended'};
-	this.seasonStatus = {'10':'Active', '60':'Inactive'};
+	this.seasonStatus = {'0':'Unknown', '10':'Active', '60':'Inactive'};
 	this.distributorWebFlags = {'3':{'name':'Visible'}};
 	this.addressFlags = {
 		'1':{'name':'Shipping'}, 
@@ -1012,11 +1012,11 @@ function ciniki_customers_edit() {
 				var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
 				if( season.open == 'yes' ) {
 					this.edit.forms.person._seasons.fields['season-' + season.id + '-status'] = {
-						'label':season.name, 'type':'toggle', 'default':'60', 'toggles':this.seasonStatus};
+						'label':season.name, 'type':'toggle', 'default':'0', 'toggles':this.seasonStatus};
 					this.edit.forms.person._seasons.fields['season-' + season.id + '-date_paid'] = {
 						'label':'Paid', 'type':'date'};
 					this.edit.forms.business._seasons.fields['season-' + season.id + '-status'] = {
-						'label':season.name, 'type':'toggle', 'default':'60', 'toggles':this.seasonStatus};
+						'label':season.name, 'type':'toggle', 'default':'0', 'toggles':this.seasonStatus};
 					this.edit.forms.business._seasons.fields['season-' + season.id + '-date_paid'] = {
 						'label':'Paid', 'type':'date'};
 				}
