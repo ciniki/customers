@@ -1374,7 +1374,7 @@ function ciniki_customers_edit() {
 		// Get subscriptions available
 		//
 		if( M.curBusiness['modules']['ciniki.subscriptions'] != null ) {
-			var rsp = M.api.getJSONCb('ciniki.subscriptions.list', {'business_id':M.curBusinessID, 
+			var rsp = M.api.getJSONCb('ciniki.subscriptions.subscriptionList', {'business_id':M.curBusinessID, 
 				'customer_id':this.edit.customer_id}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);

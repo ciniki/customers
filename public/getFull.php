@@ -332,7 +332,7 @@ function ciniki_customers_getFull($ciniki) {
 				. "AND ciniki_subscription_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. ") "
 			. "WHERE ciniki_subscriptions.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND status = 10 "
+			. "AND ciniki_subscription_customers.status = 10 "
 			. "ORDER BY ciniki_subscriptions.name "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
