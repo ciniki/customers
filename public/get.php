@@ -412,6 +412,21 @@ function ciniki_customers_get($ciniki) {
 	}
 
 	//
+	// If subscriptions
+	//
+	if( isset($modules['ciniki.subscriptions']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'subscriptions', 'hooks', 'customerSubscriptions');
+		$rc = ciniki_subscriptions_hooks_customerSubscriptions($ciniki, $args['business_id'], 
+			array('customer_id'=>$args['customer_id']));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['subscriptions']) ) {
+			$customer['subscriptions'] = $rc['subscriptions'];
+		}
+	}
+
+	//
 	// Get any membership seasons
 	//
 	if( ($modules['ciniki.customers']['flags']&0x02000000) > 0 

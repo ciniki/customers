@@ -202,6 +202,9 @@ function ciniki_customers_members() {
 //				'phone_fax':{'label':'Fax', 'visible':'no'},
 				'webvisible':{'label':'Web Settings'},
 				}},
+			'_subscriptions':{'label':'', 'aside':'yes', 'visible':'no', 'list':{
+				'subscriptions':{'label':'Subscriptions'},
+				}},
 			'membership':{'label':'Status', 'aside':'yes', 'list':{
 				'member_status_text':{'label':'Status'},
 				'member_lastpaid':{'label':'Last Paid'},
@@ -249,12 +252,12 @@ function ciniki_customers_members() {
 				}},
 		};
 		this.member.sectionData = function(s) {
-			if( s == 'info' || s == 'membership' ) { return this.sections[s].list; }
+			if( s == 'info' || s == 'membership' || s == '_subscriptions' ) { return this.sections[s].list; }
 			if( s == 'short_bio' || s == 'full_bio' || s == 'notes' ) { return this.data[s].replace(/\n/g, '<br/>'); }
 			return this.data[s];
 			};
 		this.member.listLabel = function(s, i, d) {
-			if( s == 'info' || s == 'membership' ) { 
+			if( s == 'info' || s == 'membership' || s == '_subscriptions' ) { 
 				return d.label; 
 			}
 			return null;
@@ -280,6 +283,16 @@ function ciniki_customers_members() {
 			}
 			if( i == 'name' ) {
 				return this.data.first + ' ' + this.data.last;
+			}
+			if( s == '_subscriptions' && i == 'subscriptions' ) {
+				if( this.data.subscriptions == null ) { return 'None'; }
+				var subs = '';
+				var k = 0;
+				for(k in this.data.subscriptions) {
+					subs += (subs!=''?', ':'') + this.data.subscriptions[k].subscription.name;
+				}
+				if( subs == '' ) { return 'None'; }
+				return subs;
 			}
 			return this.data[i];
 		};
@@ -468,6 +481,15 @@ function ciniki_customers_members() {
 			}
 		} else {
 			this.menu.sections.seasons.visible = 'no';
+		}
+
+		//
+		// Check if subscriptions module enabled
+		//
+		if( M.curBusiness.modules['ciniki.subscriptions'] != null ) {
+			this.member.sections._subscriptions.visible = 'yes';
+		} else {
+			this.member.sections._subscriptions.visible = 'no';
 		}
 
 		if( args.customer_id != null && args.customer_id > 0 ) {
