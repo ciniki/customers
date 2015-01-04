@@ -54,7 +54,6 @@ function ciniki_customers_seasonInfo($ciniki) {
 	$date_format = ciniki_users_dateFormat($ciniki, 'php');
 	$mysql_date_format = ciniki_users_dateFormat($ciniki);
 
-
 	//
 	// Load maps
 	//

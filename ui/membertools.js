@@ -3,8 +3,8 @@ function ciniki_customers_membertools() {
 	//
 	// Panels
 	//
+	this.toggleOptions = {'no':'No', 'yes':'Yes'};
 	this.init = function() {
-		this.toggleOptions = {'no':'No', 'yes':'Yes'};
 		//
 		// The tools menu 
 		//
@@ -55,6 +55,7 @@ function ciniki_customers_membertools() {
 				'short_description':{'label':'Short Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'full_bio':{'label':'Full Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				}},
+			'seasons':{'label':'Season Status', 'active':'no', 'fields':{}},
 			'_buttons':{'label':'', 'buttons':{
 				'selectall':{'label':'Select All', 'fn':'M.ciniki_customers_membertools.selectAll();'},
 				'download':{'label':'Download Excel', 'fn':'M.ciniki_customers_membertools.downloadListExcel();'},
@@ -112,7 +113,11 @@ function ciniki_customers_membertools() {
 			this.memberlist.sections.options.fields.membership_type.active = 'no';
 		}
 
-		this.showMenu(cb);
+		if( args.start != null && args.start == 'memberlist' ) {
+			M.ciniki_customers_membertools.showMemberList(cb, args.season);
+		} else {
+			this.showMenu(cb);
+		}
 	}
 
 	//
@@ -128,7 +133,30 @@ function ciniki_customers_membertools() {
 			{'business_id':M.curBusinessID}));
 	};
 
-	this.showMemberList = function(cb) {
+	this.showMemberList = function(cb, selected_season) {
+		//
+		// Get seasons if enabled
+		//
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
+			&& M.curBusiness.modules['ciniki.customers'].settings != null
+			&& M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+			) {
+			this.memberlist.sections.seasons.active = 'yes';
+			this.memberlist.sections.seasons.fields = {};
+			for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
+				var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
+				if( season.open == 'yes' ) {
+					this.memberlist.sections.seasons.fields['season-' + season.id] = {
+						'label':season.name, 
+						'type':'toggle', 'default':(selected_season!=null&&selected_season==season.id?'yes':'no'), 
+						'toggles':this.toggleOptions,
+					};
+				}
+			}
+		} else {
+			this.memberlist.sections.seasons.active = 'yes';
+		}
+
 		this.memberlist.refresh();
 		this.memberlist.show(cb);
 	};
@@ -160,6 +188,18 @@ function ciniki_customers_membertools() {
 			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
 			if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {
 				cols += (cols!=''?'::':'') + i;
+			}
+		}
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
+			&& M.curBusiness.modules['ciniki.customers'].settings != null
+			&& M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+			) {
+			fields = this.memberlist.sections.seasons.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
 			}
 		}
 		window.open(M.api.getUploadURL('ciniki.customers.memberDownloadExcel', 

@@ -125,6 +125,7 @@ function ciniki_customers_members() {
 			'ciniki_customers_members', 'season',
 			'mc', 'medium mediumflex', 'sectioned', 'ciniki.customers.members.season');
 		this.season.data = {};
+		this.season.season_id = 0;
 		this.season.sections = {
 			'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':2, 
 				'cellClasses':['multiline','multiline'],
@@ -144,6 +145,9 @@ function ciniki_customers_members() {
 				'cellClasses':['', '', ''],
 				'noData':'No members',
 				},
+			'_buttons':{'label':'', 'buttons':{
+				'download':{'label':'Download Excel', 'fn':'M.startApp(\'ciniki.customers.membertools\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'start\':\'memberlist\', \'season\':M.ciniki_customers_members.season.season_id});'},
+				}},
 			};
 		this.season.sectionData = function(s) { return this.data[s]; }
 		this.season.liveSearchCb = function(s, i, value) {
