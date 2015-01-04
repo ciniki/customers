@@ -358,9 +358,10 @@ function ciniki_customers_edit() {
 				}
 			}
 			if( s == 'emails' ) {
-				if( j == 0 ) { 
-					return M.linkEmail(d.email.address) + ((M.ciniki_customers_edit.edit.memberinfo=='yes'&&d.email.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
-				}
+				var flags = '';
+				if( (d.email.flags&0x08) > 0 ) { flags += (flags!=''?', ':'') + 'Public'; }
+				if( (d.email.flags&0x10) > 0 ) { flags += (flags!=''?', ':'') + 'No Emails'; }
+				return M.linkEmail(d.email.address) + (flags!=''?' <span class="subdue">(' + flags + ')</span>':'');
 			}
 			if( s == 'addresses' ) {
 				if( j == 0 ) { 

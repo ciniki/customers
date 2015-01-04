@@ -369,7 +369,11 @@ function ciniki_customers_main() {
 				}
 			}
 			else if( s == 'emails' ) {
-				if( j == 0 ) { return M.linkEmail(d.email.address); }
+				var flags = '';
+				if( (d.email.flags&0x08) > 0 ) { flags += (flags!=''?', ':'') + 'Public'; }
+				if( (d.email.flags&0x10) > 0 ) { flags += (flags!=''?', ':'') + 'No Emails'; }
+				return M.linkEmail(d.email.address) + (flags!=''?' <span class="subdue">(' + flags + ')</span>':'');
+//				if( j == 0 ) { return M.linkEmail(d.email.address); }
 			}
 			else if( s == 'addresses' ) {
 				if( j == 0 ) { 
@@ -756,7 +760,10 @@ function ciniki_customers_main() {
 		}
 		if( rsp.customer.emails != null ) {
 			for(i in rsp.customer.emails) {
-				this.customer.data.details['email-'+i] = {'label':'Email', 'value':M.linkEmail(rsp.customer.emails[i].email.address)};
+				var flags = '';
+				if( (rsp.customer.emails[i].email.flags&0x08) > 0 ) { flags += (flags!=''?', ':'') + 'Public'; }
+				if( (rsp.customer.emails[i].email.flags&0x10) > 0 ) { flags += (flags!=''?', ':'') + 'No Emails'; }
+				this.customer.data.details['email-'+i] = {'label':'Email', 'value':M.linkEmail(rsp.customer.emails[i].email.address) + (flags!=''?' <span class="subdue">(' + flags + ')</span>':'')};
 			}
 		}
 		if( rsp.customer.addresses != null ) {
