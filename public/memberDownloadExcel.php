@@ -49,6 +49,7 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 	$maps = $rc['maps'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 
 	//
@@ -102,6 +103,100 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 		}
 	}
 
+	//
+	// Load the categories
+	//
+	$member_categories = array();
+	$strsql = "SELECT customer_id, "
+		. "ciniki_customer_tags.tag_name AS member_categories "
+		. "FROM ciniki_customer_tags "
+		. "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ciniki_customer_tags.tag_type = 40 "
+		. "ORDER BY ciniki_customer_tags.customer_id "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'customers', 'fname'=>'customer_id', 
+			'fields'=>array('member_categories'),
+			'dlists'=>array('member_categories'=>', ')),
+		));	
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['customers']) ) {
+		$member_categories = $rc['customers'];
+	}
+
+	//
+	// Load the phones
+	//
+	$phones = array();
+	$strsql = "SELECT customer_id, "
+		. "CONCAT_WS(': ', ciniki_customer_phones.phone_label, "
+			. "ciniki_customer_phones.phone_number) AS phones "
+		. "FROM ciniki_customer_phones "
+		. "WHERE ciniki_customer_phones.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "ORDER BY ciniki_customer_phones.customer_id "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'customers', 'fname'=>'customer_id', 
+			'fields'=>array('phones'),
+			'dlists'=>array('phones'=>', ')),
+		));	
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['customers']) ) {
+		$phones = $rc['customers'];
+	} 
+
+	//
+	// Load the addresses
+	//
+	$addresses = array();
+	$strsql = "SELECT customer_id, "
+		. "CONCAT_WS(', ', ciniki_customer_addresses.address1, "
+			. "ciniki_customer_addresses.address2, "
+			. "ciniki_customer_addresses.city, "
+			. "ciniki_customer_addresses.province, "
+			. "ciniki_customer_addresses.postal) AS addresses "
+		. "FROM ciniki_customer_addresses "
+		. "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "ORDER BY ciniki_customer_addresses.customer_id "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'customers', 'fname'=>'customer_id', 
+			'fields'=>array('addresses'),
+			'dlists'=>array('addresses'=>'/')),
+		));	
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['customers']) ) {
+		$addresses = $rc['customers'];
+	}
+
+	//
+	// Load the links
+	//
+	$links = array();
+	$strsql = "SELECT customer_id, "
+		. "ciniki_customer_links.url AS links "
+		. "FROM ciniki_customer_links "
+		. "WHERE ciniki_customer_links.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "ORDER BY ciniki_customer_links.customer_id "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'customers', 'fname'=>'customer_id', 
+			'fields'=>array('links'),
+			'dlists'=>array('links'=>', ')),
+		));	
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['customers']) ) {
+		$links = $rc['customers'];
+	}
+
 	require($ciniki['config']['core']['lib_dir'] . '/PHPExcel/PHPExcel.php');
 	$objPHPExcel = new PHPExcel();
 
@@ -118,47 +213,16 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 		. "ciniki_customers.short_description, "
 		. "ciniki_customers.full_bio, "
 		. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
-		. "ciniki_customer_tags.tag_name AS member_categories, "
-		. "CONCAT_WS(': ', ciniki_customer_phones.phone_label, "
-			. "ciniki_customer_phones.phone_number) AS phones, "
-		. "ciniki_customer_emails.email AS emails, "
-		. "CONCAT_WS(', ', ciniki_customer_addresses.address1, "
-			. "ciniki_customer_addresses.address2, "
-			. "ciniki_customer_addresses.city, "
-			. "ciniki_customer_addresses.province, "
-			. "ciniki_customer_addresses.postal) AS addresses, "
-		. "ciniki_customer_links.url AS links "
-//	if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 
-//		&& count($season_ids) > 0 
-//		) {
-//		$strsql .= "IFNULL(ciniki_customer_season_members.season_id, 0) AS season_ids, "
-//			. "IFNULL(ciniki_customer_season_members.status, 0) AS season_status ";
-//	} else {
-//		$strsql .= "0 AS season_ids, "
-//			. "0 AS season_status ";
-//	}
+		. "'' AS member_categories, "
+		. "'' AS phones, "
+		. "'' AS addresses, "
+		. "'' AS links, "
+		. "ciniki_customer_emails.email AS emails "
 		. "FROM ciniki_customers "
-		. "LEFT JOIN ciniki_customer_tags ON ("
-			. "ciniki_customers.id = ciniki_customer_tags.customer_id "
-			. "AND ciniki_customer_tags.tag_type = 40 "
-			. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "LEFT JOIN ciniki_customer_phones ON (ciniki_customers.id = ciniki_customer_phones.customer_id "
-			. "AND ciniki_customer_phones.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
 			. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
-		. "LEFT JOIN ciniki_customer_addresses ON (ciniki_customers.id = ciniki_customer_addresses.customer_id "
-			. "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "LEFT JOIN ciniki_customer_links ON (ciniki_customers.id = ciniki_customer_links.customer_id "
-			. "AND ciniki_customer_links.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") ";
-//	if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 
-//		&& count($season_ids) > 0 
-//		) {
-//	}
+		. "";
 			
 	$strsql .= "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.member_status = 10 "
@@ -173,16 +237,13 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 				'member_categories',
 				'phones', 'emails', 'addresses', 'links',
 				'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
-//				'season_ids', 'season_status'),
 			'maps'=>array(
 				'type'=>array('1'=>'Individual', '2'=>'Business'),
 				'member_status'=>$maps['customer']['member_status'], //array('10'=>'Active', '60'=>'Former'),
 				'membership_length'=>$maps['customer']['membership_length'], // array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),
 				'membership_type'=>$maps['customer']['membership_type'], // array('10'=>'Regular', '20'=>'Complimentary', '30'=>'Reciprocal'),
 				),
-			'dlists'=>array('phones'=>', ', 'emails'=>', ', 'addresses'=>' - ', 'links'=>', ', 
-				'member_categories'=>', ')),
-//				'seasons_ids'=>':', 'season_status'=>':')),
+			'dlists'=>array('emails'=>', ')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -253,14 +314,19 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 					$col++;
 					continue;
 				}
+			} elseif( $column == 'member_categories' && isset($member_categories[$customer['id']]['member_categories']) ) {
+				$value = $member_categories[$customer['id']]['member_categories'];
+			} elseif( $column == 'phones' && isset($phones[$customer['id']]['phones']) ) {
+				$value = $phones[$customer['id']]['phones'];
+			} elseif( $column == 'addresses' && isset($addresses[$customer['id']]['addresses']) ) {
+				$value = preg_replace('/, ,/', ',', $addresses[$customer['id']]['addresses']);
+			} elseif( $column == 'links' && isset($links[$customer['id']]['links']) ) {
+				$value = $links[$customer['id']]['links'];
 			} elseif( !isset($customer[$column]) ) {
 				$col++;
 				continue;
 			} else {
 				$value = $customer[$column];
-			}
-			if( $column == 'addresses' ) {
-				$value = preg_replace('/, ,/', ',', $customer[$column]);
 			}
 			$objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $value, false);
 			$col++;
