@@ -374,21 +374,6 @@ function ciniki_customers_members() {
 				return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showMember();\',\'mc\',{\'customer_id\':M.ciniki_customers_members.member.customer_id,\'edit_link_id\':\'' + d.link.id + '\',\'member\':\'yes\'});';
 			}
 		};
-		this.member.thumbSrc = function(s, i, d) {
-			if( d.image.image_data != null && d.image.image_data != '' ) {
-				return d.image.image_data;
-			} else {
-				return '/ciniki-mods/core/ui/themes/default/img/noimage_75.jpg';
-			}
-		};
-		this.member.thumbTitle = function(s, i, d) {
-			if( d.image.name != null ) { return d.image.name; }
-			return '';
-		};
-		this.member.thumbID = function(s, i, d) {
-			if( d.image.id != null ) { return d.image.id; }
-			return 0;
-		};
 		this.member.thumbFn = function(s, i, d) {
 			return 'M.startApp(\'ciniki.customers.images\',null,\'M.ciniki_customers_members.showMember();\',\'mc\',{\'customer_image_id\':\'' + d.image.id + '\'});';
 		};
