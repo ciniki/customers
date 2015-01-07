@@ -146,6 +146,7 @@ function ciniki_customers_main() {
 			'tools':{'label':'Cleanup', 'list':{
 				'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_main.tools.show();\');'},
 				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
+				'salesreps':{'label':'Sales Reps', 'visible':'no', 'fn':'M.startApp(\'ciniki.customers.salesreps\', null, \'M.ciniki_customers_main.tools.show();\');'},
 			}},
 //			'import':{'label':'Import', 'list':{
 //				'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
@@ -604,6 +605,13 @@ function ciniki_customers_main() {
 			this.search.sections.main.dataMaps = ['display_name', 'status_text'];
 		}
 	
+		if( M.curBusiness.modules['ciniki.businesses'] != null 
+			&& (M.curBusiness.modules['ciniki.businesses'].flags&0x02) > 0 ) {
+			this.tools.sections.tools.list.salesreps.visible = 'yes';
+		} else {
+			this.tools.sections.tools.list.salesreps.visible = 'no';
+		}
+
 		//
 		// Setup the buttons based on who is asking
 		//
@@ -640,8 +648,6 @@ function ciniki_customers_main() {
 		} else {
 			this.showMenu(cb);
 		}
-
-
 	}
 
 	//
