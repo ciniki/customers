@@ -34,6 +34,12 @@ function ciniki_customers_salesreps() {
 			'customers':{'label':'Sales Reps', 'num_cols':1, 'type':'simplegrid', 
 				'noData':'No customers',
 				},
+			'_move':{'label':'Change Sales Rep', 'fields':{
+				'new_salesrep_id':{'label':'New Sales Rep', 'type':'select', 'options':{}},
+				}},
+			'_move_buttons':{'label':'', 'buttons':{
+				'move':{'label':'Update', 'fn':'M.ciniki_customers_salesreps.changeRep();'},
+				}},
 			};
 		this.menu.sectionData = function(s) {
 			return this.data[s];
@@ -42,6 +48,9 @@ function ciniki_customers_salesreps() {
 			if( this.sections[s].noData != null ) { return this.sections[s].noData; }
 			return ''; 
 		}
+		this.menu.fieldValue = function(s, i, d) {
+			return this.data[i];
+		};
 		this.menu.cellValue = function(s, i, j, d) {
 			if( s == 'salesreps' ) {
 				return d.salesrep.firstname + ' ' + d.salesrep.lastname + ' <span class="subdue">[' + d.salesrep.display_name + ']</span> <span class="count">' + d.salesrep.num_customers + '</span>';
@@ -97,8 +106,40 @@ function ciniki_customers_salesreps() {
 				} 
 				var p = M.ciniki_customers_salesreps.menu;
 				p.data = rsp;
+				var reps = {};
+				reps[0] = 'None';
+				if( rsp.salesreps != null && rsp.salesreps.length > 0 && rsp.customers != null && rsp.customers.length > 0 ) {
+					p.data.new_salesrep_id = M.ciniki_customers_salesreps.menu.salesrep_id;
+					p.sections._move.active = 'yes';
+					p.sections._move_buttons.active = 'yes';
+					for(i in rsp.salesreps) {
+						for(i in rsp.salesreps) {
+							reps[rsp.salesreps[i].salesrep.id] = rsp.salesreps[i].salesrep.display_name;
+						}
+					}
+				} else {
+					p.sections._move.active = 'no';
+					p.sections._move_buttons.active = 'no';
+				}
+				p.sections._move.fields.new_salesrep_id.options = reps;
 				p.refresh();
 				p.show(cb);
 			});
+	};
+
+	this.changeRep = function() {
+		var nri = this.menu.formFieldValue(this.menu.sections._move.fields.new_salesrep_id, 'new_salesrep_id');
+		if( nri != this.menu.salesrep_id ) {
+			if( confirm('Are you sure you want to change the sales rep?') ) {
+				M.api.getJSONCb('ciniki.customers.salesrepChange', {'business_id':M.curBusinessID, 
+					'old_salesrep_id':this.menu.salesrep_id, 'new_salesrep_id':nri}, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						} 
+						M.ciniki_customers_salesreps.showReps();
+					});
+			}
+		}
 	};
 }
