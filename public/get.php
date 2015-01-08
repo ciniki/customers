@@ -63,6 +63,7 @@ function ciniki_customers_get($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
 	$date_format = ciniki_users_dateFormat($ciniki, 'php');
+	$mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
 	//
 	// Get the types of customers available for this business
@@ -73,6 +74,16 @@ function ciniki_customers_get($ciniki) {
 //		return $rc;
 //	}
 //	$types = $rc['types'];
+
+	//
+	// Load maps
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+	$rc = ciniki_customers_maps($ciniki);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$maps = $rc['maps'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -111,9 +122,12 @@ function ciniki_customers_get($ciniki) {
 					'emails'),
 				'lists'=>array('emails'),
 				'maps'=>array(
-					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
-					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
-					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
+					'member_status_text'=>$maps['customer']['member_status'],
+					'dealer_status_text'=>$maps['customer']['dealer_status'],
+					'distributor_status_text'=>$maps['customer']['distributor_status'],
+//					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
+//					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
+//					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
@@ -156,9 +170,12 @@ function ciniki_customers_get($ciniki) {
 					'reward_level', 'sales_total', 'start_date', 
 					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes'),
 				'maps'=>array(
-					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
-					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
-					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
+					'member_status_text'=>$maps['customer']['member_status'],
+					'dealer_status_text'=>$maps['customer']['dealer_status'],
+					'distributor_status_text'=>$maps['customer']['distributor_status'],
+//					'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
+//					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
+//					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
 				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
@@ -437,7 +454,9 @@ function ciniki_customers_get($ciniki) {
 			. "ciniki_customer_seasons.flags, "
 			. "IFNULL(ciniki_customer_season_members.id, 0) AS season_member_id, "
 			. "IFNULL(ciniki_customer_season_members.status, '') AS status, "
-			. "IFNULL(ciniki_customer_season_members.date_paid, '') AS date_paid "
+			. "IFNULL(ciniki_customer_season_members.status, '') AS status_text, "
+//			. "DATE_FORMAT(IFNULL(ciniki_customer_season_members.date_paid, ''), '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS date_paid "
+			. "IFNULL(DATE_FORMAT(ciniki_customer_season_members.date_paid, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "'), '') AS date_paid "
 			. "FROM ciniki_customer_season_members, ciniki_customer_seasons "
 			. "WHERE ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND (ciniki_customer_seasons.flags&0x02) > 0 "
@@ -448,7 +467,9 @@ function ciniki_customers_get($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'seasons', 'fname'=>'id', 'name'=>'season',
-				'fields'=>array('id', 'name', 'flags', 'season_member_id', 'status', 'date_paid')),
+				'fields'=>array('id', 'name', 'flags', 'season_member_id', 'status', 'status_text', 'date_paid'),
+				'maps'=>array('status_text'=>$maps['season_member']['status']),
+				),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

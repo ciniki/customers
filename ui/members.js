@@ -211,10 +211,13 @@ function ciniki_customers_members() {
 				}},
 			'membership':{'label':'Status', 'aside':'yes', 'list':{
 				'member_status_text':{'label':'Status'},
-				'member_lastpaid':{'label':'Last Paid'},
+				'member_lastpaid':{'label':'Last Paid', 'visible':'no'},
 				'type':{'label':'Type'},
 				'member_categories':{'label':'Categories', 'visible':'no'},
 				}},
+			'seasons':{'label':'Seasons', 'visible':'no', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+				'cellClasses':['label', ''],
+				},
 			'phones':{'label':'Phones', 'type':'simplegrid', 'num_cols':2,
 				'headerValues':null,
 				'cellClasses':['label', ''],
@@ -307,6 +310,13 @@ function ciniki_customers_members() {
 			return this.data[i];
 		};
 		this.member.cellValue = function(s, i, j, d) {
+			if( s == 'seasons' ) {
+				switch(j) {
+					case 0: return d.season.name;
+					case 1: return d.season.status_text + ((d.season.date_paid!=null&&d.season.date_paid!='0000-00-00'&&d.season.date_paid!='')?' <span class="subdue">(' + d.season.date_paid + ')</span>':'');
+//					case 1: return d.season.phone_number + ((d.phone.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
+				}
+			}
 			if( s == 'phones' ) {
 				switch(j) {
 					case 0: return d.phone.phone_label;
@@ -461,6 +471,8 @@ function ciniki_customers_members() {
 			&& M.curBusiness.modules['ciniki.customers'].settings.seasons != null
 			) {
 			this.menu.sections.seasons.visible = 'yes';
+			this.member.sections.seasons.visible = 'yes';
+			this.member.sections.membership.list.member_lastpaid.visible = 'no';
 			this.menu.sections.seasons.list = {};
 			for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
 				var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
@@ -473,6 +485,8 @@ function ciniki_customers_members() {
 			}
 		} else {
 			this.menu.sections.seasons.visible = 'no';
+			this.member.sections.seasons.visible = 'no';
+			this.member.sections.membership.list.member_lastpaid.visible = 'yes';
 		}
 
 		//
