@@ -35,10 +35,12 @@ function ciniki_customers_salesrepList($ciniki) {
 
 	$rsp = array('stat'=>'ok', 'salesreps'=>array());
 
+
 	//
 	// Get the list of sales reps and the number of customers they have
 	//
 	$strsql = "SELECT ciniki_users.id, "
+		. "ciniki_business_users.status, "
 		. "ciniki_users.firstname, "
 		. "ciniki_users.lastname, "
 		. "ciniki_users.display_name, "
@@ -55,6 +57,7 @@ function ciniki_customers_salesrepList($ciniki) {
 		. "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_business_users.permission_group = 'salesreps' "
 		. "GROUP BY ciniki_business_users.user_id "
+		. "HAVING status < 60 OR num_customers > 0 "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -69,7 +72,7 @@ function ciniki_customers_salesrepList($ciniki) {
 	} 
 
 	$salesrep_id = 0;
-	if( isset($args['salesrep_id']) && $args['salesrep_id'] > 0 ) {
+	if( isset($args['salesrep_id']) && $args['salesrep_id'] != '' ) {
 		$salesrep_id = $args['salesrep_id'];
 	} else {
 		if( count($rsp['salesreps']) > 0 ) {
@@ -77,7 +80,30 @@ function ciniki_customers_salesrepList($ciniki) {
 		}
 	}
 
-	if( $salesrep_id != '' && $salesrep_id > 0 ) {
+	//
+	// Get the number of customers with No salesrep
+	//
+	$strsql = "SELECT 'num_customers', COUNT(ciniki_customers.salesrep_id) "
+		. "FROM ciniki_customers "
+		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ciniki_customers.salesrep_id = 0 "
+		. "GROUP BY ciniki_customers.salesrep_id "
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+	$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['num']) ) {
+		$rsp['salesreps'][] = array('salesrep'=>array('id'=>'0', 
+			'firstname'=>'No Sales Rep', 'lastname'=>'', 'display_name'=>'None', 
+			'email'=>'', 'num_customers'=>$rc['num']['num_customers']));
+	} 
+
+	//
+	// Load the list of salesreps
+	//
+	if( $salesrep_id != '' ) {
 		$strsql = "SELECT ciniki_customers.id, "
 			. "ciniki_customers.display_name "
 			. "FROM ciniki_customers "
