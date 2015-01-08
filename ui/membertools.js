@@ -15,57 +15,10 @@ function ciniki_customers_membertools() {
 		this.menu.sections = {
 			'tools':{'label':'Downloads', 'list':{
 				'directory':{'label':'Directory (Word)', 'fn':'M.ciniki_customers_membertools.downloadDirectory();'},
-				'memberlist':{'label':'Member List (Excel)', 'fn':'M.ciniki_customers_membertools.showMemberList(\'M.ciniki_customers_membertools.showMenu();\');'},
+				'memberlist':{'label':'Member List (Excel)', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_membertools.showMenu();\',\'mc\',{\'membersonly\':\'yes\'});'},
 				}},
 			};
 		this.menu.addClose('Back');
-
-		//
-		// The member list fields available to download
-		//
-		this.memberlist = new M.panel('Member List',
-			'ciniki_customers_membertools', 'memberlist',
-			'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.membertools.memberlist');
-		this.memberlist.data = {};
-		this.memberlist.sections = {
-			'options':{'label':'Data to include', 'aside':'yes', 'fields':{
-				'prefix':{'label':'Name Prefix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'first':{'label':'First Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-				'middle':{'label':'Middle Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'last':{'label':'Last Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-				'suffix':{'label':'Name Suffix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'company':{'label':'Company', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'department':{'label':'Department', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'title':{'label':'Title', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'visible':{'label':'Web Visible', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'member_status':{'label':'Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-				'member_lastpaid':{'label':'Last Paid Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'membership_type':{'label':'Membership Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'member_categories':{'label':'Categories', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-			}},
-			'options2':{'label':'More Options', 'fields':{
-				'phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'links':{'label':'Websites', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'primary_image':{'label':'Image', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'primary_image_caption':{'label':'Image Caption', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'short_description':{'label':'Short Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'full_bio':{'label':'Full Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				}},
-			'seasons':{'label':'Season Status', 'active':'no', 'fields':{}},
-			'subscriptions':{'label':'Subscription Status', 'active':'no', 'fields':{}},
-			'_buttons':{'label':'', 'buttons':{
-				'selectall':{'label':'Select All', 'fn':'M.ciniki_customers_membertools.selectAll();'},
-				'download':{'label':'Download Excel', 'fn':'M.ciniki_customers_membertools.downloadListExcel();'},
-				}},
-			};
-		this.memberlist.fieldValue = function(s, i, j, d) {
-			return M.ciniki_customers_membertools.memberlist.sections[s].fields[i].default;
-		};
-		this.memberlist.addClose('Back');
 	}
 
 	//
@@ -101,24 +54,9 @@ function ciniki_customers_membertools() {
 			}
 		}
 		this.menu.title = slabel + ' Tools';
-		this.memberlist.title = 'Export ' + plabel;
 		this.menu.sections.tools.list.memberlist.label = 'Export ' + plabel + ' (Excel)';
 
-		if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
-			this.memberlist.sections.options.fields.member_lastpaid.active = 'yes';
-			this.memberlist.sections.options.fields.membership_length.active = 'yes';
-			this.memberlist.sections.options.fields.membership_type.active = 'yes';
-		} else {
-			this.memberlist.sections.options.fields.member_lastpaid.active = 'no';
-			this.memberlist.sections.options.fields.membership_length.active = 'no';
-			this.memberlist.sections.options.fields.membership_type.active = 'no';
-		}
-
-		if( args.start != null && args.start == 'memberlist' ) {
-			M.ciniki_customers_membertools.showMemberList(cb, args.season);
-		} else {
-			this.showMenu(cb);
-		}
+		this.showMenu(cb);
 	}
 
 	//
@@ -132,114 +70,5 @@ function ciniki_customers_membertools() {
 	this.downloadDirectory = function() {
 		window.open(M.api.getUploadURL('ciniki.customers.memberDownloadDirectory', 
 			{'business_id':M.curBusinessID}));
-	};
-
-	this.showMemberList = function(cb, selected_season) {
-		//
-		// Get seasons if enabled
-		//
-		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
-			&& M.curBusiness.modules['ciniki.customers'].settings != null
-			&& M.curBusiness.modules['ciniki.customers'].settings.seasons != null
-			) {
-			this.memberlist.sections.seasons.active = 'yes';
-			this.memberlist.sections.seasons.fields = {};
-			for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
-				var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
-				if( season.open == 'yes' ) {
-					this.memberlist.sections.seasons.fields['season-' + season.id] = {
-						'label':season.name, 
-						'type':'toggle', 'default':(selected_season!=null&&selected_season==season.id?'yes':'no'), 
-						'toggles':this.toggleOptions,
-					};
-				}
-			}
-		} else {
-			this.memberlist.sections.seasons.active = 'yes';
-		}
-
-		//
-		// Check if subscriptions are enabled
-		//
-		if( M.curBusiness.modules['ciniki.subscriptions'] != null ) {
-			M.api.getJSONCb('ciniki.subscriptions.subscriptionList', {'business_id':M.curBusinessID}, function(rsp) {
-				if( rsp.stat != 'ok' ) {
-					M.api.err(rsp);
-					return false;
-				} 
-				var p = M.ciniki_customers_membertools.memberlist;
-				p.subscriptions = rsp.subscriptions;
-				if( rsp.subscriptions.length > 0 ) {
-					p.sections.subscriptions.active = 'yes';
-					p.sections.subscriptions.fields = {};
-					for(i in rsp.subscriptions) {
-						p.sections.subscriptions.fields['subscription-' + rsp.subscriptions[i].subscription.id] = {
-							'label':rsp.subscriptions[i].subscription.name, 
-							'type':'toggle', 'default':'no', 'toggles':M.ciniki_customers_membertools.toggleOptions,
-						};
-					}
-				}
-				p.refresh();
-				p.show(cb);
-			});
-		} else {
-			this.memberlist.sections.subscriptions.active = 'no';
-			this.memberlist.refresh();
-			this.memberlist.show(cb);
-		}
-	};
-
-	this.selectAll = function() {
-		var fields = this.memberlist.sections.options.fields;
-		for(i in fields) {
-			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-			this.memberlist.setFieldValue(i, 'yes')
-		}
-		fields = this.memberlist.sections.options2.fields;
-		for(i in fields) {
-			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-			this.memberlist.setFieldValue(i, 'yes')
-		}
-	}
-
-	this.downloadListExcel = function() {	
-		var cols = '';
-		var fields = this.memberlist.sections.options.fields;
-		for(i in fields) {
-			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-			if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {
-				cols += (cols!=''?'::':'') + i;
-			}
-		}
-		fields = this.memberlist.sections.options2.fields;
-		for(i in fields) {
-			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-			if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {
-				cols += (cols!=''?'::':'') + i;
-			}
-		}
-		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
-			&& M.curBusiness.modules['ciniki.customers'].settings != null
-			&& M.curBusiness.modules['ciniki.customers'].settings.seasons != null
-			) {
-			fields = this.memberlist.sections.seasons.fields;
-			for(i in fields) {
-				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-				if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {
-					cols += (cols!=''?'::':'') + i;
-				}
-			}
-		}
-		if( M.curBusiness.modules['ciniki.subscriptions'] ) {
-			fields = this.memberlist.sections.subscriptions.fields;
-			for(i in fields) {
-				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-				if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {
-					cols += (cols!=''?'::':'') + i;
-				}
-			}
-		}
-		window.open(M.api.getUploadURL('ciniki.customers.memberDownloadExcel', 
-			{'business_id':M.curBusinessID, 'columns':cols}));
 	};
 }

@@ -146,7 +146,7 @@ function ciniki_customers_members() {
 				'noData':'No members',
 				},
 			'_buttons':{'label':'', 'buttons':{
-				'download':{'label':'Download Excel', 'fn':'M.startApp(\'ciniki.customers.membertools\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'start\':\'memberlist\', \'season\':M.ciniki_customers_members.season.season_id});'},
+				'download':{'label':'Download Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'membersonly\':\'yes\', \'selected_season\':M.ciniki_customers_members.season.season_id});'},
 				}},
 			};
 		this.season.sectionData = function(s) { return this.data[s]; }

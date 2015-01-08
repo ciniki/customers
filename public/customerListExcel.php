@@ -7,13 +7,13 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:			The ID of the business the members belong to.
+// business_id:			The ID of the business the customers belong to.
 //
 // Returns
 // -------
 // A word document
 //
-function ciniki_customers_memberDownloadExcel(&$ciniki) {
+function ciniki_customers_customerListExcel(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -21,6 +21,8 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'columns'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Columns'), 
+		'memberlist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Members Only'),
+		'subscription_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subscription'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -32,7 +34,7 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
     // check permission to run this function for this business
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.memberDownloadExcel', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.customerListExcel', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -198,6 +200,28 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 	}
 
 	//
+	// Load the emails
+	//
+	$emails = array();
+	$strsql = "SELECT customer_id, "
+		. "ciniki_customer_emails.email AS emails "
+		. "FROM ciniki_customer_emails "
+		. "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "ORDER BY ciniki_customer_emails.customer_id "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+		array('container'=>'customers', 'fname'=>'customer_id', 
+			'fields'=>array('emails'),
+			'dlists'=>array('emails'=>', ')),
+		));	
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['customers']) ) {
+		$emails = $rc['customers'];
+	}
+
+	//
 	// Load the links
 	//
 	$links = array();
@@ -222,34 +246,81 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 	require($ciniki['config']['core']['lib_dir'] . '/PHPExcel/PHPExcel.php');
 	$objPHPExcel = new PHPExcel();
 
-	$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
-		. "company, department, title, display_name, "
-		. "ciniki_customers.type, "
-		. "ciniki_customers.status, "
-		. "ciniki_customers.member_status, "
-		. "ciniki_customers.member_lastpaid, "
-		. "ciniki_customers.membership_length, "
-		. "ciniki_customers.membership_type, "
-		. "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
-		. "ciniki_customers.primary_image_caption, "
-		. "ciniki_customers.short_description, "
-		. "ciniki_customers.full_bio, "
-		. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
-		. "'' AS member_categories, "
-		. "'' AS phones, "
-		. "'' AS addresses, "
-		. "'' AS links, "
-		. "ciniki_customer_emails.email AS emails "
-		. "FROM ciniki_customers "
-		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
-			. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. ") "
-		. "";
-			
-	$strsql .= "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customers.member_status = 10 "
-		. "ORDER BY ciniki_customers.sort_name "
-		. "";
+	if( isset($args['membersonly']) && $args['membersonly'] == 'yes' ) {
+		$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
+			. "company, department, title, display_name, "
+			. "ciniki_customers.type, "
+			. "ciniki_customers.status, "
+			. "ciniki_customers.member_status, "
+			. "ciniki_customers.member_lastpaid, "
+			. "ciniki_customers.membership_length, "
+			. "ciniki_customers.membership_type, "
+			. "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
+			. "ciniki_customers.primary_image_caption, "
+			. "ciniki_customers.short_description, "
+			. "ciniki_customers.full_bio, "
+			. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
+			. "'' AS member_categories, "
+			. "'' AS phones, "
+			. "'' AS addresses, "
+			. "'' AS links, "
+			. "'' AS emails "
+			. "FROM ciniki_customers "
+			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_customers.member_status = 10 "
+			. "ORDER BY ciniki_customers.sort_name "
+			. "";
+	} elseif( isset($args['subscription_id']) && $args['subscription_id'] != '' && $args['subscription_id'] > 0 ) {
+		$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
+			. "company, department, title, display_name, "
+			. "ciniki_customers.type, "
+			. "ciniki_customers.status, "
+			. "ciniki_customers.member_status, "
+			. "ciniki_customers.member_lastpaid, "
+			. "ciniki_customers.membership_length, "
+			. "ciniki_customers.membership_type, "
+			. "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
+			. "ciniki_customers.primary_image_caption, "
+			. "ciniki_customers.short_description, "
+			. "ciniki_customers.full_bio, "
+			. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
+			. "'' AS member_categories, "
+			. "'' AS phones, "
+			. "'' AS addresses, "
+			. "'' AS links, "
+			. "'' AS emails "
+			. "FROM ciniki_subscription_customers, ciniki_customers "
+			. "WHERE ciniki_subscription_customers.subscription_id = '" . ciniki_core_dbQuote($ciniki, $args['subscription_id']) . "' "
+			. "AND ciniki_subscription_customers.status = 10 "
+			. "AND ciniki_subscription_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_subscription_customers.customer_id = ciniki_customers.id "
+			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY ciniki_customers.sort_name "
+			. "";
+	} else {
+		$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
+			. "company, department, title, display_name, "
+			. "ciniki_customers.type, "
+			. "ciniki_customers.status, "
+			. "ciniki_customers.member_status, "
+			. "ciniki_customers.member_lastpaid, "
+			. "ciniki_customers.membership_length, "
+			. "ciniki_customers.membership_type, "
+			. "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
+			. "ciniki_customers.primary_image_caption, "
+			. "ciniki_customers.short_description, "
+			. "ciniki_customers.full_bio, "
+			. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
+			. "'' AS member_categories, "
+			. "'' AS phones, "
+			. "'' AS addresses, "
+			. "'' AS links, "
+			. "'' AS emails "
+			. "FROM ciniki_customers "
+			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "ORDER BY ciniki_customers.sort_name "
+			. "";
+	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
@@ -269,6 +340,9 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
+	}
+	if( !isset($rc['customers']) ) {
+		$customers = array();
 	}
 
 	$objPHPExcelWorksheet = $objPHPExcel->setActiveSheetIndex(0);
@@ -357,6 +431,8 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 				$value = $phones[$customer['id']]['phones'];
 			} elseif( $column == 'addresses' && isset($addresses[$customer['id']]['addresses']) ) {
 				$value = preg_replace('/, ,/', ',', $addresses[$customer['id']]['addresses']);
+			} elseif( $column == 'emails' && isset($emails[$customer['id']]['emails']) ) {
+				$value = preg_replace('/, ,/', ',', $emails[$customer['id']]['emails']);
 			} elseif( $column == 'links' && isset($links[$customer['id']]['links']) ) {
 				$value = $links[$customer['id']]['links'];
 			} elseif( !isset($customer[$column]) ) {
