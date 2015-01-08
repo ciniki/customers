@@ -56,6 +56,7 @@ function ciniki_customers_membertools() {
 				'full_bio':{'label':'Full Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				}},
 			'seasons':{'label':'Season Status', 'active':'no', 'fields':{}},
+			'subscriptions':{'label':'Subscription Status', 'active':'no', 'fields':{}},
 			'_buttons':{'label':'', 'buttons':{
 				'selectall':{'label':'Select All', 'fn':'M.ciniki_customers_membertools.selectAll();'},
 				'download':{'label':'Download Excel', 'fn':'M.ciniki_customers_membertools.downloadListExcel();'},
@@ -157,8 +158,35 @@ function ciniki_customers_membertools() {
 			this.memberlist.sections.seasons.active = 'yes';
 		}
 
-		this.memberlist.refresh();
-		this.memberlist.show(cb);
+		//
+		// Check if subscriptions are enabled
+		//
+		if( M.curBusiness.modules['ciniki.subscriptions'] != null ) {
+			M.api.getJSONCb('ciniki.subscriptions.subscriptionList', {'business_id':M.curBusinessID}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				} 
+				var p = M.ciniki_customers_membertools.memberlist;
+				p.subscriptions = rsp.subscriptions;
+				if( rsp.subscriptions.length > 0 ) {
+					p.sections.subscriptions.active = 'yes';
+					p.sections.subscriptions.fields = {};
+					for(i in rsp.subscriptions) {
+						p.sections.subscriptions.fields['subscription-' + rsp.subscriptions[i].subscription.id] = {
+							'label':rsp.subscriptions[i].subscription.name, 
+							'type':'toggle', 'default':'no', 'toggles':M.ciniki_customers_membertools.toggleOptions,
+						};
+					}
+				}
+				p.refresh();
+				p.show(cb);
+			});
+		} else {
+			this.memberlist.sections.subscriptions.active = 'no';
+			this.memberlist.refresh();
+			this.memberlist.show(cb);
+		}
 	};
 
 	this.selectAll = function() {
@@ -195,6 +223,15 @@ function ciniki_customers_membertools() {
 			&& M.curBusiness.modules['ciniki.customers'].settings.seasons != null
 			) {
 			fields = this.memberlist.sections.seasons.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
+			}
+		}
+		if( M.curBusiness.modules['ciniki.subscriptions'] ) {
+			fields = this.memberlist.sections.subscriptions.fields;
 			for(i in fields) {
 				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
 				if( this.memberlist.formFieldValue(fields[i], i) == 'yes' ) {

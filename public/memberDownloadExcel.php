@@ -104,6 +104,28 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 	}
 
 	//
+	// If subscriptions are enabled
+	//
+	$subscription_ids = array();
+	$subscriptions = array();
+	if( isset($ciniki['business']['modules']['ciniki.subscriptions']) ) {
+		foreach($args['columns'] as $column) {
+			if( preg_match("/^subscription-([0-9]+)$/", $column, $matches) ) {
+				$subscription_ids[] = $matches[1];
+			}
+		}
+		if( count($subscription_ids) > 0 ) {
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'subscriptions', 'hooks', 'subscriptionCustomers');
+			$rc = ciniki_subscriptions_hooks_subscriptionCustomers($ciniki, $args['business_id'], 
+				array('subscription_ids'=>$subscription_ids));
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			$subscriptions = $rc['subscriptions'];
+		}
+	}
+
+	//
 	// Load the categories
 	//
 	$member_categories = array();
@@ -290,6 +312,11 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 				$value = $seasons[$matches[1]]['name'];
 			}
 		}
+		if( preg_match("/^subscription-([0-9]+)$/", $column, $matches) ) {
+			if( isset($subscriptions[$matches[1]]) ) {
+				$value = $subscriptions[$matches[1]]['name'];
+			}
+		}
 		$objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $value, false);
 		$col++;
 	}
@@ -310,6 +337,16 @@ function ciniki_customers_memberDownloadExcel(&$ciniki) {
 					&& isset($maps['season_member']['status'][$seasons[$matches[1]]['customers'][$customer['id']]['status']]) 
 					) {
 					$value = $maps['season_member']['status'][$seasons[$matches[1]]['customers'][$customer['id']]['status']];
+				} else {
+					$col++;
+					continue;
+				}
+			} elseif( preg_match("/^subscription-([0-9]+)$/", $column, $matches) ) {
+				$value = '';
+				if( isset($subscriptions[$matches[1]]['customers'][$customer['id']]['status_text'])
+					&& $subscriptions[$matches[1]]['customers'][$customer['id']]['status_text'] != ''
+					) {
+					$value = $subscriptions[$matches[1]]['customers'][$customer['id']]['status_text'];
 				} else {
 					$col++;
 					continue;
