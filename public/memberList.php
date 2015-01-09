@@ -38,6 +38,16 @@ function ciniki_customers_memberList($ciniki) {
     }   
 
 	//
+	// Load maps
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+	$rc = ciniki_customers_maps($ciniki);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$maps = $rc['maps'];
+
+	//
 	// Get the business settings
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
@@ -51,79 +61,97 @@ function ciniki_customers_memberList($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
 	$date_format = ciniki_users_dateFormat($ciniki, 'php');
+	$mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
 	//
 	// Load the list of members for a business
 	//
+	$strsql = "SELECT ciniki_customers.id, "
+		. "ciniki_customers.first, "
+		. "ciniki_customers.last, "
+		. "ciniki_customers.display_name, "
+		. "ciniki_customers.member_status AS member_status_text, "
+		. "ciniki_customers.member_lastpaid, "
+		. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
+		. "ciniki_customers.membership_length AS membership_length_text, "
+		. "ciniki_customers.membership_type, "
+		. "ciniki_customers.membership_type AS membership_type_text, "
+		. "ciniki_customers.company ";
 	if( isset($args['category']) && $args['category'] != '' ) {
-		$strsql = "SELECT ciniki_customers.id, "
-			. "ciniki_customers.first, "
-			. "ciniki_customers.last, "
-			. "ciniki_customers.display_name, "
-			. "ciniki_customers.member_status AS member_status_text, "
-			. "ciniki_customers.member_lastpaid, "
-			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
-			. "ciniki_customers.membership_length AS membership_length_text, "
-			. "ciniki_customers.membership_type, "
-			. "ciniki_customers.membership_type AS membership_type_text, "
-			. "ciniki_customers.company "
-			. "FROM ciniki_customer_tags, ciniki_customers "
-			. "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		$strsql .= "FROM ciniki_customer_tags "
+			. "LEFT JOIN ciniki_customers ON ("
+				. "ciniki_customer_tags.customer_id = ciniki_customers.id "
+				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND ciniki_customers.member_status = 10 "
+				. ") ";
+		if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+			$strsql .= "LEFT JOIN ciniki_customer_season_members ON ("
+				. "ciniki_customers.id = ciniki_customer_season_members.customer_id "
+				. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") ";
+		}
+		$strsql .= "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customer_tags.permalink = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
 			. "AND ciniki_customer_tags.tag_type = '40' "
-			. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
-			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND ciniki_customers.member_status = 10 "
-			. "ORDER BY sort_name, last, first, company";
+			. "ORDER BY sort_name, last, first, company"
+			. "";
 	} elseif( isset($args['category']) && $args['category'] == '' ) {
-		$strsql = "SELECT ciniki_customers.id, "
-			. "ciniki_customers.first, "
-			. "ciniki_customers.last, "
-			. "ciniki_customers.display_name, "
-			. "ciniki_customers.member_status AS member_status_text, "
-			. "ciniki_customers.member_lastpaid, "
-			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
-			. "ciniki_customers.membership_length AS membership_length_text, "
-			. "ciniki_customers.membership_type, "
-			. "ciniki_customers.membership_type AS membership_type_text, "
-			. "ciniki_customers.company "
-			. "FROM ciniki_customers "
+//		$strsql = "SELECT ciniki_customers.id, "
+//			. "ciniki_customers.first, "
+//			. "ciniki_customers.last, "
+//			. "ciniki_customers.display_name, "
+//			. "ciniki_customers.member_status AS member_status_text, "
+//			. "ciniki_customers.member_lastpaid, "
+//			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
+//			. "ciniki_customers.membership_length AS membership_length_text, "
+//			. "ciniki_customers.membership_type, "
+//			. "ciniki_customers.membership_type AS membership_type_text, "
+//			. "ciniki_customers.company "
+		$strsql .= "FROM ciniki_customers "
 			. "LEFT JOIN ciniki_customer_tags ON ("
 				. "ciniki_customers.id = ciniki_customer_tags.customer_id "
 				. "AND ciniki_customer_tags.tag_type = '40' "
 				. "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-				. ") "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") ";
+		if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+			$strsql .= "LEFT JOIN ciniki_customer_season_members ON ("
+				. "ciniki_customers.id = ciniki_customer_season_members.customer_id "
+				. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") ";
+		}
+		$strsql .="WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.member_status = 10 "
 			. "AND ISNULL(ciniki_customer_tags.tag_name) "
-			. "ORDER BY sort_name, last, first, company";
+			. "ORDER BY sort_name, last, first, company"
+			. "";
 	} else {
-		$strsql = "SELECT ciniki_customers.id, "
-			. "ciniki_customers.first, "
-			. "ciniki_customers.last, "
-			. "ciniki_customers.display_name, "
-			. "ciniki_customers.member_status AS member_status_text, "
-			. "ciniki_customers.member_lastpaid, "
-			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
-			. "ciniki_customers.membership_length AS membership_length_text, "
-			. "ciniki_customers.membership_type, "
-			. "ciniki_customers.membership_type AS membership_type_text, "
-			. "ciniki_customers.company "
-			. "FROM ciniki_customers "
-			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//		$strsql = "SELECT ciniki_customers.id, "
+//			. "ciniki_customers.first, "
+//			. "ciniki_customers.last, "
+//			. "ciniki_customers.display_name, "
+//			. "ciniki_customers.member_status AS member_status_text, "
+//			. "ciniki_customers.member_lastpaid, "
+//			. "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
+//			. "ciniki_customers.membership_length AS membership_length_text, "
+//			. "ciniki_customers.membership_type, "
+//			. "ciniki_customers.membership_type AS membership_type_text, "
+//			. "ciniki_customers.company "
+		$strsql .= "FROM ciniki_customers ";
+		$strsql .= "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_customers.member_status = 10 "
-			. "ORDER BY sort_name, last, first, company";
+			. "ORDER BY sort_name, last, first, company"
+			. "";
 	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.artclub', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customer', array(
 		array('container'=>'members', 'fname'=>'id', 'name'=>'member',
 			'fields'=>array('id', 'first', 'last', 'display_name', 'company', 
 				'member_status_text', 'member_lastpaid', 'member_lastpaid_age', 'membership_length_text', 
 				'membership_type', 'membership_type_text'),
 			'maps'=>array(
-				'member_status_text'=>array('0'=>'Non-Member', '10'=>'Active', '60'=>'Suspended'),
-				'membership_length_text'=>array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),
-				'membership_type_text'=>array('10'=>'Regular', '20'=>'Complimentary', '30'=>'Reciprocal'),
+				'member_status_text'=>$maps['customer']['member_status'],
+				'membership_length_text'=>$maps['customer']['membership_length'],
+				'membership_type_text'=>$maps['customer']['membership_type'],
 				),
 			'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 			),
@@ -131,10 +159,46 @@ function ciniki_customers_memberList($ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+	$rsp = array('stat'=>'ok', 'members'=>array());
 	if( isset($rc['members']) ) {
-		return array('stat'=>'ok', 'members'=>$rc['members']);
+		$rsp['members'] = $rc['members'];
+
+		//
+		// Get the seasons if enabled for the last_paid date
+		//
+		if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+			$strsql = "SELECT ciniki_customer_season_members.customer_id, "
+				. "ciniki_customer_seasons.name, "
+				. "ciniki_customer_season_members.status AS status_text, "
+				. "DATE_FORMAT(ciniki_customer_season_members.date_paid, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS date_paid "
+				. "FROM ciniki_customer_season_members, ciniki_customer_seasons "
+				. "WHERE ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND ciniki_customer_season_members.season_id = ciniki_customer_seasons.id "
+				. "AND ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "ORDER BY ciniki_customer_season_members.customer_id, ciniki_customer_seasons.start_date DESC "
+				. "";
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+			$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+				array('container'=>'customers', 'fname'=>'customer_id', 
+					'fields'=>array('customer_id', 'name', 'status_text', 'date_paid'),
+					'maps'=>array('status_text'=>$maps['season_member']['status'])),
+				));
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			if( isset($rc['customers']) ) {
+				$customers = $rc['customers'];
+				foreach($rsp['members'] as $mid => $member) {
+					if( isset($customers[$member['member']['id']]) ) {
+						$rsp['members'][$mid]['member']['season_name'] = $customers[$member['member']['id']]['name'];
+						$rsp['members'][$mid]['member']['season_status_text'] = $customers[$member['member']['id']]['status_text'];
+						$rsp['members'][$mid]['member']['season_date_paid'] = $customers[$member['member']['id']]['date_paid'];
+					}
+				}
+			}
+		}
 	} 
 
-	return array('stat'=>'ok', 'members'=>array());
+	return $rsp;
 }
 ?>

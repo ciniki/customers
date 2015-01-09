@@ -106,10 +106,17 @@ function ciniki_customers_members() {
 		this.list.cellValue = function(s, i, j, d) {
 			switch(j) {
 				case 0: return d.member.display_name;
-				case 1: if( d.member.membership_type == '20' ) {
-						return d.member.membership_type_text;
-					} 
-					return '<span class="maintext">' + d.member.membership_type_text + '</span><span class="subtext">Paid: ' + d.member.member_lastpaid + '</span>';
+				case 1: 
+					var subtxt = '';
+					if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 ) {
+						if( d.member.season_name != null && d.member.season_name != '' ) {
+							subtxt = '<span class="subtext">' + d.member.season_name + (d.member.season_status_text!=null&&d.member.season_status_text!=''?' - ' + d.member.season_status_text:'') + (d.member.season_date_paid!=null&&d.member.season_date_paid!=''?' (' + d.member.season_date_paid + ')':'');
+						}
+					} else {
+						subtxt = '<span class="subtext">Paid: ' + d.member.member_lastpaid + '</span>';
+					}
+
+					return '<span class="maintext">' + d.member.membership_type_text + '</span>' + subtxt;
 			}
 		};
 		this.list.rowFn = function(s, i, d) { 
