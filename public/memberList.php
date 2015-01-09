@@ -173,6 +173,7 @@ function ciniki_customers_memberList($ciniki) {
 				. "DATE_FORMAT(ciniki_customer_season_members.date_paid, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS date_paid "
 				. "FROM ciniki_customer_season_members, ciniki_customer_seasons "
 				. "WHERE ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND ciniki_customer_season_members.status > 0 "
 				. "AND ciniki_customer_season_members.season_id = ciniki_customer_seasons.id "
 				. "AND ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. "ORDER BY ciniki_customer_season_members.customer_id, ciniki_customer_seasons.start_date DESC "
