@@ -26,6 +26,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_images ON ("
 			. "ciniki_customers.id = ciniki_customer_images.customer_id "
+			. "AND ciniki_customer_images.image_id > 0 "
 			. "AND (ciniki_customer_images.webflags&0x01) = 1 "
 			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
