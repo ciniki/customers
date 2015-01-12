@@ -783,8 +783,16 @@ function ciniki_customers_edit() {
 
 		if( args.next != null && args.next != '' ) {
 			this.edit.nextFn = args.next;
+			this.edit.forms.person._buttons.buttons.save.label = 'Next';
+			this.edit.forms.business._buttons.buttons.save.label = 'Next';
+			this.edit.rightbuttons.save.icon = 'next';
+			this.edit.rightbuttons.save.label = 'Next';
 		} else {
 			this.edit.nextFn = null;
+			this.edit.forms.person._buttons.buttons.save.label = 'Save';
+			this.edit.forms.business._buttons.buttons.save.label = 'Save';
+			this.edit.rightbuttons.save.icon = 'save';
+			this.edit.rightbuttons.save.label = 'Save';
 		}
 		//
 		// Set most things to off
