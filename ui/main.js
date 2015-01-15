@@ -284,9 +284,14 @@ function ciniki_customers_main() {
 				'addTxt':'Add',
 				'addFn':'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'invoice_type\':10});',
 				},
+			'order_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':4, 
+				'hint':'Search orders', 'noData':'No orders found',
+				'headerValues':['Invoice #', 'Date', 'Amount', 'Status'],
+				'cellClasses':['multiline','','',''],
+				},
 			'orders':{'label':'', 'type':'simplegrid', 'visible':'no', 'num_cols':4, 
 				'headerValues':['Invoice #', 'Date', 'Amount', 'Status'],
-				'cellClasses':['','','',''],
+				'cellClasses':['multiline','','',''],
 				'limit':10,
 				'moreTxt':'More',
 				'moreFn':'M.startApp(\'ciniki.sapos.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
@@ -344,6 +349,31 @@ function ciniki_customers_main() {
 		};
 		this.customer.sectionData = function(s) {
 			return this.data[s];
+		};
+		this.customer.liveSearchCb = function(s, i, value) {
+			if( s == 'order_search' && value != '' ) {
+				M.api.getJSONBgCb('ciniki.sapos.invoiceSearch', {'business_id':M.curBusinessID, 'customer_id':M.ciniki_customers_main.customer.customer_id, 'invoice_type':'40', 'start_needle':value, 'limit':'10'}, 
+					function(rsp) { 
+						M.ciniki_customers_main.customer.liveSearchShow('order_search', null, M.gE(M.ciniki_customers_main.customer.panelUID + '_' + s), rsp.invoices); 
+					});
+				return true;
+			}
+		};
+		this.customer.liveSearchResultValue = function(s, f, i, j, d) {
+			if( s == 'order_search' ) {
+				switch(j) {
+					case 0: return d.invoice.invoice_number + (d.invoice.po_number!=null&&d.invoice.po_number!=''?'<span class="subtext">PO #:' + d.invoice.po_number + '</span>':'');
+					case 1: return d.invoice.invoice_date;
+					case 2: return d.invoice.total_amount_display;
+					case 3: return d.invoice.status_text;
+				}
+			}
+			return '';
+		};
+		this.customer.liveSearchResultRowFn = function(s, f, i, j, d) { 
+			if( s == 'order_search' ) {
+				return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'invoice_id\':\'' + d.invoice.id + '\'});';
+			}
 		};
 		this.customer.cellColour = function(s, i, j, d) {
 			if( s == 'appointments' && j == 1 ) { 
@@ -441,7 +471,8 @@ function ciniki_customers_main() {
 			}
 			else if( s == 'invoices' || s == 'carts' || s == 'pos' || s == 'orders' ) {
 				switch(j) {
-					case 0: return d.invoice.invoice_number;
+//					case 0: return d.invoice.invoice_number;
+					case 0: return d.invoice.invoice_number + (d.invoice.po_number!=null&&d.invoice.po_number!=''?'<span class="subtext">PO #:' + d.invoice.po_number + '</span>':'');
 					case 1: return d.invoice.invoice_date;
 					case 2: return d.invoice.total_amount_display;
 					case 3: return d.invoice.status_text;
@@ -1026,6 +1057,7 @@ function ciniki_customers_main() {
 		p.sections.currentwineproduction.visible = 'no';
 		p.sections.pastwineproduction.visible = 'no';
 		p.sections.invoices.visible = 'no';
+		p.sections.order_search.visible = 'no';
 		p.sections.orders.visible = 'no';
 		p.sections.pos.visible = 'no';
 		p.sections.carts.visible = 'no';
@@ -1039,6 +1071,7 @@ function ciniki_customers_main() {
 		} else if( p.paneltab == 'invoices' ) {
 			p.sections.invoices.visible = 'yes';
 		} else if( p.paneltab == 'orders' ) {
+			p.sections.order_search.visible = 'yes';
 			p.sections.orders.visible = 'yes';
 		} else if( p.paneltab == 'pos' ) {
 			p.sections.pos.visible = 'yes';
