@@ -68,7 +68,6 @@ function ciniki_customers_membertools() {
 	};
 
 	this.downloadDirectory = function() {
-		window.open(M.api.getUploadURL('ciniki.customers.memberDownloadDirectory', 
-			{'business_id':M.curBusinessID}));
+		M.api.openFile('ciniki.customers.memberDownloadDirectory', {'business_id':M.curBusinessID});
 	};
 }

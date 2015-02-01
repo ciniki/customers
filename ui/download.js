@@ -220,6 +220,6 @@ function ciniki_customers_download() {
 		var args = {'business_id':M.curBusinessID, 'columns':cols};
 		if( this.exportlist.membersonly != '' ) { args.membersonly = this.exportlist.membersonly; }
 		if( this.exportlist.subscription_id != '' ) { args.subscription_id = this.exportlist.subscription_id; }
-		window.open(M.api.getUploadURL('ciniki.customers.customerListExcel', args));
+		M.api.openFile('ciniki.customers.customerListExcel', args);
 	};
 }

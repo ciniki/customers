@@ -130,8 +130,7 @@ function ciniki_customers_dealertools() {
 	};
 
 	this.downloadDirectory = function() {
-		window.open(M.api.getUploadURL('ciniki.customers.dealerDownloadDirectory', 
-			{'business_id':M.curBusinessID}));
+		M.api.openFile('ciniki.customers.dealerDownloadDirectory', {'business_id':M.curBusinessID});
 	};
 
 	this.showMemberList = function(cb) {
@@ -180,7 +179,6 @@ function ciniki_customers_dealertools() {
 				cols += (cols!=''?'::':'') + i;
 			}
 		}
-		window.open(M.api.getUploadURL('ciniki.customers.dealerDownloadExcel', 
-			{'business_id':M.curBusinessID, 'columns':cols}));
+		M.api.openFile('ciniki.customers.dealerDownloadExcel', {'business_id':M.curBusinessID, 'columns':cols});
 	};
 }
