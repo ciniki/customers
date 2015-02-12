@@ -26,7 +26,7 @@ function ciniki_customers_emailSearch($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+//        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
 		'email'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -57,8 +57,11 @@ function ciniki_customers_emailSearch($ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+	if( isset($rc['rows']) && $rc['num_rows'] > 1 ) {
+		return array('stat'=>'ambiguous', 'err'=>array('pkg'=>'ciniki', 'code'=>'2211', 'msg'=>'Multiple emails found'));
+	}
 	if( !isset($rc['email']) ) {
-		return array('stat'=>'ok');
+		return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'2212', 'msg'=>'Email not found'));
 	}
 
 	return array('stat'=>'ok', 'email'=>$rc['email']);
