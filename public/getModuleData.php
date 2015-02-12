@@ -61,6 +61,7 @@ function ciniki_customers_getModuleData($ciniki) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
 	$date_format = ciniki_users_dateFormat($ciniki, 'php');
+	$mysql_date_format = ciniki_users_dateFormat($ciniki);
 
 	//
 	// Load maps
@@ -488,7 +489,7 @@ function ciniki_customers_getModuleData($ciniki) {
 			. "DATE_FORMAT(ciniki_wineproductions.filtering_date, '%b %e, %Y') AS filtering_date, "
 			. "DATE_FORMAT(ciniki_wineproductions.bottling_date, '%b %e, %Y') AS bottling_date, "
 			. "DATE_FORMAT(IF(rack_date > 0, DATE_ADD(rack_date, INTERVAL (kit_length) DAY), "
-				. "DATE_ADD(ciniki_wineproductions.start_date, INTERVAL kit_length WEEK)), '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS approx_filtering_date "
+				. "DATE_ADD(ciniki_wineproductions.start_date, INTERVAL kit_length WEEK)), '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS approx_filtering_date "
 			. "FROM ciniki_wineproductions "
 			. "LEFT JOIN ciniki_products ON (ciniki_wineproductions.product_id = ciniki_products.id "
 				. "AND ciniki_products.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -532,7 +533,7 @@ function ciniki_customers_getModuleData($ciniki) {
 			. "DATE_FORMAT(ciniki_wineproductions.filtering_date, '%b %e, %Y') AS filtering_date, "
 			. "DATE_FORMAT(ciniki_wineproductions.bottling_date, '%b %e, %Y') AS bottling_date, "
 			. "DATE_FORMAT(IF(rack_date > 0, DATE_ADD(rack_date, INTERVAL (kit_length) DAY), "
-				. "DATE_ADD(ciniki_wineproductions.start_date, INTERVAL kit_length WEEK)), '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS approx_filtering_date "
+				. "DATE_ADD(ciniki_wineproductions.start_date, INTERVAL kit_length WEEK)), '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS approx_filtering_date "
 			. "FROM ciniki_wineproductions "
 			. "LEFT JOIN ciniki_products ON (ciniki_wineproductions.product_id = ciniki_products.id "
 				. "AND ciniki_products.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
