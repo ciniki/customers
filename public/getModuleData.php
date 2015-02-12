@@ -19,6 +19,7 @@ function ciniki_customers_getModuleData($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
 		'eid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer ID'),
+		'display_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Display Name'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -40,7 +41,9 @@ function ciniki_customers_getModuleData($ciniki) {
 	// Check either ID or code has been specified
 	//
 	if( (!isset($args['customer_id']) || $args['customer_id'] == '')
-		&& (!isset($args['eid']) || $args['eid'] == '') ) {
+		&& (!isset($args['eid']) || $args['eid'] == '') 
+		&& (!isset($args['display_name']) || $args['display_name'] == '') 
+		) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1907', 'msg'=>'You must specify either a customer or ID'));
 	}
 
@@ -120,6 +123,8 @@ function ciniki_customers_getModuleData($ciniki) {
 		$strsql .= "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
 	} elseif( isset($args['eid']) && $args['eid'] != '' ) {
 		$strsql .= "AND ciniki_customers.eid = '" . ciniki_core_dbQuote($ciniki, $args['eid']) . "' ";
+	} elseif( isset($args['display_name']) && $args['display_name'] != '' ) {
+		$strsql .= "AND ciniki_customers.display_name = '" . ciniki_core_dbQuote($ciniki, $args['display_name']) . "' ";
 	} else {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1906', 'msg'=>'You must specify either a customer or ID'));
 	}
@@ -146,6 +151,9 @@ function ciniki_customers_getModuleData($ciniki) {
 	}
 	if( !isset($rc['customers']) ) {
 		return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'1511', 'msg'=>'Invalid customer'));
+	}
+	if( isset($rc['customers']) && count($rc['customers']) > 1 ) {
+		return array('stat'=>'ambiguous', 'err'=>array('pkg'=>'ciniki', 'code'=>'2210', 'msg'=>'Multiple customers found'));
 	}
 	$customer = $rc['customers'][0]['customer'];
 	$customer['addresses'] = array();
