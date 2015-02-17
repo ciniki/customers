@@ -43,8 +43,11 @@ function ciniki_customers_duplicatesFind($ciniki) {
 		. "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND c1.id < c2.id "
 //		. "AND ((c1.first = c2.first and c1.last = c2.last) OR (c1.first = c2.last and c1.last = c2.first)) "
-		. "AND ((soundex(c1.first) = soundex(c2.first) and soundex(c1.last) = soundex(c2.last)) "
-			. "OR (soundex(c1.first) = soundex(c2.last) and soundex(c1.last) = soundex(c2.first))) "
+		. "AND ((c1.type = 1 AND soundex(c1.first) = soundex(c2.first) and soundex(c1.last) = soundex(c2.last)) "
+			. "OR (c1.type = 1 AND soundex(c1.first) = soundex(c2.last) and soundex(c1.last) = soundex(c2.first)) "
+			. "OR (c1.type = 2 AND soundex(c1.company) = soundex(c2.company)) "
+			. "OR (soundex(c1.display_name) = soundex(c2.display_name)) "
+			. ") "
 		. "ORDER BY c1_display_name, c1.id "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
