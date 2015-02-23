@@ -55,6 +55,9 @@ function ciniki_customers_members() {
 		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
 			return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showMenu();\',\'' + d.customer.id + '\');'; 
 		};
+		this.menu.liveSearchSubmitFn = function(s, search_str) {
+			M.startApp('ciniki.customers.main',null,'M.ciniki_customers_members.showMenu();','mc',{'type':'members', 'search':search_str});
+		};
 		this.menu.listValue = function(s, i, d) {
 			return d.label;
 		}
