@@ -105,15 +105,21 @@ function ciniki_customers_salesrepList($ciniki) {
 	//
 	if( $salesrep_id != '' ) {
 		$strsql = "SELECT ciniki_customers.id, "
-			. "ciniki_customers.display_name "
+			. "ciniki_customers.display_name, "
+			. "IFNULL(ciniki_customer_addresses.province, '') AS location "
 			. "FROM ciniki_customers "
+			. "LEFT JOIN ciniki_customer_addresses ON ("
+				. "ciniki_customers.id = ciniki_customer_addresses.customer_id "
+				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") "
 			. "WHERE ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $salesrep_id) . "' "
 			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "ORDER BY ciniki_customers.sort_name "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-				'fields'=>array('id', 'display_name')),
+				'fields'=>array('id', 'display_name', 'location'),
+				'lists'=>array('location')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

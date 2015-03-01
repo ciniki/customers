@@ -31,7 +31,10 @@ function ciniki_customers_salesreps() {
 			'salesreps':{'label':'Sales Reps', 'aside':'yes', 'num_cols':1, 'type':'simplegrid', 
 				'noData':'No sales reps',
 				},
-			'customers':{'label':'Sales Reps', 'num_cols':1, 'type':'simplegrid', 
+			'customers':{'label':'Sales Reps', 'num_cols':2, 'type':'simplegrid', 
+				'headerValues':['Customer', 'Location'],
+				'sortable':'yes', 
+				'sortTypes':['text', 'text'],
 				'noData':'No customers',
 				},
 			'_move':{'label':'Change Sales Rep', 'fields':{
@@ -55,7 +58,10 @@ function ciniki_customers_salesreps() {
 			if( s == 'salesreps' ) {
 				return d.salesrep.firstname + ' ' + d.salesrep.lastname + ' <span class="subdue">[' + d.salesrep.display_name + ']</span> <span class="count">' + d.salesrep.num_customers + '</span>';
 			} else if( s == 'customers' ) {
-				return d.customer.display_name;
+				switch(j) {
+					case 0: return d.customer.display_name;
+					case 1: return d.customer.location;
+				}
 			}
 			return '';
 		};
