@@ -61,7 +61,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
 	//
 	if( $business_id <= 0 ) {
 		// If no business_id specified, then fail
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2031', 'msg'=>'Access denied'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2256', 'msg'=>'Access denied'));
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
@@ -90,89 +90,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
 	//
 	// By default, deny access
 	//
-	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2032', 'msg'=>'Access denied'));
+	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2234', 'msg'=>'Access denied'));
 
-
-/* OLD CODE
-	//
-	// Find any users which are owners of the requested business_id
-	//
-	$strsql = "SELECT business_id, user_id FROM ciniki_business_users "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "AND user_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
-		. "AND package = 'ciniki' "
-		. "AND status = 10 "
-		. "AND (permission_group = 'owners' OR permission_group = 'employees') "
-		. "";
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQuery');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
-	if( $rc['stat'] != 'ok' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'378', 'msg'=>'Access denied', 'err'=>$rc['err']));
-	}
-	//
-	// If the user has permission, return ok
-	//
-	if( !isset($rc['rows']) 
-		|| !isset($rc['rows'][0]) 
-		|| $rc['rows'][0]['user_id'] <= 0 
-		|| $rc['rows'][0]['user_id'] != $ciniki['session']['user']['id'] ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'516', 'msg'=>'Access denied'));
-	}
-
-	// 
-	// At this point, we have ensured the user is a part of the business.
-	//
-
-
-	if( $method == 'ciniki.customers.relationshipHistory' 
-		|| $method == 'ciniki.customers.relationshipGet'
-		|| $method == 'ciniki.customers.relationshipDelete'
-		|| $method == 'ciniki.customers.relationshipUpdate' ) {
-		//
-		// Make sure the relationship is owned by the business
-		//
-		$strsql = "SELECT business_id, id "
-			. "FROM ciniki_customer_relationships "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND id = '" . ciniki_core_dbQuote($ciniki, $req_id) . "' "
-			. "";
-		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'relationship');
-		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'319', 'msg'=>'Access denied', 'err'=>$rc['err']));
-		}
-		if( !isset($rc['relationship']) 
-			|| $rc['relationship']['business_id'] != $business_id
-			|| $rc['relationship']['id'] != $req_id ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'298', 'msg'=>'Access denied'));
-		}
-	}
-
-	//
-	// Check the customer is attached to the business
-	//
-	elseif( $req_id > 0 ) {
-		//
-		// Make sure the customer is attached to the business
-		//
-		$strsql = "SELECT business_id, id FROM ciniki_customers "
-			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-			. "AND id = '" . ciniki_core_dbQuote($ciniki, $req_id) . "' "
-			. "";
-		$rc = ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer', array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'377', 'msg'=>'Access denied')));
-		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'515', 'msg'=>'Access denied', 'err'=>$rc['err']));
-		}
-		if( $rc['num_rows'] != 1 
-			|| $rc['customers'][0]['customer']['business_id'] != $business_id
-			|| $rc['customers'][0]['customer']['id'] != $req_id ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'379', 'msg'=>'Access denied'));
-		}
-	}
-
-	//
-	// All checks passed, return ok
-	//
-	return array('stat'=>'ok', 'modules'=>$modules);
-	*/
 }
 ?>

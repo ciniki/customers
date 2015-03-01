@@ -737,7 +737,6 @@ function ciniki_customers_main() {
 	this.showCustomer = function(cb, cid) {
 		if( cid != null ) { this.customer.customer_id = cid; }
 		// Reset to not showing all sections
-//		this.customer.sections.phones.visible = 'no';
 		this.customer.sections.subscriptions.visible = 'no';
 		this.customer.sections.invoices.visible = 'no';
 		this.customer.sections.appointments.visible = 'no';
