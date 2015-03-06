@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.19.
+#
+ALTER TABLE ciniki_customers ADD COLUMN sales_total_prev varchar(50) not null AFTER sales_total;
+ALTER TABLE ciniki_customers COMMENT='v1.20';
+

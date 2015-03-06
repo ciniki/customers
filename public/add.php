@@ -138,6 +138,7 @@ function ciniki_customers_add(&$ciniki) {
         'tax_location_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Tax Location'), 
         'reward_level'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Reward Level'), 
         'sales_total'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Sales Total'), 
+        'sales_total_prev'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Previous Sales'), 
         'start_date'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Start Date'), 
         'link_name_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website Name'), 
         'link_url_1'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Website URL'), 

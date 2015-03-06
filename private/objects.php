@@ -48,6 +48,7 @@ function ciniki_customers_objects($ciniki) {
 			'tax_location_id'=>array('ref'=>'ciniki.taxes.location'),
 			'reward_level'=>array(),
 			'sales_total'=>array(),
+			'sales_total_prev'=>array(),
 			'start_date'=>array(),
 			'webflags'=>array(),
 			'permalink'=>array(),

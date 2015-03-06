@@ -101,7 +101,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "'), '') AS birthdate, "
-		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, start_date, "
+		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, sales_total_prev, start_date, "
 		. "notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
@@ -116,7 +116,7 @@ function ciniki_customers_getFull($ciniki) {
 				'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
 				'display_name', 'display_name_format', 'company', 'department', 'title', 
 				'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
-				'reward_level', 'sales_total', 'start_date', 
+				'reward_level', 'sales_total', 'sales_total_prev', 'start_date', 
 				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
 			'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
 				'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 

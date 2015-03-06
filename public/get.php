@@ -101,7 +101,7 @@ function ciniki_customers_get($ciniki) {
 			. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
 			. "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
 			. "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
-			. "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.start_date, "
+			. "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.sales_total_prev, ciniki_customers.start_date, "
 			. "ciniki_customer_emails.email AS emails "
 			. "FROM ciniki_customers "
 			. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
@@ -117,7 +117,7 @@ function ciniki_customers_get($ciniki) {
 					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
 					'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-					'reward_level', 'sales_total', 'start_date', 
+					'reward_level', 'sales_total', 'sales_total_prev', 'start_date', 
 					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes',
 					'emails'),
 				'lists'=>array('emails'),
@@ -150,7 +150,7 @@ function ciniki_customers_get($ciniki) {
 			. "short_bio, full_bio, webflags, "
 			. "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
 			. "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
-			. "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.start_date, "
+			. "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.sales_total_prev, ciniki_customers.start_date, "
 			. "notes "
 			. "FROM ciniki_customers "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -167,7 +167,7 @@ function ciniki_customers_get($ciniki) {
 					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
 					'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-					'reward_level', 'sales_total', 'start_date', 
+					'reward_level', 'sales_total', 'sales_total_prev', 'start_date', 
 					'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes'),
 				'maps'=>array(
 					'member_status_text'=>$maps['customer']['member_status'],

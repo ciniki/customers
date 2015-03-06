@@ -887,12 +887,19 @@ function ciniki_customers_main() {
 			this.customer.sections.account.visible = 'yes';
 			this.customer.data.account.sales_total = {'label':'Sales Total', 'value':rsp.customer.sales_total};
 		}
-		// Start Date
+		// Previous Sales Total
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 
-			&& rsp.customer.sales_total != null && rsp.customer.sales_total != ''
+			&& rsp.customer.sales_total_prev != null && rsp.customer.sales_total_prev != ''
 			) {
 			this.customer.sections.account.visible = 'yes';
-			this.customer.data.account.sales_total = {'label':'Sales Total', 'value':rsp.customer.sales_total};
+			this.customer.data.account.sales_total_prev = {'label':'Previous Sales', 'value':rsp.customer.sales_total_prev};
+		}
+		// Start Date
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 
+			&& rsp.customer.start_date != null && rsp.customer.start_date != ''
+			) {
+			this.customer.sections.account.visible = 'yes';
+			this.customer.data.account.start_date = {'label':'Start Date', 'value':rsp.customer.start_date};
 		}
 
 //		this.customer.data.phones = {};

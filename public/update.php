@@ -51,6 +51,7 @@ function ciniki_customers_update(&$ciniki) {
         'tax_location_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tax Location'), 
         'reward_level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Reward Level'), 
         'sales_total'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sales Total'), 
+        'sales_total_prev'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Previous Sales'), 
         'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Start Date'), 
 		'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
 		'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),

@@ -90,7 +90,8 @@ function ciniki_customers_edit() {
 				'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
 				'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
 				'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
-				'sales_total':{'label':'Sales Total', 'active':'no', 'type':'text', 'size':'small'},
+				'sales_total':{'label':'Current Sales Total', 'active':'no', 'type':'text', 'size':'small'},
+				'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
 				'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
 				}},
 			'_customer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
@@ -222,6 +223,7 @@ function ciniki_customers_edit() {
 				'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
 				'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
 				'sales_total':{'label':'Sales Total', 'active':'no', 'type':'text', 'size':'small'},
+				'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
 				'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
 				}},
 			'name':{'label':'Contact', 'aside':'yes', 'fields':{
@@ -719,9 +721,13 @@ function ciniki_customers_edit() {
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 ) {
 			this.edit.forms.person.account.fields.sales_total.active = 'yes';
 			this.edit.forms.business.account.fields.sales_total.active = 'yes';
+			this.edit.forms.person.account.fields.sales_total_prev.active = 'yes';
+			this.edit.forms.business.account.fields.sales_total_prev.active = 'yes';
 		} else {
 			this.edit.forms.person.account.fields.sales_total.active = 'no';
 			this.edit.forms.business.account.fields.sales_total.active = 'no';
+			this.edit.forms.person.account.fields.sales_total_prev.active = 'no';
+			this.edit.forms.business.account.fields.sales_total_prev.active = 'no';
 		}
 		// Display the address phone number
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x01000000) > 0 ) {
