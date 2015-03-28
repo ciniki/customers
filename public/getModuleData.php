@@ -381,9 +381,27 @@ function ciniki_customers_getModuleData($ciniki) {
 	}
 
 	//
+	// If child account, get parent information
+	//
+
+	//
 	// Get any child customers
 	//
 	if( ($modules['ciniki.customers']['flags']&0x200000) > 0 ) {
+		if( $customer['parent_id'] != 0 ) {
+			$strsql = "SELECT id, eid, display_name "
+				. "FROM ciniki_customers "
+				. "WHERE ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer['parent_id']) . "' "
+				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "";
+			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			if( isset($rc['parent']) ) {
+				$customer['parent'] = $rc['parent'];
+			}
+		} 
 		$strsql = "SELECT id, eid, display_name "
 			. "FROM ciniki_customers "
 			. "WHERE ciniki_customers.parent_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
@@ -604,6 +622,28 @@ function ciniki_customers_getModuleData($ciniki) {
 		}
 		if( ($modules['ciniki.sapos']['flags']&0x20) && !isset($customer['orders']) ) {
 			$customer['orders'] = array();
+		}
+	}
+
+	//
+	// Check for First Add Certifications
+	//
+	if( isset($modules['ciniki.fatt']) && ($modules['ciniki.fatt']['flags']&0x10) > 0 ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'hooks', 'customerCerts');
+		$rc = ciniki_fatt_hooks_customerCerts($ciniki, $args['business_id'], array(
+			'customer_id'=>$customer['id']));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['curcerts']) ) {
+			$customer['curcerts'] = $rc['curcerts'];
+		} else {
+			$customer['curcerts'] = array();
+		}
+		if( isset($rc['pastcerts']) ) {
+			$customer['pastcerts'] = $rc['pastcerts'];
+		} else {
+			$customer['pastcerts'] = array();
 		}
 	}
 

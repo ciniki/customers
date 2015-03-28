@@ -758,7 +758,14 @@ function ciniki_customers_edit() {
 				this.edit.forms.person.account.fields.pricepoint_id.active = 'no';
 				this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
 			}
-			// Sales Reps - Taken care of on load
+			// Sales Reps 
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x2000) > 0 ) {
+				this.edit.forms.person.account.fields.salesrep_id.active = 'yes';
+				this.edit.forms.business.account.fields.salesrep_id.active = 'yes';
+			} else {
+				this.edit.forms.person.account.fields.salesrep_id.active = 'no';
+				this.edit.forms.business.account.fields.salesrep_id.active = 'no';
+			}
 			// Tax Locations
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x40000) > 0 
 				&& M.curBusiness.taxes != null 
@@ -785,6 +792,8 @@ function ciniki_customers_edit() {
 			this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
 			this.edit.forms.person.account.fields.tax_location_id.active = 'no';
 			this.edit.forms.business.account.fields.tax_location_id.active = 'no';
+			this.edit.forms.person.account.fields.salesrep_id.active = 'no';
+			this.edit.forms.business.account.fields.salesrep_id.active = 'no';
 		}
 
 		if( args.next != null && args.next != '' ) {
