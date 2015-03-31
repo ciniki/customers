@@ -25,6 +25,8 @@ function ciniki_customers_searchQuick($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
+        'parent_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'), 
+        'member_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Members'), 
         'member_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Members'), 
         'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Dealers'), 
         'distributor_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Distributors'), 
@@ -105,6 +107,9 @@ function ciniki_customers_searchQuick($ciniki) {
 	if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
 		$strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
 	}
+	if( isset($args['parent_id']) && $args['parent_id']	!= '' ) {
+		$strsql .= "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' ";
+	}
 	if( isset($args['member_status']) && $args['member_status']	!= '' ) {
 		$strsql .= "AND member_status = '" . ciniki_core_dbQuote($ciniki, $args['member_status']) . "' ";
 	}
@@ -114,6 +119,7 @@ function ciniki_customers_searchQuick($ciniki) {
 	if( isset($args['distributor_status']) && $args['distributor_status']	!= '' ) {
 		$strsql .= "AND distributor_status = '" . ciniki_core_dbQuote($ciniki, $args['distributor_status']) . "' ";
 	}
+	$args['start_needle'] = preg_replace("/([^\s]) ([^\s])/", '$1%$2', $args['start_needle']);
 	$strsql .= "AND (first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. "OR last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

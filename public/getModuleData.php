@@ -385,11 +385,24 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 
 	//
-	// Get any child customers
+	// Get the parent information and any child customers
 	//
 	if( ($modules['ciniki.customers']['flags']&0x200000) > 0 ) {
+		//
+		// Get parent info
+		//
 		if( $customer['parent_id'] != 0 ) {
-			$strsql = "SELECT id, eid, display_name "
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
+			$rc = ciniki_customers__customerDetails($ciniki, $args['business_id'], $customer['parent_id'], 
+				array('phones'=>'yes', 'emails'=>'yes'));
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			if( isset($rc['customer']) ) {
+				$customer['parent'] = array('id'=>$rc['customer']['id'], 'eid'=>$rc['customer']['eid'], 'display_name'=>$rc['customer']['display_name']);
+				$customer['parent']['details'] = $rc['details'];
+			}
+/*			$strsql = "SELECT id, eid, display_name "
 				. "FROM ciniki_customers "
 				. "WHERE ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer['parent_id']) . "' "
 				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -400,8 +413,11 @@ function ciniki_customers_getModuleData($ciniki) {
 			}
 			if( isset($rc['parent']) ) {
 				$customer['parent'] = $rc['parent'];
-			}
+			}*/
 		} 
+		//
+		// Get children
+		//
 		$strsql = "SELECT id, eid, display_name "
 			. "FROM ciniki_customers "
 			. "WHERE ciniki_customers.parent_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "

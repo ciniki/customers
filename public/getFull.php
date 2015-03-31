@@ -286,6 +286,42 @@ function ciniki_customers_getFull($ciniki) {
 	}
 
 	//
+	// Get the parent info
+	if( ($modules['ciniki.customers']['flags']&0x200000) > 0 ) {
+		if( $customer['parent_id'] != 0 ) {
+			$strsql = "SELECT id, eid, display_name "
+				. "FROM ciniki_customers "
+				. "WHERE ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer['parent_id']) . "' "
+				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "";
+			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
+			if( $rc['stat'] != 'ok' ) {
+				return $rc;
+			}
+			if( isset($rc['parent']) ) {
+				$customer['parent'] = $rc['parent'];
+			}
+		}
+		//
+		// Get the number of children
+		//
+		$strsql = "SELECT 'children', COUNT(id) "
+			. "FROM ciniki_customers "
+			. "WHERE ciniki_customers.parent_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.customers', 'num');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['num']['children']) ) {
+			$customer['num_children'] = $rc['num']['children'];
+		} else {
+			$customer['num_children'] = 0;
+		}
+	}
+	//
 	// Get the membership seasons
 	//
 	if( ($modules['ciniki.customers']['flags']&0x02000000) > 0 ) {
