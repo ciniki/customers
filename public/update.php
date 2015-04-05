@@ -139,6 +139,13 @@ function ciniki_customers_update(&$ciniki) {
 	// Check if trying to make a child customer
 	//
 	if( isset($args['parent_id']) && $args['parent_id'] > 0 ) {
+		//
+		// Make sure parent_id is not customer id
+		//
+		if( $args['parent_id'] == $args['customer_id'] ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2328', 'msg'=>'Parent cannot be the same as the child.'));
+		}
+
 		// 
 		// Check to make sure the parent is not a child
 		//

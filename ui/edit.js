@@ -1313,10 +1313,17 @@ function ciniki_customers_edit() {
 				});
 		} else {
 			this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15};
-			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 && pid != null ) {
-				this.edit.data.parent = {'id':pid, 'display_name':(pname!=null?unescape(pname):'')};
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 ) {
+				this.edit.forms.person.parent.active = 'yes';
+				this.edit.forms.business.parent.active = 'yes';
+				if( pid != null ) {
+					this.edit.data.parent = {'id':pid, 'display_name':(pname!=null?unescape(pname):'')};
+				} else {
+					this.edit.data.parent = {'id':'', 'display_name':''};
+				}
 			} else {
-				this.edit.data.parent = {'id':'', 'display_name':''};
+				this.edit.forms.person.parent.active = 'no';
+				this.edit.forms.business.parent.active = 'no';
 			}
 			if( M.curBusiness.customers.settings != null 
 				&& M.curBusiness.customers.settings['defaults-edit-form'] != null
@@ -1522,14 +1529,10 @@ function ciniki_customers_edit() {
 		if( this.edit.customer_id > 0 ) {
 			var c = this.edit.serializeFormSection('no', 'name')
 				+ this.edit.serializeFormSection('no', 'business')
-//				+ this.edit.serializeFormSection('no', 'phone')
 				+ this.edit.serializeFormSection('no', '_notes');
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 
-//				&& this.edit.parent_id > 0
-//				&& this.edit.parent_id != this.edit.data.parent_id
 				) {
-//				c += this.edit.serializeFormSection('no', 'parent');
-				c += '&parent_id=' + this.edit.formValue('parent_id');
+				c += this.edit.serializeFormSection('no', 'parent');
 			}
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('no', '_image')
@@ -1589,7 +1592,6 @@ function ciniki_customers_edit() {
 				M.ciniki_customers_edit.closeEdit();
 			}
 		} else {
-//			var c = this.edit.serializeForm('yes');
 			var c = this.edit.serializeFormSection('yes', 'name')
 				+ this.edit.serializeFormSection('yes', 'business')
 				+ this.edit.serializeFormSection('yes', 'phone')
@@ -1598,8 +1600,6 @@ function ciniki_customers_edit() {
 				+ this.edit.serializeFormSection('yes', '_notes');
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 ) {
 				c += this.edit.serializeFormSection('yes', 'parent');
-				c += '&parent_id=' + this.edit.formValue('parent_id');
-//				c += '&parent_id=' + this.edit.parent_id;
 			}
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
 				c += this.edit.serializeFormSection('yes', '_image')
