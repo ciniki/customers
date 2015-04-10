@@ -1531,6 +1531,7 @@ function ciniki_customers_edit() {
 				+ this.edit.serializeFormSection('no', 'business')
 				+ this.edit.serializeFormSection('no', '_notes');
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 
+				&& this.edit.sections.parent.active == 'yes' 
 				) {
 				c += this.edit.serializeFormSection('no', 'parent');
 			}
@@ -1598,7 +1599,9 @@ function ciniki_customers_edit() {
 				+ this.edit.serializeFormSection('yes', 'email')
 				+ this.edit.serializeFormSection('yes', 'address')
 				+ this.edit.serializeFormSection('yes', '_notes');
-			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 ) {
+			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 
+				&& this.edit.sections.parent.active == 'yes' 
+				) {
 				c += this.edit.serializeFormSection('yes', 'parent');
 			}
 			if( this.edit.memberinfo != null && this.edit.memberinfo == 'yes' ) {
