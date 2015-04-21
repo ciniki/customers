@@ -498,8 +498,8 @@ function ciniki_customers_getModuleData($ciniki) {
 	// Get the wineproduction appointments
 	//
 	if( isset($modules['ciniki.wineproduction']) ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'wineproduction', 'private', 'appointments');
-		$rc = ciniki_wineproduction__appointments($ciniki, $args['business_id'], array(
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'wineproduction', 'hooks', 'appointments');
+		$rc = ciniki_wineproduction_hooks_appointments($ciniki, $args['business_id'], array(
 			'customer_id'=>$customer['id'],
 			'status'=>'unbottled',
 			));
