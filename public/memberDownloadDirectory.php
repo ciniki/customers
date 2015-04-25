@@ -39,26 +39,6 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
     }   
 	$modules = $rc['modules'];
 
-	require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Autoloader.php');
-	\PhpOffice\PhpWord\Autoloader::register();
-	require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/PhpWord.php');
-
-//	$PHPWord = new PhpWord();
-	$PHPWord = new \PhpOffice\PhpWord\PhpWord();
-	$h1_size = 20;
-	if( isset($args['heading1_size']) && $args['heading1_size'] != '' ) {
-		$h1_size = $args['heading1_size'];
-	}
-	// 120 = 6pt
-	$PHPWord->addTitleStyle(1, array('size'=>$h1_size, 'color'=>'000000', 'bold'=>true), 
-		array('align'=>'center', 'spaceAfter'=>120));
-	$h2_size = 16;
-	if( isset($args['heading2_size']) && $args['heading2_size'] != '' ) {
-		$h2_size = $args['heading1_size'];
-	}
-	$PHPWord->addTitleStyle(2, array('size'=>$h2_size, 'color'=>'000000', 'bold'=>true), 
-		array('spaceBefore'=>240, 'spaceAfter'=>120));
-
 
 	if( ($modules['ciniki.customers']['flags']&0x04) > 0 ) {
 		$strsql = "SELECT ciniki_customers.id, "
@@ -100,6 +80,28 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
 		return $rc;
 	}
 	$categories = $rc['categories'];
+
+
+	require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Autoloader.php');
+	\PhpOffice\PhpWord\Autoloader::register();
+	require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/PhpWord.php');
+
+//	$PHPWord = new PhpWord();
+	$PHPWord = new \PhpOffice\PhpWord\PhpWord();
+	$h1_size = 20;
+	if( isset($args['heading1_size']) && $args['heading1_size'] != '' ) {
+		$h1_size = $args['heading1_size'];
+	}
+	// 120 = 6pt
+	$PHPWord->addTitleStyle(1, array('size'=>$h1_size, 'color'=>'000000', 'bold'=>true), 
+		array('align'=>'center', 'spaceAfter'=>120));
+	$h2_size = 16;
+	if( isset($args['heading2_size']) && $args['heading2_size'] != '' ) {
+		$h2_size = $args['heading1_size'];
+	}
+	$PHPWord->addTitleStyle(2, array('size'=>$h2_size, 'color'=>'000000', 'bold'=>true), 
+		array('spaceBefore'=>240, 'spaceAfter'=>120));
+
 	$s_count = 0;
 	$section = $PHPWord->createSection(array(
 		'marginLeft'=>720, 

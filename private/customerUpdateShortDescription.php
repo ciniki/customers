@@ -124,7 +124,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	}
 
 	//
-	// Get the phone numbers for the customer
+	// Get the websites for the customer
 	//
 	$strsql = "SELECT id, name, url, webflags "
 		. "FROM ciniki_customer_links "

@@ -210,6 +210,7 @@ function ciniki_customers_edit() {
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.customerSave();'},
 				'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
+				'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},	// Used when linked with next button.
 				}},
 			};
 		this.edit.forms.business = {
@@ -350,6 +351,7 @@ function ciniki_customers_edit() {
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.customerSave();'},
 				'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
+				'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},	// Used when linked with next button.
 				}},
 			};
 		this.edit.sectionData = function(s) {
@@ -1210,6 +1212,16 @@ function ciniki_customers_edit() {
 			}
 		}
 
+		if( this.edit.nextFn != null && this.edit.customer_id > 0 ) {
+			this.edit.forms.person._buttons.buttons.delete.visible = 'no';
+			this.edit.forms.business._buttons.buttons.delete.visible = 'no';
+			this.edit.forms.person._buttons.buttons.remove.visible = 'yes';
+			this.edit.forms.business._buttons.buttons.remove.visible = 'yes';
+		} else {
+			this.edit.forms.person._buttons.buttons.remove.visible = 'no';
+			this.edit.forms.business._buttons.buttons.remove.visible = 'no';
+		}
+
 		if( this.edit.customer_id > 0 ) {
 			// Edit existing customer
 			this.edit.forms.person.email.active = 'no';
@@ -1587,10 +1599,10 @@ function ciniki_customers_edit() {
 							M.api.err(rsp);
 							return false;
 						} 
-						M.ciniki_customers_edit.closeEdit();
+						M.ciniki_customers_edit.closeEdit(rsp);
 					});
 			} else {
-				M.ciniki_customers_edit.closeEdit();
+				M.ciniki_customers_edit.closeEdit(null);
 			}
 		} else {
 			var c = this.edit.serializeFormSection('yes', 'name')
@@ -1647,12 +1659,12 @@ function ciniki_customers_edit() {
 						return false;
 					} 
 					M.ciniki_customers_edit.edit.customer_id = rsp.id;
-					M.ciniki_customers_edit.closeEdit();
+					M.ciniki_customers_edit.closeEdit(rsp);
 			});
 		}
 	};
 
-	this.closeEdit = function() {
+	this.closeEdit = function(rsp) {
 		if( M.ciniki_customers_edit.edit.nextFn != null ) {
 			// Check if we should pass customer id to next panel
 			eval(M.ciniki_customers_edit.edit.nextFn + '(' + M.ciniki_customers_edit.edit.customer_id + ');');
@@ -1708,6 +1720,15 @@ function ciniki_customers_edit() {
 						}
 					});
 			}
+		}
+	}
+
+	this.removeCustomer = function() {
+		if( M.ciniki_customers_edit.edit.nextFn != null ) {
+			// Check if we should pass customer id to next panel
+			eval(M.ciniki_customers_edit.edit.nextFn + '(0);');
+		} else {
+			M.ciniki_customers_edit.edit.close();
 		}
 	}
 

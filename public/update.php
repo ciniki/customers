@@ -439,6 +439,17 @@ function ciniki_customers_update(&$ciniki) {
 		return $rc;
 	}
 
-	return array('stat'=>'ok');
+	$rsp = array('stat'=>'ok');
+
+//
+//	FIXME: Switch UI to use response for add/update to fill out details
+//
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
+//	$rc = ciniki_customers__customerDetails($ciniki, $args['business_id'], $args['customer_id'], array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
+//	if( $rc['stat'] == 'ok' && isset($rc['details']) ) {
+//		$rsp['customer_details'] = $rc['details'];
+//	}
+
+	return $rsp;
 }
 ?>

@@ -39,7 +39,7 @@ function ciniki_customers_memberCategories($ciniki) {
 	//
 	// Build the query to get the tags
 	//
-	$strsql = "SELECT IFNULL(ciniki_customer_tags.tag_name, 'Uncategorized') AS tag_name, "
+	$strsql = "SELECT IFNULL(ciniki_customer_tags.id, 0) AS id, IFNULL(ciniki_customer_tags.tag_name, 'Uncategorized') AS tag_name, "
 		. "IFNULL(ciniki_customer_tags.permalink, '') AS permalink, "
 		. "COUNT(ciniki_customers.id) AS num_members "
 		. "FROM ciniki_customers "
@@ -60,7 +60,7 @@ function ciniki_customers_memberCategories($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'categories', 'fname'=>'permalink', 'name'=>'category',
-			'fields'=>array('name'=>'tag_name', 'permalink', 'num_members')),
+			'fields'=>array('id', 'name'=>'tag_name', 'permalink', 'num_members')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

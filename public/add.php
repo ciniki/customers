@@ -600,6 +600,17 @@ function ciniki_customers_add(&$ciniki) {
 	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 
 		'args'=>array('id'=>$customer_id));
 
-	return array('stat'=>'ok', 'id'=>$customer_id);
+	$rsp = array('stat'=>'ok', 'id'=>$customer_id);
+
+//
+//	FIXME: Switch UI to use response for add/update to fill out details
+//
+//	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
+//	$rc = ciniki_customers__customerDetails($ciniki, $args['business_id'], $customer_id, array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
+//	if( $rc['stat'] == 'ok' && isset($rc['details']) ) {
+//		$rsp['customer_details'] = $rc['details'];
+//	}
+
+	return $rsp;
 }
 ?>
