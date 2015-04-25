@@ -55,6 +55,9 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 		public $footer_text = '';
 		public $usable_width = 180;
 		public $fresh_page = 'yes';		// Flag to track if on a fresh page and if title should be at top or bumped down.
+		public $section_title_font_size = 18;
+		public $member_title_font_size = 14;
+		public $member_font_size = 12;
 
 		public function Header() {
 //			$this->SetFont('helvetica', 'B', 20);
@@ -175,16 +178,16 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 			$cnt_height = ($this->getPageHeight() - $this->top_margin - $this->header_height - $this->footer_height);
 			$member_height = 0;
 			if( $section_title != '' ) {
-				$this->SetFont('', 'B', '18');
+				$this->SetFont('', 'B', $this->section_title_font_size);
 				$member_height += $this->getStringHeight($this->usable_width, $section_title);
-				$member_height += 6;
+				$member_height += 8;
 			}
 			if( isset($member['title']) && $member['title'] != '' ) {
-				$this->SetFont('', 'B', '14');
+				$this->SetFont('', 'B', $this->member_title_font_size);
 				$member_height += $this->getStringHeight($this->usable_width, $member['title']);
 				$member_height += 1;
 			}
-			$this->SetFont('', '', '12');
+			$this->SetFont('', '', $this->member_font_size);
 			if( isset($member['short_bio']) && $member['short_bio'] != '' ) {
 				$member_height += $this->getStringHeight($this->usable_width, $member['short_bio']);
 				$member_height += 3;
@@ -212,9 +215,9 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 			}
 
 			if( $section_title != '' ) {
-				$this->SetFont('', 'B', '18');
+				$this->SetFont('', 'B', $this->section_title_font_size);
 				$this->MultiCell($this->usable_width, 8, $section_title, 0, 'C', false, 1, '', '', true, 0, false, true, 0, 'T');
-				$this->Ln(3);
+				$this->Ln(5);
 				// Add a table of contents bookmarks
 				if( $this->toc == 'yes' && $this->toc_categories == 'yes' ) {
 					$this->SetFont('', '');
@@ -223,7 +226,7 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 			}
 
 			if( isset($member['title']) && $member['title'] != '' ) {
-				$this->SetFont('', 'B', '14');
+				$this->SetFont('', 'B', $this->member_title_font_size);
 				$this->MultiCell($this->usable_width, 5, $member['title'], 0, 'L', false, 1, '', '', true, 0, false, true, 0, 'T');
 				$this->Ln(1);
 				if( $this->toc == 'yes' && $this->toc_categories == 'no' ) {
@@ -231,7 +234,7 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 				}
 			}
 
-			$this->SetFont('', '', '12');
+			$this->SetFont('', '', $this->member_font_size);
 			if( isset($member['short_bio']) && $member['short_bio'] != '' ) {
 				$this->MultiCell($this->usable_width, 5, $member['short_bio'], 0, 'L', false, 1, '', '', true, 0, false, true, 0, 'T');
 				$this->Ln(3);
@@ -266,6 +269,9 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 		$pdf->setPageOrientation('P', false);
 		$pdf->SetFooterMargin(0);
 		$pdf->usable_width = 114;
+		$pdf->section_title_font_size = 18;
+		$pdf->member_title_font_size = 12;
+		$pdf->member_font_size = 12;
 	} else {
 		$pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 		// set margins
@@ -279,6 +285,9 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 		$pdf->setPageOrientation('P', false);
 		$pdf->SetFooterMargin(0);
 		$pdf->usable_width = 180;
+		$pdf->section_title_font_size = 18;
+		$pdf->member_title_font_size = 14;
+		$pdf->member_font_size = 12;
 	}
 	
 	if( isset($args['title']) ) {
@@ -394,7 +403,7 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 		$pdf->MultiCell($pdf->usable_width, 5, 'Table of Contents', 0, 'C', false, 1, '', '', true, 0, false, true, 0, 'T');
 		$pdf->setCellPaddings(0,0,0,0);
 		$pdf->Ln(8);
-		$pdf->SetFont('helvetica', '', 12);
+		$pdf->SetFont('helvetica', '', $pdf->member_font_size);
 		$pdf->pagenumbers = 'no';
 		$pdf->addTOC(($pdf->coverpage=='yes'?2:0), 'courier', '.', 'INDEX', '');
 		$pdf->pagenumbers = 'yes';
