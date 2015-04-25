@@ -261,7 +261,7 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 		// set margins
 		$pdf->header_height = 0;
 		$pdf->footer_height = 12;
-		$pdf->top_margin = 15;
+		$pdf->top_margin = 12;
 		$pdf->left_margin = 13;
 		$pdf->right_margin = 13;
 		$pdf->middle_margin = 6;
