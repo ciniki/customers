@@ -95,6 +95,7 @@ function ciniki_customers_templates_fullpage($ciniki, $business_id, $categories,
 			$member_details = array();
 			$ln = 0;
 			$member_details[$ln] = '';
+			$this->SetFont('helvetica', '', $this->member_font_size);
 			if( isset($member['addresses']) && count($member['addresses']) > 0 ) {
 				foreach($member['addresses'] as $addr) {
 					if( isset($addr['address1']) && $addr['address1'] != '' ) {

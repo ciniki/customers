@@ -112,6 +112,7 @@ function ciniki_customers_memberPDFDirectory(&$ciniki) {
 		. "FROM ciniki_customer_addresses "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND (flags&0x08) > 0 "
+		. "ORDER BY customer_id "
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('customer_id')),
@@ -131,6 +132,7 @@ function ciniki_customers_memberPDFDirectory(&$ciniki) {
 		. "FROM ciniki_customer_emails "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND (flags&0x08) > 0 "
+		. "ORDER BY customer_id "
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('customer_id')),
@@ -152,6 +154,7 @@ function ciniki_customers_memberPDFDirectory(&$ciniki) {
 		. "FROM ciniki_customer_phones "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND (flags&0x08) > 0 "
+		. "ORDER BY customer_id "
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('customer_id')),
@@ -173,6 +176,7 @@ function ciniki_customers_memberPDFDirectory(&$ciniki) {
 		. "FROM ciniki_customer_links "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND (webflags&0x01) > 0 "
+		. "ORDER BY customer_id "
 		. "";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('customer_id')),
