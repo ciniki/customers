@@ -208,7 +208,7 @@ function ciniki_customers_membertools() {
 				args['categories'] = categories;
 			}
 		}
-		M.api.openFile('ciniki.customers.memberPDFDirectory', args);
+		M.api.openPDF('ciniki.customers.memberPDFDirectory', args);
 	};
 
 	this.showPDFContactInfo = function(cb) {
@@ -228,6 +228,6 @@ function ciniki_customers_membertools() {
 		args['private'] = this.contactinfo.formValue('private');
 //		args['toc'] = this.contactinfo.formValue('toc');
 		args['layout'] = 'contactinfo';
-		M.api.openFile('ciniki.customers.memberPDFContactInfo', args);
+		M.api.openPDF('ciniki.customers.memberPDFContactInfo', args);
 	};
 }
