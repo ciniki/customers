@@ -94,7 +94,7 @@ function ciniki_customers_templates_contactinfo($ciniki, $business_id, $members,
 			//
 			$member_details = array();
 			$ln = 0;
-			$member_details[$ln] = $member['title'];
+			$member_details[$ln] = $member['title'] . '--';
 			$this->SetFont('helvetica', '', $this->member_font_size);
 /*			if( isset($member['addresses']) && count($member['addresses']) > 0 ) {
 				foreach($member['addresses'] as $addr) {
@@ -195,10 +195,10 @@ function ciniki_customers_templates_contactinfo($ciniki, $business_id, $members,
 //			}
 
 			// Remove member title, was only there for layout calculations	
-			if( $member_details[0] == $member['title'] ) {
+			if( $member_details[0] == $member['title'] . '--' ) {
 				$member_details[0] = '';
 			} else {
-				$member_details[0] = str_replace($member['title'] . ' - ', '', $member_details[0]);
+				$member_details[0] = str_replace($member['title'] . '-- - ', '', $member_details[0]);
 			}
 			foreach($member_details as $det) {
 				if( $det != '' ) {
