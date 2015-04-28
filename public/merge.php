@@ -490,6 +490,24 @@ function ciniki_customers_merge($ciniki) {
 	}
 
 	//
+	// Check for module hooks that need to be updated
+	//
+	foreach($ciniki['business']['modules'] as $module => $m) {
+		list($pkg, $mod) = explode('.', $module);
+		$rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'customerMerge');
+		if( $rc['stat'] == 'ok' ) {
+			$fn = $rc['function_call'];
+			$rc = $fn($ciniki, $args['business_id'], array(
+				'primary_customer_id'=>$args['primary_customer_id'], 
+				'secondary_customer_id'=>$args['secondary_customer_id'], 
+				));
+			if( $rc['stat'] != 'ok' ) {
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2363', 'msg'=>'Unable to merge customer.', 'err'=>$rc['err']));
+			}
+		}
+	}
+
+	//
 	// Commit the database changes
 	//
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
