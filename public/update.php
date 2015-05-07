@@ -325,6 +325,26 @@ function ciniki_customers_update(&$ciniki) {
 	}
 
 	//
+	// Hook into other modules when updating name incase orders or other items should be changed
+	//
+	if( isset($args['display_name']) && $args['display_name'] != '' ) {
+		foreach($modules as $module => $m) {
+			list($pkg, $mod) = explode('.', $module);
+			$rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'customerNameUpdate');
+			if( $rc['stat'] == 'ok' ) {
+				$fn = $rc['function_call'];
+				$rc = $fn($ciniki, $args['business_id'], array(
+					'customer_id'=>$args['customer_id'], 
+					'display_name'=>$args['display_name'],
+					));
+				if( $rc['stat'] != 'ok' ) {
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2372', 'msg'=>'Unable to update customer name.', 'err'=>$rc['err']));
+				}
+			}
+		}
+	}
+
+	//
 	// Check for subscriptions
 	//
 	if( isset($args['subscriptions']) || isset($args['unsubscriptions']) ) {
