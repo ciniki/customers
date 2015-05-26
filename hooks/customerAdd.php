@@ -97,7 +97,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2383', 'msg'=>'The parent does not exist.'));
 		}
 		if( isset($rc['parent']) && $rc['parent']['parent_id'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2384', 'msg'=>'The parent is already a child.'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2379', 'msg'=>'The parent is already a child.'));
 		}
 	}
 
