@@ -108,6 +108,7 @@ function ciniki_customers_getModuleData($ciniki) {
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
+		. "connection, "
 		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, "
 		. "reward_level, sales_total, sales_total_prev, start_date, webflags, "
 		. "notes "
@@ -138,7 +139,7 @@ function ciniki_customers_getModuleData($ciniki) {
 				'dealer_status', 'dealer_status_text',
 				'distributor_status', 'distributor_status_text',
 				'company', 'department', 'title', 
-				'notes', 'birthdate', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
+				'notes', 'birthdate', 'connection', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
 				'reward_level', 'sales_total', 'sales_total_prev', 'start_date', 'webflags'),
 			'maps'=>array('status_text'=>$maps['customer']['status'],
 				'dealer_status_text'=>$maps['customer']['dealer_status'],

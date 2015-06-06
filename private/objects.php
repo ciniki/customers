@@ -42,6 +42,7 @@ function ciniki_customers_objects($ciniki) {
 //			'phone_fax'=>array(),
 			'notes'=>array('default'=>''),
 			'birthdate'=>array('default'=>''),
+			'connection'=>array('default'=>''),
 			'pricepoint_id'=>array('ref'=>'ciniki.customers.pricepoint', 'default'=>'0'),
 			'salesrep_id'=>array('ref'=>'ciniki.users.user', 'default'=>'0'),
 			'tax_number'=>array('default'=>''),

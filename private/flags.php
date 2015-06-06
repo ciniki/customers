@@ -30,7 +30,7 @@ function ciniki_customers_flags($ciniki, $modules) {
 		// 0x1000
 		array('flag'=>array('bit'=>'13', 'name'=>'Price Points')),
 		array('flag'=>array('bit'=>'14', 'name'=>'Sales Reps')),
-//		array('flag'=>array('bit'=>'15', 'name'=>'Relationships')),
+		array('flag'=>array('bit'=>'15', 'name'=>'Connection')),
 		array('flag'=>array('bit'=>'16', 'name'=>'Birthdate')),
 		// 0x010000
 		array('flag'=>array('bit'=>'17', 'name'=>'External ID')),
@@ -45,7 +45,7 @@ function ciniki_customers_flags($ciniki, $modules) {
 		// 0x01000000
 		array('flag'=>array('bit'=>'25', 'name'=>'Address Phone Numbers')),
 		array('flag'=>array('bit'=>'26', 'name'=>'Membership Seasons')),
-//		array('flag'=>array('bit'=>'27', 'name'=>'')),
+		array('flag'=>array('bit'=>'27', 'name'=>'Start Date')),
 //		array('flag'=>array('bit'=>'28', 'name'=>'')),
 		// 0x10000000
 //		array('flag'=>array('bit'=>'29', 'name'=>'')),

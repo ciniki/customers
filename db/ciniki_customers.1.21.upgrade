@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.21.
+#
+ALTER TABLE ciniki_customers ADD COLUMN connection varchar(250) not null AFTER birthdate;
+ALTER TABLE ciniki_customers COMMENT='v1.21';
+

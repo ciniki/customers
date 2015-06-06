@@ -101,6 +101,7 @@ function ciniki_customers_getFull($ciniki) {
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "'), '') AS birthdate, "
+		. "connection, "
 		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, sales_total_prev, start_date, "
 		. "notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
@@ -117,7 +118,7 @@ function ciniki_customers_getFull($ciniki) {
 				'display_name', 'display_name_format', 'company', 'department', 'title', 
 				'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
 				'reward_level', 'sales_total', 'sales_total_prev', 'start_date', 
-				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate'),
+				'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate', 'connection'),
 			'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
 				'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),

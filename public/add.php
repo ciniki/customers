@@ -132,6 +132,7 @@ function ciniki_customers_add(&$ciniki) {
         'short_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Short Bio'), 
         'full_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'birthdate'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
+        'connection'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Connection'), 
         'pricepoint_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Price Point'), 
         'salesrep_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Sales Rep'), 
         'tax_number'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Tax Number'), 

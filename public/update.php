@@ -45,6 +45,7 @@ function ciniki_customers_update(&$ciniki) {
         'short_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Bio'), 
         'full_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'birthdate'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
+        'connection'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Connection'), 
         'pricepoint_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Price Point'), 
         'salesrep_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sales Rep'), 
         'tax_number'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tax Number'), 
