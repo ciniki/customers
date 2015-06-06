@@ -143,6 +143,9 @@ function ciniki_customers_main() {
 				'suspended':{'label':'Suspended', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'50\'});'},
 				'deleted':{'label':'Deleted', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'60\'});'},
 				}},
+			'_connections':{'label':'', 'list':{
+				'connection':{'label':'Connections', 'fn':'M.startApp(\'ciniki.customers.connections\',null,\'M.ciniki_customers_main.tools.show();\')'},
+				}},
 			'tools':{'label':'Cleanup', 'list':{
 				'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_main.tools.show();\');'},
 				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
@@ -679,6 +682,11 @@ function ciniki_customers_main() {
 		this.customer.sections.parent.addTxt = 'Add ' + this.parentLabel;
 		this.customer.sections.parent.changeTxt = 'Change ' + this.parentLabel;
 
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x4000) > 0 ) {
+			this.tools.sections._connections.active = 'yes';
+		} else {
+			this.tools.sections._connections.active = 'no';
+		}
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x010000) > 0 ) {
 			this.search.sections.main.num_cols = 3;
 			this.search.sections.main.headerValues = ['ID', 'Name', 'Status'];
@@ -859,6 +867,9 @@ function ciniki_customers_main() {
 			if( rsp.customer.birthdate != '' ) {
 				this.customer.data.details.birthdate = {'label':'Birthday', 'value':rsp.customer.birthdate};
 			}
+		}
+		if( rsp.customer.connection != '' ) {
+			this.customer.data.details.connection = {'label':'Connection', 'value':rsp.customer.connection};
 		}
 		if( rsp.customer.phones != null ) {
 			for(i in rsp.customer.phones) {
