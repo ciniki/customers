@@ -447,6 +447,7 @@ function ciniki_customers_edit() {
 			this.setFieldValue(fid, 0, null, null);
 			return true;
 		};
+
 		this.edit.liveSearchCb = function(s, i, value) {
 			if( i == 'parent_id' ) {
 				M.api.getJSONBgCb('ciniki.customers.searchQuick', 
@@ -463,6 +464,8 @@ function ciniki_customers_edit() {
 					{'business_id':M.curBusinessID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
 						M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp.customers); 
 					});
+			} else if( i == 'phone_label_1' || i == 'phone_label_2' || i == 'phone_label_3' ) {
+				M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), ['Home','Work','Cell','Fax']);
 			} else if( i == 'connection' ) {
 				M.api.getJSONBgCb('ciniki.customers.connectionSearch', 
 					{'business_id':M.curBusinessID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
@@ -478,6 +481,7 @@ function ciniki_customers_edit() {
 				return d.customer.display_name; 
 			}
 			else if( f == 'city') { return d.city.name + ',' + d.city.province; }
+			else if( f == 'phone_label_1' || f == 'phone_label_2' || f == 'phone_label_3' ) { return d; }
 			else if( f == 'connection' ) {
 				return d.connection.connection;
 			}
@@ -496,6 +500,9 @@ function ciniki_customers_edit() {
 			else if( f == 'city' ) {
 				return 'M.ciniki_customers_edit.edit.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
 			}
+			else if( f == 'phone_label_1' || f == 'phone_label_2' || f == 'phone_label_3' ) {
+				return 'M.ciniki_customers_edit.edit.updateLabel(\'' + s + '\',\'' + f + '\',\'' + escape(d) + '\');';
+			}
 			else if( f == 'connection' ) {
 				return 'M.ciniki_customers_edit.edit.updateConnection(\'' + s + '\',\'' + escape(d.connection.connection) + '\');';
 			}
@@ -510,6 +517,10 @@ function ciniki_customers_edit() {
 			M.gE(this.panelUID + '_province').value = province;
 			M.gE(this.panelUID + '_country').value = country;
 			this.removeLiveSearch(s, 'city');
+		};
+		this.edit.updateLabel = function(s, i, l) {
+			M.gE(this.panelUID + '_' + i).value = l;
+			this.removeLiveSearch(s, i);
 		};
 		this.edit.updateConnection = function(s, connection) {
 			M.gE(this.panelUID + '_connection').value = connection;
@@ -1371,7 +1382,7 @@ function ciniki_customers_edit() {
 					M.ciniki_customers_edit.showEditSubscriptions(cb);
 				});
 		} else {
-			this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15};
+			this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15, 'phone_label_1':'Home', 'phone_label_2':'Work', 'phone_label_3':'Cell'};
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 ) {
 				this.edit.forms.person.parent.active = 'yes';
 				this.edit.forms.business.parent.active = 'yes';

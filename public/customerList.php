@@ -56,7 +56,7 @@ function ciniki_customers_customerList($ciniki) {
 	// Get the number of customers in each status for the business, 
 	// if no rows found, then return empty array
 	//
-	$strsql = "SELECT DISTINCT ciniki_customers.id, eid, display_name, "
+	$strsql = "SELECT DISTINCT ciniki_customers.id, ciniki_customer.parent_id, eid, display_name, "
 		. "status, status AS status_text, "
 		. "type, company ";
 	$strsql .= "FROM ciniki_customers "
@@ -70,7 +70,7 @@ function ciniki_customers_customerList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'eid', 'display_name', 'status', 'status_text', 'display_name', 
+			'fields'=>array('id', 'parent_id', 'eid', 'display_name', 'status', 'status_text', 'display_name', 
 				'type', 'company'),
 			'maps'=>array('status_text'=>$maps['customer']['status'])),
 			));
