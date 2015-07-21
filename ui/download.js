@@ -14,6 +14,7 @@ function ciniki_customers_download() {
 		this.exportlist.data = {};
 		this.exportlist.sections = {
 			'options':{'label':'Data to include', 'aside':'yes', 'fields':{
+				'ids':{'label':'IDs for updating', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'eid':{'label':'External ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'status':{'label':'Status', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},

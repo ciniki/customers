@@ -55,6 +55,14 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 
 	//
+	// Check if we are to include ids
+	//
+	$ids = 'no';
+	foreach($args['columns'] as $column) {
+		if($column == 'ids' ) { $ids = 'yes'; }
+	}
+
+	//
 	// If seasons is enabled and requested, get the requested season names
 	//
 	$season_ids = array();
@@ -499,6 +507,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 	foreach($args['columns'] as $column) {
 		$value = '';
 		switch($column) {
+			case 'ids': $value = 'ID'; break;
 			case 'eid': $value = 'EID'; break;
 			case 'status': $value = 'Status'; break;
 			case 'prefix': $value = 'Prefix'; break;
@@ -540,29 +549,56 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 		}
 		if( $column == 'split_phones' && $num_phone_columns > 0 ) {
 			for($i=0;$i<$num_phone_columns;$i++) {
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone Label', false);
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone Number', false);
+				if( $ids == 'yes' ) { 
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'PID ' . ($i+1), false); 
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone ' . ($i+1), false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone ' . ($i+1) . ' Number', false);
+				} else {
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone Number', false);
+				}
 			}
 		}
 		elseif( $column == 'split_addresses' && $num_address_columns > 0 ) {
 			for($i=0;$i<$num_address_columns;$i++) {
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address Type', false);
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address 1', false);
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address 2', false);
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Province', false);
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Postal', false);
+				if( $ids == 'yes' ) {
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'AID ' . ($i+1), false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address ' . ($i+1) . ' Type', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address ' . ($i+1) . ' 1', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address ' . ($i+1) . ' 2', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City' . ($i+1) . ' ', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Province' . ($i+1) . ' ', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Postal' . ($i+1) . ' ', false);
+				} else {
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address Type', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address 1', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address 2', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Province', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Postal', false);
+				}
 			}
 		}
 		elseif( $column == 'split_emails' && $num_email_columns > 0 ) {
 			for($i=0;$i<$num_email_columns;$i++) {
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+				if( $ids == 'yes' ) {
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'EID ' . ($i+1), false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email ' + ($i+1), false);
+				} else {
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+				}
 			}
 		} 
 		elseif( $column == 'split_links' && $num_link_columns > 0 ) {
 			for($i=0;$i<$num_link_columns;$i++) {
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Link Name', false);
-				$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Link URL', false);
+				if( $ids == 'yes' ) {
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'LID ' . ($i+1), false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Link ' + ($i+1) . ' Name', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Link ' + ($i+1) . ' URL', false);
+				} else {
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Link Name', false);
+					$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Link URL', false);
+				}
 			}
 		} 
 		else {
@@ -591,7 +627,10 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 
 		$col = 0;
 		foreach($args['columns'] as $column) {
-			if( preg_match("/^season-([0-9]+)$/", $column, $matches) ) {
+			if( $column == 'ids' ) {
+				$value = $customer['id'];
+			}
+			elseif( preg_match("/^season-([0-9]+)$/", $column, $matches) ) {
 				$value = '';
 				if( isset($seasons[$matches[1]]['customers'][$customer['id']]['status'])
 					&& $seasons[$matches[1]]['customers'][$customer['id']]['status'] > 0 
@@ -645,18 +684,20 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 				$i = 0;
 				if( isset($phones[$customer['id']]['split_phones']) ) {
 					foreach($phones[$customer['id']]['split_phones'] as $phone) {
+						if( $ids == 'yes' ) { $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $phone['id'], false); }
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $phone['phone_label'], false);
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $phone['phone_number'], false);
 						$i++;
 					}
 				}
-				while($i<$num_phone_columns) { $col+=2; $i++; }
+				while($i<$num_phone_columns) { $col+=(2+($ids=='yes'?1:0)); $i++; }
 				continue;
 			} 
 			elseif( $column == 'split_addresses' ) {
 				$i = 0;
 				if( isset($addresses[$customer['id']]['split_addresses']) ) {
 					foreach($addresses[$customer['id']]['split_addresses'] as $address) {
+						if( $ids == 'yes' ) { $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $address['id'], false); }
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, preg_replace('/, /', '', $address['type']), false);
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $address['address1'], false);
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $address['address2'], false);
@@ -666,29 +707,31 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 						$i++;
 					}
 				}
-				while($i<$num_address_columns) { $col+=6; $i++; }
+				while($i<$num_address_columns) { ($col+=6+($ids=='yes'?1:0)); $i++; }
 				continue;
 			} 
 			elseif( $column == 'split_emails' ) {
 				$i = 0;
 				if( isset($emails[$customer['id']]['split_emails']) ) {
 					foreach($emails[$customer['id']]['split_emails'] as $email) {
+						if( $ids == 'yes' ) { $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $email['id'], false); }
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $email['email'], false);
 						$i++;
 					}
 				}
-				while($i<$num_email_columns) { $col+=1; $i++; }
+				while($i<$num_email_columns) { ($col+=1+($ids=='yes'?1:0)); $i++; }
 				continue;
 			} elseif( $column == 'split_links' ) {
 				$i = 0;
 				if( isset($links[$customer['id']]['split_links']) ) {
 					foreach($links[$customer['id']]['split_links'] as $link) {
+						if( $ids == 'yes' ) { $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $link['id'], false); }
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $link['name'], false);
 						$objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $link['url'], false);
 						$i++;
 					}
 				}
-				while($i<$num_link_columns) { $col+=2; $i++; }
+				while($i<$num_link_columns) { ($col+=2+($ids=='yes'?1:0)); $i++; }
 				continue;
 			} elseif( !isset($customer[$column]) ) {
 				$col++;
