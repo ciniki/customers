@@ -14,6 +14,9 @@ function ciniki_customers_download() {
 		this.exportlist.data = {};
 		this.exportlist.sections = {
 			'options':{'label':'Data to include', 'aside':'yes', 'fields':{
+				'eid':{'label':'External ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'status':{'label':'Status', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'display_name':{'label':'Full Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
 				'prefix':{'label':'Name Prefix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'first':{'label':'First Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
@@ -23,23 +26,48 @@ function ciniki_customers_download() {
 				'company':{'label':'Company', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'department':{'label':'Department', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'title':{'label':'Title', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'birthdate':{'label':'Birthdate', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'visible':{'label':'Web Visible', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'member_status':{'label':'Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+			}},
+			'_members':{'label':'', 'aside':'yes', 'fields':{
+				'member_status':{'label':'Member Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
 				'member_lastpaid':{'label':'Last Paid Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'membership_type':{'label':'Membership Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'member_categories':{'label':'Categories', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-			}},
-			'options2':{'label':'More Options', 'fields':{
-				'phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-				'links':{'label':'Websites', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'primary_image':{'label':'Image', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'primary_image_caption':{'label':'Image Caption', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'short_description':{'label':'Short Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'full_bio':{'label':'Full Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+			}},
+			'_dealers':{'label':'', 'aside':'yes', 'fields':{
+				'dealer_status':{'label':'Dealer Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+			}},
+			'_distributors':{'label':'', 'aside':'yes', 'fields':{
+				'distributor_status':{'label':'Distributor Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+			}},
+			'options3':{'label':'', 'aside':'yes', 'active':'yes', 'fields':{
+				'salesrep':{'label':'Sales Rep', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'pricepoint_name':{'label':'Pricepoint', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'pricepoint_code':{'label':'Pricepoint Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'tax_number':{'label':'Tax Number', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'tax_location_code':{'label':'Tax Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'reward_level':{'label':'Reward Level', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'sales_total':{'label':'Sales Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'sales_total_prev':{'label':'Previous Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+				'start_date':{'label':'Start Date', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+			}},
+			'options4':{'label':'Joined Contact Info', 'active':'yes', 'fields':{
+				'phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'links':{'label':'Websites', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+			}},
+			'options5':{'label':'Split Contact Info', 'active':'yes', 'fields':{
+				'split_phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'split_emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'split_addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+				'split_links':{'label':'Links', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				}},
 			'seasons':{'label':'Season Status', 'active':'no', 'fields':{}},
 			'subscriptions':{'label':'Subscription Status', 'active':'no', 'fields':{}},
@@ -88,26 +116,40 @@ function ciniki_customers_download() {
 		}
 		this.exportlist.title = 'Export ' + plabel;
 
+		var flags = M.curBusiness.modules['ciniki.customers'].flags;
+
+		this.exportlist.sections._members.fields.member_status.active=((flags&0x02)>0?'yes':'no');
+		this.exportlist.sections._members.fields.member_categories.active=((flags&0x04)>0?'yes':'no');
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
-			this.exportlist.sections.options.fields.member_status.active = 'yes';
-			this.exportlist.sections.options.fields.member_categories.active = 'yes';
+			this.exportlist.sections._members.fields.member_lastpaid.active = 'yes';
+			this.exportlist.sections._members.fields.membership_length.active = 'yes';
+			this.exportlist.sections._members.fields.membership_type.active = 'yes';
 		} else {
-			this.exportlist.sections.options.fields.member_status.active = 'no';
-			this.exportlist.sections.options.fields.member_categories.active = 'no';
-		}
-		if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
-			this.exportlist.sections.options.fields.member_lastpaid.active = 'yes';
-			this.exportlist.sections.options.fields.membership_length.active = 'yes';
-			this.exportlist.sections.options.fields.membership_type.active = 'yes';
-		} else {
-			this.exportlist.sections.options.fields.member_lastpaid.active = 'no';
-			this.exportlist.sections.options.fields.membership_length.active = 'no';
-			this.exportlist.sections.options.fields.membership_type.active = 'no';
+			this.exportlist.sections._members.fields.member_lastpaid.active = 'no';
+			this.exportlist.sections._members.fields.membership_length.active = 'no';
+			this.exportlist.sections._members.fields.membership_type.active = 'no';
 		}
 
 		this.exportlist.selected_season = (args.selected_season!=null?args.selected_season:'');
 		this.exportlist.membersonly = (args.membersonly!=null?args.membersonly:'');
 		this.exportlist.subscription_id = (args.subscription_id!=null?args.subscription_id:'');
+
+		this.exportlist.sections.options.fields.eid.active=((flags&0x010000)>0?'yes':'no');
+		this.exportlist.sections.options.fields.birthdate.active=((flags&0x8000)>0?'yes':'no');
+		
+		this.exportlist.sections._members.active=((flags&0x02)>0?'yes':'no');
+		this.exportlist.sections._dealers.active=((flags&0x10)>0?'yes':'no');
+		this.exportlist.sections._distributors.active=((flags&0x0100)>0?'yes':'no');
+
+		this.exportlist.sections.options3.fields.salesrep.active=((flags&0x2000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.pricepoint_name.active=((flags&0x1000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.pricepoint_code.active=((flags&0x1000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.tax_number.active=((flags&0x20000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.tax_location_code.active=((flags&0x40000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.reward_level.active=((flags&0x80000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.sales_total.active=((flags&0x100000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.sales_total_prev.active=((flags&0x100000)>0?'yes':'no');
+		this.exportlist.sections.options3.fields.start_date.active='yes';
 
 		M.ciniki_customers_download.showExportList(cb);
 	}
@@ -133,7 +175,7 @@ function ciniki_customers_download() {
 				}
 			}
 		} else {
-			this.exportlist.sections.seasons.active = 'yes';
+			this.exportlist.sections.seasons.active = 'no';
 		}
 
 		//
@@ -173,10 +215,40 @@ function ciniki_customers_download() {
 			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
 			this.exportlist.setFieldValue(i, 'yes')
 		}
-		fields = this.exportlist.sections.options2.fields;
-		for(i in fields) {
-			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-			this.exportlist.setFieldValue(i, 'yes')
+		if( this.exportlist.sections._members.active == 'yes' ) {
+			fields = this.exportlist.sections._members.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				this.exportlist.setFieldValue(i, 'yes')
+			}
+		}
+		if( this.exportlist.sections._dealers.active == 'yes' ) {
+			fields = this.exportlist.sections._dealers.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				this.exportlist.setFieldValue(i, 'yes')
+			}
+		}
+		if( this.exportlist.sections._distributors.active == 'yes' ) {
+			fields = this.exportlist.sections._distributors.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				this.exportlist.setFieldValue(i, 'yes')
+			}
+		}
+		if( this.exportlist.sections.options3.active == 'yes' ) {
+			fields = this.exportlist.sections.options3.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				this.exportlist.setFieldValue(i, 'yes')
+			}
+		}
+		if( this.exportlist.sections.options4.active == 'yes' ) {
+			fields = this.exportlist.sections.options4.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				this.exportlist.setFieldValue(i, 'yes')
+			}
 		}
 	}
 
@@ -189,11 +261,58 @@ function ciniki_customers_download() {
 				cols += (cols!=''?'::':'') + i;
 			}
 		}
-		fields = this.exportlist.sections.options2.fields;
-		for(i in fields) {
-			if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
-			if( this.exportlist.formFieldValue(fields[i], i) == 'yes' ) {
-				cols += (cols!=''?'::':'') + i;
+		if( this.exportlist.sections._members.active == 'yes' ) {
+			fields = this.exportlist.sections._members.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.exportlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
+			}
+		}
+		if( this.exportlist.sections._dealers.active == 'yes' ) {
+			fields = this.exportlist.sections._dealers.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.exportlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
+			}
+		}
+		if( this.exportlist.sections._distributors.active == 'yes' ) {
+			fields = this.exportlist.sections._distributors.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.exportlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
+			}
+		}
+		if( this.exportlist.sections.options3.active == 'yes' ) {
+			fields = this.exportlist.sections.options3.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.exportlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
+			}
+		}
+		if( this.exportlist.sections.options4.active == 'yes' ) {
+			fields = this.exportlist.sections.options4.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.exportlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
+			}
+		}
+		if( this.exportlist.sections.options5.active == 'yes' ) {
+			fields = this.exportlist.sections.options5.fields;
+			for(i in fields) {
+				if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
+				if( this.exportlist.formFieldValue(fields[i], i) == 'yes' ) {
+					cols += (cols!=''?'::':'') + i;
+				}
 			}
 		}
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 

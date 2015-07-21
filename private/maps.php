@@ -20,6 +20,7 @@ function ciniki_customers_maps($ciniki) {
 			'60'=>'Deleted',
 			),
 		'member_status'=>array(
+			'0'=>'',
 			'10'=>'Active',
 			'60'=>'Suspended Member',
 			),
@@ -52,6 +53,23 @@ function ciniki_customers_maps($ciniki) {
 			'0'=>'Unknown',
 			'10'=>'Active',
 			'60'=>'Inactive',
+			),
+		);
+
+	$maps['address'] = array(
+		'flags'=>array(
+			'0'=>'',
+			0x01=>'Shipping',
+			0x02=>'Billing',
+			0x04=>'Mailing',
+			0x08=>'Public',
+			),
+		'flags_shortcodes'=>array(
+			'0'=>'',
+			0x01=>'S',
+			0x02=>'B',
+			0x04=>'M',
+			0x08=>'P',
 			),
 		);
 	

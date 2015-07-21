@@ -151,6 +151,9 @@ function ciniki_customers_main() {
 				'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
 				'salesreps':{'label':'Sales Reps', 'visible':'no', 'fn':'M.startApp(\'ciniki.customers.salesreps\', null, \'M.ciniki_customers_main.tools.show();\');'},
 			}},
+			'download':{'label':'Export (Advanced)', 'list':{
+				'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
+			}},
 //			'import':{'label':'Import', 'list':{
 //				'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //			}},
