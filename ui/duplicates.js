@@ -454,16 +454,18 @@ function ciniki_customers_duplicates() {
 			this.match2.data.currentwineproduction = [];
 			this.match2.data.pastwineproduction = [];
 			var i = 0;
-			for(i in rsp['orders']) {
-				var order = rsp['orders'][i]['order'];
-				if( order['status'] < 50 ) {
-					this.match2.data.currentwineproduction.push(rsp['orders'][i]);
-				} else  {
-					this.match2.data.pastwineproduction.push(rsp['orders'][i]);
+			if( rsp.orders != null ) {
+				for(i in rsp.orders) {
+					var order = rsp.orders[i].order;
+					if( order['status'] < 50 ) {
+						this.match2.data.currentwineproduction.push(rsp.orders[i]);
+					} else  {
+						this.match2.data.pastwineproduction.push(rsp.orders[i]);
+					}
 				}
-			}
-			if( rsp.orders.length > 0 ) {
-				this.match2.sections._buttons.buttons.delete.visible = 'no';
+				if( rsp.orders.length > 0 ) {
+					this.match2.sections._buttons.buttons.delete.visible = 'no';
+				}
 			}
 		}
 
