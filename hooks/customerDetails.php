@@ -57,7 +57,10 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
 		. "pricepoint_id, notes "
 		. "FROM ciniki_customers "
-		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
+		. "LEFT JOIN ciniki_customer_emails ON ("
+			. "ciniki_customers.id = ciniki_customer_emails.customer_id, "
+			. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
