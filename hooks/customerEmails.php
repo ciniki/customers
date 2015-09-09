@@ -57,7 +57,7 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
 		. "pricepoint_id, notes "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON ("
-			. "ciniki_customers.id = ciniki_customer_emails.customer_id, "
+			. "ciniki_customers.id = ciniki_customer_emails.customer_id "
 			. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND (ciniki_customer_emails.flags&0x10) = 0 " // Not flagged as "NO NOT EMAIL"
 			. ") "
@@ -79,7 +79,7 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
 	if( !isset($rc['customers']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2541', 'msg'=>'Invalid customer'));
 	}
-	$customer = $rc['customers'][0]['customer'];
+	$customer = array_pop($rc['customers']);
 
 	return array('stat'=>'ok', 'customer'=>$customer);
 }
