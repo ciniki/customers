@@ -27,11 +27,13 @@ function ciniki_customers_hooks_customerStatus($ciniki, $business_id, $args) {
 			return $rc;
 		}
 		if( !isset($rc['customer']) ) {
-			return array('stat'=>'ok');
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2518', 'msg'=>'Customer not found'));
 		}
 		$customer = $rc['customer'];
+
+		return array('stat'=>'ok', 'customer'=>$customer);
 	}
 
-	return array('stat'=>'ok', 'customer'=>$customer);
+	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2508', 'msg'=>'No customer specified'));
 }
 ?>
