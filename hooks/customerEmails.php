@@ -49,7 +49,7 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
 	//
 	// Get the customer details and emails
 	//
-	$strsql = "SELECT ciniki_customers.id, eid, type, prefix, first, middle, last, suffix, "
+	$strsql = "SELECT ciniki_customers.id, ciniki_customers.parent_id, eid, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, salesrep_id, "
 		. "status, dealer_status, distributor_status, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
@@ -65,7 +65,7 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'eid', 'type', 
+			'fields'=>array('id', 'parent_id', 'eid', 'type', 
 				'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
 				'status', 'dealer_status', 'distributor_status',
 				'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
