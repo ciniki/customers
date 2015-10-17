@@ -15,8 +15,6 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
 
-	error_log("WEB: auth $email");
-
 	//
 	// Get customer information
 	//
@@ -36,8 +34,8 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 	if( $rc['stat'] != 'ok' ) {
-		error_log("WEB: auth $email fail");
-		return $rc;
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2601)");
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2601', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
 	}
 	//
 	// Allow for email address to be attached to multiple accounts
@@ -53,11 +51,11 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 			$customer = $rc['rows'][0];
 			$customers = array($rc['rows'][0]['id']=>$rc['rows'][0]);
 		} else {
-			error_log("WEB: auth $email fail (2059)");
+			error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2059)");
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2059', 'msg'=>'Unable to authenticate.'));
 		}
 	} else {
-		error_log("WEB: auth $email fail (736)");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (736)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'736', 'msg'=>'Unable to authenticate.'));
 	}
 
@@ -109,8 +107,8 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 			ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 			$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
 			if( $rc['stat'] != 'ok' ) {
-				error_log("WEB: auth $email fail");
-				return $rc;
+				error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2602)");
+				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2602', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
 			}
 			if( isset($rc['rows']) ) {
 				foreach($rc['rows'] as $cust) {
@@ -137,7 +135,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 				'fields'=>array('id', 'sequence', 'flags')),
 			));
 		if( $rc['stat'] != 'ok' ) {
-			error_log("WEB: $email pricepoints not found");
+			error_log("WEB [" . $ciniki['business']['details']['name'] . "]: $email pricepoints not found");
 			return $rc;
 		}
 		if( !isset($rc['pricepoints']) ) {
@@ -149,7 +147,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 			if( isset($pricepoints[$customer['pricepoint_id']]) ) {
 				$customer['pricepoint'] = $pricepoints[$customer['pricepoint_id']];
 			} else {
-				error_log("WEB: $email pricepoints not found");
+				error_log("WEB [" . $ciniki['business']['details']['name'] . "]: $email pricepoints not found");
 				if( isset($customer['pricepoint']) ) {
 					unset($customer['pricepoint']);
 				}
@@ -223,7 +221,7 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 	$ciniki['session']['change_log_id'] = $_SESSION['change_log_id'];
 	$ciniki['session']['user'] = array('id'=>'-2');
 
-	error_log("WEB: auth $email success");
+	error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email success");
 
 	return array('stat'=>'ok');
 }

@@ -24,12 +24,10 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
 	if( strlen($newpassword) < 8 ) {
-		error_log("WEB: changeTempPassword $email fail (730)");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (730)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'730', 'msg'=>'New password must be longer than 8 characters.'));
 	}
 	
-	error_log("WEB: changeTempPassword $email");
-
 	//
 	// Check temp password
 	// Must change password within 2 hours (7200 seconds)
@@ -45,11 +43,11 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
 	if( $rc['stat'] != 'ok' ) {
-		error_log("WEB: changeTempPassword $email fail (" . $rc['err']['code'] . ")");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (" . $rc['err']['code'] . ")");
 		return $rc;
 	}
 	if( !isset($rc['user']) || !is_array($rc['user']) ) {
-		error_log("WEB: changeTempPassword $email fail (731)");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (731)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'731', 'msg'=>'Unable to update password.'));
 	}
 	$user = $rc['user'];
@@ -62,7 +60,7 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	// Perform an extra check to make sure only 1 row was found, other return error
 	//
 	if( $rc['num_rows'] != 1 ) {
-		error_log("WEB: changeTempPassword $email fail (732)");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (732)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'732', 'msg'=>'Invalid temporary password'));
 	}
 
@@ -74,7 +72,7 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
-		error_log("WEB: changeTempPassword $email fail (" . $rc['err']['code'] . ")");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (" . $rc['err']['code'] . ")");
 		return $rc;
 	}
 
@@ -93,13 +91,13 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		error_log("WEB: changeTempPassword $email fail (733)");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (733)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'733', 'msg'=>'Unable to update password.'));
 	}
 
 	if( $rc['num_affected_rows'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		error_log("WEB: changeTempPassword $email fail (734)");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (734)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'734', 'msg'=>'Unable to change password.'));
 	}
 
@@ -108,11 +106,11 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	//
 	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
 	if( $rc['stat'] != 'ok' ) {
-		error_log("WEB: changeTempPassword $email fail (735)");
+		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (735)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'735', 'msg'=>'Unable to update password.'));
 	}
 
-	error_log("WEB: changeTempPassword $email success");
+	error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email success");
 
 	//
 	// Update the last_change date in the business modules
