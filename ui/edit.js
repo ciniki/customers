@@ -195,7 +195,7 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
-			'_image':{'label':'', 'active':'no', 'fields':{
+			'_image':{'label':'', 'active':'no', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'_image_caption':{'label':'', 'active':'no', 'fields':{
@@ -339,7 +339,7 @@ function ciniki_customers_edit() {
 				'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
 				},
 			'subscriptions':{'label':'Subscriptions', 'visible':'no', 'fields':{}},
-			'_image':{'label':'', 'fields':{
+			'_image':{'label':'', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'_image_caption':{'label':'', 'active':'no', 'fields':{

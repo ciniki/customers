@@ -204,7 +204,7 @@ function ciniki_customers_members() {
 		this.member.data = {};
 		this.member.customer_id = 0;
 		this.member.sections = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
 			'info':{'label':'', 'aside':'yes', 'list':{

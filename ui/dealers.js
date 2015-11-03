@@ -105,7 +105,7 @@ function ciniki_customers_dealers() {
 		this.dealer.data = {};
 		this.dealer.customer_id = 0;
 		this.dealer.sections = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
 			'info':{'label':'', 'aside':'yes', 'list':{
