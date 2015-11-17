@@ -423,6 +423,7 @@ function ciniki_customers_getModuleData($ciniki) {
 			. "FROM ciniki_customers "
 			. "WHERE ciniki_customers.parent_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
 			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "ORDER BY ciniki_customers.last, ciniki_customers.first "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'children', 'fname'=>'id', 'name'=>'customer',

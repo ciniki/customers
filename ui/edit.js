@@ -1603,7 +1603,11 @@ function ciniki_customers_edit() {
 			if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 
 				&& this.edit.sections.parent.active == 'yes' 
 				) {
-				c += this.edit.serializeFormSection('no', 'parent');
+                if( this.edit.parent_id > 0 ) {
+                    c += this.edit.serializeFormSection('yes', 'parent');
+                } else {
+                    c += this.edit.serializeFormSection('no', 'parent');
+                }
 			}
 			if( this.edit.sections._connection.active == 'yes' ) {
 				c += this.edit.serializeFormSection('no', '_connection');
