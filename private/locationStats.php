@@ -40,7 +40,7 @@ function ciniki_customers__locationStats($ciniki, $business_id, $args) {
 			. "IF(ISNULL(country) OR country='', 1, 0) AS sorta, "
 			. "COUNT(DISTINCT ciniki_customers.id) AS num "
 			. "FROM ciniki_customers "
-			. "LEFT JOIN ciniki_customer_addresses ON ("
+			. "LEFT JOIN ciniki_customer_addresses USE INDEX FOR JOIN (uuid, city) ON ("
 				. "ciniki_customers.id = ciniki_customer_addresses.customer_id "
 				. "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 				. ") "

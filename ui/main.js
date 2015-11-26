@@ -345,11 +345,11 @@ function ciniki_customers_main() {
 				'dataMaps':['invoice_number', 'wine_name', 'order_date', 'start_date', 'racking_date', 'filtering_date', 'bottling_date'],
 				'noData':'No current orders',
 				},
-			'pastwineproduction':{'label':'Past Orders', 'type':'simplegrid', 'visible':'no', 'num_cols':7,
+			'pastwineproduction':{'label':'Past Orders', 'type':'simplegrid', 'visible':'no', 'num_cols':3,
 				'sortable':'yes',
 				'cellClasses':['multiline', 'multiline', 'multiline aligncenter', 'multiline aligncenter', 'multiline aligncenter', 'multiline aligncenter', 'multiline aligncenter'],
-				'headerValues':['INV#', 'Wine', 'OD', 'SD', 'RD', 'FD', 'BD'], 
-				'dataMaps':['invoice_number', 'wine_name', 'order_date', 'start_date', 'racking_date', 'filtering_date', 'bottle_date'],
+				'headerValues':['INV#', 'Wine', 'OD/BD'], 
+//				'dataMaps':['invoice_number', 'wine_name', 'order_date', 'start_date', 'racking_date', 'filtering_date', 'bottle_date'],
 				'noData':'No past orders',
 				'limit':'5',
 				'moreTxt':'More',
@@ -537,10 +537,10 @@ function ciniki_customers_main() {
 					return t;
 				}
 			} 
-			else if( s == 'currentwineproduction' || s == 'pastwineproduction' ) {
+			else if( s == 'currentwineproduction' ) {
 				if( j == 0 ) {
 					return '<span class="maintext">' + d.order.invoice_number + '</span><span class="subtext">' + M.ciniki_customers_main.statusOptions[d.order.status] + '</span>';
-				} else if( (s == 'currentwineproduction' || s == 'pastwineproduction') && j > 1 && j < 7 ) {
+				} else if( s == 'currentwineproduction' && j > 1 && j < 7 ) {
 					var dt = d.order[this.sections[s].dataMaps[j]];
 					// Check for missing filter date, and try to take a guess
 					if( dt == null && j == 6 ) {
@@ -555,8 +555,30 @@ function ciniki_customers_main() {
 					} else {
 						return '';
 					}
+				} else if( s == 'pastwineproduction' && j > 1 && j < 7 ) {
+					var dt = d.order[this.sections[s].dataMaps[j]];
+					// Check for missing filter date, and try to take a guess
+					if( dt == null && j == 6 ) {
+						var dt = d.order.approx_filtering_date;
+						if( dt != null ) {	
+							return dt.replace(/(...)\s([0-9]+),\s([0-9][0-9][0-9][0-9])/, "<span class='maintext'>$1<\/span><span class='subtext'>$3<\/span>");
+						}
+						return '';
+					}
+					if( dt != null && dt != '' ) {
+						return dt.replace(/(...)\s([0-9]+),\s([0-9][0-9][0-9][0-9])/, "<span class='maintext'>$1<\/span><span class='subtext'>$3<\/span>");
+					} else {
+						return '';
+					}
 				}
 				return d.order[this.sections[s].dataMaps[j]];
+			}
+			else if( s == 'pastwineproduction' ) {
+                switch (j) {    
+                    case 0: return '<span class="maintext">' + d.order.invoice_number + '</span><span class="subtext">' + M.ciniki_customers_main.statusOptions[d.order.status] + '</span>';
+                    case 1: return '<span class="maintext">' + d.order.wine_name + '</span>';
+                    case 2: return '<span class="maintext">' + d.order.order_date + '</span><span class="subtext">' + (d.order.bottle_date!=null?d.order.bottle_date:'') + '</span>';
+                }
 			}
 			else if( s == 'curcerts' || s == 'pastcerts' ) {
 				switch(j) {
@@ -600,7 +622,7 @@ function ciniki_customers_main() {
 				return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer(null,null,"' + s + '");\',\'mc\',{\'invoice_id\':\'' + d.invoice.id + '\',\'list\':M.ciniki_customers_main.customer.data.orders});';
 			}
 			else if( s == 'currentwineproduction' || s == 'pastwineproduction' ) {
-				return 'M.startApp(\'ciniki.wineproduction.main\',null,\'M.ciniki_customers_main.showCustomer(null,null,"' + s + '");\',\'mc\',{\'order_id\':' + d.order.id + '});';
+				return 'M.startApp(\'ciniki.wineproduction.main\',null,\'M.ciniki_customers_main.showCustomer(null,null,"wine");\',\'mc\',{\'order_id\':' + d.order.id + '});';
 			}
 			else if( s == 'services' ) {
 				return 'M.startApp(\'ciniki.services.customer\',null,\'M.ciniki_customers_main.showCustomer(null,null,"services");\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'subscription_id\':\'' + d.subscription.id + '\'});';
