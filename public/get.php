@@ -103,11 +103,12 @@ function ciniki_customers_get($ciniki) {
 			. "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
 			. "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
 			. "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.sales_total_prev, ciniki_customers.start_date, "
-			. "ciniki_customer_emails.email AS emails "
+            . "CONCAT_WS(',', primary_email, alternate_email) AS emails "
+//			. "ciniki_customer_emails.email AS emails "
 			. "FROM ciniki_customers "
-			. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
-				. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-				. ") "
+//			. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
+//				. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//				. ") "
 			. "WHERE ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
 			. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "";
@@ -314,7 +315,9 @@ function ciniki_customers_get($ciniki) {
 	//
 	// Get phones
 	//
-	if( isset($args['phones']) && $args['phones'] == 'yes' ) {
+	if( isset($args['phones']) && $args['phones'] == 'yes' 
+        && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 
+        ) {
 		$strsql = "SELECT id, phone_label, phone_number, flags "
 			. "FROM ciniki_customer_phones "
 			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -335,7 +338,9 @@ function ciniki_customers_get($ciniki) {
 	//
 	// Get emails
 	//
-	if( isset($args['emails']) && $args['emails'] == 'yes' ) {
+	if( isset($args['emails']) && ($args['emails'] == 'yes' || $args['emails'] == 'list')
+        && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 
+        ) {
 		$strsql = "SELECT id, email AS address, flags "
 			. "FROM ciniki_customer_emails "
 			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -349,7 +354,14 @@ function ciniki_customers_get($ciniki) {
 			return $rc;
 		}
 		if( isset($rc['emails']) ) {
-			$customer['emails'] = $rc['emails'];
+            if( $args['emails'] == 'list' ) {
+                $customer['emails'] = '';
+                foreach($rc['emails'] as $email) {
+                    $customer['emails'] .= ($customer['emails']!=''?', ':'') . $email['email']['address'];
+                }
+            } else {
+                $customer['emails'] = $rc['emails'];
+            }
 		}
 	}
 

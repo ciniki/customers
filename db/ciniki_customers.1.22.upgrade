@@ -1,0 +1,6 @@
+#
+# This file will upgrade the database table customers to version 1.02.
+#
+ALTER TABLE ciniki_customers ADD COLUMN primary_email varchar(255) not null after phone_fax;
+ALTER TABLE ciniki_customers ADD COLUMN alternate_email varchar(255) not null after primary_email;
+ALTER TABLE ciniki_customers COMMENT='v1.22';

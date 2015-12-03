@@ -103,6 +103,9 @@
 # phone_cell:		The cell phone number for the customer.
 # phone_fax:		The fax number for the customer.
 #
+# primary_email:    The primary email address for the customer.
+# alternate_email:  The alternate email address for the customer.
+#
 # notes:			The current notes for the customer.  Any updates to notes are tracked through change_log.
 #
 # birthdate:		The birthdate of the customer.
@@ -173,6 +176,8 @@ create table ciniki_customers (
 	phone_work varchar(50) not null,
 	phone_cell varchar(50) not null,
 	phone_fax varchar(50) not null,
+    primary_email varchar(255) not null,
+    alternate_email varchar(255) not null,
 	notes varchar(6000) not null,
 	birthdate date not null,
 	connection varchar(250) not null,
@@ -199,4 +204,4 @@ create table ciniki_customers (
 	index (company),
 	index (eid),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.21';
+) ENGINE='InnoDB', COMMENT='v1.22';

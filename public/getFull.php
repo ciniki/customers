@@ -98,14 +98,15 @@ function ciniki_customers_getFull($ciniki) {
 		. "dealer_status, distributor_status, "
 		. "prefix, first, middle, last, suffix, "
 		. "display_name, display_name_format, company, department, title, "
-		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
-		. "ciniki_customer_emails.flags AS email_flags, "
+        . "phone_home, phone_work, phone_cell, phone_fax, primary_email, alternate_email, "
+//		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
+//		. "ciniki_customer_emails.flags AS email_flags, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
 		. "connection, "
 		. "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, sales_total_prev, start_date, "
 		. "notes, primary_image_id, webflags, short_bio, full_bio "
 		. "FROM ciniki_customers "
-		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
+//		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -113,6 +114,7 @@ function ciniki_customers_getFull($ciniki) {
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'webflags', 'parent_id', 'status',
 				'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 
+                'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 'primary_email', 'alternate_email',
 				'dealer_status', 'distributor_status',
 				'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
 				'display_name', 'display_name_format', 'company', 'department', 'title', 
@@ -122,9 +124,9 @@ function ciniki_customers_getFull($ciniki) {
 			'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
 				'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
 				),
-		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
-			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 
-				'flags'=>'email_flags')),
+//		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
+//			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 
+//				'flags'=>'email_flags')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -177,24 +179,48 @@ function ciniki_customers_getFull($ciniki) {
 		}
 	}
 
+    //
+    // Get the customer email addresses
+    //
+    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
+        $strsql = "SELECT id, customer_id, email AS address, flags "
+            . "FROM ciniki_customer_emails "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'emails', 'fname'=>'id', 'name'=>'email',
+                'fields'=>array('id', 'customer_id', 'address', 'flags')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['emails']) ) {
+            $customer['emails'] = $rc['emails'];
+        } else {
+            $customer['emails'] = array();
+        }
+    }
 	//
 	// Get phones
 	//
-	$strsql = "SELECT id, phone_label, phone_number, flags "
-		. "FROM ciniki_customer_phones "
-		. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-		array('container'=>'phones', 'fname'=>'id', 'name'=>'phone',
-			'fields'=>array('id', 'phone_label', 'phone_number', 'flags')),
-		));
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( isset($rc['phones']) ) {
-		$customer['phones'] = $rc['phones'];
-	}
+    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
+        $strsql = "SELECT id, phone_label, phone_number, flags "
+            . "FROM ciniki_customer_phones "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'phones', 'fname'=>'id', 'name'=>'phone',
+                'fields'=>array('id', 'phone_label', 'phone_number', 'flags')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['phones']) ) {
+            $customer['phones'] = $rc['phones'];
+        }
+    }
 
 	//
 	// Get the customer addresses
