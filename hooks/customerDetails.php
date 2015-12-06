@@ -192,7 +192,10 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
             if( $label == '' ) { 
                 $label = 'Address'; 
             }
-			$joined_address = $address['address']['address1'] . "\n";
+			$joined_address = '';
+			if( isset($address['address']['address1']) && $address['address']['address1'] != '' ) {
+				$joined_address .= $address['address']['address1'] . "\n";
+			}
 			if( isset($address['address']['address2']) && $address['address']['address2'] != '' ) {
 				$joined_address .= $address['address']['address2'] . "\n";
 			}

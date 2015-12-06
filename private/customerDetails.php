@@ -199,7 +199,10 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
             if( $label == '' ) {
                 $label = 'Address';
             }
-			$joined_address = $address['address']['address1'] . "\n";
+			$joined_address = '';
+			if( isset($address['address']['address1']) && $address['address']['address1'] != '' ) {
+				$joined_address .= $address['address']['address1'] . "\n";
+			}
 			if( isset($address['address']['address2']) && $address['address']['address2'] != '' ) {
 				$joined_address .= $address['address']['address2'] . "\n";
 			}
