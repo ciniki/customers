@@ -180,14 +180,18 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 	}
 	if( isset($customer['addresses']) ) {
 		foreach($customer['addresses'] as $a => $address) {
-			$label = 'Address';
+			$label = '';
 			if( count($customer['addresses']) > 1 ) {
 				$flags = $address['address']['flags'];
 				$comma = '';
 				if( ($flags&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
 				if( ($flags&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
 				if( ($flags&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
+				if( ($flags&0x04) == 0x08 ) { $label .= $comma . 'Public'; $comma = ', ';}
 			}
+            if( $label == '' ) { 
+                $label = 'Address'; 
+            }
 			$joined_address = $address['address']['address1'] . "\n";
 			if( isset($address['address']['address2']) && $address['address']['address2'] != '' ) {
 				$joined_address .= $address['address']['address2'] . "\n";

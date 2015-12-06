@@ -735,6 +735,21 @@ function ciniki_customers_edit() {
 			settings = M.curBusiness.modules['ciniki.customers'].settings;
 		}
 
+        if( (M.curBusiness.modules['ciniki.customers'].flags&0x02) == 0x02 ) {
+            this.addressFlags = {
+                '1':{'name':'Shipping'}, 
+                '2':{'name':'Billing'}, 
+                '3':{'name':'Mailing'},
+                '4':{'name':'Public'},
+            };
+        } else {
+            this.addressFlags = {
+                '1':{'name':'Shipping'}, 
+                '2':{'name':'Billing'}, 
+                '3':{'name':'Mailing'},
+            };
+        }
+
 		//
 		// Create the app container if it doesn't exist, and clear it out
 		// if it does exist.
