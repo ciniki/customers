@@ -52,6 +52,8 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 	//
 	$strsql = "SELECT ciniki_customers.id, eid, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, salesrep_id, "
+        . "phone_home, phone_cell, phone_work, phone_fax, "
+        . "primary_email, alternate_email, "
 		. "status, dealer_status, distributor_status, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
@@ -67,6 +69,8 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'eid', 'type', 
 				'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
+                'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
+                'primary_email', 'alternate_email',
 				'status', 'dealer_status', 'distributor_status',
 				'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
 				'notes', 'birthdate')),
@@ -159,25 +163,49 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 //	if( isset($customer['company']) && $customer['company'] != '' ) {
 //		$details[] = array('detail'=>array('label'=>'Company', 'value'=>$customer['company']));
 //	}
-	if( isset($customer['phones']) ) {
-		foreach($customer['phones'] as $phone) {
-			$details[] = array('detail'=>array('label'=>$phone['phone_label'], 'value'=>$phone['phone_number']));
-		}
-	}
-	if( isset($customer['emails']) ) {
-		$emails = '';
-		$comma = '';
-		foreach($customer['emails'] as $e => $email) {
-			$emails .= $comma . $email['email']['address'];
-			$comma = ', ';
-//			$details[] = array('detail'=>array('label'=>'Email', 'value'=>$email['email']['address']));
-		}
-		if( count($customer['emails']) > 1 ) {
-			$details[] = array('detail'=>array('label'=>'Emails', 'value'=>$emails));
-		} else {
-			$details[] = array('detail'=>array('label'=>'Email', 'value'=>$emails));
-		}
-	}
+	if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
+        if( isset($customer['phones']) ) {
+            foreach($customer['phones'] as $phone) {
+                $details[] = array('detail'=>array('label'=>$phone['phone_label'], 'value'=>$phone['phone_number']));
+            }
+        }
+	} else {
+        if( isset($customer['phone_home']) && $customer['phone_home'] != '' ) {
+            $details[] = array('detail'=>array('label'=>'Home', 'value'=>$customer['phone_home']));
+        }
+        if( isset($customer['phone_work']) && $customer['phone_work'] != '' ) {
+            $details[] = array('detail'=>array('label'=>'Work', 'value'=>$customer['phone_work']));
+        }
+        if( isset($customer['phone_cell']) && $customer['phone_cell'] != '' ) {
+            $details[] = array('detail'=>array('label'=>'Cell', 'value'=>$customer['phone_cell']));
+        }
+        if( isset($customer['phone_fax']) && $customer['phone_fax'] != '' ) {
+            $details[] = array('detail'=>array('label'=>'Fax', 'value'=>$customer['phone_fax']));
+        }
+    }
+	if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
+        if( isset($customer['emails']) ) {
+            $emails = '';
+            $comma = '';
+            foreach($customer['emails'] as $e => $email) {
+                $emails .= $comma . $email['email']['address'];
+                $comma = ', ';
+    //			$details[] = array('detail'=>array('label'=>'Email', 'value'=>$email['email']['address']));
+            }
+            if( count($customer['emails']) > 1 ) {
+                $details[] = array('detail'=>array('label'=>'Emails', 'value'=>$emails));
+            } else {
+                $details[] = array('detail'=>array('label'=>'Email', 'value'=>$emails));
+            }
+        }
+    } else {
+        if( isset($customer['primary_email']) && $customer['primary_email'] != '' ) {
+            $details[] = array('detail'=>array('label'=>'Email', 'value'=>$customer['primary_email']));
+        }
+        if( isset($customer['alternate_email']) && $customer['alternate_email'] != '' ) {
+            $details[] = array('detail'=>array('label'=>'Alternate', 'value'=>$customer['alternate_email']));
+        }
+    }
 	if( isset($customer['addresses']) ) {
 		foreach($customer['addresses'] as $a => $address) {
 			$label = '';
