@@ -11,7 +11,7 @@ function ciniki_customers_edit() {
 	this.subscriptionOptions = {'60':'Unsubscribed', '10':'Subscribed'};
 	this.memberStatus = {'10':'Active', '60':'Suspended'};
 	this.membershipLength = {'10':'Monthly', '20':'Yearly', '60':'Lifetime'};
-	this.membershipType = {'10':'Regular', '20':'Complimentary', '30':'Reciprocal'};
+	this.membershipType = {'10':'Regular', '110':'Complimentary', '150':'Reciprocal'};
 	this.memberWebFlags = {'1':{'name':'Visible'}};
 	this.memberPhoneFlags = {'4':{'name':'Public'}};
 	this.dealerStatus = {'5':'Prospect', '10':'Active', '60':'Suspended'};
@@ -939,6 +939,27 @@ function ciniki_customers_edit() {
 //		this.edit.forms.business._dealer_categories.active = 'no';
 //		this.edit.forms.person._distributor_categories.active = 'no';
 //		this.edit.forms.business._distributor_categories.active = 'no';
+	    var membershipType = {};
+        if( settings['membership-type-10-active'] == null || settings['membership-type-10-active'] == 'yes' ) {
+            membershipType['10'] = 'Regular';
+        }
+        if( settings['membership-type-20-active'] != null && settings['membership-type-20-active'] == 'yes' ) {
+            membershipType['20'] = 'Student';
+        }
+        if( settings['membership-type-30-active'] != null && settings['membership-type-30-active'] == 'yes' ) {
+            membershipType['30'] = 'Individual';
+        }
+        if( settings['membership-type-40-active'] != null && settings['membership-type-40-active'] == 'yes' ) {
+            membershipType['40'] = 'Family';
+        }
+        if( settings['membership-type-110-active'] == null || settings['membership-type-110-active'] == 'yes' ) {
+            membershipType['110'] = 'Complimentary';
+        }
+        if( settings['membership-type-150-active'] == null || settings['membership-type-150-active'] == 'yes' ) {
+            membershipType['150'] = 'Reciprocal';
+        }
+        this.edit.forms.person.membership.fields.membership_type.toggles = membershipType;
+        this.edit.forms.business.membership.fields.membership_type.toggles = membershipType;
 		//
 		// Setup the member forms
 		//

@@ -144,7 +144,11 @@ function ciniki_customers_members() {
 			'tabs':{'label':'', 'selected':'unattached', 'type':'paneltabs', 'tabs':{
 				'unattached':{'label':'Unknown', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'unattached\');'},
 				'inactive':{'label':'Inactive', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'inactive\');'},
-				'regular':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'regular\');'},
+				'regular':{'label':'Paid', 'visible':'no', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'regular\');'},
+				'student':{'label':'Paid', 'visible':'no', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'student\');'},
+				'student':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'student\');'},
+				'individual':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'individual\');'},
+				'family':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'family\');'},
 				'complimentary':{'label':'Complementary', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'complimentary\');'},
 				'reciprocal':{'label':'Reciprocal', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'reciprocal\');'},
 				}},
@@ -289,8 +293,11 @@ function ciniki_customers_members() {
 				if( this.data.membership_type != null && this.data.membership_type != '' ) {
 					switch(this.data.membership_type) {
 						case '10': txt += 'Regular'; break;
-						case '20': txt += 'Complimentary'; break;
-						case '30': txt += 'Reciprocal'; break;
+						case '20': txt += 'Student'; break;
+						case '30': txt += 'Individual'; break;
+						case '40': txt += 'Family'; break;
+						case '110': txt += 'Complimentary'; break;
+						case '150': txt += 'Reciprocal'; break;
 					}
 				}
 				if( this.data.membership_length != null && this.data.membership_length != '' ) {
@@ -589,11 +596,21 @@ function ciniki_customers_members() {
 						return false;
 					}
 					var p = M.ciniki_customers_members.season;
+                    var settings = M.curBusiness.modules['ciniki.customers'].settings;
 					p.sections.tabs.tabs.unattached.label = 'Unknown (' + rsp.unattached + ')';
 					p.sections.tabs.tabs.inactive.label = 'Inactive (' + rsp.inactive + ')';
 					p.sections.tabs.tabs.regular.label = 'Regular (' + rsp.regular + ')';
+					p.sections.tabs.tabs.student.label = 'Student (' + rsp.student + ')';
+					p.sections.tabs.tabs.individual.label = 'Individual (' + rsp.individual + ')';
+					p.sections.tabs.tabs.family.label = 'Family (' + rsp.family + ')';
 					p.sections.tabs.tabs.complimentary.label = 'Complimentary (' + rsp.complimentary + ')';
 					p.sections.tabs.tabs.reciprocal.label = 'Reciprocal (' + rsp.reciprocal + ')';
+                    p.sections.tabs.tabs.regular.visible = (settings['membership-type-10-active']==null || settings['membership-type-10-active'] == 'yes')?'yes':'no';
+                    p.sections.tabs.tabs.student.visible = (settings['membership-type-20-active']!=null && settings['membership-type-20-active'] == 'yes')?'yes':'no';
+                    p.sections.tabs.tabs.individual.visible = (settings['membership-type-30-active']!=null && settings['membership-type-30-active'] == 'yes')?'yes':'no';
+                    p.sections.tabs.tabs.family.visible = (settings['membership-type-40-active']!=null && settings['membership-type-40-active'] == 'yes')?'yes':'no';
+                    p.sections.tabs.tabs.complimentary.visible = (settings['membership-type-110-active']==null || settings['membership-type-110-active'] == 'yes')?'yes':'no';
+                    p.sections.tabs.tabs.reciprocal.visible = (settings['membership-type-150-active']==null || settings['membership-type-150-active'] == 'yes')?'yes':'no';
 					p.data = rsp;
 					p.refresh();
 					p.show(cb);

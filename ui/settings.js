@@ -71,6 +71,17 @@ function ciniki_customers_settings() {
 				'addTxt':'Add Seasons',
 				'addFn':'M.ciniki_customers_settings.editSeason(\'M.ciniki_customers_settings.showMain();\',0);',
 			},
+			'membership_types':{'label':'Defaults', 
+                'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x02)>0?'yes':'no'; },
+                'fields':{
+                    'membership-type-10-active':{'label':'Regular', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                    'membership-type-20-active':{'label':'Student', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                    'membership-type-30-active':{'label':'Individual', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                    'membership-type-40-active':{'label':'Family', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                    'membership-type-110-active':{'label':'Complimentary', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                    'membership-type-150-active':{'label':'Reciprocal', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                 },
+			},
 			'ui_colours':{'label':'Status Colours', 'visible':'yes', 'fields':{
 				'ui-colours-customer-status-10':{'label':'Active', 'type':'colour'},
 				'ui-colours-customer-status-40':{'label':'On Hold', 'type':'colour'},

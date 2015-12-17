@@ -66,6 +66,12 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	$changelog_fields = array(
 		'display-name-business-format',
 		'defaults-edit-form',
+        'membership-type-10-active',
+        'membership-type-20-active',
+        'membership-type-30-active',
+        'membership-type-40-active',
+        'membership-type-110-active',
+        'membership-type-150-active',
 		'ui-labels-parent',
 		'ui-labels-parents',
 		'ui-labels-child',

@@ -67,7 +67,7 @@ function ciniki_customers_seasonInfo($ciniki) {
 	//
 	// Setup the return array
 	//
-	$rsp = array('stat'=>'ok', 'unattached'=>0, 'inactive'=>0, 'regular'=>0, 'complimentary'=>0, 'reciprocal'=>0, 'members'=>array());
+	$rsp = array('stat'=>'ok', 'unattached'=>0, 'inactive'=>0, 'regular'=>0, 'student'=>0, 'individual'=>0, 'family'=>0, 'complimentary'=>0, 'reciprocal'=>0, 'members'=>array());
 
 	//
 	// Get the stats of the season
@@ -103,9 +103,18 @@ function ciniki_customers_seasonInfo($ciniki) {
 				$rsp['regular'] += $row['num_customers'];
 			}
 			if( $row['status'] == '10' && $row['membership_type'] == '20' ) {
-				$rsp['complimentary'] += $row['num_customers'];
+				$rsp['student'] += $row['num_customers'];
 			}
 			if( $row['status'] == '10' && $row['membership_type'] == '30' ) {
+				$rsp['individual'] += $row['num_customers'];
+			}
+			if( $row['status'] == '10' && $row['membership_type'] == '40' ) {
+				$rsp['family'] += $row['num_customers'];
+			}
+			if( $row['status'] == '10' && $row['membership_type'] == '110' ) {
+				$rsp['complimentary'] += $row['num_customers'];
+			}
+			if( $row['status'] == '10' && $row['membership_type'] == '150' ) {
 				$rsp['reciprocal'] += $row['num_customers'];
 			}
 		}
@@ -162,6 +171,39 @@ function ciniki_customers_seasonInfo($ciniki) {
 					. "AND ciniki_customers.member_status = 10 "		// Active member
 					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
 					. "";
+			} elseif( $args['list'] == 'student' ) {
+				$strsql .= "FROM ciniki_customer_season_members, ciniki_customers "
+					. "WHERE ciniki_customer_season_members.season_id = '" . ciniki_core_dbQuote($ciniki, $args['season_id']) . "' "
+					. "AND ciniki_customer_season_members.status = 10 "
+					. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customer_season_members.customer_id = ciniki_customers.id "
+					. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customers.membership_type = '20' "	// Regular Member
+					. "AND ciniki_customers.member_status = 10 "		// Active member
+					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
+					. "";
+			} elseif( $args['list'] == 'individual' ) {
+				$strsql .= "FROM ciniki_customer_season_members, ciniki_customers "
+					. "WHERE ciniki_customer_season_members.season_id = '" . ciniki_core_dbQuote($ciniki, $args['season_id']) . "' "
+					. "AND ciniki_customer_season_members.status = 10 "
+					. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customer_season_members.customer_id = ciniki_customers.id "
+					. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customers.membership_type = '30' "	// Regular Member
+					. "AND ciniki_customers.member_status = 10 "		// Active member
+					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
+					. "";
+			} elseif( $args['list'] == 'family' ) {
+				$strsql .= "FROM ciniki_customer_season_members, ciniki_customers "
+					. "WHERE ciniki_customer_season_members.season_id = '" . ciniki_core_dbQuote($ciniki, $args['season_id']) . "' "
+					. "AND ciniki_customer_season_members.status = 10 "
+					. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customer_season_members.customer_id = ciniki_customers.id "
+					. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customers.membership_type = '40' "	// Regular Member
+					. "AND ciniki_customers.member_status = 10 "		// Active member
+					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
+					. "";
 			} elseif( $args['list'] == 'complimentary' ) {
 				$strsql .= "FROM ciniki_customer_season_members, ciniki_customers "
 					. "WHERE ciniki_customer_season_members.season_id = '" . ciniki_core_dbQuote($ciniki, $args['season_id']) . "' "
@@ -169,7 +211,7 @@ function ciniki_customers_seasonInfo($ciniki) {
 					. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 					. "AND ciniki_customer_season_members.customer_id = ciniki_customers.id "
 					. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-					. "AND ciniki_customers.membership_type = '20' "	// Complimentary Member
+					. "AND ciniki_customers.membership_type = '110' "	// Complimentary Member
 					. "AND ciniki_customers.member_status = 10 "		// Active member
 					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
 					. "";
@@ -180,7 +222,7 @@ function ciniki_customers_seasonInfo($ciniki) {
 					. "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 					. "AND ciniki_customer_season_members.customer_id = ciniki_customers.id "
 					. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-					. "AND ciniki_customers.membership_type = '30' "	// Reciprocal Member
+					. "AND ciniki_customers.membership_type = '150' "	// Reciprocal Member
 					. "AND ciniki_customers.member_status = 10 "		// Active member
 					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
 					. "";

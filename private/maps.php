@@ -44,8 +44,11 @@ function ciniki_customers_maps($ciniki) {
 		'membership_type'=>array(
 			'0'=>'',
 			'10'=>'Regular',
-			'20'=>'Complimentary',
-			'60'=>'Reciprocal',
+			'20'=>'Student',
+			'30'=>'Individual',
+			'40'=>'Family',
+			'110'=>'Complimentary',
+			'150'=>'Reciprocal',
 			),
 		);
 	$maps['season_member'] = array(

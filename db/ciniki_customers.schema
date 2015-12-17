@@ -59,9 +59,12 @@
 #
 # membership_type:	The type of membership, if a member, otherwise it will be zero.
 #					
-#					10 - Regular
-#					20 - Complimentary
-#					30 - Reciprocal
+#					10 - Regular/Individual
+#                   20 - Student
+#                   30 - Individual
+#                   40 - Family
+#					110:20 - Complimentary
+#					150:30 - Reciprocal
 #
 # dealer_status:	The dealer status for the customer/dealer.  This is only used if 
 #					the dealers are enabled.
