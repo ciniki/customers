@@ -339,7 +339,7 @@ function ciniki_customers_get($ciniki) {
 	// Get emails
 	//
 	if( isset($args['emails']) && ($args['emails'] == 'yes' || $args['emails'] == 'list')
-        && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 
+//        && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 
         ) {
 		$strsql = "SELECT id, email AS address, flags "
 			. "FROM ciniki_customer_emails "

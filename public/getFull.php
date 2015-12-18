@@ -182,7 +182,7 @@ function ciniki_customers_getFull($ciniki) {
     //
     // Get the customer email addresses
     //
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
+//    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
         $strsql = "SELECT id, customer_id, email AS address, flags "
             . "FROM ciniki_customer_emails "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
@@ -200,11 +200,11 @@ function ciniki_customers_getFull($ciniki) {
         } else {
             $customer['emails'] = array();
         }
-    }
+//    }
 	//
 	// Get phones
 	//
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
+    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) == 0 ) {
         $strsql = "SELECT id, phone_label, phone_number, flags "
             . "FROM ciniki_customer_phones "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "

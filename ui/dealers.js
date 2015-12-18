@@ -116,7 +116,7 @@ function ciniki_customers_dealers() {
 				'phone_cell':{'label':'Cell Phone', 'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x10000000)==0?'yes':'no';}},
 				'phone_fax':{'label':'Fax', 'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x10000000)==0?'yes':'no';}},
 				'primary_email':{'label':'Email', 'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x20000000)==0?'yes':'no';}},
-				'alternate_email':{'label':'Alternate', 'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x20000000)==0?'yes':'no';}},
+//				'alternate_email':{'label':'Alternate', 'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x20000000)==0?'yes':'no';}},
 				'webvisible':{'label':'Web Settings'},
 				'dealer_status_text':{'label':'Status'},
 				'dealer_categories':{'label':'Categories', 'visible':'no'},

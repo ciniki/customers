@@ -102,7 +102,7 @@ function ciniki_customers_getModuleData($ciniki) {
 	//
 	$strsql = "SELECT ciniki_customers.id, eid, parent_id, type, prefix, first, middle, last, suffix, "
 		. "display_name, company, department, title, "
-        . "phone_home, phone_work, phone_cell, phone_fax, primary_email, alternate_email, "
+        . "phone_home, phone_work, phone_cell, phone_fax, "
 		. "status, status AS status_text, "
 		. "dealer_status, dealer_status AS dealer_status_text, "
 		. "distributor_status, distributor_status AS distributor_status_text, "
@@ -132,7 +132,7 @@ function ciniki_customers_getModuleData($ciniki) {
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
 			'fields'=>array('id', 'eid', 'parent_id', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
 				'status', 'status_text',
-                'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 'primary_email', 'alternate_email',
+                'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
 				'dealer_status', 'dealer_status_text',
 				'distributor_status', 'distributor_status_text',
 				'company', 'department', 'title', 
@@ -268,7 +268,7 @@ function ciniki_customers_getModuleData($ciniki) {
     //
     // Get the customer email addresses
     //
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
+//    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
         $strsql = "SELECT id, customer_id, email AS address, flags "
             . "FROM ciniki_customer_emails "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
@@ -286,12 +286,12 @@ function ciniki_customers_getModuleData($ciniki) {
         } else {
             $customer['emails'] = array();
         }
-    }
+ //   }
     
 	//
 	// Get phones
 	//
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
+    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) == 0 ) {
         $strsql = "SELECT id, phone_label, phone_number, flags "
             . "FROM ciniki_customer_phones "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "

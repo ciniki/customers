@@ -916,7 +916,7 @@ function ciniki_customers_main() {
                 this.customer.data.details['phone_fax'] = {'label':'Fax', 'value':rsp.customer.phone_fax};
             }
         }
-		if( (M.curBusiness.modules['ciniki.customers'].flags&0x20000000) > 0 ) {
+//		if( (M.curBusiness.modules['ciniki.customers'].flags&0x20000000) > 0 ) {
             if( rsp.customer.emails != null ) {
                 for(i in rsp.customer.emails) {
                     var flags = '';
@@ -925,14 +925,14 @@ function ciniki_customers_main() {
                     this.customer.data.details['email-'+i] = {'label':'Email', 'value':M.linkEmail(rsp.customer.emails[i].email.address) + (flags!=''?' <span class="subdue">(' + flags + ')</span>':'')};
                 }
             }
-        } else {
-            if( rsp.customer.primary_email != '' ) {
-                this.customer.data.details['primary_email'] = {'label':'Email', 'value':rsp.customer.primary_email};
-            }
-            if( rsp.customer.alternate_email != '' ) {
-                this.customer.data.details['alternate_email'] = {'label':'Alt Email', 'value':rsp.customer.alternate_email};
-            }
-        }
+//        } else {
+//            if( rsp.customer.primary_email != '' ) {
+//                this.customer.data.details['primary_email'] = {'label':'Email', 'value':rsp.customer.primary_email};
+//            }
+//            if( rsp.customer.alternate_email != '' ) {
+//                this.customer.data.details['alternate_email'] = {'label':'Alt Email', 'value':rsp.customer.alternate_email};
+//            }
+//        }
 		if( rsp.customer.addresses != null ) {
 			for(i in rsp.customer.addresses) {
 				var l = '';

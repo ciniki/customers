@@ -53,6 +53,24 @@ function ciniki_customers_emailAdd(&$ciniki) {
 	//
 	// FIXME: Encrypt the password
 	//
+   
+    //
+    // Check if we allow multiple emails
+    // 
+    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) == 0 ) {
+        $strsql = "SELECT COUNT(id) AS emails "
+            . "FROM ciniki_customer_emails "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'num');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['num']['emails']) && $rc['num']['emails'] > 0 ) {
+            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2895', 'msg'=>'There is already an email address for this customer.'));
+        }
+    }
 
 	//
 	// Add the address
