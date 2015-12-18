@@ -65,6 +65,16 @@ function ciniki_customers_addressAdd(&$ciniki) {
     }   
     $args = $rc['args'];
 
+    //  
+    // Make sure this module is activated, and
+    // check permission to run this function for this business
+    //  
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
+    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.addressAdd', $args['customer_id']); 
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }   
+
 	//
 	// They must specify something about the address
 	//
@@ -76,15 +86,23 @@ function ciniki_customers_addressAdd(&$ciniki) {
 		$args['flags'] = $args['address_flags'];
 	}
 	
-    //  
-    // Make sure this module is activated, and
-    // check permission to run this function for this business
-    //  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.addressAdd', $args['customer_id']); 
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }   
+    //
+    // Check if we allow multiple addresses
+    // 
+    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x40000000) > 0 ) {
+        $strsql = "SELECT COUNT(id) AS addresses "
+            . "FROM ciniki_customer_addresses "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'num');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['num']['addresses']) && $rc['num']['addresses'] > 0 ) {
+            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2896', 'msg'=>'There is already an address for this customer.'));
+        }
+    }
 
 	//
 	// Lookup the latitude/longitude

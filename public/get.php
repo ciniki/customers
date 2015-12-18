@@ -316,7 +316,7 @@ function ciniki_customers_get($ciniki) {
 	// Get phones
 	//
 	if( isset($args['phones']) && $args['phones'] == 'yes' 
-        && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 
+//        && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 
         ) {
 		$strsql = "SELECT id, phone_label, phone_number, flags "
 			. "FROM ciniki_customer_phones "

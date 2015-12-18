@@ -1577,9 +1577,10 @@ function ciniki_customers_edit() {
 					M.api.err(rsp);
 					return false;
 				}
-				M.ciniki_customers_edit.edit.data.phones = rsp.customer.phones;
-				M.ciniki_customers_edit.edit.refreshSection('phones');
-				M.ciniki_customers_edit.edit.show();
+                var p = M.ciniki_customers_edit.edit;
+				p.data.phones = rsp.customer.phones;
+				p.refreshSection('phones');
+				p.show();
 			});
 	};
 

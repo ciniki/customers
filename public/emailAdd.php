@@ -57,7 +57,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
     //
     // Check if we allow multiple emails
     // 
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) == 0 ) {
+    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
         $strsql = "SELECT COUNT(id) AS emails "
             . "FROM ciniki_customer_emails "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
