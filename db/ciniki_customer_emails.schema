@@ -28,6 +28,8 @@
 #						0x08 - public, visible on website in member profile or other places
 # 						0x10 - Send no emails
 # 						0x20 - Secondary email, use only if first a problem **future**
+#                       0x40 - 
+#                       0x80 - 
 #
 # date_added:			The UTC date and time the record was added.
 # last_updated:			The UTC date and time the record was last updated.
