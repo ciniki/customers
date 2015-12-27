@@ -59,7 +59,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
             $content .= "<label for='newpassword'>New Password:</label><input class='text' id='newpassword' type='password' name='newpassword' />";
             $content .= "<div class='submit'><input type='submit' class='submit' value='Save Changes'></div>\n";
             $content .= "</form>";
-            $page['blocks'][] = array('type'=>'content', 'content'=>$content);
+            $page['blocks'][] = array('type'=>'content', 'html'=>$content);
         }
     } 
    
