@@ -15,7 +15,10 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
     $submenu = array();
 
     if( isset($ciniki['session']['customers']) && count($ciniki['session']['customers']) > 1 ) {
-        $submenu[] = array('name'=>'Accounts', 'priority'=>310, 'package'=>'ciniki', 'module'=>'customers', 'url'=>$ciniki['request']['base_url'] . '/account/accounts');
+        $submenu[] = array('name'=>'Accounts', 'priority'=>310, 'package'=>'ciniki', 'module'=>'customers', 
+            'selected'=>($ciniki['request']['page'] == 'account' 
+                && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'accounts')?'yes':'no',
+            'url'=>$ciniki['request']['base_url'] . '/account/accounts');
     }
 
     if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' 
@@ -24,11 +27,15 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
         ) {
         $submenu[] = array('name'=>'Contact Details', 'priority'=>300, 
             'package'=>'ciniki', 'module'=>'customers', 
+            'selected'=>($ciniki['request']['page'] == 'account' 
+                && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'contactdetails')?'yes':'no',
             'url'=>$ciniki['request']['base_url'] . '/account/contactdetails');
     }
 
     $submenu[] = array('name'=>'Change Password', 'priority'=>250, 
         'package'=>'ciniki', 'module'=>'customers', 
+        'selected'=>($ciniki['request']['page'] == 'account' 
+            && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'changepassword')?'yes':'no',
         'url'=>$ciniki['request']['base_url'] . '/account/changepassword');
 
 	return array('stat'=>'ok', 'submenu'=>$submenu);
