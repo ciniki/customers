@@ -54,10 +54,18 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
         if( $display_form == 'yes' ) {
             $page['blocks'][] = array('type'=>'message', 'content'=>'If you would like to change your password, enter your old password followed by a new one.');
             $content = "<form action='' method='POST'>";
+            $content .= "<div class='change-password-form'>";
             $content .= "<input type='hidden' name='action' value='update'/>";
-            $content .= "<label for='oldpassword'>Old Password:</label><input class='text' id='oldpassword' type='password' name='oldpassword' />";
-            $content .= "<label for='newpassword'>New Password:</label><input class='text' id='newpassword' type='password' name='newpassword' />";
-            $content .= "<div class='submit'><input type='submit' class='submit' value='Save Changes'></div>\n";
+            $content .= "<div class='input'>"
+                . "<label for='oldpassword'>Old Password:</label>"
+                . "<input class='text' id='oldpassword' type='password' name='oldpassword' />"
+                . "</div>";
+            $content .= "<div class='input'>"
+                . "<label for='newpassword'>New Password:</label>"
+                . "<input class='text' id='newpassword' type='password' name='newpassword' />"
+                . "</div>";
+            $content .= "<div class='submit'><input type='submit' class='button submit' value='Change Password'></div>\n";
+            $content .= "</div>";
             $content .= "</form>";
             $page['blocks'][] = array('type'=>'content', 'html'=>$content);
         }
