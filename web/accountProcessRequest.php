@@ -293,6 +293,10 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
             . "</div>";
         if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
             if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x40000000) > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'countryCodes');
+                $rc = ciniki_core_countryCodes($ciniki);
+                $country_codes = $rc['countries'];
+                $province_codes = $rc['provinces'];
                 $form .= "<div class='input address1'>"
                     . "<label for='address1'>Street Address 1</label>"
                     . "<input type='text' class='text' name='address1' value='" . $address['address1'] . "'>"
@@ -305,18 +309,62 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
                     . "<label for='city'>City</label>"
                     . "<input type='text' class='text' name='city' value='" . $address['city'] . "'>"
                     . "</div>";
+                $form .= "<div class='input country'>"
+                    . "<label for='country'>Country</label>"
+                    . "<select id='country_code' type='select' class='select' name='country' onchange='updateProvince()'>"
+                    . "<option value=''></option>";
+                $selected_country = '';
+                foreach($country_codes as $country_code => $country_name) {
+                    $form .= "<option value='" . $country_code . "' " 
+                        . (($country_code == $address['country'] || $country_name == $address['country'])?' selected':'')
+                        . ">" . $country_name . "</option>";
+                    if( $country_code == $address['country'] || $country_name == $address['country'] ) {
+                        $selected_country = $country_code;
+                    }
+                }
+                $form .= "</select></div>";
                 $form .= "<div class='input province'>"
                     . "<label for='province'>State/Province</label>"
-                    . "<input type='text' class='text' name='province' value='" . $address['province'] . "'>"
-                    . "</div>";
+                    . "<input id='province_text' type='text' class='text' name='province' "
+                        . (isset($province_codes[$selected_country])?" style='display:none;'":"")
+                        . "value='" . $address['province'] . "'>";
+                $js = '';
+                foreach($province_codes as $country_code => $provinces) {
+                    $form .= "<select id='province_code_{$country_code}' type='select' class='select' "
+                        . (($country_code != $selected_country)?" style='display:none;'":"")
+                        . "name='province' >"
+                        . "<option value=''></option>";
+                    $js .= "document.getElementById('province_code_" . $country_code . "').style.display='none';";
+                    foreach($provinces as $province_code => $province_name) {
+                        $form .= "<option value='" . $province_code . "'" 
+                            . (($province_code == $address['province'] || $province_name == $address['province'])?' selected':'')
+                            . ">" . $province_name . "</option>";
+                    }
+                    $form .= "</select>";
+                }
+                $form .= "</div>";
                 $form .= "<div class='input postal'>"
                     . "<label for='postal'>ZIP/Postal Code</label>"
                     . "<input type='text' class='text' name='postal' value='" . $address['postal'] . "'>"
                     . "</div>";
-                $form .= "<div class='input country'>"
-                    . "<label for='country'>Country</label>"
-                    . "<input type='text' class='text' name='country' value='" . $address['country'] . "'>"
-                    . "</div>";
+                $form .= "<script type='text/javascript'>"
+                    . "function updateProvince() {"
+                        . "console.log('testing');"
+                        . "var cc = document.getElementById('country_code');"
+                        . "var pr = document.getElementById('province_text');"
+                        . "var pc = document.getElementById('province_code_'+cc.value);"
+                        . "console.log(cc);"
+                        . "console.log(pr);"
+                        . "console.log(pc);"
+                        . $js
+                        . "if( pc != null ) {"
+                            . "pc.style.display='';"
+                            . "pr.style.display='none';"
+                        . "}else{"
+                            . "pr.style.display='';"
+                        . "}"
+                    . "}"
+                    . "</script>";
             } else {
                 // FIXME: Manage multiple addresses
             }
