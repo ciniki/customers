@@ -13,6 +13,11 @@
 function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $settings, $business_id, $args) {
 
     //
+    // Setup the required fields array
+    //
+    $required = (isset($args['required'])?$args['required']:array());
+
+    //
     // Get the customer details
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
@@ -32,6 +37,10 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
         $address = $customer['addresses'][0]['address'];
     } else {
         $address = array('id'=>'0', 'address1'=>'', 'address2'=>'', 'city'=>'', 'province'=>'', 'postal'=>'', 'country'=>'');
+    }
+
+    if( $customer['first'] == $email['address'] ) {
+        $customer['first'] = '';
     }
 
     //
@@ -61,6 +70,15 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
                     $customer_args['phone_cell'] = $_POST['phone_cell'];
                     $customer['phone_cell'] = $_POST['phone_cell'];
                 }
+            }
+        }
+        if( isset($customer_args['first']) && $customer_args['first'] == '' 
+            && ((!isset($customer_args['last']) && $customer['last'] == '') || (isset($customer_args['last']) && $customer_args['last'] == ''))
+            ) {
+            if( isset($_POST['email']) && $_POST['email'] != '' ) {
+                $customer_args['first'] = $_POST['email'];
+            } else {
+                $customer_args['first'] = $email['address'];
             }
         }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
@@ -190,7 +208,7 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
     if( isset($settings['page-account-email-update']) && $settings['page-account-email-update'] == 'yes' ) {
         if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
             $form .= "<div class='input email'>"
-                . "<label for='email'>Email Address</label>"
+                . "<label for='email'>Email Address" . (in_array('email', $required)?' *':'') . "</label>"
                 . "<input type='text' class='text' name='email' value='" . $email['address'] . "'>"
                 . "</div>";
         } else {
@@ -200,7 +218,7 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
     if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' ) {
         if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
             $form .= "<div class='input phone_cell'>"
-                . "<label for='phone_cell'>Cell Phone Number</label>"
+                . "<label for='phone_cell'>Cell Phone Number" . (in_array('phone_cell', $required)?' *':'') . "</label>"
                 . "<input type='text' class='text' name='phone_cell' value='" . $customer['phone_cell'] . "'>"
                 . "</div>";
         } else {
@@ -208,11 +226,11 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
         }
     }
     $form .= "<div class='input first'>"
-        . "<label for='first'>First Name</label>"
+        . "<label for='first'>First Name" . (in_array('address1', $required)?' *':'') . "</label>"
         . "<input type='text' class='text' name='first' value='" . $customer['first'] . "'>"
         . "</div>";
     $form .= "<div class='input last'>"
-        . "<label for='last'>Last Name</label>"
+        . "<label for='last'>Last Name" . (in_array('address1', $required)?' *':'') . "</label>"
         . "<input type='text' class='text' name='last' value='" . $customer['last'] . "'>"
         . "</div>";
     if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
@@ -222,19 +240,19 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
             $country_codes = $rc['countries'];
             $province_codes = $rc['provinces'];
             $form .= "<div class='input address1'>"
-                . "<label for='address1'>Street Address 1</label>"
+                . "<label for='address1'>Street Address 1" . (in_array('address1', $required)?' *':'') . "</label>"
                 . "<input type='text' class='text' name='address1' value='" . $address['address1'] . "'>"
                 . "</div>";
             $form .= "<div class='input address2'>"
-                . "<label for='address2'>Street Address 2</label>"
+                . "<label for='address2'>Street Address 2" . (in_array('address2', $required)?' *':'') . "</label>"
                 . "<input type='text' class='text' name='address2' value='" . $address['address2'] . "'>"
                 . "</div>";
             $form .= "<div class='input city'>"
-                . "<label for='city'>City</label>"
+                . "<label for='city'>City" . (in_array('city', $required)?' *':'') . "</label>"
                 . "<input type='text' class='text' name='city' value='" . $address['city'] . "'>"
                 . "</div>";
             $form .= "<div class='input country'>"
-                . "<label for='country'>Country</label>"
+                . "<label for='country'>Country" . (in_array('country', $required)?' *':'') . "</label>"
                 . "<select id='country_code' type='select' class='select' name='country' onchange='updateProvince()'>"
                 . "<option value=''></option>";
             $selected_country = '';
@@ -248,7 +266,7 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
             }
             $form .= "</select></div>";
             $form .= "<div class='input province'>"
-                . "<label for='province'>State/Province</label>"
+                . "<label for='province'>State/Province" . (in_array('province', $required)?' *':'') . "</label>"
                 . "<input id='province_text' type='text' class='text' name='province' "
                     . (isset($province_codes[$selected_country])?" style='display:none;'":"")
                     . "value='" . $address['province'] . "'>";
@@ -268,12 +286,11 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
             }
             $form .= "</div>";
             $form .= "<div class='input postal'>"
-                . "<label for='postal'>ZIP/Postal Code</label>"
+                . "<label for='postal'>ZIP/Postal Code" . (in_array('postal', $required)?' *':'') . "</label>"
                 . "<input type='text' class='text' name='postal' value='" . $address['postal'] . "'>"
                 . "</div>";
             $form .= "<script type='text/javascript'>"
                 . "function updateProvince() {"
-                    . "console.log('testing');"
                     . "var cc = document.getElementById('country_code');"
                     . "var pr = document.getElementById('province_text');"
                     . "var pc = document.getElementById('province_code_'+cc.value);"

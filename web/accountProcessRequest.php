@@ -43,7 +43,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
 				$rc = ciniki_customers_web_changePassword($ciniki, $ciniki['request']['business_id'], 
 					$_POST['oldpassword'], $_POST['newpassword']);
 				if( $rc['stat'] != 'ok' ) {
-                    $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to set your new password, please try again.');
+                    $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$rc['err']['msg']);
 				} else {
                     $page['blocks'][] = array('type'=>'formmessage', 'level'=>'success', 'message'=>'Your password has been updated.');
                     $display_form = 'no';
@@ -97,8 +97,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
                 . "<input type='hidden' name='action' value='update'>";
             $form .= $rc['form'];
             $form .= "<div class='submit'><input type='submit' class='submit' value='Save'></div>";
-            $form .= "</div>"
-                . "</form>";
+            $form .= "</form>";
         }
 
         $page['title'] = 'Contact Details';

@@ -63,7 +63,7 @@ function ciniki_customers_web_changePassword($ciniki, $business_id, $oldpassword
 	//
 	// Perform an extra check to make sure only 1 row was found, other return error
 	//
-	if( $rc['num_rows'] != 1 ) {
+	if( $rc['num_rows'] < 1 ) {
 		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " fail (752)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'752', 'msg'=>'Invalid temporary password'));
 	}
