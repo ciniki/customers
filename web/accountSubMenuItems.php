@@ -15,7 +15,7 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
     $submenu = array();
 
     if( isset($ciniki['session']['customers']) && count($ciniki['session']['customers']) > 1 ) {
-        $submenu[] = array('name'=>'Accounts', 'priority'=>310, 'package'=>'ciniki', 'module'=>'customers', 
+        $submenu[] = array('name'=>'Switch Account', 'priority'=>310, 'package'=>'ciniki', 'module'=>'customers', 
             'selected'=>($ciniki['request']['page'] == 'account' 
                 && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'accounts')?'yes':'no',
             'url'=>$ciniki['request']['base_url'] . '/account/accounts');
@@ -37,6 +37,11 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
         'selected'=>($ciniki['request']['page'] == 'account' 
             && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'changepassword')?'yes':'no',
         'url'=>$ciniki['request']['base_url'] . '/account/changepassword');
+
+    $submenu[] = array('name'=>'Logout', 'priority'=>100, 
+        'package'=>'ciniki', 'module'=>'customers', 
+        'selected'=>'no',
+        'url'=>$ciniki['request']['base_url'] . '/account/logout');
 
 	return array('stat'=>'ok', 'submenu'=>$submenu);
 }
