@@ -37,7 +37,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	$display_category = 'no';
 	$display_locations = 'no';
 	$display_location = 'no';
-	$display_map = 'no';
+	$display_map = 'yes';
 	$display_list = 'no';
 	$display_profile = 'no';
 	$maps = array();
