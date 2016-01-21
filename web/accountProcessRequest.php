@@ -52,9 +52,10 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
         }
        
         if( $display_form == 'yes' ) {
-            $page['blocks'][] = array('type'=>'message', 'content'=>'If you would like to change your password, enter your old password followed by a new one.');
+//            $page['blocks'][] = array('type'=>'message', 'content'=>'If you would like to change your password, enter your old password followed by a new one.');
             $content = "<form action='' method='POST'>";
             $content .= "<div class='change-password-form'>";
+            $content .= "<p>If you would like to change your password, enter your old password followed by a new one.</p>";
             $content .= "<input type='hidden' name='action' value='update'/>";
             $content .= "<div class='input'>"
                 . "<label for='oldpassword'>Old Password:</label>"
