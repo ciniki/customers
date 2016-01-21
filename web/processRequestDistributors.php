@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This function will generate the dealers page for the business.
+// This function will generate the distributors page for the business.
 //
-// The dealer page can be referenced multiple ways depending on how th user arrives at the page.
-// /dealers/dealer-permalink
-// /dealers/location/country/province/state/dealer-permalink
-// /dealers/category/cat-permalink/dealer-permalink
-// /dealers/search/string/dealer-permalink
+// The distributor page can be referenced multiple ways depending on how th user arrives at the page.
+// /distributors/distributor-permalink
+// /distributors/location/country/province/state/distributor-permalink
+// /distributors/category/cat-permalink/distributor-permalink
+// /distributors/search/string/distributor-permalink
 // 
 //
 // Arguments
@@ -19,7 +19,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $business_id, $args) {
+function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $business_id, $args) {
 
     $uri_split = $args['uri_split'];
     
@@ -43,8 +43,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	$display_list = 'no';
 	$display_profile = 'no';
 	$maps = array();
-	if( isset($settings['page-dealers-locations-map-names'])
-		&& $settings['page-dealers-locations-map-names'] == 'yes' ) {
+	if( isset($settings['page-distributors-locations-map-names'])
+		&& $settings['page-distributors-locations-map-names'] == 'yes' ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'locationNameMaps');
 		$rc = ciniki_web_locationNameMaps($ciniki);
 		if( $rc['stat'] != 'ok' ) {
@@ -70,7 +70,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	if( isset($ciniki['business']['cache_dir']) && $ciniki['business']['cache_dir'] != '' 
 		&& (!isset($ciniki['config']['ciniki.web']['cache']) 
 			|| $ciniki['config']['ciniki.web']['cache'] != 'off') ) {
-		$cache_file = $ciniki['business']['cache_dir'] . '/ciniki.web/dealers/';
+		$cache_file = $ciniki['business']['cache_dir'] . '/ciniki.web/distributors/';
 		$depth = 1;
 		foreach($uri_split as $uri_index => $uri_piece) {
 			if( $uri_index < $depth ) {
@@ -117,8 +117,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	//
 	// Generate the map data.
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'dealersMapMarkers');
-	$rc = ciniki_customers_web_dealersMapMarkers($ciniki, $settings, $ciniki['request']['business_id'], array());
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorsMapMarkers');
+	$rc = ciniki_customers_web_distributorsMapMarkers($ciniki, $settings, $ciniki['request']['business_id'], array());
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -126,7 +126,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$json = 'var gmap_data = ' . json_encode($rc['markers']) . ';';
 		$filename = '/' . sprintf('%02d', ($ciniki['request']['business_id']%100)) . '/'
 			. sprintf('%07d', $ciniki['request']['business_id'])
-			. '/dealers/gmap_data.js';
+			. '/distributors/gmap_data.js';
 		$data_filename = $ciniki['request']['cache_dir'] . $filename;
 		if( !file_exists(dirname($data_filename)) ) {
 			mkdir(dirname($data_filename), 0755, true);
@@ -137,7 +137,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	}
 
 	//
-	// Check if we are to display a dealer
+	// Check if we are to display a distributor
 	//
 	if( isset($uri_split[0]) 
 		&& $uri_split[0] != '' 
@@ -145,8 +145,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		&& $uri_split[0] != 'category' 
 		) {
 		$display_profile = 'yes';
-		$dealer_permalink = $uri_split[0];
-		$base_url = $ciniki['request']['base_url'] . "/dealers/$dealer_permalink";
+		$distributor_permalink = $uri_split[0];
+		$base_url = $ciniki['request']['base_url'] . "/distributors/$distributor_permalink";
 		// Check for gallery image
 		if( isset($uri_split[1]) 
 			&& $uri_split[1] == 'gallery'
@@ -158,7 +158,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	}
 
 	//
-	// Check if we are to display a dealer
+	// Check if we are to display a distributor
 	//
 	elseif( isset($uri_split[0]) 
 		&& $uri_split[0] == 'category' 
@@ -169,8 +169,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		) {
 		$display_profile = 'yes';
 		$category = $uri_split[1];
-		$dealer_permalink = $uri_split[2];
-		$base_url = $ciniki['request']['base_url'] . "/dealers/category/$category/$dealer_permalink";
+		$distributor_permalink = $uri_split[2];
+		$base_url = $ciniki['request']['base_url'] . "/distributors/category/$category/$distributor_permalink";
 		// Check for gallery image
 		if( isset($uri_split[3]) 
 			&& $uri_split[3] == 'gallery'
@@ -179,19 +179,19 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			) {
 			$image_permalink = $uri_split[4];
 			$ciniki['response']['head']['links'][] = array('rel'=>'canonical',
-				'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink 
+				'href'=>$ciniki['request']['domain_base_url'] . '/distributors/' . $distributor_permalink 
 					. '/gallery/' . $image_permalink
 				);
 			$base_url .= "/gallery/$image_permalink";
 		} else {
 			$ciniki['response']['head']['links'][] = array('rel'=>'canonical',
-				'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink
+				'href'=>$ciniki['request']['domain_base_url'] . '/distributors/' . $distributor_permalink
 				);
 		}
 	}
 
 	//
-	// Check if we are to display a dealer
+	// Check if we are to display a distributor
 	//
 	elseif( isset($uri_split[0]) 
 		&& $uri_split[0] == 'location' 
@@ -208,8 +208,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$country = $uri_split[1];
 		$province = $uri_split[2];
 		$state = $uri_split[3];
-		$dealer_permalink = $uri_split[4];
-		$base_url = $ciniki['request']['base_url'] . "/dealers/location/$country/$province/$state/$dealer_permalink";
+		$distributor_permalink = $uri_split[4];
+		$base_url = $ciniki['request']['base_url'] . "/distributors/location/$country/$province/$state/$distributor_permalink";
 		// Check for gallery image
 		if( isset($uri_split[5]) 
 			&& $uri_split[5] == 'gallery'
@@ -218,13 +218,13 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			) {
 			$image_permalink = $uri_split[6];
 			$ciniki['response']['head']['links'][] = array('rel'=>'canonical',
-				'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink 
+				'href'=>$ciniki['request']['domain_base_url'] . '/distributors/' . $distributor_permalink 
 					. '/gallery/' . $image_permalink
 				);
 			$base_url .= "/gallery/$image_permalink";
 		} else {
 			$ciniki['response']['head']['links'][] = array('rel'=>'canonical',
-				'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink
+				'href'=>$ciniki['request']['domain_base_url'] . '/distributors/' . $distributor_permalink
 				);
 		}
 	}
@@ -240,7 +240,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$country_permalink = $uri_split[1];
 		$country_name = rawurldecode($country_permalink);
 		$country_print_name = (isset($maps[strtolower($country_name)]['name'])?$maps[strtolower($country_name)]['name']:$country_name);
-		$base_url = $ciniki['request']['domain_base_url'] . '/dealers/location/' . $country_permalink;
+		$base_url = $ciniki['request']['domain_base_url'] . '/distributors/location/' . $country_permalink;
         $page['breadcrumbs'][] = array('name'=>$country_print_name, 'url'=>$base_url);
 		$display_locations = 'yes';
 		$display_map = 'yes';
@@ -275,28 +275,28 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	}
 
 	//
-	// Display the list of dealers if a specific one isn't selected
+	// Display the list of distributors if a specific one isn't selected
 	//
 	else {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processContent');
 
 		//
-		// Should the dealer categories be displayed
+		// Should the distributor categories be displayed
 		//
-		if( isset($settings['page-dealers-categories-display']) 
-			&& ($settings['page-dealers-categories-display'] == 'wordlist'
-				|| $settings['page-dealers-categories-display'] == 'wordcloud' )
+		if( isset($settings['page-distributors-categories-display']) 
+			&& ($settings['page-distributors-categories-display'] == 'wordlist'
+				|| $settings['page-distributors-categories-display'] == 'wordcloud' )
 			&& isset($ciniki['business']['modules']['ciniki.customers']['flags']) 
 			&& ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20) > 0 
 			) {
 			$display_categories = 'yes';
 		}
 		//
-		// Should the dealer locations be displayed
+		// Should the distributor locations be displayed
 		//
-		if( isset($settings['page-dealers-locations-display']) 
-			&& ($settings['page-dealers-locations-display'] == 'wordlist'
-				|| $settings['page-dealers-locations-display'] == 'wordcloud' )
+		if( isset($settings['page-distributors-locations-display']) 
+			&& ($settings['page-distributors-locations-display'] == 'wordlist'
+				|| $settings['page-distributors-locations-display'] == 'wordcloud' )
 			&& isset($ciniki['business']['modules']['ciniki.customers']['flags']) 
 			&& ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10) > 0 
 			) {
@@ -310,7 +310,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	//
 
 	//
-	// Display the dealer profile page
+	// Display the distributor profile page
 	//
 	if( $display_profile == 'yes' ) {
 		$display_categories = 'no';
@@ -324,20 +324,20 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processURL');
 
 		//
-		// Get the dealer information
+		// Get the distributor information
 		//
-		$rc = ciniki_customers_web_dealerDetails($ciniki, $settings, 
-			$ciniki['request']['business_id'], $dealer_permalink);
+		$rc = ciniki_customers_web_distributorDetails($ciniki, $settings, 
+			$ciniki['request']['business_id'], $distributor_permalink);
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
-		$dealer = $rc['dealer'];
+		$distributor = $rc['distributor'];
 
-		$page_title = $dealer['name'];
+		$page_title = $distributor['name'];
 		if( isset($image_permalink) && $image_permalink != '' ) {
 			ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processGalleryImage');
 			$rc = ciniki_web_processGalleryImage($ciniki, $settings, $business_id, array(
-				'item'=>$dealer,
+				'item'=>$distributor,
 				'image_permalink'=>$image_permalink,
 				));
 			if( $rc['stat'] != 'ok' ) {
@@ -349,9 +349,9 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			// Add description
 			//
 			$description = '';
-			if( isset($dealer['description']) ) {
+			if( isset($distributor['description']) ) {
 				ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processContent');
-				$rc = ciniki_web_processContent($ciniki, $dealer['description']);	
+				$rc = ciniki_web_processContent($ciniki, $distributor['description']);	
 				if( $rc['stat'] != 'ok' ) {
 					return $rc;
 				}
@@ -362,8 +362,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			// Add contact_info
 			//
 			$cinfo = '';
-			if( isset($dealer['addresses']) ) {
-				foreach($dealer['addresses'] as $address) {
+			if( isset($distributor['addresses']) ) {
+				foreach($distributor['addresses'] as $address) {
 					$addr = '';
 					if( $address['address1'] != '' ) {
 						$addr .= ($addr!=''?'<br/>':'') . $address['address1'];
@@ -385,8 +385,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 					}
 				}
 			}
-			if( isset($dealer['phones']) ) {
-				foreach($dealer['phones'] as $phone) {
+			if( isset($distributor['phones']) ) {
+				foreach($distributor['phones'] as $phone) {
 					if( $phone['phone_label'] != '' && $phone['phone_number'] != '' ) {
 						$cinfo .= ($cinfo!=''?'<br/>':'') . $phone['phone_label'] . ': ' . $phone['phone_number'];
 					} elseif( $phone['phone_number'] != '' ) {
@@ -394,8 +394,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 					}
 				}
 			}
-			if( isset($dealer['emails']) ) {
-				foreach($dealer['emails'] as $email) {
+			if( isset($distributor['emails']) ) {
+				foreach($distributor['emails'] as $email) {
 					if( $email['email'] != '' ) {
 						$cinfo .= ($cinfo!=''?'<br/>':'') . '<a href="mailto:' . $email['email'] . '">' . $email['email'] . '</a>';
 					}
@@ -407,9 +407,9 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 				$description .= "<p>$cinfo</p>";
 			}
 
-			if( isset($dealer['links']) ) {
+			if( isset($distributor['links']) ) {
 				$links = '';
-				foreach($dealer['links'] as $link) {
+				foreach($distributor['links'] as $link) {
 					$rc = ciniki_web_processURL($ciniki, $link['url']);
 					if( $rc['stat'] != 'ok' ) {
 						return $rc;
@@ -420,7 +420,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 						$display_url = $link['name'];
 					}
 					$links .= ($links!=''?'<br/>':'') 
-						. "<a class='dealer-url' target='_blank' href='" . $url . "' "
+						. "<a class='distributor-url' target='_blank' href='" . $url . "' "
 						. "title='" . $display_url . "'>" . $display_url . "</a>";
 				}
 				if( $links != '' ) {
@@ -428,12 +428,12 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 					$description .= "<p>" . $links . "</p>";
 				}
 			}
-			$dealer['content'] = $description;
+			$distributor['content'] = $description;
 
 			//
-			// Put together the dealer as a page
+			// Put together the distributor as a page
 			//
-			$rc = ciniki_web_processPage($ciniki, $settings, $base_url, $dealer, array());
+			$rc = ciniki_web_processPage($ciniki, $settings, $base_url, $distributor, array());
 			if( $rc['stat'] != 'ok' ) {
 				return $rc;
 			}
@@ -465,8 +465,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	// Display the list of categories
 	//
 	if( $display_categories == 'yes' ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'dealerTagCloud');
-		$base_url = $ciniki['request']['base_url'] . '/dealers/category';
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorTagCloud');
+		$base_url = $ciniki['request']['base_url'] . '/distributors/category';
 		$rc = ciniki_customers_web_tagCloud($ciniki, $settings, $ciniki['request']['business_id'], 60);
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
@@ -475,17 +475,17 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		//
 		// Process the tags
 		//
-		if( $settings['page-dealers-categories-display'] == 'wordlist' ) {
+		if( $settings['page-distributors-categories-display'] == 'wordlist' ) {
 			if( isset($rc['tags']) && count($rc['tags']) > 0 ) {
-                $page['blocks'][] = array('type'=>'taglist', 'section'=>'dealer-categories', 'base_url'=>$base_url, 'tags'=>$rc['tags']);
+                $page['blocks'][] = array('type'=>'taglist', 'section'=>'distributor-categories', 'base_url'=>$base_url, 'tags'=>$rc['tags']);
 			} else {
-                $page['blocks'][] = array('type'=>'content', 'content'=>"I'm sorry, there are no dealers found");
+                $page['blocks'][] = array('type'=>'content', 'content'=>"I'm sorry, there are no distributors found");
 			}
-		} elseif( $settings['page-dealers-categories-display'] == 'wordcloud' ) {
+		} elseif( $settings['page-distributors-categories-display'] == 'wordcloud' ) {
 			if( isset($rc['tags']) && count($rc['tags']) > 0 ) {
-                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'dealer-categories', 'base_url'=>$base_url, 'tags'=>$rc['tags']);
+                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'distributor-categories', 'base_url'=>$base_url, 'tags'=>$rc['tags']);
 			} else {
-                $page['blocks'][] = array('type'=>'content', 'content'=>"I'm sorry, there are no dealers found");
+                $page['blocks'][] = array('type'=>'content', 'content'=>"I'm sorry, there are no distributors found");
 			}
 		}
 	}
@@ -494,8 +494,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	// Display the list of countries/provinces/cities
 	//
 	if( $display_locations == 'yes' ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'dealerLocationTagCloud');
-		$rc = ciniki_customers_web_dealerLocationTagCloud($ciniki, $settings, 
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorLocationTagCloud');
+		$rc = ciniki_customers_web_distributorLocationTagCloud($ciniki, $settings, 
 			$ciniki['request']['business_id'], array(
 				'country'=>(isset($country_name)?$country_name:''),
 				'province'=>(isset($province_name)?$province_name:''),
@@ -515,11 +515,11 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 					$tags[$tid]['name'] = $maps[strtolower($tag['name'])]['name'];
 				}
 			}
-			if( !isset($settings['page-dealers-location-countries-display'])
-				|| $settings['page-dealers-location-countries-display'] == 'wordcloud' ) {
-                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'dealer-countries', 'base_url'=>$base_url, 'tags'=>$tags);
-			} elseif( $settings['page-dealers-location-countries-display'] == 'wordlist' ) {
-                $page['blocks'][] = array('type'=>'taglist', 'section'=>'dealer-countries', 'base_url'=>$base_url, 'tags'=>$tags);
+			if( !isset($settings['page-distributors-location-countries-display'])
+				|| $settings['page-distributors-location-countries-display'] == 'wordcloud' ) {
+                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'distributor-countries', 'base_url'=>$base_url, 'tags'=>$tags);
+			} elseif( $settings['page-distributors-location-countries-display'] == 'wordlist' ) {
+                $page['blocks'][] = array('type'=>'taglist', 'section'=>'distributor-countries', 'base_url'=>$base_url, 'tags'=>$tags);
 			}
 		} elseif( isset($rc['provinces']) ) {
 			$tags = $rc['provinces'];
@@ -533,31 +533,31 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 					$tags[$tid]['name'] = $maps[strtolower($country_name)]['provinces'][strtolower($tag['name'])]['name'];
 				}
 			}
-			if( !isset($settings['page-dealers-location-provinces-display'])
-				|| $settings['page-dealers-location-provinces-display'] == 'wordcloud' ) {
-                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'dealer-provinces', 'base_url'=>$base_url, 'tags'=>$tags);
-			} elseif( $settings['page-dealers-location-provinces-display'] == 'wordlist' ) {
-                $page['blocks'][] = array('type'=>'taglist', 'section'=>'dealer-provinces', 'base_url'=>$base_url, 'tags'=>$tags);
+			if( !isset($settings['page-distributors-location-provinces-display'])
+				|| $settings['page-distributors-location-provinces-display'] == 'wordcloud' ) {
+                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'distributor-provinces', 'base_url'=>$base_url, 'tags'=>$tags);
+			} elseif( $settings['page-distributors-location-provinces-display'] == 'wordlist' ) {
+                $page['blocks'][] = array('type'=>'taglist', 'section'=>'distributor-provinces', 'base_url'=>$base_url, 'tags'=>$tags);
 			}
 		} elseif( isset($rc['cities']) ) {
 			$tags = $rc['cities'];
-			if( !isset($settings['page-dealers-location-cities-display'])
-				|| $settings['page-dealers-location-cities-display'] == 'wordcloud' ) {
-                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'dealer-cities', 'base_url'=>$base_url, 'tags'=>$tags);
-			} elseif( $settings['page-dealers-location-cities-display'] == 'wordlist' ) {
-                $page['blocks'][] = array('type'=>'taglist', 'section'=>'dealer-cities', 'base_url'=>$base_url, 'tags'=>$tags);
+			if( !isset($settings['page-distributors-location-cities-display'])
+				|| $settings['page-distributors-location-cities-display'] == 'wordcloud' ) {
+                $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'distributor-cities', 'base_url'=>$base_url, 'tags'=>$tags);
+			} elseif( $settings['page-distributors-location-cities-display'] == 'wordlist' ) {
+                $page['blocks'][] = array('type'=>'taglist', 'section'=>'distributor-cities', 'base_url'=>$base_url, 'tags'=>$tags);
 			}
 		} else {
-			return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'1924', 'msg'=>'No dealers found for this .'));
+			return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'1924', 'msg'=>'No distributors found for this .'));
 		}
 	} 
 
 	//
-	// Get the list of dealers
+	// Get the list of distributors
 	//
 	if( $display_map == 'yes' || $display_list == 'yes' ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'dealerList');
-		$rc = ciniki_customers_web_dealerList($ciniki, $settings, $ciniki['request']['business_id'], 
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorList');
+		$rc = ciniki_customers_web_distributorList($ciniki, $settings, $ciniki['request']['business_id'], 
 			array('format'=>'2dlist', 
 				'country'=>(isset($country_name)?$country_name:''),
 				'province'=>(isset($province_name)?$province_name:''),
@@ -566,13 +566,13 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
-		$dealers = $rc['dealers'];
+		$distributors = $rc['distributors'];
 	}
 
 	//
-	// Display the map of the dealers 
+	// Display the map of the distributors 
 	//
-	if( $display_map == 'yes' && isset($dealers) ) {
+	if( $display_map == 'yes' && isset($distributors) ) {
 		// 
 		// Setup the javascript to display the map
 		//
@@ -666,14 +666,14 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			. '</script>'
 			. '';
 		$map_content .= '<div class="googlemap" id="googlemap"></div>';
-        $page['blocks'][] = array('type'=>'content', 'section'=>'dealer-google-map', 'html'=>$map_content);
+        $page['blocks'][] = array('type'=>'content', 'section'=>'distributor-google-map', 'html'=>$map_content);
 	}
 
-	if( $display_list == 'yes' && isset($dealers) ) {
-		if( count($dealers) > 0 ) {
-            $page['blocks'][] = array('type'=>'cilist', 'section'=>'dealer-list', 'base_url'=>$base_url, 'notitle'=>'yes', 'categories'=>$dealers);
+	if( $display_list == 'yes' && isset($distributors) ) {
+		if( count($distributors) > 0 ) {
+            $page['blocks'][] = array('type'=>'cilist', 'section'=>'distributor-list', 'base_url'=>$base_url, 'notitle'=>'yes', 'categories'=>$distributors);
 		} else {
-            $page['blocks'][] = array('type'=>'content', 'section'=>'dealerlist', 'content'=>"No dealers found for this area");
+            $page['blocks'][] = array('type'=>'content', 'section'=>'distributorlist', 'content'=>"No distributors found for this area");
 		}
 	}
 
