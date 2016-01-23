@@ -548,7 +548,7 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
                 $page['blocks'][] = array('type'=>'taglist', 'section'=>'distributor-cities', 'base_url'=>$base_url, 'tags'=>$tags);
 			}
 		} else {
-			return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'1924', 'msg'=>'No distributors found for this .'));
+			return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'3054', 'msg'=>'No distributors found for this .'));
 		}
 	} 
 

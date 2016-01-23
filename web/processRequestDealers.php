@@ -548,7 +548,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
                 $page['blocks'][] = array('type'=>'taglist', 'section'=>'dealer-cities', 'base_url'=>$base_url, 'tags'=>$tags);
 			}
 		} else {
-			return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'1924', 'msg'=>'No dealers found for this .'));
+			return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'3039', 'msg'=>'No dealers found for this .'));
 		}
 	} 
 
