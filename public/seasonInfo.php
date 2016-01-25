@@ -67,7 +67,17 @@ function ciniki_customers_seasonInfo($ciniki) {
 	//
 	// Setup the return array
 	//
-	$rsp = array('stat'=>'ok', 'unattached'=>0, 'inactive'=>0, 'regular'=>0, 'student'=>0, 'individual'=>0, 'family'=>0, 'complimentary'=>0, 'reciprocal'=>0, 'members'=>array());
+	$rsp = array('stat'=>'ok', 
+        'unattached'=>0, 
+        'inactive'=>0, 
+        'regular'=>0, 
+        'student'=>0, 
+        'individual'=>0, 
+        'family'=>0, 
+        'complimentary'=>0, 
+        'reciprocal'=>0, 
+        'lifetime'=>0, 
+        'members'=>array());
 
 	//
 	// Get the stats of the season
@@ -119,6 +129,23 @@ function ciniki_customers_seasonInfo($ciniki) {
 			}
 		}
 	} 
+
+    //
+    // Get the number of lifetime members
+    //
+	$strsql = "SELECT COUNT(ciniki_customers.id) AS customers "
+		. "FROM ciniki_customers "
+		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ciniki_customers.member_status = 10 "		// Active members only
+		. "AND ciniki_customers.membership_length = 60 "	// lifetime member
+		. "";
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'num');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['num']) ) {
+        $rsp['lifetime'] = $rc['num']['customers'];
+    }
 
 	//
 	// Load the list of requested members
@@ -225,6 +252,27 @@ function ciniki_customers_seasonInfo($ciniki) {
 					. "AND ciniki_customers.membership_type = '150' "	// Reciprocal Member
 //					. "AND ciniki_customers.member_status = 10 "		// Active member
 					. "AND ciniki_customers.membership_length < 60 "	// Not a lifetime member
+					. "";
+			} elseif( $args['list'] == 'lifetime' ) {
+                $strsql = "SELECT ciniki_customers.id, "
+                    . "ciniki_customers.first, "
+                    . "ciniki_customers.last, "
+                    . "ciniki_customers.display_name, "
+                    . "ciniki_customers.member_status AS member_status_text, "
+                    . "ciniki_customers.member_lastpaid, "
+                    . "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
+                    . "ciniki_customers.membership_length AS membership_length_text, "
+                    . "ciniki_customers.membership_type, "
+                    . "ciniki_customers.membership_type AS membership_type_text, "
+                    . "ciniki_customers.company, "
+                    . "'0' AS member_season_status, "
+                    . "'Lifetime' AS member_season_status_text, "
+//                    . "IFNULL(DATE_FORMAT(ciniki_customers.member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "'), '') AS date_paid "
+                    . "'' AS date_paid "
+				    . "FROM ciniki_customers "
+					. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND ciniki_customers.member_status = 10 "		// Active member
+					. "AND ciniki_customers.membership_length = 60 "	// lifetime member
 					. "";
 			} else {
 				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2103', 'msg'=>'Invalid list type'));

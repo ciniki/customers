@@ -151,6 +151,7 @@ function ciniki_customers_members() {
 				'family':{'label':'Paid', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'family\');'},
 				'complimentary':{'label':'Complementary', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'complimentary\');'},
 				'reciprocal':{'label':'Reciprocal', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'reciprocal\');'},
+				'lifetime':{'label':'Lifetime', 'visible':'yes', 'fn':'M.ciniki_customers_members.showSeason(null, null, \'lifetime\');'},
 				}},
 			'members':{'label':'', 'type':'simplegrid', 'num_cols':4,
 				'headerValues':['Member', 'Type', 'Status', 'Date Paid'],
@@ -605,12 +606,14 @@ function ciniki_customers_members() {
 					p.sections.tabs.tabs.family.label = 'Family (' + rsp.family + ')';
 					p.sections.tabs.tabs.complimentary.label = 'Complimentary (' + rsp.complimentary + ')';
 					p.sections.tabs.tabs.reciprocal.label = 'Reciprocal (' + rsp.reciprocal + ')';
+					p.sections.tabs.tabs.lifetime.label = 'Lifetime (' + rsp.lifetime + ')';
                     p.sections.tabs.tabs.regular.visible = (settings['membership-type-10-active']==null || settings['membership-type-10-active'] == 'yes')?'yes':'no';
                     p.sections.tabs.tabs.student.visible = (settings['membership-type-20-active']!=null && settings['membership-type-20-active'] == 'yes')?'yes':'no';
                     p.sections.tabs.tabs.individual.visible = (settings['membership-type-30-active']!=null && settings['membership-type-30-active'] == 'yes')?'yes':'no';
                     p.sections.tabs.tabs.family.visible = (settings['membership-type-40-active']!=null && settings['membership-type-40-active'] == 'yes')?'yes':'no';
                     p.sections.tabs.tabs.complimentary.visible = (settings['membership-type-110-active']==null || settings['membership-type-110-active'] == 'yes')?'yes':'no';
                     p.sections.tabs.tabs.reciprocal.visible = (settings['membership-type-150-active']==null || settings['membership-type-150-active'] == 'yes')?'yes':'no';
+                    p.sections.tabs.tabs.lifetime.visible = 'yes';
 					p.data = rsp;
 					p.refresh();
 					p.show(cb);
