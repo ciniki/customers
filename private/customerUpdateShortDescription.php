@@ -183,12 +183,12 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 				$address3 .= (($address3!='')?', ':'') . $address['province'];
 				$townprovince .= (($townprovince!='')?', ':'') . $address['province'];
 			}
-			if( $address3 != '' ) {
-				$addrnl .= (($addrnl!='')?"\n":'') . $address3;
-			}
 			if( $address['postal'] != '' ) {
 				$addr .= (($addr!='')?'  ':'') . $address['postal'];
-				$address3 .= (($address3!='')?"\n":'') . $address['postal'];
+				$address3 .= (($address3!='')?"  ":'') . $address['postal'];
+			}
+			if( $address3 != '' ) {
+				$addrnl .= (($addrnl!='')?"\n":'') . $address3;
 			}
 			if( $addr != '' ) {
 				$pieces['addresses'] .= ($pieces['addresses']!=''?"\n":'') . "$addr";
