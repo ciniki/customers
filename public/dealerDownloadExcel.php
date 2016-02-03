@@ -54,6 +54,7 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 	foreach($args['columns'] as $column) {
 		$value = '';
 		switch($column) {
+			case 'eid': $value = 'ID'; break;
 			case 'prefix': $value = 'Prefix'; break;
 			case 'first': $value = 'First'; break;
 			case 'middle': $value = 'Middle'; break;
@@ -100,7 +101,7 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 	$row++;
 
 
-	$strsql = "SELECT ciniki_customers.id, prefix, first, middle, last, suffix, "
+	$strsql = "SELECT ciniki_customers.id, ciniki_customers.eid, prefix, first, middle, last, suffix, "
 		. "ciniki_customers.company, ciniki_customers.department, ciniki_customers.title, "
 		. "ciniki_customers.display_name, "
 		. "ciniki_customers.type, "
@@ -134,7 +135,7 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 		. "ciniki_customers.primary_image_caption, "
 		. "ciniki_customers.short_description, "
 		. "ciniki_customers.full_bio, "
-		. "IF((ciniki_customers.webflags&0x01)=1,'Visible','Hidden') AS visible, "
+		. "IF((ciniki_customers.webflags&0x02)=0x02,'Visible','Hidden') AS visible, "
 		. "ciniki_customer_tags.tag_name AS dealer_categories, "
 		. "CONCAT_WS(': ', ciniki_customer_phones.phone_label, "
 			. "ciniki_customer_phones.phone_number) AS phones, "
@@ -182,12 +183,12 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 			. "AND ciniki_customer_links.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customers.dealer_status = 10 "
+		. "AND ciniki_customers.dealer_status > 0 "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix',
+			'fields'=>array('id', 'eid', 'prefix', 'first', 'middle', 'last', 'suffix',
 				'company', 'display_name', 'type', 'status', 'visible', 
 				'dealer_status', 'dealer_categories',
 				'salesrep', 'pricepoint_name', 'pricepoint_code', 
@@ -197,7 +198,7 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 				'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
 			'maps'=>array(
 				'type'=>array('1'=>'Individual', '2'=>'Business'),
-				'dealer_status'=>array('10'=>'Active', '60'=>'Former'),
+				'dealer_status'=>array('5'=>'Prospect', '10'=>'Active', '60'=>'Inactive'),
 				),
 			'dlists'=>array('phones'=>', ', 'emails'=>', ', 'addresses'=>' - ', 'links'=>', ', 'dealer_categories'=>', ')),
 		));

@@ -28,6 +28,7 @@ function ciniki_customers_dealertools() {
 		this.dealerlist.data = {};
 		this.dealerlist.sections = {
 			'options':{'label':'Data to include', 'aside':'yes', 'fields':{
+				'eid':{'label':'Customer ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'prefix':{'label':'Name Prefix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 				'first':{'label':'First Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
