@@ -31,7 +31,8 @@ function ciniki_customers_web_dealerList($ciniki, $settings, $business_id, $args
 		if( isset($args['city']) && $args['city'] != '' && $args['city'] != '-' ) {
 			$strsql .= "AND ciniki_customer_addresses.city = '" . ciniki_core_dbQuote($ciniki, $args['city']) . "' ";
 		}
-		$strsql .= "AND ciniki_customer_addresses.customer_id = ciniki_customers.id "
+		$strsql .= "AND (ciniki_customer_addresses.flags&0x08) > 0 "
+		    . "AND ciniki_customer_addresses.customer_id = ciniki_customers.id "
 			// Check the dealer is visible on the website
 			. "AND ciniki_customers.dealer_status = 10 "
 			. "AND (ciniki_customers.webflags&0x02) = 2 "
