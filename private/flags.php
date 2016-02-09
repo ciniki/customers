@@ -52,6 +52,11 @@ function ciniki_customers_flags($ciniki, $modules) {
 		array('flag'=>array('bit'=>'30', 'name'=>'Single Email')),       // Only allow one email
 		array('flag'=>array('bit'=>'31', 'name'=>'Single Address')),     // Only allow one address
 //		array('flag'=>array('bit'=>'32', 'name'=>'')),
+		// 0x0100000000
+		array('flag'=>array('bit'=>'33', 'name'=>'Academics')),
+//		array('flag'=>array('bit'=>'34', 'name'=>'')),
+//		array('flag'=>array('bit'=>'35', 'name'=>'')),
+//		array('flag'=>array('bit'=>'36', 'name'=>'')),
 		);
 
 	return array('stat'=>'ok', 'flags'=>$flags);

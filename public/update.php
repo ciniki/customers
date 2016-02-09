@@ -244,9 +244,9 @@ function ciniki_customers_update(&$ciniki) {
 		}
 		if( $space == '' && $person_name != '' ) { $space = ' '; }
 		if( isset($args['suffix']) && $args['suffix'] != '' ) {
-			$person_name .= $space . $args['suffix'];
+			$person_name .= ($space!=''?',':'') . $space . $args['suffix'];
 		} elseif( !isset($args['suffix']) && $customer['suffix'] != '' ) {
-			$person_name .= $space . $customer['suffix'];
+			$person_name .= ($space!=''?',':'') . $space . $customer['suffix'];
 		}
 
 		if( isset($args['first']) && $args['first'] != '' ) {

@@ -276,7 +276,7 @@ function ciniki_customers_add(&$ciniki) {
 	}
 	if( $space == '' && $person_name != '' ) { $space = ' '; }
 	if( isset($args['suffix']) && $args['suffix'] != '' ) {
-		$person_name .= $space . $args['suffix'];
+		$person_name .= ($space!=''?',':'') . $space . $args['suffix'];
 	}
 	$sort_person_name = '';
 	if( isset($args['last']) && $args['last'] != '' ) {

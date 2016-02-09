@@ -25,6 +25,7 @@ function ciniki_customers_hooks_customerLookup($ciniki, $business_id, $args) {
         . "WHERE email = '" . ciniki_core_dbQuote($ciniki, $args['email']) . "' "
         . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
         . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('id'=>'customer_id', 'email')),
         ));

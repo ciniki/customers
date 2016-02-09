@@ -25,7 +25,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     // check permission to run this function for this business
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $business_id, 'ciniki.customers.add', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $business_id, 'ciniki.customers.hooks.customerAdd', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -140,7 +140,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
 	}
 	if( $space == '' && $person_name != '' ) { $space = ' '; }
 	if( isset($args['suffix']) && $args['suffix'] != '' ) {
-		$person_name .= $space . $args['suffix'];
+		$person_name .= ($space!=''?',':'') . $space . $args['suffix'];
 	}
 	$sort_person_name = '';
 	if( isset($args['last']) && $args['last'] != '' ) {

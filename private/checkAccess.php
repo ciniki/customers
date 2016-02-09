@@ -73,6 +73,13 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
 		return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>$perms);
 	}
 
+    //
+    // Check for Ciniki Robot user
+    //
+    if( $ciniki['session']['user']['id'] == -3 ) {
+        return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>0);
+    }
+
 	//
 	// If the user is part of the salesreps, ensure they have access to request method
 	//

@@ -17,6 +17,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
 	$date_format = ciniki_users_dateFormat($ciniki);
 
 	if( $format == '' ) {
