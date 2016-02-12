@@ -25,7 +25,7 @@ function ciniki_customers_web_distributorsMapMarkers($ciniki, $settings, $busine
 		. "AND (ciniki_customer_addresses.flags&0x08) > 0 "
 		. "AND ciniki_customer_addresses.customer_id = ciniki_customers.id "
 		// Check the distributor is visible on the website
-		. "AND ciniki_customers.distributor_status = 10 "
+//		. "AND ciniki_customers.distributor_status = 10 "
 		. "AND (ciniki_customers.webflags&0x04) = 0x04 "
 		. "ORDER BY ciniki_customers.sort_name ";
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'marker');

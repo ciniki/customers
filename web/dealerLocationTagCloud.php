@@ -50,7 +50,7 @@ function ciniki_customers_web_dealerLocationTagCloud($ciniki, $settings, $busine
 			. "AND ciniki_customer_addresses.province = '" . ciniki_core_dbQuote($ciniki, $args['province']) . "' "
 			. "AND ciniki_customer_addresses.city <> '' "
 			. "AND (ciniki_customer_addresses.flags&0x08) = 0x08 "	// Only public addresses
-			. "AND ciniki_customers.dealer_status = 10 " // Must be active dealer
+//			. "AND ciniki_customers.dealer_status = 10 " // Must be active dealer
 			. "AND (ciniki_customers.webflags&0x02) = 0x02 " // Must be visible online
 			. "GROUP BY ciniki_customer_addresses.country, ciniki_customer_addresses.province, "
 				. "ciniki_customer_addresses.city "
@@ -81,7 +81,7 @@ function ciniki_customers_web_dealerLocationTagCloud($ciniki, $settings, $busine
 			. "AND ciniki_customer_addresses.country = '" . ciniki_core_dbQuote($ciniki, $args['country']) . "' "
 			. "AND ciniki_customer_addresses.province <> '' "
 			. "AND (ciniki_customer_addresses.flags&0x08) = 0x08 "	// Only public addresses
-			. "AND ciniki_customers.dealer_status = 10 " // Must be active dealer
+//			. "AND ciniki_customers.dealer_status = 10 " // Must be active dealer
 			. "AND (ciniki_customers.webflags&0x02) = 0x02 " // Must be visible online
 			. "GROUP BY ciniki_customer_addresses.country, ciniki_customer_addresses.province "
 			. "ORDER BY ciniki_customer_addresses.country, ciniki_customer_addresses.province "
@@ -118,7 +118,7 @@ function ciniki_customers_web_dealerLocationTagCloud($ciniki, $settings, $busine
 			. "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND ciniki_customer_addresses.country <> '' "
 			. "AND (ciniki_customer_addresses.flags&0x08) = 0x08 "	// Only public addresses
-			. "AND ciniki_customers.dealer_status = 10 " // Must be active dealer
+//			. "AND ciniki_customers.dealer_status = 10 " // Must be active dealer
 			. "AND (ciniki_customers.webflags&0x02) = 0x02 " // Must be visible online
 			. "GROUP BY ciniki_customer_addresses.country "
 			. "ORDER BY ciniki_customer_addresses.country "

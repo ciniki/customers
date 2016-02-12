@@ -34,7 +34,6 @@ function ciniki_customers_web_dealerList($ciniki, $settings, $business_id, $args
 		$strsql .= "AND (ciniki_customer_addresses.flags&0x08) > 0 "
 		    . "AND ciniki_customer_addresses.customer_id = ciniki_customers.id "
 			// Check the dealer is visible on the website
-			. "AND ciniki_customers.dealer_status = 10 "
 			. "AND (ciniki_customers.webflags&0x02) = 2 "
 			. "ORDER BY ciniki_customers.sort_name ";
 	} elseif( isset($args['category']) && $args['category'] != '' ) {
@@ -62,7 +61,7 @@ function ciniki_customers_web_dealerList($ciniki, $settings, $business_id, $args
 			. "AND ciniki_customer_tags.permalink = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
 			. "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
 			// Check the dealer is visible on the website
-			. "AND ciniki_customers.dealer_status = 10 "
+//			. "AND ciniki_customers.dealer_status = 10 "
 			. "AND (ciniki_customers.webflags&0x02) = 2 "
 			. "ORDER BY ciniki_customers.sort_name ";
 	} else {
@@ -75,7 +74,7 @@ function ciniki_customers_web_dealerList($ciniki, $settings, $business_id, $args
 			. "FROM ciniki_customers "
 			. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			// Check the dealer is visible on the website
-			. "AND ciniki_customers.dealer_status = 10 "
+//			. "AND ciniki_customers.dealer_status = 10 "
 			. "AND (ciniki_customers.webflags&0x02) = 2 "
 			. "ORDER BY ciniki_customers.sort_name ";
 	}

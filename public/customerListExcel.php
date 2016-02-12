@@ -526,7 +526,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 			case 'membership_length': $value = 'Length'; break;
 			case 'membership_type': $value = 'Type'; break;
 			case 'member_categories': $value = 'Categories'; break;
-			case 'dealer_status': $value = 'Status'; break;
+			case 'dealer_status': $value = 'Dealer Status'; break;
 			case 'salesrep': $value = 'Sales Rep'; $salesrep = 'yes'; break;
 			case 'pricepoint_name': $value = 'Pricepoint'; $pricepoint = 'yes'; break;
 			case 'pricepoint_code': $value = 'Pricepoint Code'; $pricepoint = 'yes'; break;
@@ -536,7 +536,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 			case 'reward_level': $value = 'Reward Level'; break;
 			case 'sales_total': $value = 'Sales Total'; break;
 			case 'start_date': $value = 'Start Date'; break;
-			case 'distributor_status': $value = 'Status'; break;
+			case 'distributor_status': $value = 'Distributor Status'; break;
 			case 'phones': $value = 'Phones'; break;
 			case 'emails': $value = 'Emails'; break;
 			case 'addresses': $value = 'Addresses'; break;

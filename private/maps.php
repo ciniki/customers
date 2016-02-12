@@ -28,12 +28,12 @@ function ciniki_customers_maps($ciniki) {
 			'0'=>'',
 			'5'=>'Prospect',
 			'10'=>'Dealer',
-			'60'=>'Suspended Dealer',
+			'60'=>'Closed',
 			),
 		'distributor_status'=>array(
 			'0'=>'',
 			'10'=>'Distributor',
-			'60'=>'Suspended Distributor',
+			'60'=>'Closed',
 			),
 		'membership_length'=>array(
 			'0'=>'',
