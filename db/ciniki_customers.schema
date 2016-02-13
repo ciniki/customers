@@ -71,7 +71,8 @@
 #
 #					0 - Not a dealer
 #					5 - Prospect
-#					10 - Dealer
+#					10 - Active
+#					40 - Previous
 #					60 - Suspended Dealer
 #
 # distributor_status:	The distributor status for the customer/distributor.  This is only used if 
