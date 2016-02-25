@@ -28,7 +28,9 @@ function ciniki_customers_searchQuick($ciniki) {
         'parent_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'), 
         'member_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Members'), 
         'member_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Members'), 
+        'dealers'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Dealers'), 
         'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Dealers'), 
+        'distributors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Dealers'), 
         'distributor_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Distributors'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -102,7 +104,7 @@ function ciniki_customers_searchQuick($ciniki) {
 	$strsql .= "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_customers.status < 50 ";
+		. "AND ciniki_customers.status < 60 ";
 	// Check if only a sales rep
 	if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
 		$strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
@@ -116,8 +118,14 @@ function ciniki_customers_searchQuick($ciniki) {
 	if( isset($args['dealer_status']) && $args['dealer_status']	!= '' ) {
 		$strsql .= "AND dealer_status = '" . ciniki_core_dbQuote($ciniki, $args['dealer_status']) . "' ";
 	}
+	if( isset($args['dealers']) && $args['dealers']	== 'yes' ) {
+		$strsql .= "AND dealer_status > 0 ";
+	}
 	if( isset($args['distributor_status']) && $args['distributor_status']	!= '' ) {
 		$strsql .= "AND distributor_status = '" . ciniki_core_dbQuote($ciniki, $args['distributor_status']) . "' ";
+	}
+	if( isset($args['distributors']) && $args['distributors'] == 'yes' ) {
+		$strsql .= "AND distributor_status > 0 ";
 	}
 	$args['start_needle'] = preg_replace("/([^\s]) ([^\s])/", '$1%$2', $args['start_needle']);
 	$strsql .= "AND (first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
@@ -131,7 +139,7 @@ function ciniki_customers_searchQuick($ciniki) {
 //			. "OR CONCAT_WS(' ', first, last) LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 //			. "OR CONCAT_WS(' ', first, last) LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. ") "
-		. "ORDER BY last, first DESC ";
+		. "ORDER BY sort_name, last, first DESC ";
 	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
 		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";	// is_numeric verified
 	} else {

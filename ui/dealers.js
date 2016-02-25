@@ -27,7 +27,7 @@ function ciniki_customers_dealers() {
 		this.menu.sectionData = function(s) { return this.data[s]; }
 		this.menu.liveSearchCb = function(s, i, value) {
 			if( s == 'search' && value != '' ) {
-				M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':'10'}, 
+				M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':'10', 'dealers':'yes'}, 
 					function(rsp) { 
 						M.ciniki_customers_dealers.menu.liveSearchShow('search', null, M.gE(M.ciniki_customers_dealers.menu.panelUID + '_' + s), rsp.customers); 
 					});
@@ -43,6 +43,9 @@ function ciniki_customers_dealers() {
 		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
 			return 'M.ciniki_customers_dealers.showDealer(\'M.ciniki_customers_dealers.showMenu();\',\'' + d.customer.id + '\');'; 
 		};
+		this.menu.liveSearchSubmitFn = function(s, search_str) {
+            M.startApp('ciniki.customers.main',null,'M.ciniki_businesses_main.showMenu();','mc',{'search': search_str,'type':'dealers'});
+        };
 		this.menu.cellValue = function(s, i, j, d) {
 			if( s == 'dealers' && j == 0 ) {
 				if( d.dealer.company != null && d.dealer.company != '' ) {
