@@ -101,7 +101,7 @@ function ciniki_customers_searchFull($ciniki) {
 //			. "OR CONCAT_WS(' ', first, last) LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 //			. "OR CONCAT_WS(' ', first, last) LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. ") "
-		. "ORDER BY last, first ";
+		. "ORDER BY sort_name, last, first ";
 	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
 		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";	// is_numeric verified
 	}

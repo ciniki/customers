@@ -1259,7 +1259,7 @@ function ciniki_customers_main() {
 		if( search_str != null ) { this.search.search_str = search_str; }
 		if( type != null ) { this.search.search_type = type; }
 		M.api.getJSONCb('ciniki.customers.searchFull', {'business_id':M.curBusinessID, 
-			'start_needle':this.search.search_str, 'type':this.search.search_type, 'limit':100}, function(rsp) {
+			'start_needle':this.search.search_str, 'type':this.search.search_type}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
