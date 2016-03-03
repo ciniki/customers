@@ -57,7 +57,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 	if( $format == '' ) {
 		if( $customer['member_status'] == 10 ) {
 			$format = $member_format;
-		} elseif( $customer['dealer_status'] == 10 ) {
+		} elseif( $customer['dealer_status'] > 0 ) {
 			$format = $dealer_format;
 		} else {
 			$format = 'shortbio';

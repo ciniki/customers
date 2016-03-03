@@ -68,7 +68,7 @@ function ciniki_customers_objects($ciniki) {
 			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
 			'flags'=>array('default'=>'7'),
 			'address1'=>array(),
-			'address2'=>array(),
+			'address2'=>array('default'=>''),
 			'city'=>array(),
 			'province'=>array(),
 			'postal'=>array(),
