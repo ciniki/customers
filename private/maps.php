@@ -33,7 +33,9 @@ function ciniki_customers_maps($ciniki) {
 			),
 		'distributor_status'=>array(
 			'0'=>'',
+			'5'=>'Prospect',
 			'10'=>'Active',
+			'40'=>'Previous',
 			'60'=>'Closed',
 			),
 		'membership_length'=>array(

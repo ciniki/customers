@@ -15,10 +15,10 @@ function ciniki_customers_edit() {
 	this.memberWebFlags = {'1':{'name':'Visible'}};
 //	this.memberPhoneFlags = {'4':{'name':'Public'}};
 	this.dealerStatus = {'5':'Prospect', '10':'Active', '40':'Previous', '60':'Closed'};
-	this.dealerWebFlags = {'2':{'name':'Visible'}};
-	this.distributorStatus = {'10':'Active', '60':'Closed'};
+//	this.dealerWebFlags = {'2':{'name':'Visible'}};
+	this.distributorStatus = {'5':'Prospect', '10':'Active', '40':'Previous', '60':'Closed'};
 	this.seasonStatus = {'0':'Unknown', '10':'Active', '60':'Inactive'};
-	this.distributorWebFlags = {'3':{'name':'Visible'}};
+//	this.distributorWebFlags = {'3':{'name':'Visible'}};
 	this.addressFlags = {
 		'1':{'name':'Shipping'}, 
 		'2':{'name':'Billing'}, 

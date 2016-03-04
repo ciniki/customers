@@ -79,7 +79,9 @@
 #						the distributors are enabled.
 #
 #						0 - Not a distributor
+#					    5 - Prospect
 #						10 - Distributor
+#					    40 - Previous
 #						60 - Suspended Distributor
 #
 # prefix:			Dr. Mr. Ms. Miss. Mrs.
