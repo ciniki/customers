@@ -115,28 +115,6 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	} */
 
 	//
-	// Generate the map data.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'dealersMapMarkers');
-	$rc = ciniki_customers_web_dealersMapMarkers($ciniki, $settings, $ciniki['request']['business_id'], array());
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( isset($rc['markers']) ) {
-		$json = 'var gmap_data = ' . json_encode($rc['markers']) . ';';
-		$filename = '/' . sprintf('%02d', ($ciniki['request']['business_id']%100)) . '/'
-			. sprintf('%07d', $ciniki['request']['business_id'])
-			. '/dealers/gmap_data.js';
-		$data_filename = $ciniki['request']['cache_dir'] . $filename;
-		if( !file_exists(dirname($data_filename)) ) {
-			mkdir(dirname($data_filename), 0755, true);
-		}
-		file_put_contents($data_filename, $json);
-		$ciniki['response']['head']['scripts'][] = array('src'=>$ciniki['request']['cache_url'] . $filename, 
-			'type'=>'text/javascript');
-	}
-
-	//
 	// Check if we are to display a dealer
 	//
 	if( isset($uri_split[0]) 
@@ -303,6 +281,31 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			$display_locations = 'yes';
 			$base_url .= '/location';
 		}
+	}
+
+	//
+	// Generate the map data.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'dealersMapMarkers');
+	$rc = ciniki_customers_web_dealersMapMarkers($ciniki, $settings, $ciniki['request']['business_id'], array(
+        'country'=>(isset($country_name)?$country_name:'')));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['markers']) ) {
+		$json = 'var gmap_data = ' . json_encode($rc['markers']) . ';';
+        // Removed cache map data file so it can be broken down by country
+/*		$filename = '/' . sprintf('%02d', ($ciniki['request']['business_id']%100)) . '/'
+			. sprintf('%07d', $ciniki['request']['business_id'])
+			. '/dealers/gmap_data.js';
+		$data_filename = $ciniki['request']['cache_dir'] . $filename;
+		if( !file_exists(dirname($data_filename)) ) {
+			mkdir(dirname($data_filename), 0755, true);
+		}
+		file_put_contents($data_filename, $json);
+		$ciniki['response']['head']['scripts'][] = array('src'=>$ciniki['request']['cache_url'] . $filename, 
+			'type'=>'text/javascript'); */
+		$ciniki['request']['inline_javascript'] .= '<script type="text/javascript">' . $json . '</script>';
 	}
 
 	//

@@ -27,7 +27,11 @@ function ciniki_customers_web_dealersMapMarkers($ciniki, $settings, $business_id
 		// Check the dealer is visible on the website
 //		. "AND ciniki_customers.dealer_status = 10 "
 		. "AND (ciniki_customers.webflags&0x02) = 2 "
-		. "ORDER BY ciniki_customers.sort_name ";
+        . "";
+    if( isset($args['country']) && $args['country'] != '' ) {
+        $strsql .= "AND ciniki_customer_addresses.country = '" . ciniki_core_dbQuote($ciniki, $args['country']) . "' ";
+    }
+	$strsql .= "ORDER BY ciniki_customers.sort_name ";
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'marker');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
