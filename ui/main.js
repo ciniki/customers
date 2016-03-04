@@ -876,10 +876,11 @@ function ciniki_customers_main() {
 //				this.customer.data.details.status_text.style = 'background: #FFD0D0;';
 //			}
 		}
-		if( (M.curBusiness.modules['ciniki.customers'].flags&0x10) > 0 
-			&& rsp.customer.dealer_status_text != null 
-			) {
+		if( M.modFlagSet('ciniki.customers', 0x10) == 'yes' && rsp.customer.dealer_status_text != null ) {
 			this.customer.data.details.dealer_status_text = {'label':'Dealer Status', 'value':rsp.customer.dealer_status_text};
+		}
+        if( M.modFlagSet('ciniki.customers', 0x0100) == 'yes' && rsp.customer.distributor_status_text != null ) {
+			this.customer.data.details.distributor_status_text = {'label':'Distributor Status', 'value':rsp.customer.distributor_status_text};
 		}
 		if( rsp.customer.type == 2 ) {
 			this.customer.data.details.company = {'label':'Name', 'value':rsp.customer.company};
