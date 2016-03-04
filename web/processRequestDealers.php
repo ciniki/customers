@@ -124,7 +124,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		) {
 		$display_profile = 'yes';
 		$dealer_permalink = $uri_split[0];
-		$base_url = $ciniki['request']['base_url'] . "/dealers/$dealer_permalink";
+//		$base_url = $ciniki['request']['base_url'] . "/dealers/$dealer_permalink";
+        $base_url .= '/' . $dealer_permalink;
 		// Check for gallery image
 		if( isset($uri_split[1]) 
 			&& $uri_split[1] == 'gallery'
@@ -148,7 +149,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$display_profile = 'yes';
 		$category = $uri_split[1];
 		$dealer_permalink = $uri_split[2];
-		$base_url = $ciniki['request']['base_url'] . "/dealers/category/$category/$dealer_permalink";
+//		$base_url = $ciniki['request']['base_url'] . "/dealers/category/$category/$dealer_permalink";
+		$base_url .= "/category/$category/$dealer_permalink";
 		// Check for gallery image
 		if( isset($uri_split[3]) 
 			&& $uri_split[3] == 'gallery'
@@ -187,7 +189,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$province = $uri_split[2];
 		$state = $uri_split[3];
 		$dealer_permalink = $uri_split[4];
-		$base_url = $ciniki['request']['base_url'] . "/dealers/location/$country/$province/$state/$dealer_permalink";
+//		$base_url = $ciniki['request']['base_url'] . "/dealers/location/$country/$province/$state/$dealer_permalink";
+		$base_url .= "/location/$country/$province/$state/$dealer_permalink";
 		// Check for gallery image
 		if( isset($uri_split[5]) 
 			&& $uri_split[5] == 'gallery'
@@ -218,7 +221,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$country_permalink = $uri_split[1];
 		$country_name = rawurldecode($country_permalink);
 		$country_print_name = (isset($maps[strtolower($country_name)]['name'])?$maps[strtolower($country_name)]['name']:$country_name);
-		$base_url = $ciniki['request']['domain_base_url'] . '/dealers/location/' . $country_permalink;
+//		$base_url = $ciniki['request']['domain_base_url'] . '/dealers/location/' . $country_permalink;
+		$base_url .= '/location/' . $country_permalink;
         $page['breadcrumbs'][] = array('name'=>$country_print_name, 'url'=>$base_url);
 		$display_locations = 'yes';
 		$display_map = 'yes';
@@ -469,7 +473,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 	//
 	if( $display_categories == 'yes' ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'dealerTagCloud');
-		$base_url = $ciniki['request']['base_url'] . '/dealers/category';
+//		$base_url = $ciniki['request']['base_url'] . '/dealers/category';
+//		$base_url .= '/category';
 		$rc = ciniki_customers_web_tagCloud($ciniki, $settings, $ciniki['request']['business_id'], 60);
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
