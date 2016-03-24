@@ -754,6 +754,7 @@ function ciniki_customers_edit() {
                 };
 			this.phone.sections._phone.fields.flags.active = 'yes';
             this.phone.sections._phone.fields.flags.flags = this.phoneFlags;
+            this.link.sections._link.fields.webflags.flags = this.linkFlags;
             this.edit.forms.person._phone.fields.phone_flags_1.active = 'yes'
             this.edit.forms.person._phone.fields.phone_flags_1.flags = this.phoneFlags;
             this.edit.forms.person._phone.fields.phone_flags_2.active = 'yes'
@@ -791,6 +792,7 @@ function ciniki_customers_edit() {
             this.phoneFlags = {
                 };
 			this.phone.sections._phone.fields.flags.active = 'no';
+            this.link.sections._link.fields.webflags.flags = this.linkFlags;
             this.edit.forms.person._phone.fields.phone_flags_1.active = 'no'
             this.edit.forms.person._phone.fields.phone_flags_2.active = 'no'
             this.edit.forms.person._phone.fields.phone_flags_3.active = 'no'

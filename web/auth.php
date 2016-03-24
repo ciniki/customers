@@ -8,7 +8,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
+function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $password) {
 	//
 	// Find all the required and optional arguments
 	//
@@ -29,7 +29,11 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 		. "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
 		. "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
 		. "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "') "
-		. "ORDER BY parent_id ASC " 	// List parent accounts first
+        . "";
+    if( isset($settings['page-account-child-logins']) && $settings['page-account-child-logins'] == 'no' ) {
+        $strsql .= "AND ciniki_customers.parent_id = 0 ";
+    }
+	$strsql .= "ORDER BY parent_id ASC " 	// List parent accounts first
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -37,6 +41,8 @@ function ciniki_customers_web_auth(&$ciniki, $business_id, $email, $password) {
 		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2601)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2601', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
 	}
+
+
 	//
 	// Allow for email address to be attached to multiple accounts
 	//
