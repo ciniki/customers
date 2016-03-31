@@ -212,6 +212,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
             . "FROM ciniki_customer_season_members, ciniki_customer_seasons "
             . "WHERE ciniki_customer_season_members.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
             . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['business_id']) . "' "
+            . "AND ciniki_customer_season_members.status = 10 " // Active for the season
             . "AND ciniki_customer_season_members.season_id = ciniki_customer_seasons.id "
             . "AND ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['business_id']) . "' "
             . "";
