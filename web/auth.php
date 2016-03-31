@@ -16,6 +16,16 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
 
 	//
+	// Load the business settings
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_timezone = $rc['settings']['intl-default-timezone'];
+
+	//
 	// Get customer information
 	//
 	$strsql = "SELECT ciniki_customers.id, parent_id, "
@@ -41,7 +51,6 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2601)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2601', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
 	}
-
 
 	//
 	// Allow for email address to be attached to multiple accounts
@@ -192,7 +201,39 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 		// they can see prices if not suspended/deleted
 		$customer['price_flags'] |= 0x10;
 	}
-	if( $customer['member_status'] == 10 ) {
+    //
+    // Check if memberships enabled and if customer is part of current season
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000000) ) {   // Check if membership seasons is active
+        //
+        // Check for Latest date the members price is valid to
+        //
+        $strsql = "SELECT MAX(ciniki_customer_seasons.end_date) AS membership_expiration "
+            . "FROM ciniki_customer_season_members, ciniki_customer_seasons "
+            . "WHERE ciniki_customer_season_members.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+            . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['business_id']) . "' "
+            . "AND ciniki_customer_season_members.season_id = ciniki_customer_seasons.id "
+            . "AND ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+        if( $rc['stat'] != 'ok' ) {
+            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: unable to check member season $email fail (3231)");
+            error_log(print_r($rc['err'], true));
+            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3231', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
+        }
+        if( isset($rc['customer']['membership_expiration']) ) {
+            $dt = new DateTime($rc['customer']['membership_expiration'], new DateTimeZone($intl_timezone));
+            $customer['membership_expiration'] = $dt->format('U');
+            $dt = new DateTime('now', new DateTimeZone($intl_timezone));
+            //
+            // Check the membership hasn't expired yet
+            //
+            if( $customer['membership_expiration'] > $dt->format('U') ) {
+                $customer['price_flags'] |= 0x20;
+            }
+        }
+    } 
+    elseif( $customer['member_status'] == 10 ) {
 		$customer['price_flags'] |= 0x20;
 	}
 	if( $customer['dealer_status'] == 10 ) {
