@@ -358,7 +358,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			$description = '';
 			if( isset($dealer['description']) ) {
 				ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processContent');
-				$rc = ciniki_web_processContent($ciniki, $dealer['description']);	
+				$rc = ciniki_web_processContent($ciniki, $settings, $dealer['description']);	
 				if( $rc['stat'] != 'ok' ) {
 					return $rc;
 				}

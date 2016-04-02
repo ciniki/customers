@@ -63,8 +63,8 @@
 #                   20 - Student
 #                   30 - Individual
 #                   40 - Family
-#					110:20 - Complimentary
-#					150:30 - Reciprocal
+#					110 - Complimentary
+#					150 - Reciprocal
 #
 # dealer_status:	The dealer status for the customer/dealer.  This is only used if 
 #					the dealers are enabled.

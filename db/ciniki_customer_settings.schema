@@ -21,6 +21,24 @@
 # Does the business use birthdates for customers
 # - use-birthdate - (yes|no)
 #
+# Membership information
+# membership-type-10-active         - Regular membership type
+# membership-type-10-price          - Regular membership price
+# membership-type-10-online         - (yes|now) Regular membership e-commerce
+# membership-type-20-active         - Student membership type
+# membership-type-20-price          - Student membership price
+# membership-type-20-online         - (yes|now) Student membership e-commerce
+# membership-type-30-active         - Individual membership type
+# membership-type-30-price          - Individual membership price
+# membership-type-30-online         - (yes|now) Individual membership e-commerce
+# membership-type-40-active         - Family membership type
+# membership-type-40-price          - Family membership price
+# membership-type-40-online         - (yes|now) Family membership e-commerce
+# membership-type-lifetime-price    - Lifetime membership price
+# membership-type-lifetime-online   - (yes|now) Lifetime membership e-commerce
+
+# 
+#
 # Fields
 # ------
 # business_id:	The id of the business the detail is for.

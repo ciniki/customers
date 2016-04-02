@@ -538,15 +538,15 @@ function ciniki_customers_edit() {
 			this.removeLiveSearch(s, 'connection');
 		};
 		this.edit.setupStatus = function() {
-			if( this.memberinfo == 'yes' && this.data.member_status == 0 ) {
-				this.setFieldValue('member_status', 10);
-			}
-			if( this.dealerinfo == 'yes' && this.data.dealer_status == 0 ) {
-				this.setFieldValue('dealer_status', 10);
-			}
-			if( this.distributorinfo == 'yes' && this.data.distributor_status == 0 ) {
-				this.setFieldValue('distributor_status', 10);
-			}
+//			if( this.memberinfo == 'yes' && this.data.member_status == 0 ) {
+//				this.setFieldValue('member_status', 10);
+//			}
+//			if( this.dealerinfo == 'yes' && this.data.dealer_status == 0 ) {
+//				this.setFieldValue('dealer_status', 10);
+//			}
+//			if( this.distributorinfo == 'yes' && this.data.distributor_status == 0 ) {
+//				this.setFieldValue('distributor_status', 10);
+//			}
 		};
 		this.edit.addButton('save', 'Save', 'M.ciniki_customers_edit.customerSave();');
 		this.edit.addClose('cancel');
@@ -1554,9 +1554,9 @@ function ciniki_customers_edit() {
 				this.edit.data.type = 1;
 			}
 			if( this.edit.memberinfo == 'yes' ) {
-				this.edit.data.member_status = 10;
-				this.edit.data.membership_length = 20;
-				this.edit.data.membership_type = 10;
+//				this.edit.data.member_status = 10;
+//				this.edit.data.membership_length = 20;
+//				this.edit.data.membership_type = 10;
 				if( category != null ) { this.edit.data.member_categories = category; }
 			} else if( this.edit.dealerinfo == 'yes' ) {
 				this.edit.data.dealer_status = 10;
