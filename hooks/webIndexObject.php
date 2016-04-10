@@ -137,6 +137,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             $item['permalink'] = 'location/' . $address['country'] . '/' . $address['province'] . '/' . $address['city'];
         } else {
             $address = array();
+            $item['permalink'] = '';
         }
 
         //
@@ -205,6 +206,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             $item['permalink'] = 'location/' . $address['country'] . '/' . $address['province'] . '/' . $address['city'];
         } else {
             $address = array();
+            $item['permalink'] = '';
         }
 
         //
