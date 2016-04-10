@@ -35,12 +35,16 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 		if( isset($settings['page-dealers-list-format']) && $settings['page-dealers-list-format'] != '' ) {
 			$dealer_format = $settings['page-dealers-list-format'];
 		}
+		$distributor_format = 'shortbio';
+		if( isset($settings['page-distributors-list-format']) && $settings['page-distributors-list-format'] != '' ) {
+			$distributor_format = $settings['page-distributors-list-format'];
+		}
 	}
 
 	//
 	// Get the customer information for the short description
 	//
-	$strsql = "SELECT id, member_status, dealer_status, short_bio, short_description "
+	$strsql = "SELECT id, member_status, dealer_status, distributor_status, short_bio, short_description "
 		. "FROM ciniki_customers "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -59,6 +63,8 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
 			$format = $member_format;
 		} elseif( $customer['dealer_status'] > 0 ) {
 			$format = $dealer_format;
+		} elseif( $customer['distributor_status'] > 0 ) {
+			$format = $distributor_format;
 		} else {
 			$format = 'shortbio';
 		}

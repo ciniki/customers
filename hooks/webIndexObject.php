@@ -134,10 +134,12 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         }
         if( isset($rc['address']) ) {
             $address = $rc['address'];
-            $item['permalink'] = 'location/' . $address['country'] . '/' . $address['province'] . '/' . $address['city'];
+            $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
+                . '/' . ($address['province'] == '' ? '-' : $address['province']) 
+                . '/' . ($address['city'] == '' ? '-' : $address['city']);
         } else {
             $address = array();
-            $item['permalink'] = '';
+            return array('stat'=>'ok');         // Require an address to be in search engine
         }
 
         //
@@ -203,10 +205,12 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         }
         if( isset($rc['address']) ) {
             $address = $rc['address'];
-            $item['permalink'] = 'location/' . $address['country'] . '/' . $address['province'] . '/' . $address['city'];
+            $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
+                . '/' . ($address['province'] == '' ? '-' : $address['province']) 
+                . '/' . ($address['city'] == '' ? '-' : $address['city']);
         } else {
             $address = array();
-            $item['permalink'] = '';
+            return array('stat'=>'ok');         // Require an address to be in search engine
         }
 
         //
