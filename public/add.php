@@ -600,8 +600,7 @@ function ciniki_customers_add(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
 	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 
-		'args'=>array('id'=>$customer_id));
+	$ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 'args'=>array('id'=>$customer_id));
 
 	$rsp = array('stat'=>'ok', 'id'=>$customer_id);
 
@@ -613,6 +612,12 @@ function ciniki_customers_add(&$ciniki) {
 //	if( $rc['stat'] == 'ok' && isset($rc['details']) ) {
 //		$rsp['customer_details'] = $rc['details'];
 //	}
+
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$customer_id));
 
 	return $rsp;
 }

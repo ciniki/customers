@@ -62,6 +62,17 @@ function ciniki_customers_emailDelete(&$ciniki) {
 	// Delete the email
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-	return ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.email', $args['email_id'], $uuid, 0x07);
+	$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.email', $args['email_id'], $uuid, 0x07);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$args['customer_id']));
+   
+    return array('stat'=>'ok');
 }
 ?>
