@@ -830,6 +830,13 @@ function ciniki_customers_edit() {
 		// Turn off account section by default
 		var account = 'no';
 
+        if( M.curBusiness.customers.settings != null 
+            && M.curBusiness.customers.settings['defaults-edit-person-hide-company'] != null
+            && M.curBusiness.customers.settings['defaults-edit-person-hide-company'] == 'yes' ) {
+            this.edit.forms.person.business.active = 'no';
+        } else {
+            this.edit.forms.person.business.active = 'yes';
+        }
 		//
 		// Turn on or off the flag for web login based on if the module is enabled
 		//

@@ -66,6 +66,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
 	$changelog_fields = array(
 		'display-name-business-format',
 		'defaults-edit-form',
+        'defaults-edit-person-hide-company',
         'membership-type-10-active',
         'membership-type-10-online',
         'membership-type-10-name',

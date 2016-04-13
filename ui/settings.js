@@ -51,6 +51,7 @@ function ciniki_customers_settings() {
 			},
 			'defaults':{'label':'Defaults', 'visible':'yes', 'fields':{
 				'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Business'}},
+				'defaults-edit-person-hide-company':{'label':'Hide Company', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 			}},
 			'ui_labels':{'label':'Labels', 'visible':'no', 'fields':{
 				'ui-labels-parent':{'label':'Parent Name', 'type':'text', 'hint':'Parent'},
@@ -72,7 +73,7 @@ function ciniki_customers_settings() {
 				'addFn':'M.ciniki_customers_settings.editSeason(\'M.ciniki_customers_settings.showMain();\',0);',
 			},
 			'membership_types':{'label':'Membership Types', 
-                'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x02)>0?'yes':'no'; },
+                'active':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x02)>0?'yes':'no'; },
                 'fields':{
                     'membership-type-10-active':{'label':'Regular', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                     'membership-type-20-active':{'label':'Student', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -84,7 +85,7 @@ function ciniki_customers_settings() {
                  },
 			},
 			'membership_prices':{'label':'Online Membership Sales', 
-                'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x02)>0&&M.curBusiness.modules['ciniki.sapos']!=null&&(M.curBusiness.modules['ciniki.sapos'].flags&0x08)>0?'yes':'no'; },
+                'active':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x02)>0&&M.curBusiness.modules['ciniki.sapos']!=null&&(M.curBusiness.modules['ciniki.sapos'].flags&0x08)>0?'yes':'no'; },
                 'fields':{
                     'membership-type-10-online':{'label':'Regular', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                     'membership-type-10-name':{'label':'Regular Name', 'type':'text'},

@@ -56,6 +56,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             return array('stat'=>'ok');
         }
         $object = array(
+            'label'=>'Members',
             'title'=>$rc['item']['display_name'],
             'subtitle'=>'',
             'meta'=>'',
@@ -149,6 +150,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             return array('stat'=>'ok');
         }
         $object = array(
+            'label'=>'Dealers',
             'title'=>$item['display_name'],
             'subtitle'=>'',
             'meta'=>'',
@@ -220,6 +222,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             return array('stat'=>'ok');
         }
         $object = array(
+            'label'=>'Distributors',
             'title'=>$item['display_name'],
             'subtitle'=>'',
             'meta'=>'',
