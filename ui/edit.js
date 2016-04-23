@@ -2013,6 +2013,16 @@ function ciniki_customers_edit() {
 		if( cid != null ) { this.address.customer_id = cid; }
 		if( aid != null ) { this.address.address_id = aid; }
 
+        if( (M.modFlagSet('ciniki.customers', 0x0010) == 'yes' && this.edit.formValue('webflags_2') == 'on')
+            || (M.modFlagSet('ciniki.customers', 0x0100) == 'yes' && this.edit.formValue('webflags_3') == 'on')
+            ) {
+            this.address.sections._latlong_buttons.active = 'yes';
+            this.address.sections._latlong.active = 'yes';
+        } else {
+            this.address.sections._latlong_buttons.active = 'no';
+            this.address.sections._latlong.active = 'no';
+        }
+
 		if( this.address.address_id > 0 ) {
 			this.address.sections._buttons.buttons.delete.visible = 'yes';
 			var rsp = M.api.getJSONCb('ciniki.customers.addressGet', 
