@@ -21,6 +21,9 @@
 #					artists to submit porfolios and determine which ones show up.
 #
 #					0x01 - Visible, show publicly on website
+#					0x02 - Sold (add red dot)
+#                   0x04 - 
+#                   0x08 -
 #
 # image_id:			The ID of the image in the ciniki.images module.
 #
