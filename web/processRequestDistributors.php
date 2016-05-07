@@ -124,15 +124,16 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
 	}
 	if( isset($rc['markers']) ) {
 		$json = 'var gmap_data = ' . json_encode($rc['markers']) . ';';
-		$filename = '/' . sprintf('%02d', ($ciniki['request']['business_id']%100)) . '/'
-			. sprintf('%07d', $ciniki['request']['business_id'])
-			. '/distributors/gmap_data.js';
-		$data_filename = $ciniki['request']['cache_dir'] . $filename;
+//		$filename = '/' . sprintf('%02d', ($ciniki['request']['business_id']%100)) . '/'
+//			. sprintf('%07d', $ciniki['request']['business_id'])
+//			. '/distributors/gmap_data.js';
+		$filename = '/distributors/gmap_data.js';
+		$data_filename = $ciniki['business']['web_cache_dir'] . $filename;
 		if( !file_exists(dirname($data_filename)) ) {
 			mkdir(dirname($data_filename), 0755, true);
 		}
 		file_put_contents($data_filename, $json);
-		$ciniki['response']['head']['scripts'][] = array('src'=>$ciniki['request']['cache_url'] . $filename, 
+		$ciniki['response']['head']['scripts'][] = array('src'=>$ciniki['business']['web_cache_url'] . $filename, 
 			'type'=>'text/javascript');
 	}
 
