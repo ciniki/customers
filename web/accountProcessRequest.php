@@ -110,11 +110,12 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
     //
     elseif( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'accounts' ) {
         $page['breadcrumbs'][] = array('name'=>'Accounts', 'url'=>$ciniki['request']['domain_base_url'] . '/account/accounts');
-        $page['title'] = 'Other Accounts';
+        $page['title'] = 'Choose Account';
 
-        $aside = "<p>Name: " . $ciniki['session']['customer']['display_name'] . "</p>";
-        if( isset($customer['addresses']) ) {
-            foreach($customer['addresses'] as $addr) {
+        $aside = "<p>You are currently logged in as " . $ciniki['session']['customer']['display_name'] . ". "
+            . "You have several accounts and may switch to another account below.</p>";
+        if( isset($ciniki['session']['customer']['addresses']) ) {
+            foreach($ciniki['session']['customer']['addresses'] as $addr) {
                 $addr = $addr['address'];
                 if( ($addr['flags']&0x02) ) {
                     $aside .= "<p><b>Billing Address</b><br/>"
@@ -128,16 +129,19 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
                 }
             }
         }
-        $page['blocks'][] = array('type'=>'asidecontent', 'title'=>'Account', 'html'=>$aside);
+        $page['blocks'][] = array('type'=>'content', 'html'=>$aside);
 
         $content = "<div class='largebutton-list'>";
         foreach($ciniki['session']['customers'] as $cust) {
+            if( $cust['id'] == $ciniki['session']['customer']['id'] ) {
+                continue;
+            }
             $content .= "<div class='button-list-wrap'><div class='button-list-button'>";
             $content .= "<a href='" . $ciniki['request']['base_url'] . '/account/switch/' . $cust['id'] . "'>" . $cust['display_name'] . "</a>";
             $content .= "</div></div><br/>";
         }
         $content .= "</div>";
-        $page['blocks'][] = array('type'=>'content', 'html'=>$content);
+        $page['blocks'][] = array('type'=>'content', 'title'=>'Switch Account', 'html'=>$content);
     }
 
 	return array('stat'=>'ok', 'page'=>$page);
