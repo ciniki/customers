@@ -46,11 +46,15 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (" . $rc['err']['code'] . ")");
 		return $rc;
 	}
-	if( !isset($rc['user']) || !is_array($rc['user']) ) {
+	if( !isset($rc['rows']) || count($rc['rows']) == 0 ) {
 		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (731)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'731', 'msg'=>'Unable to update password.'));
 	}
-	$user = $rc['user'];
+//	if( !isset($rc['user']) || !is_array($rc['user']) ) {
+//		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (731)");
+//		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'731', 'msg'=>'Unable to update password.'));
+//	}
+	$users = $rc['rows'];
 
 	//
 	// FIXME: Put check for active user status < 40
@@ -59,10 +63,10 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 	//
 	// Perform an extra check to make sure only 1 row was found, other return error
 	//
-	if( $rc['num_rows'] != 1 ) {
-		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (732)");
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'732', 'msg'=>'Invalid temporary password'));
-	}
+//	if( $rc['num_rows'] != 1 ) {
+//		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (732)");
+//		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'732', 'msg'=>'Invalid temporary password'));
+//	}
 
 	//
 	// Turn off autocommit
@@ -76,30 +80,32 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 		return $rc;
 	}
 
-	//
-	// Update the password, but only if the temporary one matches
-	//
-	$strsql = "UPDATE ciniki_customer_emails "
-		. "SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $newpassword) . "'), "
-		. "temp_password = '', "
-		. "last_updated = UTC_TIMESTAMP() "
-		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
-		. "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') "
-		. "AND (flags&0x01) = 0x01 "
-		. "";
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (733)");
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'733', 'msg'=>'Unable to update password.'));
-	}
+    foreach($users as $user) {
+        //
+        // Update the password, but only if the temporary one matches
+        //
+        $strsql = "UPDATE ciniki_customer_emails "
+            . "SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $newpassword) . "'), "
+            . "temp_password = '', "
+            . "last_updated = UTC_TIMESTAMP() "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
+            . "AND temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $temppassword) . "') "
+            . "AND (flags&0x01) = 0x01 "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+        $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (733)");
+            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'733', 'msg'=>'Unable to update password.'));
+        }
 
-	if( $rc['num_affected_rows'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (734)");
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'734', 'msg'=>'Unable to change password.'));
-	}
+        if( $rc['num_affected_rows'] < 1 ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (734)");
+            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'734', 'msg'=>'Unable to change password.'));
+        }
+    }
 
 	//
 	// Commit all the changes to the database

@@ -15,7 +15,7 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
     $submenu = array();
 
     if( isset($ciniki['session']['customers']) && count($ciniki['session']['customers']) > 1 
-        && (!isset($settings['page-account-child-logins']) || $settings['page-account-child-logins'] == 'yes')
+//        && (!isset($settings['page-account-child-logins']) || $settings['page-account-child-logins'] == 'yes')
         ) {
         $submenu[] = array('name'=>'Switch Account', 'priority'=>310, 'package'=>'ciniki', 'module'=>'customers', 
             'selected'=>($ciniki['request']['page'] == 'account' 

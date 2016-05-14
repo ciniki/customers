@@ -112,6 +112,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 				. "ciniki_customers.pricepoint_id "
 				. "FROM ciniki_customers "
 				. "WHERE ciniki_customers.parent_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
+		        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 //				. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 //				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 //				. "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
@@ -135,6 +136,37 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 		}
 	}
 
+    //
+    // Check for other accounts with the same email address and password
+    //
+ /*   $strsql = "SELECT ciniki_customers.id, "
+        . "ciniki_customers.first, ciniki_customers.last, ciniki_customers.display_name, "
+        . "ciniki_customers.status, ciniki_customers.member_status, "
+        . "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
+        . "ciniki_customers.pricepoint_id "
+        . "FROM ciniki_customer_emails, ciniki_customers "
+        . "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND ciniki_customer_emails.email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
+		. "AND ciniki_customer_emails.password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "') "
+        . "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
+        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_customers.parent_id = 0 "
+        . "ORDER BY parent_id ASC " 	// List parent accounts first
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+    if( $rc['stat'] != 'ok' ) {
+        error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2602)");
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2602', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
+    }
+    if( isset($rc['rows']) ) {
+        foreach($rc['rows'] as $cust) {
+            if( !isset($customers[$cust['id']]) ) {
+                $customers[$cust['id']] = $cust;
+            }
+        }
+    }
+*/
 	//
 	// Get the sequence for the customers pricepoint if set
 	//
