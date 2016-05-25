@@ -50,10 +50,6 @@ function ciniki_customers_web_changeTempPassword($ciniki, $business_id, $email, 
 		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (731)");
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'731', 'msg'=>'Unable to update password.'));
 	}
-//	if( !isset($rc['user']) || !is_array($rc['user']) ) {
-//		error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (731)");
-//		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'731', 'msg'=>'Unable to update password.'));
-//	}
 	$users = $rc['rows'];
 
 	//
