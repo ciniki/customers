@@ -60,12 +60,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$dealer_permalink = $uri_split[0];
         $base_url .= '/' . $dealer_permalink;
 		// Check for gallery image
-		if( isset($uri_split[1]) 
-			&& $uri_split[1] == 'gallery'
-			&& $uri_split[2] != ''
-			) {
+		if( isset($uri_split[1]) && $uri_split[1] == 'gallery' && $uri_split[2] != '') {
 			$image_permalink = $uri_split[2];
-			$base_url .= "/gallery/$image_permalink";
 		}
 	}
 
@@ -81,16 +77,9 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 		$dealer_permalink = $uri_split[2];
 		$base_url .= "/category/$category/$dealer_permalink";
 		// Check for gallery image
-		if( isset($uri_split[3]) 
-			&& $uri_split[3] == 'gallery' && isset($uri_split[4])
-			&& $uri_split[4] != ''
-			) {
+		if( isset($uri_split[3]) && $uri_split[3] == 'gallery' && isset($uri_split[4]) && $uri_split[4] != '') {
 			$image_permalink = $uri_split[4];
-			$ciniki['response']['head']['links'][] = array('rel'=>'canonical',
-				'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink 
-					. '/gallery/' . $image_permalink
-				);
-			$base_url .= "/gallery/$image_permalink";
+			$ciniki['response']['head']['links'][] = array('rel'=>'canonical', 'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink);
 		} else {
 			$ciniki['response']['head']['links'][] = array('rel'=>'canonical',
 				'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink
@@ -171,7 +160,7 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
                 if( isset($uri_split[4]) && $uri_split[4] != '' ) {
                     $display_profile = 'yes';
                     $dealer_permalink = $uri_split[4];
-                    $base_url .= "/location/$country_permalink/$province_permalink/$province_permalink/$dealer_permalink";
+                    $base_url .= "/$dealer_permalink";
                     //
                     // Check for gallery image
                     //
@@ -179,15 +168,9 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
                         && isset($uri_split[6]) && $uri_split[6] != ''
                         ) {
                         $image_permalink = $uri_split[6];
-                        $ciniki['response']['head']['links'][] = array('rel'=>'canonical',
-                            'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink 
-                                . '/gallery/' . $image_permalink
-                            );
-                        $base_url .= "/gallery/$image_permalink";
+                        $ciniki['response']['head']['links'][] = array('rel'=>'canonical', 'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink );
                     } else {
-                        $ciniki['response']['head']['links'][] = array('rel'=>'canonical',
-                            'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink
-                            );
+                        $ciniki['response']['head']['links'][] = array('rel'=>'canonical', 'href'=>$ciniki['request']['domain_base_url'] . '/dealers/' . $dealer_permalink);
                     }
                 }
 			}
@@ -288,15 +271,29 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 
 		$page_title = $dealer['name'];
 		if( isset($image_permalink) && $image_permalink != '' ) {
-			ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processGalleryImage');
-			$rc = ciniki_web_processGalleryImage($ciniki, $settings, $business_id, array(
-				'item'=>$dealer,
-				'image_permalink'=>$image_permalink,
-				));
-			if( $rc['stat'] != 'ok' ) {
-				return $rc;
-			}
-			$page_content .= $rc['content'];
+            $page['title'] = "<a href='$base_url'>" . $dealer['name'] . "</a>";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'galleryFindNextPrev');
+            $rc = ciniki_web_galleryFindNextPrev($ciniki, $dealer['images'], $image_permalink);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( $rc['img'] == NULL ) {
+                $page['blocks'][] = array('type'=>'message', 'content'=>"I'm sorry, but we can't seem to find the image you requested.");
+            } else {
+                $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$base_url . '/gallery/' . $image_permalink);
+                if( $rc['img']['title'] != '' ) {
+                    $page['title'] .= ' - ' . $rc['img']['title'];
+                }
+                $block = array('type'=>'galleryimage', 'section'=>'gallery-primary-image', 'primary'=>'yes', 'image'=>$rc['img']);
+                if( $rc['prev'] != null ) {
+                    $block['prev'] = array('url'=>$base_url . '/gallery/' . $rc['prev']['permalink'], 'image_id'=>$rc['prev']['image_id']);
+                }
+                if( $rc['next'] != null ) {
+                    $block['next'] = array('url'=>$base_url . '/gallery/' . $rc['next']['permalink'], 'image_id'=>$rc['next']['image_id']);
+                }
+                $page['blocks'][] = $block;
+                $page['blocks'][] = array('type'=>'gallery', 'title'=>'Additional Images', 'section'=>'gallery-images', 'base_url'=>$base_url . '/gallery', 'images'=>$dealer['images']);
+            }
 		} else {
             $aside_display = 'block';
             if( isset($dealer['image_id']) && $dealer['image_id'] > 0 ) {
@@ -392,6 +389,10 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			if( isset($dealer['links']) ) {
                 $page['blocks'][] = array('type'=>'links', 'section'=>'dealer-links', 'title'=>'Website' . (count($dealer['links']) > 1 ? 's' : ''), 'links'=>$dealer['links']);
 			}
+            // Add gallery
+            if( isset($dealer['images']) && count($dealer['images']) > 0 ) {
+                $page['blocks'][] = array('type'=>'gallery', 'title'=>'Additional Images', 'section'=>'additional-images', 'base_url'=>$base_url . '/gallery', 'images'=>$dealer['images']);
+            }
 		}
 	} 
 
