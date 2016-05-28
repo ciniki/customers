@@ -330,8 +330,8 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
 			$description = '';
             if( isset($dealer['description']) && $dealer['description'] != '' ) {
                 $description = strip_tags($dealer['description']);
-            } elseif( isset($dealer['synopsis']) && $dealer['synopsis'] != '' ) {
-                $description = strip_tags($dealer['synopsis']);
+//            } elseif( isset($dealer['synopsis']) && $dealer['synopsis'] != '' ) {
+//                $description = strip_tags($dealer['synopsis']);
             }
             $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>$description);
 
