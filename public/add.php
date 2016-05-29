@@ -50,6 +50,7 @@
 //						0x02 - Billing
 //						0x04 - Mailing
 //						0x08 - Public
+//
 // phone:				(optional) The phone number to assist in deliveries.
 // 
 // phone_label_1:		(optional) The label for the first phone number.
