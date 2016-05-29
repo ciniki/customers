@@ -72,7 +72,7 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
                 }
             }
         }
-        if( isset($customer_args['first']) && $customer_args['first'] == '' 
+        if( ((!isset($customer_args['first']) && $customer['first'] == '') || (isset($customer_args['first']) && $customer_args['first'] == ''))
             && ((!isset($customer_args['last']) && $customer['last'] == '') || (isset($customer_args['last']) && $customer_args['last'] == ''))
             ) {
             if( isset($_POST['email']) && $_POST['email'] != '' ) {
