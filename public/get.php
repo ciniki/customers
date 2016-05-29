@@ -114,7 +114,7 @@ function ciniki_customers_get($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 			array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-				'fields'=>array('id', 'type', 'display_name', 'primary_image_id', 
+				'fields'=>array('id', 'eid', 'type', 'display_name', 'primary_image_id', 
 					'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
 					'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
 					'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
@@ -131,7 +131,10 @@ function ciniki_customers_get($ciniki) {
 //					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
 //					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
-				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
+				'utctotz'=>array(
+                    'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    ), 
 				),
 			));
 		if( $rc['stat'] != 'ok' ) {
@@ -179,7 +182,10 @@ function ciniki_customers_get($ciniki) {
 //					'dealer_status_text'=>array('0'=>'Non-Dealer', '5'=>'Prospect', '10'=>'Active', '60'=>'Suspended'),
 //					'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
 					),
-				'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
+				'utctotz'=>array(
+                    'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    ), 
 				),
 			));
 		if( $rc['stat'] != 'ok' ) {

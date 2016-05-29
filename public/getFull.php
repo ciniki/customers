@@ -23,6 +23,7 @@ function ciniki_customers_getFull($ciniki) {
 		'dealer_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Categories'),
 		'distributor_categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Categories'),
 		'sales_reps'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sales Reps'),
+		'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -348,6 +349,39 @@ function ciniki_customers_getFull($ciniki) {
 			$customer['num_children'] = 0;
 		}
 	}
+
+	//
+	// Get images
+	//
+	if( isset($args['images']) && $args['images'] == 'yes' ) {
+		$strsql = "SELECT id, name, image_id, webflags "
+			. "FROM ciniki_customer_images "
+			. "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+			. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'images', 'fname'=>'id', 'name'=>'image',
+				'fields'=>array('id', 'name', 'image_id', 'webflags')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['images']) ) {
+			$customer['images'] = $rc['images'];
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheThumbnail');
+			foreach($customer['images'] as $inum => $img) {
+				if( isset($img['image']['image_id']) && $img['image']['image_id'] > 0 ) {
+					$rc = ciniki_images_loadCacheThumbnail($ciniki, $args['business_id'], 
+						$img['image']['image_id'], 75);
+					if( $rc['stat'] != 'ok' ) {
+						return $rc;
+					}
+					$customer['images'][$inum]['image']['image_data'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
+				}
+			}
+		}
+	}
+
 	//
 	// Get the membership seasons
 	//

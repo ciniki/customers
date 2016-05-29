@@ -213,6 +213,7 @@ function ciniki_customers_members() {
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
 			'info':{'label':'', 'aside':'yes', 'list':{
+				'eid':{'label':'Member #', 'visible':'no'},
 				'name':{'label':'Name'},
 				'company':{'label':'Company', 'visible':'no'},
 				'phone_home':{'label':'Home Phone', 'visible':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x10000000)>0?'yes':'no';}},
@@ -231,6 +232,7 @@ function ciniki_customers_members() {
 				'member_lastpaid':{'label':'Last Paid', 'visible':'no'},
 				'type':{'label':'Type'},
 				'member_categories':{'label':'Categories', 'visible':'no'},
+                'start_date':{'label':'Start', 'visible':'no'},
 				}},
 			'seasons':{'label':'Seasons', 'visible':'no', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
 				'cellClasses':['label', ''],
@@ -486,6 +488,17 @@ function ciniki_customers_members() {
 			this.list.sections.members.num_cols = 1;
 			this.list.sections.members.headerValues = null;
 		}
+
+        if( (M.curBusiness.modules['ciniki.customers'].flags&0x04000000) > 0 ) {
+            this.member.sections.membership.list.start_date.visible = 'yes';
+        } else {
+            this.member.sections.membership.list.start_date.visible = 'no';
+        }
+        if( (M.curBusiness.modules['ciniki.customers'].flags&0x010000) > 0 ) {
+            this.member.sections.info.list.eid.visible = 'yes';
+        } else {
+            this.member.sections.info.list.eid.visible = 'no';
+        }
 
 		// Season Memberships
 		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 

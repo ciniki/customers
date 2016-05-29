@@ -22,6 +22,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
 		. "ciniki_customer_images.name AS image_name, "
 		. "ciniki_customer_images.permalink AS image_permalink, "
 		. "ciniki_customer_images.description AS image_description, "
+        . "IF((ciniki_customer_images.webflags&0x02)=0x02, 'yes', 'no') AS sold, "
 		. "UNIX_TIMESTAMP(ciniki_customer_images.last_updated) AS image_last_updated "
 		. "FROM ciniki_customers "
 		. "LEFT JOIN ciniki_customer_images ON ("
@@ -42,8 +43,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
 				'image_id'=>'primary_image_id', 'image_caption'=>'primary_image_caption', 'description')),
 		array('container'=>'images', 'fname'=>'image_id', 
 			'fields'=>array('image_id', 'title'=>'image_name', 'permalink'=>'image_permalink',
-				'description'=>'image_description', 
-				'last_updated'=>'image_last_updated')),
+				'description'=>'image_description', 'sold', 'last_updated'=>'image_last_updated')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

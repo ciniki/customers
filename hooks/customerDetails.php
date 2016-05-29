@@ -54,6 +54,7 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 		. "display_name, company, department, title, salesrep_id, "
         . "phone_home, phone_cell, phone_work, phone_fax, "
         . "primary_email, alternate_email, "
+        . (isset($args['full_bio']) && $args['full_bio'] == 'yes' ? "full_bio, " : '')
 		. "status, dealer_status, distributor_status, "
 		. "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 		. "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
@@ -65,15 +66,18 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 			. ") "
 		. "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
+    $fields = array('id', 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
+        'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
+        'primary_email', 'alternate_email',
+        'status', 'dealer_status', 'distributor_status',
+        'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
+        'notes', 'birthdate');
+    if( isset($args['full_bio']) && $args['full_bio'] == 'yes' ) {
+        $fields[] = 'full_bio';
+    }
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
 		array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-			'fields'=>array('id', 'eid', 'type', 
-				'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
-                'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
-                'primary_email', 'alternate_email',
-				'status', 'dealer_status', 'distributor_status',
-				'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
-				'notes', 'birthdate')),
+            'fields'=>$fields),
 		array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
 			'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
 		));

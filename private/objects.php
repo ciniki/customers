@@ -123,7 +123,7 @@ function ciniki_customers_objects($ciniki) {
 			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
 			'name'=>array(),
 			'permalink'=>array(),
-			'webflags'=>array(),
+			'webflags'=>array('name'=>'Web Options', 'default'=>'1'),
 			'image_id'=>array('ref'=>'ciniki.images.image'),
 			'description'=>array(),
 			),

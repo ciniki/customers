@@ -4,6 +4,7 @@
 function ciniki_customers_images() {
 	this.webFlags = {
 		'1':{'name':'Visible'},
+		'2':{'name':'Sold'},
 		};
 	this.init = function() {
 		//

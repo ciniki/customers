@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// Authenticate the customer, and setup a session
+// Authenticate the customer, and setup a session.
 //
 // Returns
 // -------
@@ -56,6 +56,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 	// Allow for email address to be attached to multiple accounts
 	//
 	if( isset($rc['rows']) ) {
+        $children = array();
 		if( count($rc['rows']) > 1 ) {
 			$customer = $rc['rows'][0];
 			$customers = array();
@@ -82,7 +83,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 	}
 
 	//
-	// Check for child accounts
+	// Check for other accounts with the same email/password or child accounts
 	//
 	if( isset($ciniki['business']['modules']['ciniki.customers']['flags']) 
 		&& ($ciniki['business']['modules']['ciniki.customers']['flags']&0x200000) 
@@ -112,6 +113,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 				. "ciniki_customers.pricepoint_id "
 				. "FROM ciniki_customers "
 				. "WHERE ciniki_customers.parent_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
+		        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 //				. "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 //				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 //				. "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
@@ -127,9 +129,16 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 			}
 			if( isset($rc['rows']) ) {
 				foreach($rc['rows'] as $cust) {
-					if( !isset($customers[$cust['id']]) ) {
-						$customers[$cust['id']] = $cust;
-					}
+                    //
+                    // If the children are unable to login, add them to the children list
+                    //
+                    if( isset($settings['page-account-child-logins']) && $settings['page-account-child-logins'] == 'yes' ) {
+                        if( !isset($customers[$cust['id']]) ) {
+                            $customers[$cust['id']] = $cust;
+                        }
+                    } else {
+                        $children[$cust['id']] = $cust;
+                    }
 				}
 			}
 		}
@@ -262,9 +271,11 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
 	$_SESSION['login'] = $login;
 	$_SESSION['customer'] = $customer;
 	$_SESSION['customers'] = $customers;
+	$_SESSION['children'] = $children;
 	$ciniki['session']['login'] = $login;
 	$ciniki['session']['customer'] = $customer;
 	$ciniki['session']['customers'] = $customers;
+	$ciniki['session']['children'] = $children;
 	$ciniki['session']['business_id'] = $ciniki['request']['business_id'];
 	$ciniki['session']['change_log_id'] = $_SESSION['change_log_id'];
 	$ciniki['session']['user'] = array('id'=>'-2');
