@@ -1246,20 +1246,28 @@ function ciniki_customers_edit() {
 		}
     
         // Check if membership info collected
+        console.log('test0093');
+        console.log(M.curBusiness.modules['ciniki.customers']);
         if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
+            console.log('test8883');
+            this.edit.forms.person.membership.active = 'yes';
             this.edit.forms.person.membership.label = 'Membership';
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'yes';
             this.edit.forms.person.membership.fields.membership_length.active = 'yes';
             this.edit.forms.person.membership.fields.membership_type.active = 'yes';
+            this.edit.forms.business.membership.active = 'yes';
             this.edit.forms.business.membership.label = 'Membership';
             this.edit.forms.business.membership.fields.member_lastpaid.active = 'yes';
             this.edit.forms.business.membership.fields.membership_length.active = 'yes';
             this.edit.forms.business.membership.fields.membership_type.active = 'yes';
         } else {
+            console.log('test8823');
+            this.edit.forms.person.membership.active = 'no';
             this.edit.forms.person.membership.label = 'Status';
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'no';
             this.edit.forms.person.membership.fields.membership_length.active = 'no';
             this.edit.forms.person.membership.fields.membership_type.active = 'no';
+            this.edit.forms.business.membership.active = 'no';
             this.edit.forms.business.membership.label = 'Status';
             this.edit.forms.business.membership.fields.member_lastpaid.active = 'no';
             this.edit.forms.business.membership.fields.membership_length.active = 'no';
