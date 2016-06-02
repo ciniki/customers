@@ -187,7 +187,7 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
             $details[] = array('detail'=>array('label'=>'Fax', 'value'=>$customer['phone_fax']));
         }
     }
-	if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
+	if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) == 0 ) {
         if( isset($customer['emails']) ) {
             $emails = '';
             $comma = '';
