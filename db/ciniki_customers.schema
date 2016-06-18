@@ -14,200 +14,200 @@
 #
 # Fields
 # ------
-# id: 				The id for each customer.
-# uuid:				Universal Unique ID
+# id:                 The id for each customer.
+# uuid:                Universal Unique ID
 #
-# business_id:		The business the customer is attached to.
+# business_id:        The business the customer is attached to.
 #
-# eid:				The ID for the customer, specified by the business.  This is a field
-#					used for outside reference, no internal linking should be done with
-#					this field.
+# eid:                The ID for the customer, specified by the business.  This is a field
+#                    used for outside reference, no internal linking should be done with
+#                    this field.
 # 
-# parent_id:		The ID of the parent customer/account.  This allows for master business
-#					to be the head office, and each location the child with their own account.
+# parent_id:        The ID of the parent customer/account.  This allows for master business
+#                    to be the head office, and each location the child with their own account.
 #
-# status:			The current status of this customer.  If the status is < 40 they are
-#					still able to login via the website.
+# status:            The current status of this customer.  If the status is < 40 they are
+#                    still able to login via the website.
 #
-#					0 - unknown
-#					10 - Active
-#					40 - On Hold
-#					50 - Suspended (show in lists, quick searches, etc)
-#					60 - Deleted (Don't show by default, need to do advanced search to find
+#                    0 - unknown
+#                    10 - Active
+#                    40 - On Hold
+#                    50 - Suspended (show in lists, quick searches, etc)
+#                    60 - Deleted (Don't show by default, need to do advanced search to find
 #
-# type:				The type of customer, person or business.
+# type:                The type of customer, person or business.
 #
-#					1 - person
-#					2 - business
+#                    1 - person
+#                    2 - business
 #
-# member_status:	The membership status for the customer/member.  This is only used if the
-#					members are enabled for the business/club.
-#					
-#					0 - Not a member
-#					10 - Active Member
-#					60 - Suspended Member
+# member_status:    The membership status for the customer/member.  This is only used if the
+#                    members are enabled for the business/club.
+#                    
+#                    0 - Not a member
+#                    10 - Active Member
+#                    60 - Suspended Member
 #
-# member_lastpaid:	The UTC date and time of the last membership payment.  This is used to know
-#					who is behind or not.
+# member_lastpaid:    The UTC date and time of the last membership payment.  This is used to know
+#                    who is behind or not.
 #
-# membership_length:	The length of membership, which is used to know who is paid up and who is not.
+# membership_length:    The length of membership, which is used to know who is paid up and who is not.
 #
-#					0 - unknown
-#					10 - monthly **future**  
-#					20 - yearly
-#					60 - lifetime (no expiry)
+#                    0 - unknown
+#                    10 - monthly **future**  
+#                    20 - yearly
+#                    60 - lifetime (no expiry)
 #
-# membership_type:	The type of membership, if a member, otherwise it will be zero.
-#					
-#					10 - Regular/Individual
+# membership_type:    The type of membership, if a member, otherwise it will be zero.
+#                    
+#                    10 - Regular/Individual
 #                   20 - Student
 #                   30 - Individual
 #                   40 - Family
-#					110 - Complimentary
-#					150 - Reciprocal
+#                    110 - Complimentary
+#                    150 - Reciprocal
 #
-# dealer_status:	The dealer status for the customer/dealer.  This is only used if 
-#					the dealers are enabled.
+# dealer_status:    The dealer status for the customer/dealer.  This is only used if 
+#                    the dealers are enabled.
 #
-#					0 - Not a dealer
-#					5 - Prospect
-#					10 - Active
-#					40 - Previous
-#					60 - Suspended Dealer
+#                    0 - Not a dealer
+#                    5 - Prospect
+#                    10 - Active
+#                    40 - Previous
+#                    60 - Suspended Dealer
 #
-# distributor_status:	The distributor status for the customer/distributor.  This is only used if 
-#						the distributors are enabled.
+# distributor_status:    The distributor status for the customer/distributor.  This is only used if 
+#                        the distributors are enabled.
 #
-#						0 - Not a distributor
-#					    5 - Prospect
-#						10 - Distributor
-#					    40 - Previous
-#						60 - Suspended Distributor
+#                        0 - Not a distributor
+#                        5 - Prospect
+#                        10 - Distributor
+#                        40 - Previous
+#                        60 - Suspended Distributor
 #
-# prefix:			Dr. Mr. Ms. Miss. Mrs.
-# first:			The first name(s) of the customer.
-# middle:			The middle name(s) of the customer.
-# last:				The last name(s) of the customer.
-# suffix:			Any letters after the end of their name, Ph.D, etc.
-# display_name:		The name to be displayed in lists, invoices, etc.  This can be any combination of
-#					prefix, first, middle, last, suffix, company.  The format settings are in
-#					ciniki_customer_settings.schema.
-# display_name_format:	The format for displaying the display_name field.
+# prefix:            Dr. Mr. Ms. Miss. Mrs.
+# first:            The first name(s) of the customer.
+# middle:            The middle name(s) of the customer.
+# last:                The last name(s) of the customer.
+# suffix:            Any letters after the end of their name, Ph.D, etc.
+# display_name:        The name to be displayed in lists, invoices, etc.  This can be any combination of
+#                    prefix, first, middle, last, suffix, company.  The format settings are in
+#                    ciniki_customer_settings.schema.
+# display_name_format:    The format for displaying the display_name field.
 #
-#					company - display only the company name
-#					person - company - display person then company name
-#					company - person - display the company name then the person name
+#                    company - display only the company name
+#                    person - company - display person then company name
+#                    company - person - display the company name then the person name
 #
-# sort_name:		The name to be used for sorting purposes.
+# sort_name:        The name to be used for sorting purposes.
 #
-# company:			The company the customer is associated with.
-# department:		The department within the company.
-# title:			The title in that department.
+# company:            The company the customer is associated with.
+# department:        The department within the company.
+# title:            The title in that department.
 #
-# phone_home:		The home phone number for the customer.
-# phone_work:		The work phone number for the customer.
-# phone_cell:		The cell phone number for the customer.
-# phone_fax:		The fax number for the customer.
+# phone_home:        The home phone number for the customer.
+# phone_work:        The work phone number for the customer.
+# phone_cell:        The cell phone number for the customer.
+# phone_fax:        The fax number for the customer.
 #
 # primary_email:    The primary email address for the customer.
 # alternate_email:  The alternate email address for the customer.
 #
-# notes:			The current notes for the customer.  Any updates to notes are tracked through change_log.
+# notes:            The current notes for the customer.  Any updates to notes are tracked through change_log.
 #
-# birthdate:		The birthdate of the customer.
+# birthdate:        The birthdate of the customer.
 #
-# connection:		How did you hear about us?
+# connection:        How did you hear about us?
 # 
-# pricepoint_id:	The price point the customer/member/dealer/distributor is at.  This refers
-#					to the ciniki_product_price_points table and must be enabled in ciniki.products to work.
-#					By default the customers price point is ID 0, refering to nothing set.
+# pricepoint_id:    The price point the customer/member/dealer/distributor is at.  This refers
+#                    to the ciniki_product_price_points table and must be enabled in ciniki.products to work.
+#                    By default the customers price point is ID 0, refering to nothing set.
 #
-# salesrep_id:		The ID of the sales employee for this account.  This links to ciniki_users table.
+# salesrep_id:        The ID of the sales employee for this account.  This links to ciniki_users table.
 #
-# tax_number:		The tax number of the customer account for reporting.
-# tax_location_id:	The ID of tax location in ciniki_tax_locations for this account.  This is used
-#					for tax calculations for the online ordering.  If a tax_location_id is set in
-#					for the customer, it overrides the tax calculates in sapos based on postal/zip.
+# tax_number:        The tax number of the customer account for reporting.
+# tax_location_id:    The ID of tax location in ciniki_tax_locations for this account.  This is used
+#                    for tax calculations for the online ordering.  If a tax_location_id is set in
+#                    for the customer, it overrides the tax calculates in sapos based on postal/zip.
 #
-# reward_level:		The current reward level they are set at.  This is used by external systems.
-# sales_total:		The current amount of sales for the year, used by external systems.
-# sales_total_prev:	The last years sales amount, used by external systems.
+# reward_level:        The current reward level they are set at.  This is used by external systems.
+# sales_total:        The current amount of sales for the year, used by external systems.
+# sales_total_prev:    The last years sales amount, used by external systems.
 #
-# start_date:		The UTC date and time of the first order, typically used as a date.
+# start_date:        The UTC date and time of the first order, typically used as a date.
 #
-# webflags:			The flags to determine how the customer is shown within the website.
+# webflags:            The flags to determine how the customer is shown within the website.
 #
-#					0x01 - Member Visible (hidden by default without this set)
-#					0x02 - Dealer Visible (hidden by default without this set)
-#					0x04 - Distributor Visible (hidden by default without this set)
+#                    0x01 - Member Visible (hidden by default without this set)
+#                    0x02 - Dealer Visible (hidden by default without this set)
+#                    0x04 - Distributor Visible (hidden by default without this set)
 #
-# permalink:		The permalink for the customer/member to be displayed on the website.
-# primary_image_id:	The ID of the main image to show for the member.
-# primary_image_caption:	The caption for the primary image.
-# short_bio:		The short bio to show on the website.
-# short_description:	The short description is a combination of elements for the member that should
-#						appear in the listing on the website.  This allows for quick queries instead
-#						of building it each time the page is requested.
-# full_bio:			The full bio to show member page on the website.
+# permalink:        The permalink for the customer/member to be displayed on the website.
+# primary_image_id:    The ID of the main image to show for the member.
+# primary_image_caption:    The caption for the primary image.
+# short_bio:        The short bio to show on the website.
+# short_description:    The short description is a combination of elements for the member that should
+#                        appear in the listing on the website.  This allows for quick queries instead
+#                        of building it each time the page is requested.
+# full_bio:            The full bio to show member page on the website.
 #
-# date_added:		The UTC date and time the record was added.
-# last_updated:		The UTC date and time the record was udpated.
+# date_added:        The UTC date and time the record was added.
+# last_updated:        The UTC date and time the record was udpated.
 # 
 create table ciniki_customers (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	eid varchar(50) not null,
-	parent_id int not null,
-	status tinyint unsigned not null,
-	type tinyint unsigned not null,
-	member_status tinyint unsigned not null,
-	member_lastpaid datetime not null,
-	membership_length tinyint unsigned not null,
-	membership_type tinyint unsigned not null,
-	dealer_status tinyint unsigned not null,
-	distributor_status tinyint unsigned not null,
-	prefix varchar(10) not null,
-	first varchar(100) not null,
-	middle varchar(100) not null,
-	last varchar(100) not null,
-	suffix varchar(100) not null,
-	display_name varchar(250) not null,
-	display_name_format varchar(100) not null,
-	sort_name varchar(250) not null,
-	company varchar(100) not null,
-	department varchar(100) not null,
-	title varchar(100) not null,
-	phone_home varchar(50) not null,
-	phone_work varchar(50) not null,
-	phone_cell varchar(50) not null,
-	phone_fax varchar(50) not null,
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    eid varchar(50) not null,
+    parent_id int not null,
+    status tinyint unsigned not null,
+    type tinyint unsigned not null,
+    member_status tinyint unsigned not null,
+    member_lastpaid datetime not null,
+    membership_length tinyint unsigned not null,
+    membership_type tinyint unsigned not null,
+    dealer_status tinyint unsigned not null,
+    distributor_status tinyint unsigned not null,
+    prefix varchar(10) not null,
+    first varchar(100) not null,
+    middle varchar(100) not null,
+    last varchar(100) not null,
+    suffix varchar(100) not null,
+    display_name varchar(250) not null,
+    display_name_format varchar(100) not null,
+    sort_name varchar(250) not null,
+    company varchar(100) not null,
+    department varchar(100) not null,
+    title varchar(100) not null,
+    phone_home varchar(50) not null,
+    phone_work varchar(50) not null,
+    phone_cell varchar(50) not null,
+    phone_fax varchar(50) not null,
     primary_email varchar(255) not null,
     alternate_email varchar(255) not null,
-	notes varchar(6000) not null,
-	birthdate date not null,
-	connection varchar(250) not null,
-	pricepoint_id int not null,
-	salesrep_id int not null,
-	tax_number varchar(50) not null,
-	tax_location_id int not null,
-	reward_level varchar(50) not null,
-	sales_total varchar(50) not null,
-	sales_total_prev varchar(50) not null,
-	start_date datetime not null,
-	webflags tinyint unsigned not null,
-	permalink varchar(250) not null,
-	primary_image_id int not null,
-	primary_image_caption varchar(250) not null,
-	short_bio varchar(1000) not null,
-	short_description varchar(2000) not null,
-	full_bio varchar(20000) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index (uuid, business_id),
-	index (first, middle, last),
-	index (company),
-	index (eid),
-	index sync (business_id, uuid, last_updated)
+    notes varchar(6000) not null,
+    birthdate date not null,
+    connection varchar(250) not null,
+    pricepoint_id int not null,
+    salesrep_id int not null,
+    tax_number varchar(50) not null,
+    tax_location_id int not null,
+    reward_level varchar(50) not null,
+    sales_total varchar(50) not null,
+    sales_total_prev varchar(50) not null,
+    start_date datetime not null,
+    webflags tinyint unsigned not null,
+    permalink varchar(250) not null,
+    primary_image_id int not null,
+    primary_image_caption varchar(250) not null,
+    short_bio varchar(1000) not null,
+    short_description varchar(2000) not null,
+    full_bio text not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid, business_id),
+    index (first, middle, last),
+    index (company),
+    index (eid),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.22';
