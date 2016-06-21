@@ -9,13 +9,13 @@
 //
 function ciniki_customers_web_customerDetails(&$ciniki, $settings, $business_id, $customer_id) {
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
-	$rc = ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
-		array('addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
+    $rc = ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
+        array('addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	return $rc;
+    return $rc;
 }
 ?>

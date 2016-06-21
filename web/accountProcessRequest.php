@@ -31,24 +31,24 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
         if( isset($_POST['action']) && $_POST['action'] == 'update' 
             && isset($ciniki['session']['customer']['id']) && $ciniki['session']['customer']['id'] > 0 
             ) {
-			//
-			// Check if customer wants to change their password
-			//
-			if( isset($_POST['oldpassword']) && $_POST['oldpassword'] != '' 
-				&& isset($_POST['newpassword']) && $_POST['newpassword'] != '' 
-				&& (!isset($settings['page-account-password-change']) 
-					|| $settings['page-account-password-change'] == 'yes')
-				) {
-				ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'changePassword');
-				$rc = ciniki_customers_web_changePassword($ciniki, $ciniki['request']['business_id'], 
-					$_POST['oldpassword'], $_POST['newpassword']);
-				if( $rc['stat'] != 'ok' ) {
+            //
+            // Check if customer wants to change their password
+            //
+            if( isset($_POST['oldpassword']) && $_POST['oldpassword'] != '' 
+                && isset($_POST['newpassword']) && $_POST['newpassword'] != '' 
+                && (!isset($settings['page-account-password-change']) 
+                    || $settings['page-account-password-change'] == 'yes')
+                ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'changePassword');
+                $rc = ciniki_customers_web_changePassword($ciniki, $ciniki['request']['business_id'], 
+                    $_POST['oldpassword'], $_POST['newpassword']);
+                if( $rc['stat'] != 'ok' ) {
                     $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$rc['err']['msg']);
-				} else {
+                } else {
                     $page['blocks'][] = array('type'=>'formmessage', 'level'=>'success', 'message'=>'Your password has been updated.');
                     $display_form = 'no';
-				}
-			}
+                }
+            }
         }
        
         if( $display_form == 'yes' ) {
@@ -144,6 +144,6 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
         $page['blocks'][] = array('type'=>'content', 'title'=>'Switch Account', 'html'=>$content);
     }
 
-	return array('stat'=>'ok', 'page'=>$page);
+    return array('stat'=>'ok', 'page'=>$page);
 }
 ?>

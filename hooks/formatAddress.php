@@ -7,8 +7,8 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:			The business ID to check the session user against.
-// method:				The requested method.
+// business_id:         The business ID to check the session user against.
+// method:              The requested method.
 //
 // Returns
 // -------
@@ -54,6 +54,6 @@ function ciniki_customers_hooks_formatAddress($ciniki, $business_id, $args) {
         $joined_address .= "\n" . $args['address']['country'];
     }
 
-	return array('stat'=>'ok', 'label'=>$label, 'address'=>$joined_address);
+    return array('stat'=>'ok', 'label'=>$label, 'address'=>$joined_address);
 }
 ?>

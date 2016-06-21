@@ -5,38 +5,38 @@
 #
 # Fields
 # -------
-# id:				The ID of the season.
-# uuid:				The Universal Unique ID for the season.
-# business_id:		The ID of the business the season is attached to.
+# id:               The ID of the season.
+# uuid:             The Universal Unique ID for the season.
+# business_id:      The ID of the business the season is attached to.
 #
-# season_id:		The ID of the season.
-# customer_id:		The ID of the customer.
+# season_id:        The ID of the season.
+# customer_id:      The ID of the customer.
 #
-# status:			The current status of the customers membership for the season.
+# status:           The current status of the customers membership for the season.
 #
-#					0 - Unknown
-#					10 - Active
-#					60 - Removed
+#                   0 - Unknown
+#                   10 - Active
+#                   60 - Removed
 #
-# date_paid:		The date the customer paid for their membership.
+# date_paid:        The date the customer paid for their membership.
 #
-# notes:			Any notes about this customers membership for this season.
+# notes:            Any notes about this customers membership for this season.
 #
 # date_added:       The UTC date and time the thread was added.
 # last_updated:     The UTC date and time the thread was last updated.
 #
 create table ciniki_customer_season_members (
-	id bigint not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	season_id int not null,
-	customer_id int not null,
-	status tinyint unsigned not null,
-	date_paid date not null,
-	notes varchar(1000) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index (season_id, customer_id),
-	index sync (business_id, uuid, last_updated)
+    id bigint not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    season_id int not null,
+    customer_id int not null,
+    status tinyint unsigned not null,
+    date_paid date not null,
+    notes varchar(1000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (season_id, customer_id),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

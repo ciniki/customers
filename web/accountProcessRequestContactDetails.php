@@ -309,6 +309,6 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
     }
     $form .= "</div>";
 
-	return array('stat'=>'ok', 'updated'=>$updated, 'form'=>$form, 'customer'=>$customer, 'email'=>$email, 'address'=>$address, 'errors'=>$errors, 'error_msg'=>$error_msg);
+    return array('stat'=>'ok', 'updated'=>$updated, 'form'=>$form, 'customer'=>$customer, 'email'=>$email, 'address'=>$address, 'errors'=>$errors, 'error_msg'=>$error_msg);
 }
 ?>

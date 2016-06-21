@@ -45,6 +45,6 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
         'selected'=>'no',
         'url'=>$ciniki['request']['base_url'] . '/account/logout');
 
-	return array('stat'=>'ok', 'submenu'=>$submenu);
+    return array('stat'=>'ok', 'submenu'=>$submenu);
 }
 ?>

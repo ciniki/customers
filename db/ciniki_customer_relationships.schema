@@ -6,60 +6,60 @@
 #
 # Fields
 # ------
-# id: 					The id for each customer relationship.
+# id:                   The id for each customer relationship.
 #
-# uuid:					The Universal Unique ID for ech relationship.
+# uuid:                 The Universal Unique ID for ech relationship.
 #
-# business_id:			The business the customer is attached to.
+# business_id:          The business the customer is attached to.
 #
-# customer_id:			The ID of the customer to whom the related_id is
-#						related to.
+# customer_id:          The ID of the customer to whom the related_id is
+#                       related to.
 # 
-# relationship_type:	The possible relationships are:
+# relationship_type:    The possible relationships are:
 #
-#						0 - unknown
-#						10 - business owner
-#						11 - business partner
-#						30 - friend
-#						40 - relative
-#						41 - parent
-#						42 - step-parent
-#						43 - parent-in-law
-#						44 - spouse
-#						45 - sibling
-#						46 - step-sibling
-#						47 - sibling-in-law
+#                       0 - unknown
+#                       10 - business owner
+#                       11 - business partner
+#                       30 - friend
+#                       40 - relative
+#                       41 - parent
+#                       42 - step-parent
+#                       43 - parent-in-law
+#                       44 - spouse
+#                       45 - sibling
+#                       46 - step-sibling
+#                       47 - sibling-in-law
 #
-# 						When the reverse of a relationship should be used in the API,
-#						for example "child of" then a negative relationship_type should be sent (-41). 
-#						The negative indicates the reversal of the relationship_role.  Relationships
-#						are always stores with the dominant customer as the customer_id and the 
-#						related_id as the younger/submissive customer.  In roles like spouse, there
-#						is now difference.
+#                       When the reverse of a relationship should be used in the API,
+#                       for example "child of" then a negative relationship_type should be sent (-41). 
+#                       The negative indicates the reversal of the relationship_role.  Relationships
+#                       are always stores with the dominant customer as the customer_id and the 
+#                       related_id as the younger/submissive customer.  In roles like spouse, there
+#                       is now difference.
 #
-# related_id:			The ID of the customer who is related to customer_id.
+# related_id:           The ID of the customer who is related to customer_id.
 #
-# date_started:			The date the relationship started.  Used for marriages/divorces, etc.
-# date_ended:			The date the relationship ended.
+# date_started:         The date the relationship started.  Used for marriages/divorces, etc.
+# date_ended:           The date the relationship ended.
 #
-# notes:				Any notes about the relationship.
+# notes:                Any notes about the relationship.
 #
-# date_added:			The UTC date and time the record was added.
-# last_updated:			The UTC date and time the record was last updated.
+# date_added:           The UTC date and time the record was added.
+# last_updated:         The UTC date and time the record was last updated.
 #
 create table ciniki_customer_relationships (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	customer_id int not null,
-	relationship_type tinyint unsigned not null,
-	related_id int not null,
-	date_started date not null,
-	date_ended date not null,
-	notes varchar(6000) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index (business_id, customer_id, relationship_type, related_id),
-	unique index (uuid, customer_id)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    customer_id int not null,
+    relationship_type tinyint unsigned not null,
+    related_id int not null,
+    date_started date not null,
+    date_ended date not null,
+    notes varchar(6000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (business_id, customer_id, relationship_type, related_id),
+    unique index (uuid, customer_id)
 ) ENGINE='InnoDB', COMMENT='v1.02';

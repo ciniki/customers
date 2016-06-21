@@ -7,8 +7,8 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:			The business ID to check the session user against.
-// method:				The requested method.
+// business_id:         The business ID to check the session user against.
+// method:              The requested method.
 //
 // Returns
 // -------
@@ -16,9 +16,9 @@
 //
 function ciniki_customers_hooks_customerLookup($ciniki, $business_id, $args) {
 
-	if( !isset($args['email']) || $args['email'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2979', 'msg'=>'No customer email specified'));
-	}
+    if( !isset($args['email']) || $args['email'] == '' ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2979', 'msg'=>'No customer email specified'));
+    }
 
     $strsql = "SELECT customer_id, email "
         . "FROM ciniki_customer_emails "
@@ -36,6 +36,6 @@ function ciniki_customers_hooks_customerLookup($ciniki, $business_id, $args) {
         return $rc;
     }
 
-	return array('stat'=>'noexist');
+    return array('stat'=>'noexist');
 }
 ?>

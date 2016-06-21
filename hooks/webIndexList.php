@@ -7,21 +7,21 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:		The ID of the business to get events for.
+// business_id:     The ID of the business to get events for.
 //
 // Returns
 // -------
 //
 function ciniki_customers_hooks_webIndexList($ciniki, $business_id, $args) {
 
-	$objects = array();
+    $objects = array();
 
     //
     // Get the list of members that should be in the index
     //
     $strsql = "SELECT CONCAT('ciniki.customers.members.', id) AS oid, 'ciniki.customers.members' AS object, id AS object_id "
         . "FROM ciniki_customers "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
         . "AND member_status = 10 "
         . "AND (webflags&0x01) = 0x01 "
         . "";
@@ -40,7 +40,7 @@ function ciniki_customers_hooks_webIndexList($ciniki, $business_id, $args) {
     //
     $strsql = "SELECT CONCAT('ciniki.customers.dealers.', id) AS oid, 'ciniki.customers.dealers' AS object, id AS object_id "
         . "FROM ciniki_customers "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
         . "AND (webflags&0x02) = 0x02 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -58,7 +58,7 @@ function ciniki_customers_hooks_webIndexList($ciniki, $business_id, $args) {
     //
     $strsql = "SELECT CONCAT('ciniki.customers.distributors.', id) AS oid, 'ciniki.customers.distributors' AS object, id AS object_id "
         . "FROM ciniki_customers "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
         . "AND (webflags&0x04) = 0x04 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -71,6 +71,6 @@ function ciniki_customers_hooks_webIndexList($ciniki, $business_id, $args) {
         $objects = array_replace($objects, $rc['objects']);
     }
 
-	return array('stat'=>'ok', 'objects'=>$objects);
+    return array('stat'=>'ok', 'objects'=>$objects);
 }
 ?>

@@ -11,7 +11,7 @@
 // -------
 //
 function ciniki_customers_templates_halfpage($ciniki, $business_id, $categories, $args) {
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'templates', 'fullpage');
-	return ciniki_customers_templates_fullpage($ciniki, $business_id, $categories, $args, 'half');	
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'templates', 'fullpage');
+    return ciniki_customers_templates_fullpage($ciniki, $business_id, $categories, $args, 'half');  
 }
 ?>

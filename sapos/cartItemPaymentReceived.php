@@ -12,27 +12,27 @@
 //
 function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $customer, $args) {
 
-	if( !isset($args['object']) || $args['object'] == '' 
-		|| !isset($args['object_id']) || $args['object_id'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3225', 'msg'=>'No item specified.'));
-	}
+    if( !isset($args['object']) || $args['object'] == '' 
+        || !isset($args['object_id']) || $args['object_id'] == '' ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3225', 'msg'=>'No item specified.'));
+    }
 
-	if( !isset($args['invoice_id']) || $args['invoice_id'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3226', 'msg'=>'No item specified.'));
-	}
+    if( !isset($args['invoice_id']) || $args['invoice_id'] == '' ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3226', 'msg'=>'No item specified.'));
+    }
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 
-	//
-	// Get the business settings
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-	$rc = ciniki_businesses_intlSettings($ciniki, $business_id);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$intl_timezone = $rc['settings']['intl-default-timezone'];
+    //
+    // Get the business settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
     $dt = new DateTime('now', new DateTimeZone($intl_timezone));
 
     if( $args['object'] == 'ciniki.customers.membership' ) {
@@ -151,6 +151,6 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
         }
     }
 
-	return array('stat'=>'ok');
+    return array('stat'=>'ok');
 }
 ?>

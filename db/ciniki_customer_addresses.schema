@@ -10,66 +10,66 @@
 #
 # Fields
 # ------
-# id:				The id of the address.
+# id:               The id of the address.
 #
-# uuid:				The Universal Unique ID for the address.
+# uuid:             The Universal Unique ID for the address.
 #
-# business_id:		The business the customer address is attached to.
+# business_id:      The business the customer address is attached to.
 #
-# customer_id:		The customer the address is attached to.
+# customer_id:      The customer the address is attached to.
 #
-# flags:			The flags field is a set of bit flags for
-#					determining how the address should be used.  
-#					One address can be shipping, billing, home and work.
+# flags:            The flags field is a set of bit flags for
+#                   determining how the address should be used.  
+#                   One address can be shipping, billing, home and work.
 #
-#					0x01 - shipping (use this address for shipping)
-#					0x02 - billing
-#					0x04 - mailing (use for postal mailings, newsletters)
-#					0x08 - public (used on website)
-#					0x10 - home
-#					0x20 - work
-#					0x40 - unused
-#					0x80 - other
+#                   0x01 - shipping (use this address for shipping)
+#                   0x02 - billing
+#                   0x04 - mailing (use for postal mailings, newsletters)
+#                   0x08 - public (used on website)
+#                   0x10 - home
+#                   0x20 - work
+#                   0x40 - unused
+#                   0x80 - other
 #
-# address1:			The first line of the address
-# address2:			The second line of the address (suite #, etc)
+# address1:         The first line of the address
+# address2:         The second line of the address (suite #, etc)
 #
-# city:				The city name for the address.
-# province:			The province or state for the address.
-# postal:			The postal or zip code for the address.
-# country:			The country the address is located in.
+# city:             The city name for the address.
+# province:         The province or state for the address.
+# postal:           The postal or zip code for the address.
+# country:          The country the address is located in.
 #
-# phone:			The phone number used to assist in deliveries if required.
+# phone:            The phone number used to assist in deliveries if required.
 #
-# notes:			The notes for the address.
+# notes:            The notes for the address.
 #
-# latitude:			The latitude coordinate of the address.
-# longitude:		The longitude coordinate of the address.
-#					
-# date_added:		The date and time the record was added.
-# last_updated:		The date and time the record was last updated.
+# latitude:         The latitude coordinate of the address.
+# longitude:        The longitude coordinate of the address.
+#                   
+# date_added:       The date and time the record was added.
+# last_updated:     The date and time the record was last updated.
 #
 create table ciniki_customer_addresses (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	customer_id int not null,
-	flags tinyint unsigned not null,
-	address1 varchar(100) not null,
-	address2 varchar(100) not null,
-	city varchar(100) not null,
-	province varchar(100) not null, 
-	postal varchar(10) not null,
-	country varchar(50) not null,
-	latitude decimal(18,12) not null,
-	longitude decimal(18,12) not null,
-	phone varchar(50) not null,
-	notes varchar(6000) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index (uuid, customer_id),
-	index (city, province, country),
-	index (postal),
-	index sync (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    customer_id int not null,
+    flags tinyint unsigned not null,
+    address1 varchar(100) not null,
+    address2 varchar(100) not null,
+    city varchar(100) not null,
+    province varchar(100) not null, 
+    postal varchar(10) not null,
+    country varchar(50) not null,
+    latitude decimal(18,12) not null,
+    longitude decimal(18,12) not null,
+    phone varchar(50) not null,
+    notes varchar(6000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid, customer_id),
+    index (city, province, country),
+    index (postal),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.06';

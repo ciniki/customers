@@ -5,7 +5,7 @@
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// user_id:         The user making the request
 // 
 // Returns
 // -------
@@ -13,15 +13,15 @@
 //
 function ciniki_customers_customerUpdateName(&$ciniki, $business_id, $customer, $customer_id, $args) {
 
-	//
-	// Get the settings for customer module
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
+    //
+    // Get the settings for customer module
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
     $rc = ciniki_customers_getSettings($ciniki, $business_id); 
-	if( $rc['stat'] != 'ok' ) {	
-		return $rc;
-	}
-	$settings = $rc['settings'];
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    $settings = $rc['settings'];
 
     if( isset($args['display_name_format']) ) {
         $customer['display_name_format'] = $args['display_name_format'];
@@ -114,11 +114,11 @@ function ciniki_customers_customerUpdateName(&$ciniki, $business_id, $customer, 
         $rsp['sort_name'] = $sort_person_name;
     }
    
-   	if( isset($rsp['display_name']) && $rsp['display_name'] != '' ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-		$rsp['permalink'] = ciniki_core_makePermalink($ciniki, $rsp['display_name']);
-	}
+    if( isset($rsp['display_name']) && $rsp['display_name'] != '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $rsp['permalink'] = ciniki_core_makePermalink($ciniki, $rsp['display_name']);
+    }
 
-	return $rsp;
+    return $rsp;
 }
 ?>

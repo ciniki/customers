@@ -13,10 +13,10 @@
 //
 function ciniki_customers_sapos_cartItemLookup($ciniki, $business_id, $customer, $args) {
 
-	if( !isset($args['object']) || $args['object'] == '' 
-		|| !isset($args['object_id']) || $args['object_id'] == '' ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3229', 'msg'=>'No customer specified.'));
-	}
+    if( !isset($args['object']) || $args['object'] == '' 
+        || !isset($args['object_id']) || $args['object_id'] == '' ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3229', 'msg'=>'No customer specified.'));
+    }
 
     //
     // Get the customer settings
@@ -30,10 +30,10 @@ function ciniki_customers_sapos_cartItemLookup($ciniki, $business_id, $customer,
 
     $types = array('10'=>'Regular', '20'=>'Student', '30'=>'Individual', '40'=>'Family', 'lifetime'=>'Lifetime');
 
-	//
-	// Lookup the requested course offering if specified along with a price_id
-	//
-	if( $args['object'] == 'ciniki.customers.membership' ) {
+    //
+    // Lookup the requested course offering if specified along with a price_id
+    //
+    if( $args['object'] == 'ciniki.customers.membership' ) {
         $mtype = $args['object_id'];
         if( isset($customer_settings["membership-type-$mtype-active"]) && $customer_settings["membership-type-$mtype-active"] == 'yes' 
             && isset($customer_settings["membership-type-$mtype-price"]) && $customer_settings["membership-type-$mtype-price"] > 0
@@ -57,8 +57,8 @@ function ciniki_customers_sapos_cartItemLookup($ciniki, $business_id, $customer,
         else {
             return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3227', 'msg'=>'No item specified.'));
         }
-	}
+    }
 
-	return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3228', 'msg'=>'No item specified.'));
+    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3228', 'msg'=>'No item specified.'));
 }
 ?>

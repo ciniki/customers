@@ -11,34 +11,34 @@
 #
 # Fields
 # ------
-# id: 				The unique id number for each price point in the database.
-# uuid:				The Universal Unique ID.
+# id:               The unique id number for each price point in the database.
+# uuid:             The Universal Unique ID.
 #
-# business_id:		The business the price point is attached to.  
+# business_id:      The business the price point is attached to.  
 # 
-# name:				The name of this level
+# name:             The name of this level
 #
-# code:				The code for the price point.  This can be used to sync with other systems.
+# code:             The code for the price point.  This can be used to sync with other systems.
 #
-# sequence:			The order this price level
+# sequence:         The order this price level
 #
-# flags:			The options for this price level **future**
+# flags:            The options for this price level **future**
 #
-#					0x01 - Find next available price if pricepoint not set.
+#                   0x01 - Find next available price if pricepoint not set.
 #
-# date_added:			The UTC date and time the price was added to the database.
-# last_updated:			The UTC date and time of the last update.
+# date_added:           The UTC date and time the price was added to the database.
+# last_updated:         The UTC date and time of the last update.
 #
 create table ciniki_customer_pricepoints (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	name varchar(150) not null,
-	code varchar(150) not null,
-	sequence tinyint unsigned not null,
-	flags tinyint unsigned not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index sync (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    name varchar(150) not null,
+    code varchar(150) not null,
+    sequence tinyint unsigned not null,
+    flags tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

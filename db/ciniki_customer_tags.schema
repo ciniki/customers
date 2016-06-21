@@ -5,43 +5,43 @@
 #
 # Fields
 # -------
-# id:				The ID of the tag.
-# uuid:				The Universal Unique ID for the tag.
-# business_id:		The ID of the business the customer is attached to.
+# id:               The ID of the tag.
+# uuid:             The Universal Unique ID for the tag.
+# business_id:      The ID of the business the customer is attached to.
 #
-# customer_id:		The ID of the customer in ciniki_customers table.
+# customer_id:      The ID of the customer in ciniki_customers table.
 #
-# tag_type:			The type of tag, which is how it will be used.  This allows
-#					these tags to be used for multiple purposes.
-#	
-#					0 - unknown
-#					10 - Customer Category 
-#					20 - Customer Tag 
-#					40 - Member Category
-#					41 - Member Tags *future*
-#					60 - Dealer Category
-#					61 - Dealer Tags *future*
-#					80 - Distributor Category
-#					81 - Distributor Tags *future*
+# tag_type:         The type of tag, which is how it will be used.  This allows
+#                   these tags to be used for multiple purposes.
+#   
+#                   0 - unknown
+#                   10 - Customer Category 
+#                   20 - Customer Tag 
+#                   40 - Member Category
+#                   41 - Member Tags *future*
+#                   60 - Dealer Category
+#                   61 - Dealer Tags *future*
+#                   80 - Distributor Category
+#                   81 - Distributor Tags *future*
 #
-# tag_name:			The name of the tag, list or category.
+# tag_name:         The name of the tag, list or category.
 #
-# permalink:		The permalink for the tag_name.
+# permalink:        The permalink for the tag_name.
 #
 # date_added:       The UTC date and time the thread was added.
 # last_updated:     The UTC date and time the thread was last updated.
 #
 create table ciniki_customer_tags (
-	id bigint not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	customer_id int not null,
-	tag_type tinyint unsigned not null,
-	tag_name varchar(150) not null,
-	permalink varchar(150) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index (customer_id, tag_type, tag_name),
-	index sync (business_id, uuid, last_updated)
+    id bigint not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    customer_id int not null,
+    tag_type tinyint unsigned not null,
+    tag_name varchar(150) not null,
+    permalink varchar(150) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (customer_id, tag_type, tag_name),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

@@ -7,33 +7,33 @@
 #
 # Fields
 # -------
-# id:				The ID of the season.
-# uuid:				The Universal Unique ID for the season.
-# business_id:		The ID of the business the season is attached to.
+# id:               The ID of the season.
+# uuid:             The Universal Unique ID for the season.
+# business_id:      The ID of the business the season is attached to.
 #
-# name:				The name of the season, must be unique within the business.
+# name:             The name of the season, must be unique within the business.
 #
-# start_date:		The first day of the season.
-# end_date:			The last day of the season.
+# start_date:       The first day of the season.
+# end_date:         The last day of the season.
 #
-# flags:			The options for each season.
+# flags:            The options for each season.
 #
-#					0x01 - Use this as the current tracking season.
-#					0x02 - The season is open for adding memberships.
+#                   0x01 - Use this as the current tracking season.
+#                   0x02 - The season is open for adding memberships.
 #
 # date_added:       The UTC date and time the thread was added.
 # last_updated:     The UTC date and time the thread was last updated.
 #
 create table ciniki_customer_seasons (
-	id bigint not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	name varchar(150) not null,
-	start_date date not null,
-	end_date date not null,
-	flags tinyint unsigned not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index sync (business_id, uuid, last_updated)
+    id bigint not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    name varchar(150) not null,
+    start_date date not null,
+    end_date date not null,
+    flags tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

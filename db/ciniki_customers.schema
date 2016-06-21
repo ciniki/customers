@@ -84,74 +84,109 @@
 #                        40 - Previous
 #                        60 - Suspended Distributor
 #
-# prefix:            Dr. Mr. Ms. Miss. Mrs.
-# first:            The first name(s) of the customer.
-# middle:            The middle name(s) of the customer.
-# last:                The last name(s) of the customer.
-# suffix:            Any letters after the end of their name, Ph.D, etc.
-# display_name:        The name to be displayed in lists, invoices, etc.  This can be any combination of
-#                    prefix, first, middle, last, suffix, company.  The format settings are in
-#                    ciniki_customer_settings.schema.
-# display_name_format:    The format for displaying the display_name field.
+# prefix:                   Dr. Mr. Ms. Miss. Mrs.
+# first:                    The first name(s) of the customer.
+# middle:                   The middle name(s) of the customer.
+# last:                     The last name(s) of the customer.
+# suffix:                   Any letters after the end of their name, Ph.D, etc.
+# display_name:             The name to be displayed in lists, invoices, etc.  This can be any combination of
+#                           prefix, first, middle, last, suffix, company.  The format settings are in
+#                           ciniki_customer_settings.schema.
+# display_name_format:      The format for displaying the display_name field.
 #
-#                    company - display only the company name
-#                    person - company - display person then company name
-#                    company - person - display the company name then the person name
+#                           company - display only the company name
+#                           person - company - display person then company name
+#                           company - person - display the company name then the person name
 #
-# sort_name:        The name to be used for sorting purposes.
+# sort_name:            The name to be used for sorting purposes.
 #
-# company:            The company the customer is associated with.
-# department:        The department within the company.
-# title:            The title in that department.
+# company:              The company the customer is associated with.
+# department:           The department within the company.
+# title:                The title in that department.
 #
-# phone_home:        The home phone number for the customer.
-# phone_work:        The work phone number for the customer.
-# phone_cell:        The cell phone number for the customer.
-# phone_fax:        The fax number for the customer.
+# phone_home:           The home phone number for the customer.
+# phone_work:           The work phone number for the customer.
+# phone_cell:           The cell phone number for the customer.
+# phone_fax:            The fax number for the customer.
 #
-# primary_email:    The primary email address for the customer.
-# alternate_email:  The alternate email address for the customer.
+# primary_email:        The primary email address for the customer.
+# alternate_email:      The alternate email address for the customer.
+#
+# shipping_address1:    The first line of the shipping address.
+# shipping_address2:    The second line of the shipping address.
+# shipping_city:        The city for the shipping address.
+# shipping_province:    The province/state for the shipping address.
+# shipping_postal:      The postal/zip cod for the shipping address.
+# shipping_country:     The country for the shipping address.
+#
+# mailing_address1:    The first line of the mailing address.
+# mailing_address2:    The second line of the mailing address.
+# mailing_city:        The city for the mailing address.
+# mailing_province:    The province/state for the mailing address.
+# mailing_postal:      The postal/zip cod for the mailing address.
+# mailing_country:     The country for the mailing address.
+#
+# flags:            The flags for the customer.
+#
+#                       0x01 - Login allowed to website
+#                       0x02 - Send no emails
+#                       0x04 - 
+#                       0x08 - 
+#                       0x10 - Primary Email Public
+#                       0x20 - Secondary Email Public
+#                       0x40 - Tertiary Email Public
+#                       0x80 - 
+#                       0x0100 - Shipping public
+#                       0x0200 - Billing public
+#                       0x0400 - 
+#                       0x0800 - 
+#                       0x1000 - Home phone public
+#                       0x2000 - Work phone public
+#                       0x4000 - Cell phone public
+#                       0x8000 - Fax phone public
+#
+#               
 #
 # notes:            The current notes for the customer.  Any updates to notes are tracked through change_log.
 #
 # birthdate:        The birthdate of the customer.
 #
-# connection:        How did you hear about us?
+# connection:       How did you hear about us?
 # 
 # pricepoint_id:    The price point the customer/member/dealer/distributor is at.  This refers
-#                    to the ciniki_product_price_points table and must be enabled in ciniki.products to work.
-#                    By default the customers price point is ID 0, refering to nothing set.
+#                   to the ciniki_product_price_points table and must be enabled in ciniki.products to work.
+#                   By default the customers price point is ID 0, refering to nothing set.
 #
-# salesrep_id:        The ID of the sales employee for this account.  This links to ciniki_users table.
+# salesrep_id:      The ID of the sales employee for this account.  This links to ciniki_users table.
 #
-# tax_number:        The tax number of the customer account for reporting.
-# tax_location_id:    The ID of tax location in ciniki_tax_locations for this account.  This is used
-#                    for tax calculations for the online ordering.  If a tax_location_id is set in
-#                    for the customer, it overrides the tax calculates in sapos based on postal/zip.
+# tax_number:       The tax number of the customer account for reporting.
+# tax_location_id:  The ID of tax location in ciniki_tax_locations for this account.  This is used
+#                   for tax calculations for the online ordering.  If a tax_location_id is set in
+#                   for the customer, it overrides the tax calculates in sapos based on postal/zip.
 #
-# reward_level:        The current reward level they are set at.  This is used by external systems.
-# sales_total:        The current amount of sales for the year, used by external systems.
-# sales_total_prev:    The last years sales amount, used by external systems.
+# reward_level:     The current reward level they are set at.  This is used by external systems.
+# sales_total:      The current amount of sales for the year, used by external systems.
+# sales_total_prev: The last years sales amount, used by external systems.
 #
-# start_date:        The UTC date and time of the first order, typically used as a date.
+# start_date:       The UTC date and time of the first order, typically used as a date.
 #
-# webflags:            The flags to determine how the customer is shown within the website.
+# webflags:         The flags to determine how the customer is shown within the website.
 #
-#                    0x01 - Member Visible (hidden by default without this set)
-#                    0x02 - Dealer Visible (hidden by default without this set)
-#                    0x04 - Distributor Visible (hidden by default without this set)
+#                       0x01 - Member Visible (hidden by default without this set)
+#                       0x02 - Dealer Visible (hidden by default without this set)
+#                       0x04 - Distributor Visible (hidden by default without this set)
 #
-# permalink:        The permalink for the customer/member to be displayed on the website.
-# primary_image_id:    The ID of the main image to show for the member.
+# permalink:                The permalink for the customer/member to be displayed on the website.
+# primary_image_id:         The ID of the main image to show for the member.
 # primary_image_caption:    The caption for the primary image.
-# short_bio:        The short bio to show on the website.
-# short_description:    The short description is a combination of elements for the member that should
-#                        appear in the listing on the website.  This allows for quick queries instead
-#                        of building it each time the page is requested.
-# full_bio:            The full bio to show member page on the website.
+# short_bio:                The short bio to show on the website.
+# short_description:        The short description is a combination of elements for the member that should
+#                           appear in the listing on the website.  This allows for quick queries instead
+#                           of building it each time the page is requested.
+# full_bio:                 The full bio to show member page on the website.
 #
-# date_added:        The UTC date and time the record was added.
-# last_updated:        The UTC date and time the record was udpated.
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was udpated.
 # 
 create table ciniki_customers (
     id int not null auto_increment,

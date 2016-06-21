@@ -7,93 +7,93 @@
 //
 // Info
 // ----
-// Status: 				alpha
+// Status:              alpha
 //
 // Arguments
 // ---------
 // api_key:
-// auth_token:		
-// business_id:			The business ID to create the excel file for.
-// upload_id:			The information about the file uploaded via a file form field.
-// start:				The starting row, 1 or greater.
-// size:				The number of records to process, starting with the start row.
+// auth_token:      
+// business_id:         The business ID to create the excel file for.
+// upload_id:           The information about the file uploaded via a file form field.
+// start:               The starting row, 1 or greater.
+// size:                The number of records to process, starting with the start row.
 //
 // Returns
 // -------
 // <upload id="19384992" />
 //
 function ciniki_customers_automergeUploadXLSDone($ciniki) {
-	//
-	// Find all the required and optional arguments
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
-	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Automerge Customer'), 
-		));
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$args = $rc['args'];
+    //
+    // Find all the required and optional arguments
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
+    $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Automerge Customer'), 
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $args = $rc['args'];
 
-	//
-	// Check access to business_id
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-	$ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.automergeUploadXLSDone', $args['automerge_id']);
-	if( $ac['stat'] != 'ok' ) {
-		return $ac;
-	}
+    //
+    // Check access to business_id
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
+    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.automergeUploadXLSDone', $args['automerge_id']);
+    if( $ac['stat'] != 'ok' ) {
+        return $ac;
+    }
 
-	//
-	// Turn off autocommit
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    //
+    // Turn off autocommit
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+    $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	//
-	// Remove the 
-	$inputFileName = $ciniki['config']['core']['modules_dir'] . '/customers/uploads/automerge_' . $args['automerge_id'] . '.xls';
-	unlink($inputFileName);
+    //
+    // Remove the 
+    $inputFileName = $ciniki['config']['core']['modules_dir'] . '/customers/uploads/automerge_' . $args['automerge_id'] . '.xls';
+    unlink($inputFileName);
 
-	//
-	// FIXME: Delete all blank rows
-	//
+    //
+    // FIXME: Delete all blank rows
+    //
 
 
-	//
-	// Update the information in the database
-	//
-	$strsql = "UPDATE ciniki_customer_automerges SET status = 10 "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['automerge_id']) . "' ";
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
-	$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-		return $rc;
-	}
+    //
+    // Update the information in the database
+    //
+    $strsql = "UPDATE ciniki_customer_automerges SET status = 10 "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['automerge_id']) . "' ";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+    $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        return $rc;
+    }
 
-	//
-	// Commit the update
-	//
-	$rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    //
+    // Commit the update
+    //
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	//
-	// Update the last_change date in the business modules
-	// Ignore the result, as we don't want to stop user updates if this fails.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+    //
+    // Update the last_change date in the business modules
+    // Ignore the result, as we don't want to stop user updates if this fails.
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
 
-	return array('stat'=>'ok', 'id'=>$args['automerge_id']);
+    return array('stat'=>'ok', 'id'=>$args['automerge_id']);
 }
 ?>

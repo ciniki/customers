@@ -7,7 +7,7 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:		The ID of the business to get events for.
+// business_id:     The ID of the business to get events for.
 //
 // Returns
 // -------
@@ -239,6 +239,6 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         return array('stat'=>'ok', 'object'=>$object);
     }
 
-	return array('stat'=>'ok');
+    return array('stat'=>'ok');
 }
 ?>

@@ -7,47 +7,47 @@
 #
 # Fields
 # ------
-# id: 					The id for each customer.
+# id:                   The id for each customer.
 #
-# uuid:					The Universal Unique ID.
+# uuid:                 The Universal Unique ID.
 #
-# business_id:			The business the customer is attached to.
+# business_id:          The business the customer is attached to.
 #
-# customer_id:			The customer the address is attached to.
+# customer_id:          The customer the address is attached to.
 #
-# email:				The email address for the customer.
-#					
-# password:				The password for the customer which lets them login to the website for customer 
-#						customer only documents, mailing list management, etc.
-# temp_password:		The temporary password for resets.
-# temp_password_date:	The UTC date and time the password reset was requested.
+# email:                The email address for the customer.
+#                   
+# password:             The password for the customer which lets them login to the website for customer 
+#                       customer only documents, mailing list management, etc.
+# temp_password:        The temporary password for resets.
+# temp_password_date:   The UTC date and time the password reset was requested.
 #
-# flags:				0x01 - Customer is allowed to login to website, should be set by default.
-#						0x02 - 
-#						0x04 - 
-#						0x08 - public, visible on website in member profile or other places
-# 						0x10 - Send no emails
-# 						0x20 - Secondary email, use only if first a problem **future**
+# flags:                0x01 - Customer is allowed to login to website, should be set by default.
+#                       0x02 - 
+#                       0x04 - 
+#                       0x08 - public, visible on website in member profile or other places
+#                       0x10 - Send no emails
+#                       0x20 - Secondary email, use only if first a problem **future**
 #                       0x40 - 
 #                       0x80 - 
 #
-# date_added:			The UTC date and time the record was added.
-# last_updated:			The UTC date and time the record was last updated.
+# date_added:           The UTC date and time the record was added.
+# last_updated:         The UTC date and time the record was last updated.
 #
 create table ciniki_customer_emails (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	customer_id int not null,
-	email varchar(255) not null,
-	password varchar(41) not null,
-	temp_password varchar(41) not null,
-	temp_password_date datetime not null,
-	flags tinyint unsigned not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	unique index uuid (uuid, business_id),
-	index (customer_id),
-	index sync (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    customer_id int not null,
+    email varchar(255) not null,
+    password varchar(41) not null,
+    temp_password varchar(41) not null,
+    temp_password_date datetime not null,
+    flags tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index uuid (uuid, business_id),
+    index (customer_id),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.05';
