@@ -42,7 +42,9 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
             'url'=>$ciniki['request']['base_url'] . '/account/contactdetails');
     }
 
-    if( isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes' ) {
+    if( isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes' 
+        && isset($ciniki['session']['customer']['children-allowed']) && $ciniki['session']['customer']['children-allowed'] == 'yes'
+        ) {
         $submenu[] = array('name'=>'Children', 'priority'=>300, 
             'package'=>'ciniki', 'module'=>'customers', 
             'selected'=>($ciniki['request']['page'] == 'account' 

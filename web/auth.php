@@ -30,7 +30,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     //
     $strsql = "SELECT ciniki_customers.id, parent_id, "
         . "ciniki_customers.first, ciniki_customers.last, ciniki_customers.display_name, "
-        . "ciniki_customer_emails.email, ciniki_customers.status, ciniki_customers.member_status, "
+        . "ciniki_customer_emails.email, ciniki_customers.status, ciniki_customers.member_status, ciniki_customers.membership_type, "
         . "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
         . "ciniki_customers.pricepoint_id "
         . "FROM ciniki_customer_emails, ciniki_customers "
@@ -210,6 +210,12 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
         // they can see prices if not suspended/deleted
         $customer['price_flags'] |= 0x10;
     }
+
+    //
+    // If the account holder is allowed to add children to the account, option also has to be enabled in web/account
+    //
+    $customer['children-allowed'] = 'no';
+
     //
     // Check if memberships enabled and if customer is part of current season
     //
@@ -242,9 +248,30 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
                 $customer['price_flags'] |= 0x20;
             }
         }
+        //
+        // Check if children should be allowed
+        //
+        if( isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes' 
+            && $customer['membership_type'] > 0 
+            && isset($settings['page-account-children-member-' . $customer['membership_type'] . '-update']) 
+            && $settings['page-account-children-member-' . $customer['membership_type'] . '-update'] == 'yes'
+            ) {
+            $customer['children-allowed'] = 'yes';
+        }
     } 
     elseif( $customer['member_status'] == 10 ) {
         $customer['price_flags'] |= 0x20;
+        if( $customer['membership_type'] > 0 
+            && isset($settings['page-account-children-member-' . $customer['membership_type'] . '-update']) 
+            && $settings['page-account-children-member-' . $customer['membership_type'] . '-update'] == 'yes'
+            ) {
+            $customer['children-allowed'] = 'yes';
+        }
+    }
+    elseif( isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes'
+        && isset($settings['page-account-children-member-non-update']) && $settings['page-account-children-member-non-update'] == 'yes'
+        ) {
+        $customer['children-allowed'] = 'yes';
     }
     if( $customer['dealer_status'] == 10 ) {
         $customer['price_flags'] |= 0x40;

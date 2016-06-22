@@ -47,24 +47,24 @@
 #                    10 - Active Member
 #                    60 - Suspended Member
 #
-# member_lastpaid:    The UTC date and time of the last membership payment.  This is used to know
-#                    who is behind or not.
+# member_lastpaid:      The UTC date and time of the last membership payment.  This is used to know
+#                       who is behind or not.
 #
 # membership_length:    The length of membership, which is used to know who is paid up and who is not.
 #
-#                    0 - unknown
-#                    10 - monthly **future**  
-#                    20 - yearly
-#                    60 - lifetime (no expiry)
+#                        0 - unknown
+#                       10 - monthly **future**  
+#                       20 - yearly
+#                       60 - lifetime (no expiry)
 #
 # membership_type:    The type of membership, if a member, otherwise it will be zero.
 #                    
-#                    10 - Regular/Individual
-#                   20 - Student
-#                   30 - Individual
-#                   40 - Family
-#                    110 - Complimentary
-#                    150 - Reciprocal
+#                       10 - Regular/Individual
+#                       20 - Student
+#                       30 - Individual
+#                       40 - Family
+#                      110 - Complimentary
+#                      150 - Reciprocal
 #
 # dealer_status:    The dealer status for the customer/dealer.  This is only used if 
 #                    the dealers are enabled.
