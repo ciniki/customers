@@ -226,11 +226,11 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
         }
     }
     $form .= "<div class='input first'>"
-        . "<label for='first'>First Name" . (in_array('address1', $required)?' *':'') . "</label>"
+        . "<label for='first'>First Name" . (in_array('first', $required)?' *':'') . "</label>"
         . "<input type='text' class='text' name='first' value='" . $customer['first'] . "'>"
         . "</div>";
     $form .= "<div class='input last'>"
-        . "<label for='last'>Last Name" . (in_array('address1', $required)?' *':'') . "</label>"
+        . "<label for='last'>Last Name" . (in_array('last', $required)?' *':'') . "</label>"
         . "<input type='text' class='text' name='last' value='" . $customer['last'] . "'>"
         . "</div>";
     if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {

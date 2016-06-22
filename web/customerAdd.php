@@ -18,6 +18,7 @@ function ciniki_customers_web_customerAdd(&$ciniki, $business_id, $args) {
     if( !isset($args['name']) ) { $args['name'] = ''; }
     if( !isset($args['password']) ) { $args['password'] = ''; }
     if( !isset($args['company']) ) { $args['company'] = ''; }
+    if( !isset($args['sort_name']) ) { $args['sort_name'] = ''; }
     if( !isset($args['type']) ) { $args['type'] = 1; }              // Default to person
 
     

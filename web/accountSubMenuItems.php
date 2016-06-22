@@ -14,6 +14,14 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
 
     $submenu = array();
 
+    if( isset($settings['page-account-registrations-update']) && $settings['page-account-registrations-update'] == 'yes' ) {
+        $submenu[] = array('name'=>'Registrations', 'priority'=>300, 
+            'package'=>'ciniki', 'module'=>'customers', 
+            'selected'=>($ciniki['request']['page'] == 'account' 
+                && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'registrations')?'yes':'no',
+            'url'=>$ciniki['request']['base_url'] . '/account/registrations');
+    }
+
     if( isset($ciniki['session']['customers']) && count($ciniki['session']['customers']) > 1 
 //        && (!isset($settings['page-account-child-logins']) || $settings['page-account-child-logins'] == 'yes')
         ) {
@@ -32,6 +40,14 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
             'selected'=>($ciniki['request']['page'] == 'account' 
                 && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'contactdetails')?'yes':'no',
             'url'=>$ciniki['request']['base_url'] . '/account/contactdetails');
+    }
+
+    if( isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes' ) {
+        $submenu[] = array('name'=>'Children', 'priority'=>300, 
+            'package'=>'ciniki', 'module'=>'customers', 
+            'selected'=>($ciniki['request']['page'] == 'account' 
+                && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'children')?'yes':'no',
+            'url'=>$ciniki['request']['base_url'] . '/account/children');
     }
 
     $submenu[] = array('name'=>'Change Password', 'priority'=>250, 

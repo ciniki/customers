@@ -21,9 +21,19 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
     $base_url = $args['base_url'];
 
     //
+    // Check for Children update
+    //
+    if( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'children' 
+        && (isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes')
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestChildren');
+        return ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, $business_id, $args);
+    } 
+
+    //
     // Check for change password
     //
-    if( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'changepassword' ) {
+    elseif( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'changepassword' ) {
 //        $page['breadcrumbs'][] = array('name'=>'Change Password', 'url'=>$ciniki['request']['domain_base_url'] . '/account/changepassword');
         $page['title'] = 'Change Password';
     
