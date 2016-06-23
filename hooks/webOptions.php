@@ -68,6 +68,7 @@ function ciniki_customers_hooks_webOptions(&$ciniki, $business_id, $args) {
                 array('value'=>'shortbio-blank-addressesnl-phones-emails-links', 'label'=>'Short Bio, Addresses, Phones, Emails, Links'),
                 array('value'=>'addressesnl-blank-shortbio-phones-emails-links', 'label'=>'Addresses, Short Bio, Phones, Emails, Links'),
                 array('value'=>'shortbio-blank-addressesnl-phones-links', 'label'=>'Short Bio, Addresses, Phones, Links'),
+                array('value'=>'addressesnl-phones-emails-links', 'label'=>'Short Bio, Addresses, Phones, Emails, Links'),
                 ),
             ),
         ));
@@ -101,6 +102,7 @@ function ciniki_customers_hooks_webOptions(&$ciniki, $business_id, $args) {
                 array('value'=>'shortbio-blank-addressesnl-phones-emails-links', 'label'=>'Short Bio, Addresses, Phones, Emails, Links'),
                 array('value'=>'addressesnl-blank-shortbio-phones-emails-links', 'label'=>'Addresses, Short Bio, Phones, Emails, Links'),
                 array('value'=>'shortbio-blank-addressesnl-phones-links', 'label'=>'Short Bio, Addresses, Phones, Links'),
+                array('value'=>'addressesnl-phones-emails-links', 'label'=>'Short Bio, Addresses, Phones, Emails, Links'),
                 ),
             ),
         ));
