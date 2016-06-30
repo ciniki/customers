@@ -252,9 +252,14 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
         // Check if children should be allowed
         //
         if( isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes' 
-            && $customer['membership_type'] > 0 
+            && $customer['membership_type'] > 0
             && isset($settings['page-account-children-member-' . $customer['membership_type'] . '-update']) 
             && $settings['page-account-children-member-' . $customer['membership_type'] . '-update'] == 'yes'
+            ) {
+            $customer['children-allowed'] = 'yes';
+        }
+        if( isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes' 
+            && $customer['membership_type'] == 0
             ) {
             $customer['children-allowed'] = 'yes';
         }
