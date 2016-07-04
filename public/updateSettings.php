@@ -105,6 +105,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
         'ui-colours-customer-status-40',
         'ui-colours-customer-status-50',
         'ui-colours-customer-status-60',
+        'dropbox-customerprofiles',
 //      'use-cid',
 //      'use-relationships',
 //      'use-tax-number',

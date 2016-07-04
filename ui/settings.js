@@ -113,7 +113,7 @@ function ciniki_customers_settings() {
             'dropbox':{'label':'Dropbox Profiles', 
                 'visible':function() { return (M.modFlagOn('ciniki.customers', 0x0800000000) ? 'yes' : 'hidden'); },
                 'fields':{
-                    'dropbox-artistprofiles':{'label':'Directory', 'type':'text'},
+                    'dropbox-customerprofiles':{'label':'Directory', 'type':'text'},
                 }},
 //          '_types':{'label':'Customer Types', 'type':'gridform', 'rows':8, 'cols':3, 
 //              'header':['Name', 'Form', 'Type'],
