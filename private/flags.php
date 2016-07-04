@@ -56,7 +56,7 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'33', 'name'=>'Academics')),
 //      array('flag'=>array('bit'=>'34', 'name'=>'')),
 //      array('flag'=>array('bit'=>'35', 'name'=>'')),
-//      array('flag'=>array('bit'=>'36', 'name'=>'')),
+        array('flag'=>array('bit'=>'36', 'name'=>'Dropbox')),               // Allow updates from dropbox
         );
 
     return array('stat'=>'ok', 'flags'=>$flags);

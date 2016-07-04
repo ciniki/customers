@@ -110,6 +110,11 @@ function ciniki_customers_settings() {
                 'ui-colours-customer-status-50':{'label':'Suspended', 'type':'colour'},
                 'ui-colours-customer-status-60':{'label':'Deleted', 'type':'colour'},
             }},
+            'dropbox':{'label':'Dropbox Profiles', 
+                'visible':function() { return (M.modFlagOn('ciniki.customers', 0x0800000000) ? 'yes' : 'hidden'); },
+                'fields':{
+                    'dropbox-artistprofiles':{'label':'Directory', 'type':'text'},
+                }},
 //          '_types':{'label':'Customer Types', 'type':'gridform', 'rows':8, 'cols':3, 
 //              'header':['Name', 'Form', 'Type'],
 //              'fields':[
@@ -333,14 +338,13 @@ function ciniki_customers_settings() {
     this.saveSettings = function() {
         var c = this.main.serializeForm('no');
         if( c != '' ) {
-            var rsp = M.api.postJSONCb('ciniki.customers.updateSettings', 
-                {'business_id':M.curBusinessID}, c, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    } 
-                    M.ciniki_customers_settings.main.close();
-                });
+            M.api.postJSONCb('ciniki.customers.updateSettings', {'business_id':M.curBusinessID}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                } 
+                M.ciniki_customers_settings.main.close();
+            });
         } else {
             this.main.close();
         }
