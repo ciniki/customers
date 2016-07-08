@@ -592,9 +592,9 @@ function ciniki_customers_edit() {
             this.removeLiveSearch(s, 'parent_id');
         };
         this.edit.updateCity = function(s, city, province, country) {
-            M.gE(this.panelUID + '_city').value = city;
-            M.gE(this.panelUID + '_province').value = province;
-            M.gE(this.panelUID + '_country').value = country;
+            M.gE(this.panelUID + '_city').value = unescape(city);
+            M.gE(this.panelUID + '_province').value = unescape(province);
+            M.gE(this.panelUID + '_country').value = unescape(country);
             this.removeLiveSearch(s, 'city');
         };
         this.edit.updateLabel = function(s, i, l) {
@@ -777,9 +777,9 @@ function ciniki_customers_edit() {
             }
         };
         this.address.updateCity = function(s, city, province, country) {
-            M.gE(this.panelUID + '_city').value = city;
-            M.gE(this.panelUID + '_province').value = province;
-            M.gE(this.panelUID + '_country').value = country;
+            M.gE(this.panelUID + '_city').value = unescape(city);
+            M.gE(this.panelUID + '_province').value = unescape(province);
+            M.gE(this.panelUID + '_country').value = unescape(country);
             this.removeLiveSearch(s, 'city');
         };
         this.address.addButton('save', 'Save', 'M.ciniki_customers_edit.saveAddress();');
@@ -849,7 +849,7 @@ function ciniki_customers_edit() {
             return 'M.ciniki_customers_edit.phone.updateLabel(\'' + s + '\',\'' + escape(d) + '\');';
         };
         this.phone.updateLabel = function(s, l) {
-            M.gE(this.panelUID + '_phone_label').value = l;
+            M.gE(this.panelUID + '_phone_label').value = unescape(l);
             this.removeLiveSearch(s, 'phone_label');
         };
 
