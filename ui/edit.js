@@ -1189,6 +1189,15 @@ function ciniki_customers_edit() {
         }
         this.edit.forms.person.membership.fields.membership_type.toggles = membershipType;
         this.edit.forms.business.membership.fields.membership_type.toggles = membershipType;
+
+        if( M.modFlagOn('ciniki.customers', 0x02) ) {
+            this.edit.forms.person.membership.active = 'yes';
+            this.edit.forms.business.membership.active = 'yes';
+        } else {
+            this.edit.forms.person.membership.active = 'no';
+            this.edit.forms.business.membership.active = 'no';
+        }
+
         //
         // Setup the member forms
         //
@@ -1246,7 +1255,7 @@ function ciniki_customers_edit() {
         }
     
         // Check if membership info collected
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
+        if( M.modFlagOn('ciniki.customers', 0x02) || M.modFlagOn('ciniki.customers', 0x08) ) {
             this.edit.forms.person.membership.active = 'yes';
             this.edit.forms.person.membership.label = 'Membership';
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'yes';
