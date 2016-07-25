@@ -310,6 +310,15 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
             }
         }
 
+        //
+        // Update the web index if enabled
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$customer_id));
+        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.members', 'object_id'=>$customer_id));
+        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.dealers', 'object_id'=>$customer_id));
+        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.distributors', 'object_id'=>$customer_id));
+
         //  
         // Commit the changes
         //  
@@ -322,7 +331,7 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
     //
     // Update the dropbox cursor
     //
-/*    $strsql = "INSERT INTO ciniki_customer_settings (business_id, detail_key, detail_value, date_added, last_updated) "
+    $strsql = "INSERT INTO ciniki_customer_settings (business_id, detail_key, detail_value, date_added, last_updated) "
         . "VALUES ('" . ciniki_core_dbQuote($ciniki, $business_id) . "'"
         . ", '" . ciniki_core_dbQuote($ciniki, 'dropbox-cursor') . "'"
         . ", '" . ciniki_core_dbQuote($ciniki, $new_dropbox_cursor) . "'"
@@ -337,7 +346,7 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
     }
     ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $business_id, 
         2, 'ciniki_customer_settings', 'dropbox-cursor', 'detail_value', $new_dropbox_cursor);
-    $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.setting', 'args'=>array('id'=>'dropbox-cursor')); */
+    $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.setting', 'args'=>array('id'=>'dropbox-cursor'));
 
     return array('stat'=>'ok');
 }
