@@ -67,9 +67,9 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 
     // 
-    // Owners and Employees have access to everything
+    // Resellers, Owners and Employees have access to everything
     //
-    if( ($ciniki['business']['user']['perms']&0x03) > 0 ) {
+    if( ($ciniki['business']['user']['perms']&0x103) > 0 ) {
         return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>$perms);
     }
 

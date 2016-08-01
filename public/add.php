@@ -43,13 +43,13 @@
 // province:            (optional) The province or state of the address.
 // postal:              (optional) The postal code or zip code of the address.
 // country:             (optional) The country of the address.
-// flags:               (optional) The options for the address, specifing what the 
+// address_flags:       (optional) The options for the address, specifing what the 
 //                      address should be used for.
 //              
-//                      0x01 - Shipping
-//                      0x02 - Billing
-//                      0x04 - Mailing
-//                      0x08 - Public
+//                          0x01 - Shipping
+//                          0x02 - Billing
+//                          0x04 - Mailing
+//                          0x08 - Public
 //
 // phone:               (optional) The phone number to assist in deliveries.
 // 
