@@ -73,8 +73,6 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
         $dropbox_cursor = null;
     }
 
-    $dropbox_cursor = null;
-
     //
     // Get the settings for dropbox
     //
@@ -107,6 +105,7 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
         $rc = $client->getDelta($dropbox_cursor, $customers_dir);
         if( !isset($rc['entries']) ) {
             // Nothing to update, return
+            error_log("nothing\n");
             return array('stat'=>'ok');
         }
     }
@@ -314,10 +313,10 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
         // Update the web index if enabled
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$customer_id));
-        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.members', 'object_id'=>$customer_id));
-        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.dealers', 'object_id'=>$customer_id));
-        ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.distributors', 'object_id'=>$customer_id));
+        ciniki_core_hookExec($ciniki, $business_id, 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$customer_id));
+        ciniki_core_hookExec($ciniki, $business_id, 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.members', 'object_id'=>$customer_id));
+        ciniki_core_hookExec($ciniki, $business_id, 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.dealers', 'object_id'=>$customer_id));
+        ciniki_core_hookExec($ciniki, $business_id, 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.distributors', 'object_id'=>$customer_id));
 
         //  
         // Commit the changes
