@@ -135,7 +135,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
             . "<input type='text' class='text' name='email' value='" . $email['address'] . "'>"
             . "</div>";
     } else {
-        foreach($customer['emails'] as $email) {
+/*        foreach($customer['emails'] as $email) {
             $email = $email['email'];
             $form .= "<div class='input email'>"
                 . "<label for='email'>Email Address</label>"
@@ -145,7 +145,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
         $form .= "<div class='input email'>"
             . "<label for='email'>Add Another Email</label>"
             . "<input type='text' class='text' name='email_0' value=''>"
-            . "</div>";
+            . "</div>"; */
     }
 
     return array('stat'=>'ok', 'updated'=>$updated, 'form'=>$form, 'errors'=>$errors, 'error_msg'=>$error_msg);
