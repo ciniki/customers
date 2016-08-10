@@ -92,6 +92,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
             )
         ) {
         $page['breadcrumbs'][] = array('name'=>'Contact Details', 'url'=>$ciniki['request']['domain_base_url'] . '/account/contactdetails');
+        $page['container-class'] = 'page-account-contact-details';
 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactDetails');
         $rc = ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $settings, $business_id, array());
@@ -100,7 +101,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
             return $rc;
         } else {
             if( $rc['errors'] == 'yes' ) {
-                $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$error_msg . " Please try again or contact us for help.");
+                $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$rc['error_msg'] . " Please try again or contact us for help.");
             } elseif( $rc['updated'] == 'yes' ) {
                 $page['blocks'][] = array('type'=>'formmessage', 'level'=>'success', 'message'=>'Your contact information is updated.');
             }
