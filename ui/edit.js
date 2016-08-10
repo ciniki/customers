@@ -207,7 +207,7 @@ function ciniki_customers_edit() {
                             },
                         'addDropImageRefresh':'',
                         'deleteImage':function(fid) {
-                                M.ciniki_customers_edit.edit.setFieldValue(fid, 0, null, null);
+                                M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', 0, null, null);
                                 return true;
                             },
                         },

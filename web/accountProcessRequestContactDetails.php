@@ -30,13 +30,22 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
     $customer = $rc['customer'];
     if( isset($customer['emails'][0]['email']) ) {
         $email = $customer['emails'][0]['email'];
+        $emails = $customer['emails'];
     } else {
         $email = array('id'=>'0', 'address'=>'');
+        $emails = array();
+    }
+    if( isset($customer['phones']) ) {
+        $phones = $customer['phones'];
+    } else {
+        $phones = array();
     }
     if( isset($customer['addresses'][0]['address']) ) {
         $address = $customer['addresses'][0]['address'];
+        $addresses = $customer['addresses'];
     } else {
         $address = array('id'=>'0', 'address1'=>'', 'address2'=>'', 'city'=>'', 'province'=>'', 'postal'=>'', 'country'=>'');
+        $addresses = array();
     }
 
     if( $customer['first'] == $email['address'] ) {
@@ -64,13 +73,17 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
             $customer_args['last'] = $_POST['last'];
             $customer['last'] = $_POST['last'];
         }
-        if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' ) {
-            if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
+        //
+        // Max of Home, Work, Cell, Fax number for a customer
+        //
+        if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' 
+            && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0
+            ) {
                 if( isset($_POST['phone_cell']) && $_POST['phone_cell'] != $customer['phone_cell'] ) {
                     $customer_args['phone_cell'] = $_POST['phone_cell'];
                     $customer['phone_cell'] = $_POST['phone_cell'];
                 }
-            }
+                // FIXME: Add other phones here
         }
         if( ((!isset($customer_args['first']) && $customer['first'] == '') || (isset($customer_args['first']) && $customer_args['first'] == ''))
             && ((!isset($customer_args['last']) && $customer['last'] == '') || (isset($customer_args['last']) && $customer_args['last'] == ''))
@@ -104,38 +117,6 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
             }
         }
 
-        //
-        // Check emails
-        //
-        $email_args = array();
-        if( isset($settings['page-account-email-update']) && $settings['page-account-email-update'] == 'yes' ) {
-            if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
-                if( isset($_POST['email']) && $_POST['email'] != $email['address'] ) {
-                    $email_args['email'] = $_POST['email'];
-                    $email['address'] = $_POST['email'];
-                }
-            }
-            if( count($email_args) > 0 ) {
-                if( $email['id'] == 0 ) { 
-                    $email_args['customer_id'] = $customer['id'];
-                    $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.email', $email_args);
-                    if( $rc['stat'] != 'ok' ) {
-                        $errors = 'yes';
-                        $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your email address.";
-                    } else {
-                        $updated = 'yes';
-                    }
-                } else {
-                    $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.email', $email['id'], $email_args);
-                    if( $rc['stat'] != 'ok' ) {
-                        $errors = 'yes';
-                        $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your email address.";
-                    } else {
-                        $updated = 'yes';
-                    }
-                }
-            }
-        }
 
         //
         // Check address
@@ -154,7 +135,7 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
                 $address_args['city'] = $_POST['city'];
                 $address['city'] = $_POST['city'];
             }
-            if( isset($_POST['province_code_' . $_POST['country']]) ) {
+            if( isset($_POST['country']) && isset($_POST['province_code_' . $_POST['country']]) ) {
                 if( isset($_POST['province_code_' . $_POST['country']]) && $_POST['province_code_' . $_POST['country']] != $address['province'] ) {
                     $address_args['province'] = $_POST['province_code_' . $_POST['country']];
                     $address['province'] = $_POST['province_code_' . $_POST['country']];
@@ -202,18 +183,46 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
     }
 
     //
+    // Check emails
+    //
+    if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountEmailsUpdate');
+        $rc = ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_id, $customer);
+        if( $rc['stat'] != 'ok' ) {
+            $errors = 'yes';
+        } else {
+            $email_form = $rc['form'];
+            if( $rc['updated'] == 'yes' ) {
+                $updated = 'yes';
+            }
+            if( isset($rc['errors']) && $rc['errors'] == 'yes' ) {
+                $errors = 'yes';
+                if( isset($rc['error_msg']) ) {
+                    $error_msg .= ($error_msg!=''?"\n":'') . $rc['error_msg'];
+                } else {
+                    $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your email address.";
+                }
+            }
+        }
+    }
+
+    //
     // Setup the form
     //
     $form = "<div class='contact-details-form'>";
-    if( isset($settings['page-account-email-update']) && $settings['page-account-email-update'] == 'yes' ) {
-        if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
-            $form .= "<div class='input email'>"
-                . "<label for='email'>Email Address" . (in_array('email', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='email' value='" . $email['address'] . "'>"
-                . "</div>";
-        } else {
-            // FIXME: Manage multiple emails
-        }
+    $form .= "<div class='contact-details-form-name'>";
+    $form .= "<div class='input first'>"
+        . "<label for='first'>First Name" . (in_array('first', $required)?' *':'') . "</label>"
+        . "<input type='text' class='text' name='first' value='" . $customer['first'] . "'>"
+        . "</div>";
+    $form .= "<div class='input last'>"
+        . "<label for='last'>Last Name" . (in_array('last', $required)?' *':'') . "</label>"
+        . "<input type='text' class='text' name='last' value='" . $customer['last'] . "'>"
+        . "</div>";
+    $form .= "</div>";
+
+    if( isset($email_form) ) {
+        $form .= $email_form;
     }
     if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' ) {
         if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
@@ -225,14 +234,6 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
             // FIXME: Manage multiple phones
         }
     }
-    $form .= "<div class='input first'>"
-        . "<label for='first'>First Name" . (in_array('first', $required)?' *':'') . "</label>"
-        . "<input type='text' class='text' name='first' value='" . $customer['first'] . "'>"
-        . "</div>";
-    $form .= "<div class='input last'>"
-        . "<label for='last'>Last Name" . (in_array('last', $required)?' *':'') . "</label>"
-        . "<input type='text' class='text' name='last' value='" . $customer['last'] . "'>"
-        . "</div>";
     if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
         if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x40000000) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'countryCodes');
