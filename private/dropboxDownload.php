@@ -148,9 +148,9 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
             }
             if( isset($matches[3]) ) {
                 switch($matches[3]) {
-                    case 'primary-image': 
+                    case 'primary-image':
                     case 'primary_image': 
-                        if( $entry[1]['mime_type'] == 'image/jpeg' ) {
+                        if( $entry[1]['mime_type'] == 'image/jpeg' || $matches[4] == 'caption.rtf' || $matches[4] == 'caption.txt' ) {
                             $updates[$customer_eid][$matches[3]] = array(
                                 'path'=>$entry[1]['path'], 
                                 'modified'=>$entry[1]['modified'], 
@@ -198,7 +198,7 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
         //
         // Lookup the customer in the customers
         //
-        $strsql = "SELECT id, primary_image_id, full_bio "
+        $strsql = "SELECT id, primary_image_id, primary_image_caption, full_bio "
             . "FROM ciniki_customers "
             . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . "AND eid = '" . ciniki_core_dbQuote($ciniki, $customer_eid) . "' "
@@ -267,6 +267,26 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
                 }
                 if( $rc['id'] != $ciniki_customer['primary_image_id'] ) {
                     $update_args['primary_image_id'] = $rc['id'];
+                }
+            }
+            elseif( ($field == 'primary_image' || $field == 'primary-image') && $details['mime_type'] == 'application/rtf' ) {
+                $rc = ciniki_core_dropboxParseRTFToText($ciniki, $business_id, $client, $details['path']);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                    return $rc;
+                }
+                if( $rc['content'] != $ciniki_customer['primary_image_caption'] ) {
+                    $update_args['primary_image_caption'] = $rc['content'];
+                }
+            }
+            elseif( ($field == 'primary_image' || $field == 'primary-image') && $details['mime_type'] == 'text/plain' ) {
+                $rc = ciniki_core_dropboxOpenTXT($ciniki, $business_id, $client, $details['path']);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                    return $rc;
+                }
+                if( $rc['content'] != $ciniki_customer['primary_image_caption'] ) {
+                    $update_args['primary_image_caption'] = $rc['content'];
                 }
             }
             elseif( $field == 'description' && $details['mime_type'] == 'application/rtf' ) {
