@@ -61,6 +61,7 @@ function ciniki_customers_download() {
             'options4':{'label':'Joined Contact Info', 'active':'yes', 'fields':{
                 'phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
                 'emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+                'optionnoemails':{'label':'"No Emails" option', 'type':'toggle', 'default':'no', 'toggles':{'no':'Include', 'yes':'Exclude'}},
                 'addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
                 'links':{'label':'Websites', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             }},
@@ -247,6 +248,7 @@ function ciniki_customers_download() {
         if( this.exportlist.sections.options4.active == 'yes' ) {
             fields = this.exportlist.sections.options4.fields;
             for(i in fields) {
+                if( i == 'optionnoemails' ) { continue; }
                 if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
                 this.exportlist.setFieldValue(i, 'yes')
             }
@@ -255,6 +257,7 @@ function ciniki_customers_download() {
 
     this.downloadListExcel = function() {   
         var cols = '';
+        var options = '';
         var fields = this.exportlist.sections.options.fields;
         for(i in fields) {
             if( fields[i].active != null && fields[i].active == 'no' ) { continue; }

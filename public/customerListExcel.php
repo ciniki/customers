@@ -58,8 +58,10 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     // Check if we are to include ids
     //
     $ids = 'no';
+    $noemails = 'include';
     foreach($args['columns'] as $column) {
-        if($column == 'ids' ) { $ids = 'yes'; }
+        if( $column == 'ids' ) { $ids = 'yes'; }
+        if( $column == 'optionnoemails' ) { $noemails = 'exclude'; }
     }
 
     //
@@ -305,7 +307,11 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         . "ciniki_customer_emails.email AS emails "
         . "FROM ciniki_customer_emails "
         . "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "ORDER BY ciniki_customer_emails.customer_id "
+        . "";
+    if( $noemails == 'exclude' ) {
+        $strsql .= "AND (ciniki_customer_emails.flags&0x10) = 0 ";
+    }
+    $strsql .= "ORDER BY ciniki_customer_emails.customer_id "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'customer_id', 
