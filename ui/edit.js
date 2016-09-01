@@ -602,7 +602,7 @@ function ciniki_customers_edit() {
             this.removeLiveSearch(s, i);
         };
         this.edit.updateConnection = function(s, connection) {
-            M.gE(this.panelUID + '_connection').value = connection;
+            M.gE(this.panelUID + '_connection').value = unescape(connection);
             this.removeLiveSearch(s, 'connection');
         };
         this.edit.switchTab = function(tab) {
