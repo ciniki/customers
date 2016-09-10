@@ -46,7 +46,8 @@ function ciniki_customers_connectionList($ciniki) {
         . "FROM ciniki_customers "
         . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
         . "AND connection <> '' "
-        . "ORDER BY num_customers "
+        . "GROUP BY connection "
+        . "ORDER BY num_customers DESC "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQuery');
     return ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.customers', 'connections', 'connection', array('stat'=>'ok', 'connections'=>array()));

@@ -13,8 +13,9 @@ function ciniki_customers_connections() {
         this.list.data = {};
         this.list.sections = {
             'connections':{'label':'', 'num_cols':2, 'type':'simplegrid', 
-                'headerValues':['Connection', 'Customers'],
+                'sortable':'yes',
                 'sortTypes':['text', 'number'],
+                'headerValues':['Connection', 'Customers'],
                 'noData':'No connections found',
                 },
             };

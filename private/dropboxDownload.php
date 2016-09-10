@@ -91,21 +91,17 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
     //
     // Get the latest changes from Dropbox
     //
-    error_log("checking: " . $customers_dir);
     $rc = $client->getDelta($dropbox_cursor, $customers_dir);
     if( !isset($rc['entries']) ) {
         // Nothing to update, return
-        error_log("nothing\n");
         return array('stat'=>'ok');
     }
     // If there is more
     $dropbox_cursor = $rc['cursor'];
     if( count($rc['entries']) == 0 && $rc['has_more'] == 1 ) {
-        error_log('delta again');
         $rc = $client->getDelta($dropbox_cursor, $customers_dir);
         if( !isset($rc['entries']) ) {
             // Nothing to update, return
-            error_log("nothing\n");
             return array('stat'=>'ok');
         }
     }
