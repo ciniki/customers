@@ -77,7 +77,6 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])
             || isset($args['permissions']['resellers'])
-            || isset($args['permissions']['salesreps'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
         ) {
@@ -85,7 +84,43 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
             'priority'=>5600,
             'label'=>'Customers', 
             'edit'=>array('app'=>'ciniki.customers.main'),
-            'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0)), //"'customer_id':0"),
+            'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0)),
+            'search'=>array(
+                'method'=>'ciniki.customers.searchQuick',
+                'args'=>array(),
+                'container'=>'customers',
+                'cols'=>2,
+                'headerValues'=>array('Customers', 'Status'),
+                'cellValues'=>array(
+                    '0'=>'d.customer.display_name;',
+                    '1'=>'d.customer.status_text;',
+                    ),
+                'noData'=>'No customers found',
+                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
+                'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
+                ),
+            );
+        if( isset($settings['ui-labels-customers']) && $settings['ui-labels-customers'] != '' ) {
+            $menu_item['label'] = $settings['ui-labels-customers'];
+            $menu_item['search']['noData'] = 'No ' . $settings['ui-labels-customers'] . ' found';
+        }
+        $menu[] = $menu_item;
+    } 
+
+
+    //
+    // A salesrep only see's a reduced customer interface
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x01) 
+        && !isset($args['permissions']['owners'])
+        && !isset($args['permissions']['employees'])
+        && !isset($args['permissions']['resellers'])
+        && isset($args['permissions']['salesreps'])
+        ) {
+        $menu_item = array(
+            'priority'=>5600,
+            'label'=>'Customers', 
+            'edit'=>array('app'=>'ciniki.customers.main'),
             'search'=>array(
                 'method'=>'ciniki.customers.searchQuick',
                 'args'=>array(),
