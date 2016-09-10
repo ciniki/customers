@@ -65,6 +65,81 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
         }
     }
 
-    return array('stat'=>'ok', 'settings'=>$settings);  
+    //
+    // Setup the menu items
+    //
+    $menu = array();
+
+    //
+    // Check if customers flag is set, and if the user has permissions
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x01) 
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || isset($args['permissions']['salesreps'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>5600,
+            'label'=>'Customers', 
+            'edit'=>array('app'=>'ciniki.customers.main'),
+            'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0)), //"'customer_id':0"),
+            'search'=>array(
+                'method'=>'ciniki.customers.searchQuick',
+                'args'=>array(),
+                'container'=>'customers',
+                'cols'=>2,
+                'headerValues'=>array('Customers', 'Status'),
+                'cellValues'=>array(
+                    '0'=>'d.customer.display_name;',
+                    '1'=>'d.customer.status_text;',
+                    ),
+                'noData'=>'No customers found',
+                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
+                'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
+                ),
+            );
+        if( isset($settings['ui-labels-customers']) && $settings['ui-labels-customers'] != '' ) {
+            $menu_item['label'] = $settings['ui-labels-customers'];
+            $menu_item['search']['noData'] = 'No ' . $settings['ui-labels-customers'] . ' found';
+        }
+        $menu[] = $menu_item;
+    } 
+
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02)
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>5590,
+            'label'=>'Members', 
+            'edit'=>array('app'=>'ciniki.customers.members'),
+            'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0, 'member'=>'"yes"')),
+            'search'=>array(
+                'method'=>'ciniki.customers.searchQuick',
+                'args'=>array('member_status'=>10),
+                'container'=>'customers',
+                'cols'=>1,
+                'cellValues'=>array(
+                    '0'=>'d.customer.display_name;',
+                    ),
+                'noData'=>'No customers found',
+                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
+                'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str', 'type'=>'"members"')),
+                ),
+            );
+        if( isset($settings['ui-labels-members']) && $settings['ui-labels-members'] != '' ) {
+            $menu_item['label'] = $settings['ui-labels-members'];
+            $menu_item['search']['noData'] = 'No ' . $settings['ui-labels-members'] . ' found';
+        }
+        $menu[] = $menu_item;
+    } 
+
+    return array('stat'=>'ok', 'settings'=>$settings, 'menu_items'=>$menu);  
 }
 ?>
