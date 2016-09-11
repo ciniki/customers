@@ -95,6 +95,9 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                     '0'=>'d.customer.display_name;',
                     '1'=>'d.customer.status_text;',
                     ),
+                'rowStyle'=>'if( M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
+                        . '\'background: \' + M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
+                    . '}',
                 'noData'=>'No customers found',
                 'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
@@ -131,6 +134,9 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                     '0'=>'d.customer.display_name;',
                     '1'=>'d.customer.status_text;',
                     ),
+                'rowStyle'=>'if( M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
+                        . '\'background: \' + M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
+                    . '}',
                 'noData'=>'No customers found',
                 'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
