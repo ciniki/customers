@@ -1722,10 +1722,13 @@ function ciniki_customers_edit() {
                         p.forms.person.subscriptions.fields = {};
                         var i = 0;
                         for(i in rsp.subscriptions) {
-                            
-                            p.data['subscription_' + rsp.subscriptions[i].subscription.id] = rsp.subscriptions[i].subscription.status;
                             p.forms.person.subscriptions.fields['subscription_' + rsp.subscriptions[i].subscription.id] = {'label':rsp.subscriptions[i].subscription.name, 
                                 'type':'toggle', 'toggles':M.ciniki_customers_edit.subscriptionOptions};
+                            if( rsp.subscriptions[i].subscription.status == null && (rsp.subscriptions[i].subscription.flags&0x02) == 0x02 ) {
+                                p.forms.person.subscriptions.fields['subscription_' + rsp.subscriptions[i].subscription.id].default = 10;
+                            } else {
+                                p.data['subscription_' + rsp.subscriptions[i].subscription.id] = rsp.subscriptions[i].subscription.status;
+                            }
                         }
                         p.forms.business.subscriptions.fields = p.forms.person.subscriptions.fields;
                     } else {
