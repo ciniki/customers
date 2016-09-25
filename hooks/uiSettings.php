@@ -14,15 +14,14 @@
 //
 function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
 
-    $settings = array();
+    $rsp = array('stat'=>'ok', 'settings'=>array(), 'menu_items'=>array(), 'settings_menu_items'=>array());  
 
     //
     // Get the settings
     //
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'business_id', 
-        $business_id, 'ciniki.customers', 'settings', '');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'business_id', $business_id, 'ciniki.customers', 'settings', '');
     if( $rc['stat'] == 'ok' && isset($rc['settings']) ) {
-        $settings = $rc['settings'];
+        $rsp['settings'] = $rc['settings'];
     }
 
 
@@ -41,7 +40,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                 'fields'=>array('id', 'name')),
             ));
         if( $rc['stat'] == 'ok' && isset($rc['pricepoints']) ) {
-            $settings['pricepoints'] = $rc['pricepoints'];
+            $rsp['settings']['pricepoints'] = $rc['pricepoints'];
         }
     }
 
@@ -61,14 +60,9 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                 'fields'=>array('id', 'name', 'open')),
             ));
         if( $rc['stat'] == 'ok' && isset($rc['seasons']) ) {
-            $settings['seasons'] = $rc['seasons'];
+            $rsp['settings']['seasons'] = $rc['seasons'];
         }
     }
-
-    //
-    // Setup the menu items
-    //
-    $menu = array();
 
     //
     // Check if customers flag is set, and if the user has permissions
@@ -103,11 +97,11 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
                 ),
             );
-        if( isset($settings['ui-labels-customers']) && $settings['ui-labels-customers'] != '' ) {
-            $menu_item['label'] = $settings['ui-labels-customers'];
-            $menu_item['search']['noData'] = 'No ' . $settings['ui-labels-customers'] . ' found';
+        if( isset($rsp['settings']['ui-labels-customers']) && $rsp['settings']['ui-labels-customers'] != '' ) {
+            $menu_item['label'] = $rsp['settings']['ui-labels-customers'];
+            $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-customers'] . ' found';
         }
-        $menu[] = $menu_item;
+        $rsp['menu_items'][] = $menu_item;
     } 
 
 
@@ -142,11 +136,11 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
                 ),
             );
-        if( isset($settings['ui-labels-customers']) && $settings['ui-labels-customers'] != '' ) {
-            $menu_item['label'] = $settings['ui-labels-customers'];
-            $menu_item['search']['noData'] = 'No ' . $settings['ui-labels-customers'] . ' found';
+        if( isset($rsp['settings']['ui-labels-customers']) && $rsp['settings']['ui-labels-customers'] != '' ) {
+            $menu_item['label'] = $rsp['settings']['ui-labels-customers'];
+            $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-customers'] . ' found';
         }
-        $menu[] = $menu_item;
+        $rsp['menu_items'][] = $menu_item;
     } 
 
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02)
@@ -174,13 +168,23 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str', 'type'=>'"members"')),
                 ),
             );
-        if( isset($settings['ui-labels-members']) && $settings['ui-labels-members'] != '' ) {
-            $menu_item['label'] = $settings['ui-labels-members'];
-            $menu_item['search']['noData'] = 'No ' . $settings['ui-labels-members'] . ' found';
+        if( isset($rsp['settings']['ui-labels-members']) && $rsp['settings']['ui-labels-members'] != '' ) {
+            $menu_item['label'] = $rsp['settings']['ui-labels-members'];
+            $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-members'] . ' found';
         }
-        $menu[] = $menu_item;
+        $rsp['menu_items'][] = $menu_item;
+
     } 
 
-    return array('stat'=>'ok', 'settings'=>$settings, 'menu_items'=>$menu);  
+    if( isset($ciniki['business']['modules']['ciniki.customers']) 
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $rsp['settings_menu_items'][] = array('priority'=>5600, 'label'=>'Customers/Members', 'edit'=>array('app'=>'ciniki.customers.settings'));
+    }
+
+    return $rsp;
 }
 ?>
