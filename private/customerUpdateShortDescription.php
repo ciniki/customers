@@ -44,7 +44,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     //
     // Get the customer information for the short description
     //
-    $strsql = "SELECT id, member_status, dealer_status, distributor_status, short_bio, short_description "
+    $strsql = "SELECT id, member_status, dealer_status, distributor_status, short_bio, short_description, webflags "
         . "FROM ciniki_customers "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
         . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -61,9 +61,9 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     if( $format == '' ) {
         if( $customer['member_status'] == 10 ) {
             $format = $member_format;
-        } elseif( $customer['dealer_status'] > 0 ) {
+        } elseif( ($customer['webflags']&0x02) > 0 ) {
             $format = $dealer_format;
-        } elseif( $customer['distributor_status'] > 0 ) {
+        } elseif( ($customer['distributor_status']&0x04) > 0 ) {
             $format = $distributor_format;
         } else {
             $format = 'shortbio';
