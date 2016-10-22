@@ -93,7 +93,6 @@ function ciniki_customers_delete(&$ciniki) {
     if( $rc['used'] != 'no' ) {
         return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1903', 'msg'=>"The customer is still in use. " . $rc['msg']));
     }
-    return array('stat'=>'ok');
 
     //  
     // Turn on autocommit
