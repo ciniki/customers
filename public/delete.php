@@ -85,23 +85,15 @@ function ciniki_customers_delete(&$ciniki) {
     //
     // Check if any modules are currently using this customer
     //
-    foreach($modules as $module => $m) {
-        list($pkg, $mod) = explode('.', $module);
-        $rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'checkObjectUsed');
-        if( $rc['stat'] == 'ok' ) {
-            $fn = $rc['function_call'];
-            $rc = $fn($ciniki, $args['business_id'], array(
-                'object'=>'ciniki.customers.customer', 
-                'object_id'=>$args['customer_id'],
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1905', 'msg'=>'Unable to check if customer is still being used.', 'err'=>$rc['err']));
-            }
-            if( $rc['used'] != 'no' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1903', 'msg'=>"The customer is still in use. " . $rc['msg']));
-            }
-        }
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
+    $rc = ciniki_core_objectCheckUsed($ciniki, $args['business_id'], 'ciniki.customers.customer', $args['customer_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1905', 'msg'=>'Unable to check if customer is still being used.', 'err'=>$rc['err']));
     }
+    if( $rc['used'] != 'no' ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1903', 'msg'=>"The customer is still in use. " . $rc['msg']));
+    }
+    return array('stat'=>'ok');
 
     //  
     // Turn on autocommit
