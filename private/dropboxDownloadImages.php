@@ -44,7 +44,7 @@ function ciniki_customers_dropboxDownloadImages(&$ciniki, $business_id, $client,
                 // Get UUID
                 $rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3557', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.45', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
                 }
                 $uuid = $rc['uuid'];
                 // Add object

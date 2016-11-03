@@ -12,7 +12,7 @@
 function ciniki_customers_web_processRequest(&$ciniki, $settings, $business_id, $args) {
 
     if( !isset($ciniki['business']['modules']['ciniki.customers']) ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'3050', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.210', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     if( isset($args['module_page']) && $args['module_page'] == 'ciniki.customers.dealers' ) {
@@ -23,6 +23,6 @@ function ciniki_customers_web_processRequest(&$ciniki, $settings, $business_id, 
         return ciniki_customers_web_processRequestDistributors($ciniki, $settings, $business_id, $args);
     }
 
-    return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'3051', 'msg'=>"I'm sorry, the page you requested does not exist."));
+    return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.211', 'msg'=>"I'm sorry, the page you requested does not exist."));
 }
 ?>

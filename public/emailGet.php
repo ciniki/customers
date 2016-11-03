@@ -53,10 +53,10 @@ function ciniki_customers_emailGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'105', 'msg'=>'Unable to get email details', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.75', 'msg'=>'Unable to get email details', 'err'=>$rc['err']));
     }
     if( !isset($rc['email']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'721', 'msg'=>'Invalid customer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.76', 'msg'=>'Invalid customer'));
     }
     return array('stat'=>'ok', 'email'=>$rc['email']);
 }

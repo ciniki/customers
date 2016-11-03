@@ -275,7 +275,7 @@ function ciniki_customers_seasonInfo($ciniki) {
                     . "AND ciniki_customers.membership_length = 60 "    // lifetime member
                     . "";
             } else {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2103', 'msg'=>'Invalid list type'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.142', 'msg'=>'Invalid list type'));
             }
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');

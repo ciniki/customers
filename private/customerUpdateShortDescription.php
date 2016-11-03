@@ -54,7 +54,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
         return $rc;
     }
     if( !isset($rc['customer']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1606', 'msg'=>'Unable to find customer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.41', 'msg'=>'Unable to find customer'));
     }
     $customer = $rc['customer'];
 

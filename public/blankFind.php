@@ -44,7 +44,7 @@ function ciniki_customers_blankFind($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'768', 'msg'=>'Unable to locate any blank customers', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.62', 'msg'=>'Unable to locate any blank customers', 'err'=>$rc['err']));
     }
 
     return $rc;

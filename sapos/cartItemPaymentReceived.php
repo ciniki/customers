@@ -14,11 +14,11 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3225', 'msg'=>'No item specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.157', 'msg'=>'No item specified.'));
     }
 
     if( !isset($args['invoice_id']) || $args['invoice_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3226', 'msg'=>'No item specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.158', 'msg'=>'No item specified.'));
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
@@ -47,10 +47,10 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
             . "LIMIT 1 ";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'season');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3232', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.159', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
         }
         if( !isset($rc['season']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3233', 'msg'=>'Unable to setup the membership'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.160', 'msg'=>'Unable to setup the membership'));
         }
         $season = $rc['season']; 
 
@@ -65,7 +65,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customerseason');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3234', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.161', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
         }
         if( isset($rc['customerseason']) ) {
             //
@@ -81,12 +81,12 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
             }
             $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.season_member', $customerseason['id'], $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3236', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.162', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
             }
         }
 
         elseif( count($rc['rows']) > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3235', 'msg'=>'Unable to setup the membership.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.163', 'msg'=>'Unable to setup the membership.'));
         }
 
         else {
@@ -102,7 +102,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
                 );
             $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.season_member', $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3237', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.164', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
             }
         }
 
@@ -116,10 +116,10 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3238', 'msg'=>'Customer does not exist.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.165', 'msg'=>'Customer does not exist.', 'err'=>$rc['err']));
         }
         if( !isset($rc['customer']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3239', 'msg'=>'Customer does not exist.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.166', 'msg'=>'Customer does not exist.'));
         }
         $customer = $rc['customer'];
         $update_args = array();
@@ -146,7 +146,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
         if( count($update_args) > 0 ) {
             $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.customer', $customer['id'], $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3240', 'msg'=>'Unable to update the member.', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.167', 'msg'=>'Unable to update the member.', 'err'=>$rc['err']));
             }
         }
     }

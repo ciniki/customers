@@ -49,7 +49,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
         error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2601)");
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2601', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.180', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
     }
 
     //
@@ -68,18 +68,18 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
             $customers = array($rc['rows'][0]['id']=>$rc['rows'][0]);
         } else {
             error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2059)");
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2059', 'msg'=>'Unable to authenticate.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.181', 'msg'=>'Unable to authenticate.'));
         }
     } else {
         error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (736)");
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'736', 'msg'=>'Unable to authenticate.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.182', 'msg'=>'Unable to authenticate.'));
     }
 
     //
     // Check the customer status
     //
     if( !isset($customer['status']) || $customer['status'] == 0 || $customer['status'] >= 40 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1840', 'msg'=>'Login disabled, please contact us to have the problem fixed.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.183', 'msg'=>'Login disabled, please contact us to have the problem fixed.'));
     }
 
     //
@@ -125,7 +125,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
             if( $rc['stat'] != 'ok' ) {
                 error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2602)");
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2602', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.184', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
             }
             if( isset($rc['rows']) ) {
                 foreach($rc['rows'] as $cust) {
@@ -235,7 +235,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
         if( $rc['stat'] != 'ok' ) {
             error_log("WEB [" . $ciniki['business']['details']['name'] . "]: unable to check member season $email fail (3231)");
             error_log(print_r($rc['err'], true));
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3231', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.185', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
         }
         if( isset($rc['customer']['membership_expiration']) ) {
             $dt = new DateTime($rc['customer']['membership_expiration'], new DateTimeZone($intl_timezone));

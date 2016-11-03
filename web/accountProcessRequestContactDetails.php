@@ -23,9 +23,9 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
     $rc = ciniki_customers__customerDetails($ciniki, $business_id, $ciniki['session']['customer']['id'], array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2980', 'msg'=>'Unable to find your information. Please try again or contact us for help.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.178', 'msg'=>'Unable to find your information. Please try again or contact us for help.', 'err'=>$rc['err']));
     } elseif( !isset($rc['customer']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2981', 'msg'=>'Unable to find your information. Please try again or contact us for help.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.179', 'msg'=>'Unable to find your information. Please try again or contact us for help.', 'err'=>$rc['err']));
     }
     $customer = $rc['customer'];
     if( isset($customer['emails'][0]['email']) ) {

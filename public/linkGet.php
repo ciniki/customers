@@ -48,7 +48,7 @@ function ciniki_customers_linkGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['link']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1640', 'msg'=>'Invalid link'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.102', 'msg'=>'Invalid link'));
     }
     return array('stat'=>'ok', 'link'=>$rc['link']);
 }

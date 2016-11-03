@@ -15,11 +15,11 @@
 function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3290', 'msg'=>'No object specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.20', 'msg'=>'No object specified'));
     }
 
     if( !isset($args['object_id']) || $args['object_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3291', 'msg'=>'No object ID specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.21', 'msg'=>'No object ID specified'));
     }
 
     if( $args['object'] == 'ciniki.customers.members' ) {
@@ -40,10 +40,10 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3292', 'msg'=>'Object not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.22', 'msg'=>'Object not found'));
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'3293', 'msg'=>'Object not found'));
+            return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.customers.23', 'msg'=>'Object not found'));
         }
 
         //
@@ -83,7 +83,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'tag');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3300', 'msg'=>'Member categories not found'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.24', 'msg'=>'Member categories not found'));
             }
             if( isset($rc['rows']) ) {
                 foreach($rc['rows'] as $row) {
@@ -113,10 +113,10 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3294', 'msg'=>'Object not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.25', 'msg'=>'Object not found'));
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3295', 'msg'=>'Object not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.26', 'msg'=>'Object not found'));
         }
         $item = $rc['item'];
 
@@ -131,7 +131,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3299', 'msg'=>'Dealer address not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.27', 'msg'=>'Dealer address not found'));
         }
         if( isset($rc['address']) ) {
             $address = $rc['address'];
@@ -185,10 +185,10 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3296', 'msg'=>'Object not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.28', 'msg'=>'Object not found'));
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3297', 'msg'=>'Object not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.29', 'msg'=>'Object not found'));
         }
         $item = $rc['item'];
 
@@ -203,7 +203,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3298', 'msg'=>'Distributor address not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.30', 'msg'=>'Distributor address not found'));
         }
         if( isset($rc['address']) ) {
             $address = $rc['address'];

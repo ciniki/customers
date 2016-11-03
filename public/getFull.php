@@ -133,7 +133,7 @@ function ciniki_customers_getFull($ciniki) {
         return $rc;
     }
     if( !isset($rc['customers']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'722', 'msg'=>'Invalid customer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.86', 'msg'=>'Invalid customer'));
     }
     //
     // Set the display type for the customer
@@ -459,7 +459,7 @@ function ciniki_customers_getFull($ciniki) {
         $rc = ciniki_core_tagsByType($ciniki, 'ciniki.blog', $args['business_id'], 
             'ciniki_customer_tags', array());
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1651', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.87', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
         }
         if( isset($rc['types']) ) {
             $rsp['tag_types'] = $rc['types'];
@@ -482,7 +482,7 @@ function ciniki_customers_getFull($ciniki) {
         $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
             'ciniki_customer_tags', 60);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1792', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.88', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
         }
         if( isset($rc['tags']) ) {
             $rsp['dealer_categories'] = $rc['tags'];
@@ -503,7 +503,7 @@ function ciniki_customers_getFull($ciniki) {
         $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
             'ciniki_customer_tags', 40);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1793', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.89', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
         }
         if( isset($rc['tags']) ) {
             $rsp['distributor_categories'] = $rc['tags'];

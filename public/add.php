@@ -186,7 +186,7 @@ function ciniki_customers_add(&$ciniki) {
     // They must specify either a firstname or lastname
     //
     if( $args['first'] == '' && $args['last'] == '' && $args['name'] == '' && $args['company'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'368', 'msg'=>'You must specify a first or last name'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.47', 'msg'=>'You must specify a first or last name'));
     }
 
     //
@@ -210,7 +210,7 @@ function ciniki_customers_add(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1909', 'msg'=>'The customer ID already exists.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.48', 'msg'=>'The customer ID already exists.'));
         }
     }
 
@@ -231,10 +231,10 @@ function ciniki_customers_add(&$ciniki) {
             return $rc;
         }
         if( !isset($rc['parent']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1898', 'msg'=>'The parent does not exist.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.49', 'msg'=>'The parent does not exist.'));
         }
         if( isset($rc['parent']) && $rc['parent']['parent_id'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1899', 'msg'=>'The parent is already a child.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.50', 'msg'=>'The parent is already a child.'));
         }
     }
 

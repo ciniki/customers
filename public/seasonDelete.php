@@ -49,7 +49,7 @@ function ciniki_customers_seasonDelete(&$ciniki) {
         return $rc;
     }
     if( isset($rc['num']['customers']) && $rc['num']['customers'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2114', 'msg'=>'Customers are still using this season, it cannot be deleted.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.140', 'msg'=>'Customers are still using this season, it cannot be deleted.'));
     }
 
     //

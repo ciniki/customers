@@ -69,7 +69,7 @@ function ciniki_customers_addressHistory($ciniki) {
         return $rc;
     }
     if( !isset($rc['address']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'740', 'msg'=>'Access denied'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.56', 'msg'=>'Access denied'));
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');

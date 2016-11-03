@@ -57,7 +57,7 @@ function ciniki_customers_customerSetPassword(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['email']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1622', 'msg'=>'Customer email does not exist, unable to set the password.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.63', 'msg'=>'Customer email does not exist, unable to set the password.'));
     }
     $email = $rc['email'];
 
@@ -89,7 +89,7 @@ function ciniki_customers_customerSetPassword(&$ciniki) {
     $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1620', 'msg'=>'Unable to update password.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.64', 'msg'=>'Unable to update password.'));
     }
     
     $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
@@ -104,7 +104,7 @@ function ciniki_customers_customerSetPassword(&$ciniki) {
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1623', 'msg'=>'Unable to update password.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.65', 'msg'=>'Unable to update password.'));
     }
 
     //

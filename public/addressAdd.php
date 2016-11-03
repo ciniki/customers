@@ -79,7 +79,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
     // They must specify something about the address
     //
     if( $args['address1'] == '' && $args['city'] == '' && $args['province'] == '' && $args['postal'] != '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'374', 'msg'=>'No address specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.51', 'msg'=>'No address specified'));
     }
 
     if( (!isset($args['flags']) || $args['flags'] == '') && isset($args['address_flags']) && $args['address_flags'] != '' ) {
@@ -100,7 +100,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
             return $rc;
         }
         if( isset($rc['num']['addresses']) && $rc['num']['addresses'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2896', 'msg'=>'There is already an address for this customer.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.52', 'msg'=>'There is already an address for this customer.'));
         }
     }
 

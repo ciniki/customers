@@ -52,7 +52,7 @@ function ciniki_customers_pricepointGet(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['pricepoints']) || !isset($rc['pricepoints'][0]['pricepoint']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1832', 'msg'=>'Unable to find the price point'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.129', 'msg'=>'Unable to find the price point'));
     }
     $pricepoint = $rc['pricepoints'][0]['pricepoint'];
 

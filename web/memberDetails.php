@@ -49,7 +49,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
         return $rc;
     }
     if( !isset($rc['members']) || count($rc['members']) < 1 ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'1652', 'msg'=>'We are sorry, but the member you requested does not exist.'));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.203', 'msg'=>'We are sorry, but the member you requested does not exist.'));
     }
     $member = array_pop($rc['members']);
 

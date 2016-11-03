@@ -109,7 +109,7 @@ function ciniki_customers_update(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['customer']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1467', 'msg'=>'Customer does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.143', 'msg'=>'Customer does not exist'));
     }
     $customer = $rc['customer'];
 
@@ -119,7 +119,7 @@ function ciniki_customers_update(&$ciniki) {
     if( isset($args['status']) 
         && ($args['status'] >= 50 || $customer['status'] >= 50) ) {
         if( !isset($perms) || ($perms&0x01) != 1 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2053', 'msg'=>'You do not have permissions to change the customer status.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.144', 'msg'=>'You do not have permissions to change the customer status.'));
         }
     }
 
@@ -138,7 +138,7 @@ function ciniki_customers_update(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1908', 'msg'=>'The customer ID already exists.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.145', 'msg'=>'The customer ID already exists.'));
         }
     }
 
@@ -150,7 +150,7 @@ function ciniki_customers_update(&$ciniki) {
         // Make sure parent_id is not customer id
         //
         if( $args['parent_id'] == $args['customer_id'] ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2328', 'msg'=>'Parent cannot be the same as the child.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.146', 'msg'=>'Parent cannot be the same as the child.'));
         }
 
         // 
@@ -166,10 +166,10 @@ function ciniki_customers_update(&$ciniki) {
             return $rc;
         }
         if( !isset($rc['parent']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1901', 'msg'=>'The parent does not exist.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.147', 'msg'=>'The parent does not exist.'));
         }
         if( isset($rc['parent']) && $rc['parent']['parent_id'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1902', 'msg'=>'The parent is already a child.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.148', 'msg'=>'The parent is already a child.'));
         }
         // 
         // Check to make sure the customer does not have any children
@@ -185,7 +185,7 @@ function ciniki_customers_update(&$ciniki) {
             return $rc;
         }
         if( isset($rc['num']['children']) && $rc['num']['children'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1904', 'msg'=>'This customer already has children and cannot become a parent.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.149', 'msg'=>'This customer already has children and cannot become a parent.'));
         }
     }
 
@@ -308,7 +308,7 @@ function ciniki_customers_update(&$ciniki) {
     $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', 
         $args['customer_id'], $args, 0x06);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2009', 'msg'=>'Unable to updated customer', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.150', 'msg'=>'Unable to updated customer', 'err'=>$rc['err']));
     }
 
     //
@@ -325,7 +325,7 @@ function ciniki_customers_update(&$ciniki) {
                     'status'=>$args['status'],
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2007', 'msg'=>'Unable to update customer status.', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.151', 'msg'=>'Unable to update customer status.', 'err'=>$rc['err']));
                 }
             }
         }
@@ -345,7 +345,7 @@ function ciniki_customers_update(&$ciniki) {
                     'display_name'=>$args['display_name'],
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2372', 'msg'=>'Unable to update customer name.', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.152', 'msg'=>'Unable to update customer name.', 'err'=>$rc['err']));
                 }
             }
         }

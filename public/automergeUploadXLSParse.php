@@ -105,7 +105,7 @@ function ciniki_customers_automergeUploadXLSParse($ciniki) {
         $numCols = PHPExcel_Cell::columnIndexFromString($highestColumn); 
     } catch(Exception $e) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'578', 'msg'=>'Unable to understand spreadsheet data'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.61', 'msg'=>'Unable to understand spreadsheet data'));
     }
 
 

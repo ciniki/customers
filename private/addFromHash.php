@@ -32,7 +32,7 @@ function ciniki_customers_addFromHash($ciniki, $customer) {
             return $rc;
         }
     } else {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'83', 'msg'=>'Internal error', 'pmsg'=>'Unable to build SQL insert string'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.32', 'msg'=>'Internal error', 'pmsg'=>'Unable to build SQL insert string'));
     }
 
     //

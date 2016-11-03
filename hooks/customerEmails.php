@@ -17,7 +17,7 @@
 function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
 
     if( !isset($args['customer_id']) || $args['customer_id'] == '' || $args['customer_id'] == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2540', 'msg'=>'No customer specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.15', 'msg'=>'No customer specified'));
     }
     $customer_id = $args['customer_id'];
 
@@ -77,7 +77,7 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
         return $rc;
     }
     if( !isset($rc['customers']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2541', 'msg'=>'Invalid customer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.16', 'msg'=>'Invalid customer'));
     }
     $customer = array_pop($rc['customers']);
 

@@ -56,7 +56,7 @@ function ciniki_customers_pricepointUpdate(&$ciniki) {
             return $rc;
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1804', 'msg'=>'Unable to find price point'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.130', 'msg'=>'Unable to find price point'));
         }
         $old_sequence = $rc['item']['sequence'];
     }

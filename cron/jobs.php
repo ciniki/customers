@@ -29,7 +29,7 @@ function ciniki_customers_cron_jobs(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3554', 'msg'=>'Unable to get list of businesses with customer profiles', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.1', 'msg'=>'Unable to get list of businesses with customer profiles', 'err'=>$rc['err']));
     }
     if( !isset($rc['rows']) ) {
         return array('stat'=>'ok');

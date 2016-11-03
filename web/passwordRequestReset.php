@@ -40,14 +40,14 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
         error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (725)");
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'725', 'msg'=>'Unable to reset password.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.204', 'msg'=>'Unable to reset password.', 'err'=>$rc['err']));
     }
     if( $rc['num_rows'] > 1 ) {
         $customers = $rc['rows'];
         $customer = $customers[0];
     } elseif( !isset($rc['customer']) || !isset($rc['customer']['email']) ) {
         error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (726)");
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'726', 'msg'=>'Unable to reset password.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.205', 'msg'=>'Unable to reset password.'));
     } else {
         $customer = $rc['customer'];
         $customers = $rc['rows'];
@@ -81,13 +81,13 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
             error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (727)");
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'727', 'msg'=>'Unable to reset password.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.206', 'msg'=>'Unable to reset password.'));
         }
 
         if( $rc['num_affected_rows'] < 1 ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
             error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (728)");
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'728', 'msg'=>'Unable to reset password.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.207', 'msg'=>'Unable to reset password.'));
         }
     }
 
@@ -151,7 +151,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
         error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (729)");
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'729', 'msg'=>'Unable to reset password.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.208', 'msg'=>'Unable to reset password.'));
     }
 
     //

@@ -28,7 +28,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     }
 
     if( !isset($rc['ruleset']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'690', 'msg'=>'No permissions granted'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.33', 'msg'=>'No permissions granted'));
     }
     $modules = $rc['modules'];
 
@@ -53,7 +53,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     // Only sysadmins should have access to fix the history
     //
     if( $method == 'ciniki.customers.historyFix' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'114', 'msg'=>'Access denied'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.34', 'msg'=>'Access denied'));
     }
 
     //
@@ -61,7 +61,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     //
     if( $business_id <= 0 ) {
         // If no business_id specified, then fail
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2256', 'msg'=>'Access denied'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.35', 'msg'=>'Access denied'));
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
@@ -97,7 +97,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     //
     // By default, deny access
     //
-    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2234', 'msg'=>'Access denied'));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.36', 'msg'=>'Access denied'));
 
 }
 ?>

@@ -62,7 +62,7 @@ function ciniki_customers_delete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['customer']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'227', 'msg'=>'Unable to find existing customer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.66', 'msg'=>'Unable to find existing customer'));
     }
     $uuid = $rc['customer']['uuid'];
 
@@ -79,7 +79,7 @@ function ciniki_customers_delete(&$ciniki) {
         return $rc;
     }
     if( isset($rc['children']) && $rc['children'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3378', 'msg'=>'There are children attached to this account, unable to delete.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.67', 'msg'=>'There are children attached to this account, unable to delete.'));
     }
 
     //
@@ -88,10 +88,10 @@ function ciniki_customers_delete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
     $rc = ciniki_core_objectCheckUsed($ciniki, $args['business_id'], 'ciniki.customers.customer', $args['customer_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1905', 'msg'=>'Unable to check if customer is still being used.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.68', 'msg'=>'Unable to check if customer is still being used.', 'err'=>$rc['err']));
     }
     if( $rc['used'] != 'no' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1903', 'msg'=>"The customer is still in use. " . $rc['msg']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.69', 'msg'=>"The customer is still in use. " . $rc['msg']));
     }
 
     //  
@@ -120,7 +120,7 @@ function ciniki_customers_delete(&$ciniki) {
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.subscriptions', 'item');
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'777', 'msg'=>'Unable to remove subscriptions', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.70', 'msg'=>'Unable to remove subscriptions', 'err'=>$rc['err']));
         }
         if( isset($rc['rows']) ) {
             $subscriptions = $rc['rows'];
@@ -248,7 +248,7 @@ function ciniki_customers_delete(&$ciniki) {
         $args['customer_id'], $uuid, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'776', 'msg'=>'Unable to delete, internal error.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.71', 'msg'=>'Unable to delete, internal error.', 'err'=>$rc['err']));
     }
 
     //

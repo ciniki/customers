@@ -101,7 +101,7 @@ function ciniki_customers_addressUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['address']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'741', 'msg'=>'Access denied'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.57', 'msg'=>'Access denied'));
     }
     $item = $rc['address'];
 

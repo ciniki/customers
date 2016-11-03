@@ -44,7 +44,7 @@ function ciniki_customers_getModuleData($ciniki) {
         && (!isset($args['eid']) || $args['eid'] == '') 
         && (!isset($args['display_name']) || $args['display_name'] == '') 
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1907', 'msg'=>'You must specify either a customer or ID'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.90', 'msg'=>'You must specify either a customer or ID'));
     }
 
     //
@@ -125,7 +125,7 @@ function ciniki_customers_getModuleData($ciniki) {
     } elseif( isset($args['display_name']) && $args['display_name'] != '' ) {
         $strsql .= "AND ciniki_customers.display_name = '" . ciniki_core_dbQuote($ciniki, $args['display_name']) . "' ";
     } else {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1906', 'msg'=>'You must specify either a customer or ID'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.91', 'msg'=>'You must specify either a customer or ID'));
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -147,10 +147,10 @@ function ciniki_customers_getModuleData($ciniki) {
         return $rc;
     }
     if( !isset($rc['customers']) ) {
-        return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'1511', 'msg'=>'Invalid customer'));
+        return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.customers.92', 'msg'=>'Invalid customer'));
     }
     if( isset($rc['customers']) && count($rc['customers']) > 1 ) {
-        return array('stat'=>'ambiguous', 'err'=>array('pkg'=>'ciniki', 'code'=>'2210', 'msg'=>'Multiple customers found'));
+        return array('stat'=>'ambiguous', 'err'=>array('code'=>'ciniki.customers.93', 'msg'=>'Multiple customers found'));
     }
     $customer = $rc['customers'][0]['customer'];
     $customer['addresses'] = array();

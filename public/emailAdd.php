@@ -68,7 +68,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
             return $rc;
         }
         if( isset($rc['num']['emails']) && $rc['num']['emails'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2895', 'msg'=>'There is already an email address for this customer.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.72', 'msg'=>'There is already an email address for this customer.'));
         }
     }
 

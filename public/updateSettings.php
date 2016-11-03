@@ -159,7 +159,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1468', 'msg'=>'Unable to update settings for business format', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.153', 'msg'=>'Unable to update settings for business format', 'err'=>$rc['err']));
         
         }
         

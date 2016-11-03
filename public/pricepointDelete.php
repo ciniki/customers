@@ -49,7 +49,7 @@ function ciniki_customers_pricepointDelete(&$ciniki) {
         return $rc;
     }
     if( isset($rc['num']['customers']) && $rc['num']['customers'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1833', 'msg'=>'Customers are still using this price point, it cannot be deleted.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.127', 'msg'=>'Customers are still using this price point, it cannot be deleted.'));
     }
 
     //
@@ -67,7 +67,7 @@ function ciniki_customers_pricepointDelete(&$ciniki) {
             return $rc;
         }
         if( isset($rc['num']['products']) && $rc['num']['products'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1834', 'msg'=>'Products are still using this price point, it cannot be deleted.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.128', 'msg'=>'Products are still using this price point, it cannot be deleted.'));
         }
     }
 

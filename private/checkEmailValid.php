@@ -19,7 +19,7 @@ function ciniki_customers_checkEmailValid(&$ciniki, $business_id, $email) {
     // Make sure the string contains @ sign and a period.
     //
     if( !preg_match("/([^ ]+)\@([^ ]+)\.([^ ]+)/", $email) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3603', 'msg'=>"'$email' is not a valid email address."));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.39', 'msg'=>"'$email' is not a valid email address."));
     }
 
     return array('stat'=>'ok');

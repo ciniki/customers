@@ -109,10 +109,10 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'relationship');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'498', 'msg'=>'Unable to get existing relationship information', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.135', 'msg'=>'Unable to get existing relationship information', 'err'=>$rc['err']));
     }
     if( !isset($rc['relationship']) || !isset($rc['relationship']['related_id'])) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'500', 'msg'=>'Unable to get existing relationship information'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.136', 'msg'=>'Unable to get existing relationship information'));
     }
     $org_related_id = $rc['relationship']['related_id'];
     $org_relationship_type = $rc['relationship']['relationship_type'];
@@ -202,7 +202,7 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     }
     if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'533', 'msg'=>'Unable to add customer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.137', 'msg'=>'Unable to add customer'));
     }
 
     //
@@ -211,14 +211,14 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTouch');
     $rc = ciniki_core_dbTouch($ciniki, 'ciniki.customers', 'ciniki_customers', 'id', $org_customer_id);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'534', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.138', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
     }
     
     if( $org_customer_id != $args['customer_id'] ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTouch');
         $rc = ciniki_core_dbTouch($ciniki, 'ciniki.customers', 'ciniki_customers', 'id', $args['customer_id']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'502', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.139', 'msg'=>'Unable to update customer', 'err'=>$rc['err']));
         }
     }
 

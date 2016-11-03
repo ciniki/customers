@@ -107,10 +107,10 @@ function ciniki_customers_relationshipGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'relationship');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'595', 'msg'=>'Unable to find relationship', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.133', 'msg'=>'Unable to find relationship', 'err'=>$rc['err']));
     }
     if( !isset($rc['relationship']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'577', 'msg'=>'Relationship does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.134', 'msg'=>'Relationship does not exist'));
     }
     $relationship = $rc['relationship'];
 

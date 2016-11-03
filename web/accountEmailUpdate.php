@@ -18,7 +18,7 @@ function ciniki_customers_web_accountEmailUpdate($ciniki, $settings, $business_i
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkEmailValid');
     $rc = ciniki_customers_checkEmailValid($ciniki, $business_id, $post_email);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3604', 'msg'=>"The email address '$post_email' is invalid, please try again.", 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.172', 'msg'=>"The email address '$post_email' is invalid, please try again.", 'err'=>$rc['err']));
     }
 
     //
@@ -27,9 +27,9 @@ function ciniki_customers_web_accountEmailUpdate($ciniki, $settings, $business_i
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkEmailExists');
     $rc = ciniki_customers_checkEmailExists($ciniki, $business_id, $post_email);
     if( $rc['stat'] == 'exists' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3605', 'msg'=>"The email address '$post_email' is already has an account.", 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.173', 'msg'=>"The email address '$post_email' is already has an account.", 'err'=>$rc['err']));
     } elseif( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3606', 'msg'=>"Unable to add the email address.", 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.174', 'msg'=>"Unable to add the email address.", 'err'=>$rc['err']));
     }
 
     //
@@ -39,7 +39,7 @@ function ciniki_customers_web_accountEmailUpdate($ciniki, $settings, $business_i
         'email'=>$email,
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3607', 'msg'=>"Unable to add the email address.", 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.175', 'msg'=>"Unable to add the email address.", 'err'=>$rc['err']));
     }
 
     return array('stat'=>'ok');

@@ -60,7 +60,7 @@ function ciniki_customers_imageUpdate(&$ciniki) {
                 return $rc;
             }
             if( !isset($rc['item']) ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1645', 'msg'=>'Member image not found'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.98', 'msg'=>'Member image not found'));
             }
             $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($rc['item']['uuid'])));
         } else {
@@ -79,7 +79,7 @@ function ciniki_customers_imageUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1646', 'msg'=>'You already have an image with this name, please choose another name'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.99', 'msg'=>'You already have an image with this name, please choose another name'));
         }
     }
 

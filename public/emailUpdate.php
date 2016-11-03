@@ -66,7 +66,7 @@ function ciniki_customers_emailUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['email']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'743', 'msg'=>'Access denied'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.80', 'msg'=>'Access denied'));
     }
 
     //

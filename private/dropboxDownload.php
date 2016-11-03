@@ -40,7 +40,7 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
     // Check to make sure the dropbox flag is enabled for this business
     //
     if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800000000) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3551', 'msg'=>'Dropbox integration not enabled'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.42', 'msg'=>'Dropbox integration not enabled'));
     }
 
     //
@@ -52,7 +52,7 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
         return $rc;
     }
     if( !isset($rc['settings']['dropbox-customerprofiles']) || $rc['settings']['dropbox-customerprofiles'] == '') {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3552', 'msg'=>'Dropbox customers not setup.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.43', 'msg'=>'Dropbox customers not setup.'));
     }
     $customers_dir = $rc['settings']['dropbox-customerprofiles'];
     if( $customers_dir[0] != '/' ) {
@@ -82,7 +82,7 @@ function ciniki_customers_dropboxDownload(&$ciniki, $business_id) {
         return $rc;
     }
     if( !isset($rc['settings']['apis-dropbox-access-token']) || $rc['settings']['apis-dropbox-access-token'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3553', 'msg'=>'Dropbox not configured.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.44', 'msg'=>'Dropbox not configured.'));
     }
     $access_token = $rc['settings']['apis-dropbox-access-token'];
 

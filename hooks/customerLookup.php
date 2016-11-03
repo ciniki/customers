@@ -17,7 +17,7 @@
 function ciniki_customers_hooks_customerLookup($ciniki, $business_id, $args) {
 
     if( !isset($args['email']) || $args['email'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2979', 'msg'=>'No customer email specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.17', 'msg'=>'No customer email specified'));
     }
 
     $strsql = "SELECT customer_id, email "

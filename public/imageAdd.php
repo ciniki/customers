@@ -72,11 +72,11 @@ function ciniki_customers_imageAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1641', 'msg'=>'You already have an image with this name, please choose another name'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.94', 'msg'=>'You already have an image with this name, please choose another name'));
     }
 
     if( $args['customer_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1642', 'msg'=>'No customer specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.95', 'msg'=>'No customer specified'));
     }
     
     //

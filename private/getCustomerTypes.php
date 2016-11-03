@@ -30,7 +30,7 @@ function ciniki_customers_getCustomerTypes($ciniki, $business_id) {
         return $rc;
     }
     if( !isset($rc['types']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'297', 'msg'=>'Unable to find customer types'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.46', 'msg'=>'Unable to find customer types'));
     }
 
     return array('stat'=>'ok', 'types'=>$rc['types']);

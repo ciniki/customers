@@ -47,11 +47,11 @@ function ciniki_customers_automergeUploadXLS($ciniki) {
 
 
     if( isset($_FILES['uploadfile']['error']) && $_FILES['uploadfile']['error'] == UPLOAD_ERR_INI_SIZE ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'579', 'msg'=>'Upload failed, file too large.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.59', 'msg'=>'Upload failed, file too large.'));
     }
 
     if( !isset($_FILES) || !isset($_FILES['uploadfile']) || $_FILES['uploadfile']['name'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'580', 'msg'=>'Upload failed, no file specified.', '_FILES'=>$_FILES));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.60', 'msg'=>'Upload failed, no file specified.', '_FILES'=>$_FILES));
     }
 
     if( $args['name'] == '' ) {

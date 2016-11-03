@@ -17,7 +17,7 @@ function ciniki_customers_phonesMove($ciniki) {
     // Must be a sysadmin to run this
     //
     if( ($ciniki['session']['user']['perms'] & 0x01) != 0x01 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1607', 'msg'=>'Access denied'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.2', 'msg'=>'Access denied'));
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
@@ -58,7 +58,7 @@ function ciniki_customers_phonesMove($ciniki) {
         return $rc;
     }
     if( !isset($rc['customers']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1608', 'msg'=>'Unable to find customers'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.3', 'msg'=>'Unable to find customers'));
     }
     $customers = $rc['customers'];
 
@@ -68,7 +68,7 @@ function ciniki_customers_phonesMove($ciniki) {
         //
         $rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1605', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.4', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
         }
         $uuid = $rc['uuid'];
 
@@ -138,7 +138,7 @@ function ciniki_customers_phonesMove($ciniki) {
         return $rc;
     }
     if( !isset($rc['customers']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1609', 'msg'=>'Unable to find customers'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.5', 'msg'=>'Unable to find customers'));
     }
     $customers = $rc['customers'];
 
@@ -148,7 +148,7 @@ function ciniki_customers_phonesMove($ciniki) {
         //
         $rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1611', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.6', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
         }
         $uuid = $rc['uuid'];
 
@@ -218,7 +218,7 @@ function ciniki_customers_phonesMove($ciniki) {
         return $rc;
     }
     if( !isset($rc['customers']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1627', 'msg'=>'Unable to find customers'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.7', 'msg'=>'Unable to find customers'));
     }
     $customers = $rc['customers'];
 
@@ -228,7 +228,7 @@ function ciniki_customers_phonesMove($ciniki) {
         //
         $rc = ciniki_core_dbUUID($ciniki, 'ciniki.customers');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1612', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.8', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
         }
         $uuid = $rc['uuid'];
 

@@ -50,7 +50,7 @@ function ciniki_customers_web_dealerDetails($ciniki, $settings, $business_id, $p
         return $rc;
     }
     if( !isset($rc['dealers']) || count($rc['dealers']) < 1 ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2370', 'msg'=>'We are sorry, but the dealer you requested does not exist.'));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.202', 'msg'=>'We are sorry, but the dealer you requested does not exist.'));
     }
     $dealer = array_pop($rc['dealers']);
 

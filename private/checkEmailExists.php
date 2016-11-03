@@ -22,12 +22,12 @@ function ciniki_customers_checkEmailExists(&$ciniki, $business_id, $email) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3601', 'msg'=>'Unable to check if email exists.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.37', 'msg'=>'Unable to check if email exists.'));
     }
     if( !isset($rc['rows']) || count($rc['rows']) == 0 ) {
         return array('stat'=>'ok');
     }
 
-    return array('stat'=>'exists', 'err'=>array('pkg'=>'ciniki', 'code'=>'3602', 'msg'=>'Email address already exists.'));
+    return array('stat'=>'exists', 'err'=>array('code'=>'ciniki.customers.38', 'msg'=>'Email address already exists.'));
 }
 ?>

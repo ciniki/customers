@@ -46,7 +46,7 @@ function ciniki_customers_imageDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['item']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1643', 'msg'=>'Contact image does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.96', 'msg'=>'Contact image does not exist'));
     }
     $uuid = $rc['item']['uuid'];
 

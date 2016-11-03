@@ -90,7 +90,7 @@ function ciniki_customers_automergeStats($ciniki) {
         return $rc;
     }
     if( !isset($rc['num']) || !isset($rc['num']['cols']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'571', 'msg'=>'Unable to gather statistics'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.58', 'msg'=>'Unable to gather statistics'));
     }
     $num_cols = $rc['num']['cols'];
 

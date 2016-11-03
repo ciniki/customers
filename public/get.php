@@ -141,7 +141,7 @@ function ciniki_customers_get($ciniki) {
             return $rc;
         }
         if( !isset($rc['customers'][0]['customer']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1469', 'msg'=>'Invalid customer'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.81', 'msg'=>'Invalid customer'));
         }
         $customer = $rc['customers'][0]['customer'];
     } else {
@@ -192,7 +192,7 @@ function ciniki_customers_get($ciniki) {
             return $rc;
         }
         if( !isset($rc['customers'][0]['customer']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'370', 'msg'=>'Invalid customer'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.82', 'msg'=>'Invalid customer'));
         }
         $customer = $rc['customers'][0]['customer'];
     }
@@ -512,7 +512,7 @@ function ciniki_customers_get($ciniki) {
         $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
             'ciniki_customer_tags', 40);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1595', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.83', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
         }
         if( isset($rc['tags']) ) {
             $rsp['member_categories'] = $rc['tags'];
@@ -531,7 +531,7 @@ function ciniki_customers_get($ciniki) {
         $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
             'ciniki_customer_tags', 60);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1790', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.84', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
         }
         if( isset($rc['tags']) ) {
             $rsp['dealer_categories'] = $rc['tags'];
@@ -550,7 +550,7 @@ function ciniki_customers_get($ciniki) {
         $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['business_id'], 
             'ciniki_customer_tags', 80);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1791', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.85', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
         }
         if( isset($rc['tags']) ) {
             $rsp['distributor_categories'] = $rc['tags'];

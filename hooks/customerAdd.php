@@ -49,7 +49,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
         && (!isset($args['name']) || $args['name'] == '')
         && (!isset($args['company']) || $args['company'] == '')
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2380', 'msg'=>'You must specify a first or last name'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.9', 'msg'=>'You must specify a first or last name'));
     }
 
     //
@@ -73,7 +73,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2382', 'msg'=>'The customer ID already exists.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.10', 'msg'=>'The customer ID already exists.'));
         }
     }
 
@@ -94,10 +94,10 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
             return $rc;
         }
         if( !isset($rc['parent']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2383', 'msg'=>'The parent does not exist.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.11', 'msg'=>'The parent does not exist.'));
         }
         if( isset($rc['parent']) && $rc['parent']['parent_id'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2379', 'msg'=>'The parent is already a child.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.12', 'msg'=>'The parent is already a child.'));
         }
     }
 

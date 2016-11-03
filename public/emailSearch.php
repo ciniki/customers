@@ -58,10 +58,10 @@ function ciniki_customers_emailSearch($ciniki) {
         return $rc;
     }
     if( isset($rc['rows']) && $rc['num_rows'] > 1 ) {
-        return array('stat'=>'ambiguous', 'err'=>array('pkg'=>'ciniki', 'code'=>'2211', 'msg'=>'Multiple emails found'));
+        return array('stat'=>'ambiguous', 'err'=>array('code'=>'ciniki.customers.78', 'msg'=>'Multiple emails found'));
     }
     if( !isset($rc['email']) ) {
-        return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'2212', 'msg'=>'Email not found'));
+        return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.customers.79', 'msg'=>'Email not found'));
     }
 
     return array('stat'=>'ok', 'email'=>$rc['email']);
