@@ -42,7 +42,7 @@ function ciniki_customers_cron_jobs(&$ciniki) {
         //
         $rc = ciniki_businesses_checkModuleAccess($ciniki, $business['business_id'], 'ciniki', 'customers');
         if( $rc['stat'] != 'ok' ) { 
-            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'3555', 'msg'=>'ciniki.customers not configured', 
+            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'ciniki.customers.214', 'msg'=>'ciniki.customers not configured', 
                 'severity'=>30, 'err'=>$rc['err']));
             continue;
         }
@@ -54,7 +54,7 @@ function ciniki_customers_cron_jobs(&$ciniki) {
         //
         $rc = ciniki_customers_dropboxDownload($ciniki, $business['business_id']);
         if( $rc['stat'] != 'ok' ) {
-            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'3556', 'msg'=>'Unable to update customers', 
+            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'ciniki.customers.215', 'msg'=>'Unable to update customers', 
                 'severity'=>50, 'err'=>$rc['err']));
             continue;
         }
