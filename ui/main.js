@@ -897,13 +897,13 @@ function ciniki_customers_main() {
         if( rsp.customer.connection != '' ) {
             this.customer.data.details.connection = {'label':'Connection', 'value':rsp.customer.connection};
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x10000000) > 0 ) {
+//        if( (M.curBusiness.modules['ciniki.customers'].flags&0x10000000) > 0 ) {
             if( rsp.customer.phones != null ) {
                 for(i in rsp.customer.phones) {
                     this.customer.data.details['phone-'+i] = {'label':rsp.customer.phones[i].phone.phone_label, 'value':rsp.customer.phones[i].phone.phone_number};
                 }
             }
-        } else {
+/*        } else {
             if( rsp.customer.phone_home != '' ) {
                 this.customer.data.details['phone_home'] = {'label':'Home', 'value':rsp.customer.phone_home};
             }
@@ -916,7 +916,7 @@ function ciniki_customers_main() {
             if( rsp.customer.phone_fax != '' ) {
                 this.customer.data.details['phone_fax'] = {'label':'Fax', 'value':rsp.customer.phone_fax};
             }
-        }
+        } */
 //      if( (M.curBusiness.modules['ciniki.customers'].flags&0x20000000) > 0 ) {
             if( rsp.customer.emails != null ) {
                 for(i in rsp.customer.emails) {
