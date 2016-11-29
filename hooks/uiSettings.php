@@ -86,7 +86,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                 'cols'=>2,
                 'headerValues'=>array('Customers', 'Status'),
                 'cellValues'=>array(
-                    '0'=>'d.customer.display_name;',
+                    '0'=>'d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + ")</span>" : "");',
                     '1'=>'d.customer.status_text;',
                     ),
                 'rowStyle'=>'if( M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
@@ -125,7 +125,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                 'cols'=>2,
                 'headerValues'=>array('Customers', 'Status'),
                 'cellValues'=>array(
-                    '0'=>'d.customer.display_name;',
+                    '0'=>'d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + "</span>" : "");',
                     '1'=>'d.customer.status_text;',
                     ),
                 'rowStyle'=>'if( M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'

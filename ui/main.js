@@ -67,7 +67,7 @@ function ciniki_customers_main() {
             };
         this.menu.liveSearchCb = function(s, i, value) {
             if( s == 'search' && value != '' ) {
-                M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':'10'}, 
+                M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':encodeURIComponent(value), 'limit':'10'}, 
                     function(rsp) { 
                         M.ciniki_customers_main.menu.liveSearchShow('search', null, M.gE(M.ciniki_customers_main.menu.panelUID + '_' + s), rsp.customers); 
                     });
@@ -77,7 +77,7 @@ function ciniki_customers_main() {
         this.menu.liveSearchResultValue = function(s, f, i, j, d) {
             if( s == 'search' ) { 
                 switch(j) {
-                    case 0: return d.customer.display_name;
+                    case 0: return d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + ")</span>" : "");
                     case 1: return d.customer.status_text;
                 }
             }
@@ -164,20 +164,20 @@ function ciniki_customers_main() {
         // The search panel will list all search results for a string.  This allows more advanced searching,
         // and will search the entire strings, not just start of the string like livesearch
         //
-        this.search = new M.panel('Search Results',
-            'ciniki_customers_main', 'search',
-            'mc', 'medium', 'sectioned', 'ciniki.customers.main.search');
+        this.search = new M.panel('Search Results', 'ciniki_customers_main', 'search', 'mc', 'medium', 'sectioned', 'ciniki.customers.main.search');
         this.search.search_type = 'customers';
         this.search.sections = {
             'main':{'label':'', 'type':'simplegrid', 'num_cols':2, 
                 'headerValues':['Name', 'Status'], 
-                'dataMaps':['display_name', 'status_text'],
                 'sortable':'yes'},
         };
         this.search.noData = function() { return 'No ' + this.search_type + ' found'; }
         this.search.sectionData = function(s) { return this.data; }
         this.search.cellValue = function(s, i, j, d) { 
-            return d.customer[this.sections[s].dataMaps[j]];
+            switch(j) {
+                case 0: return d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + ")</span>" : "");
+                case 1: return d.customer.status_text;
+            }
         };
         this.search.rowFn = function(s, i, d) { 
             if( M.ciniki_customers_main.search.search_type == 'members' ) {

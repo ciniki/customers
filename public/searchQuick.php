@@ -74,15 +74,19 @@ function ciniki_customers_searchQuick($ciniki) {
     // Get the number of customers in each status for the business, 
     // if no rows found, then return empty array
     //
-    $strsql = "SELECT DISTINCT ciniki_customers.id, display_name, "
-        . "status, status AS status_text, "
-        . "type, company, eid, "
-        . "IFNULL(DATE_FORMAT(member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS member_lastpaid, "
-        . "member_status, "
-        . "membership_type, "
-        . "membership_type AS membership_type_text, "
-        . "membership_length, "
-        . "membership_length AS membership_length_text "
+    $strsql = "SELECT DISTINCT c1.id, c1.display_name, IFNULL(c2.display_name, '') AS parent_name, "
+        . "c1.parent_id, "
+        . "c1.status, "
+        . "c1.status AS status_text, "
+        . "c1.type, "
+        . "c1.company, "
+        . "c1.eid, "
+        . "IFNULL(DATE_FORMAT(c1.member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS member_lastpaid, "
+        . "c1.member_status, "
+        . "c1.membership_type, "
+        . "c1.membership_type AS membership_type_text, "
+        . "c1.membership_length, "
+        . "c1.membership_length AS membership_length_text "
         . "";
 //  if( count($types) > 0 ) {
 //      // If there are customer types defined, choose the right name for the customer
@@ -101,45 +105,52 @@ function ciniki_customers_searchQuick($ciniki) {
 //      // Default to a person
 //      $strsql .= "CONCAT_WS(' ', first, last) AS name ";
 //  }
-    $strsql .= "FROM ciniki_customers "
-        . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
-        . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND ciniki_customers.status < 60 ";
+    $strsql .= "FROM ciniki_customers AS c1 "
+        . "LEFT JOIN ciniki_customer_emails ON ("
+            . "c1.id = ciniki_customer_emails.customer_id "
+            . "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customers AS c2 ON ("
+            . "c1.parent_id = c2.id "
+            . "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . ") "
+        . "WHERE c1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND c1.status < 60 ";
     // Check if only a sales rep
     if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
-        $strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+        $strsql .= "AND c1.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
     }
     if( isset($args['parent_id']) && $args['parent_id'] != '' ) {
-        $strsql .= "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' ";
+        $strsql .= "AND c1.parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' ";
     }
     if( isset($args['member_status']) && $args['member_status'] != '' ) {
-        $strsql .= "AND member_status = '" . ciniki_core_dbQuote($ciniki, $args['member_status']) . "' ";
+        $strsql .= "AND c1.member_status = '" . ciniki_core_dbQuote($ciniki, $args['member_status']) . "' ";
     }
     if( isset($args['dealer_status']) && $args['dealer_status'] != '' ) {
-        $strsql .= "AND dealer_status = '" . ciniki_core_dbQuote($ciniki, $args['dealer_status']) . "' ";
+        $strsql .= "AND c1.dealer_status = '" . ciniki_core_dbQuote($ciniki, $args['dealer_status']) . "' ";
     }
     if( isset($args['dealers']) && $args['dealers'] == 'yes' ) {
-        $strsql .= "AND dealer_status > 0 ";
+        $strsql .= "AND c1.dealer_status > 0 ";
     }
     if( isset($args['distributor_status']) && $args['distributor_status']   != '' ) {
-        $strsql .= "AND distributor_status = '" . ciniki_core_dbQuote($ciniki, $args['distributor_status']) . "' ";
+        $strsql .= "AND c1.distributor_status = '" . ciniki_core_dbQuote($ciniki, $args['distributor_status']) . "' ";
     }
     if( isset($args['distributors']) && $args['distributors'] == 'yes' ) {
-        $strsql .= "AND distributor_status > 0 ";
+        $strsql .= "AND c1.distributor_status > 0 ";
     }
     $args['start_needle'] = preg_replace("/([^\s]) ([^\s])/", '$1%$2', $args['start_needle']);
-    $strsql .= "AND (first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR company LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR company LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+    $strsql .= "AND (c1.first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.company LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.company LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-//          . "OR CONCAT_WS(' ', first, last) LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-//          . "OR CONCAT_WS(' ', first, last) LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+//          . "OR CONCAT_WS(' ', c1.first, c1.last) LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+//          . "OR CONCAT_WS(' ', c1.first, c1.last) LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
-        . "ORDER BY sort_name, last, first DESC ";
+        . "ORDER BY c1.type DESC, c1.sort_name, c1.last, c1.first DESC ";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
         $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified
     } else {
@@ -149,7 +160,7 @@ function ciniki_customers_searchQuick($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'eid', 'display_name', 'status', 'status_text',
+            'fields'=>array('id', 'eid', 'display_name', 'parent_name', 'status', 'status_text',
                 'type', 'company', 'member_lastpaid', 'member_status', 
                 'membership_type', 'membership_type_text', 'membership_length', 'membership_length_text'),
             'maps'=>array('status_text'=>$maps['customer']['status'],
