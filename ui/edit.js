@@ -1370,13 +1370,13 @@ function ciniki_customers_edit() {
         else if( args.edit_link_id != null && args.edit_link_id != '' && args.customer_id != null && args.customer_id > 0 ) {
             this.showLinkEdit(cb, args.customer_id, args.edit_link_id);
         } else {
-            this.showEdit(cb, args.customer_id, args.category, (args.parent_id!=null?args.parent_id:0), args.parent_name);
+            this.showEdit(cb, args.customer_id, args.category, (args.parent_id!=null?args.parent_id:0), args.parent_name, args.type);
         }
 
         return false;
     }
 
-    this.showEdit = function(cb, cid, category, pid, pname) {
+    this.showEdit = function(cb, cid, category, pid, pname, type) {
         if( pid != null ) { this.edit.parent_id = pid; }
         if( cid != null ) { this.edit.customer_id = cid; }
         this.edit.formtab = null;
@@ -1543,9 +1543,10 @@ function ciniki_customers_edit() {
                 this.edit.forms.person.parent.active = 'no';
                 this.edit.forms.business.parent.active = 'no';
             }
-            if( M.curBusiness.customers.settings != null 
+            if( (M.curBusiness.customers.settings != null 
                 && M.curBusiness.customers.settings['defaults-edit-form'] != null
-                && M.curBusiness.customers.settings['defaults-edit-form'] == 'business' ) {
+                && M.curBusiness.customers.settings['defaults-edit-form'] == 'business') 
+                || (type != null && type == 2) ) {
                 this.edit.data.type = 2;
             } else {
                 this.edit.data.type = 1;
