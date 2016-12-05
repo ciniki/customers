@@ -1533,7 +1533,7 @@ function ciniki_customers_edit() {
             this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15, 'phone_label_1':'Home', 'phone_label_2':'Work', 'phone_label_3':'Cell'};
             if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 ) {
                 this.edit.forms.person.parent.active = 'yes';
-                this.edit.forms.business.parent.active = 'yes';
+//                this.edit.forms.business.parent.active = 'yes';
                 if( pid != null ) {
                     this.edit.data.parent = {'id':pid, 'display_name':(pname!=null?unescape(pname):'')};
                 } else {
