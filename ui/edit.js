@@ -571,10 +571,10 @@ function ciniki_customers_edit() {
                 return 'M.ciniki_customers_edit.edit.updateParent(\'' + s + '\',\'' + escape(d.customer.id) + '\',\'' + escape(d.customer.display_name) + '\');'
             }
             else if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
-                if( M.ciniki_customers_edit.edit.data.parent != null ) {
-                    return 'M.ciniki_customers_edit.showEdit(null,\'' + d.customer.id + '\',null,\'' + M.ciniki_customers_edit.edit.data.parent.id + '\',\'' + escape(M.ciniki_customers_edit.edit.data.parent.display_name) + '\');';
+                if( this.parent_id != null && this.parent_id > 0 ) {
+                    return 'M.ciniki_customers_edit.showEdit(null,\'' + d.customer.id + '\',null,\'' + this.parent_id + '\',\'' + escape(this.parent_name) + '\');';
                 }
-                return 'M.ciniki_customers_edit.showEdit(null,' + d.customer.id + ');';
+                return 'M.ciniki_customers_edit.showEdit(null,' + d.customer.id + ',null,0,\'\');';
             }
             else if( f == 'city' ) {
                 return 'M.ciniki_customers_edit.edit.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
@@ -1378,6 +1378,7 @@ function ciniki_customers_edit() {
 
     this.showEdit = function(cb, cid, category, pid, pname, type) {
         if( pid != null ) { this.edit.parent_id = pid; }
+        if( pname != null ) { this.edit.parent_name = unescape(pname); }
         if( cid != null ) { this.edit.customer_id = cid; }
         this.edit.formtab = null;
         this.edit.formtab_field_id = null;
@@ -1459,7 +1460,7 @@ function ciniki_customers_edit() {
                     p.forms.business.parent.active = 'no';
                     if( (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0 ) {
                         if( pid != null && (rsp.customer.parent == null || rsp.customer.parent.id == 0) ) {
-                            p.data.parent = {'id':pid, 'display_name':(pname!=null?unescape(pname):'')};
+                            p.data.parent = {'id':0, 'display_name':(pname!=null?unescape(pname):'')};
                         }
                         if( rsp.customer.num_children == null || rsp.customer.num_children == 0 || rsp.customer.parent_id > 0 ) {
                             p.forms.person.parent.active = 'yes';
@@ -1740,6 +1741,9 @@ function ciniki_customers_edit() {
                     p.refresh();
                     p.show(cb);
                     p.setupStatus();
+                    if( p.parent_id > 0 && p.data.parent_id == 0 ) { 
+                        p.setFieldValue('parent_id', p.parent_id);
+                    }
                 });
         } else {
             var p = M.ciniki_customers_edit.edit;
@@ -1749,6 +1753,9 @@ function ciniki_customers_edit() {
             p.refresh();
             p.show(cb);
             p.setupStatus();
+            if( p.parent_id > 0 && p.data.parent_id == 0 ) { 
+                p.setFieldValue('parent_id', p.parent_id);
+            }
         }
     };
     
