@@ -154,7 +154,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
             'priority'=>5590,
             'label'=>'Members', 
             'edit'=>array('app'=>'ciniki.customers.members'),
-            'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0, 'member'=>'"yes"')),
+            'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0, 'member'=>"'\"yes\"'")),
             'search'=>array(
                 'method'=>'ciniki.customers.searchQuick',
                 'args'=>array('member_status'=>10),
