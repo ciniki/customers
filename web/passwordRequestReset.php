@@ -27,7 +27,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
     //
     // Get the username for the account
     //
-    $strsql = "SELECT ciniki_customer_emails.id, email, ciniki_customers.uuid "
+    $strsql = "SELECT ciniki_customer_emails.id, email, ciniki_customers.uuid, ciniki_customers.display_name "
         . "FROM ciniki_customer_emails, ciniki_customers "
         . "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
         . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -138,6 +138,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
         // The from address can be set in the config file.
         //
         $ciniki['emailqueue'][] = array('to'=>$customer['email'],
+            'to_name'=>$customer['display_name'],
             'business_id'=>$business_id,
             'subject'=>$subject,
             'textmsg'=>$text_message,
