@@ -41,11 +41,21 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
     }
     $settings = $rc['settings'];
 
+    //
+    // Get the maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+    $rc = ciniki_customers_maps($ciniki, $business_id); 
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-    $date_format = ciniki_users_dateFormat($ciniki);
+    $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     //
     // Get the customer details and emails
@@ -56,6 +66,7 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
         . "primary_email, alternate_email, "
         . (isset($args['full_bio']) && $args['full_bio'] == 'yes' ? "full_bio, " : '')
         . "status, dealer_status, distributor_status, "
+        . "member_status, member_status AS member_status_text, member_lastpaid, "
         . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
         . "pricepoint_id, notes "
@@ -65,11 +76,13 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
             . "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . ") "
         . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
+        . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
+        . "";
     $fields = array('id', 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
         'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
         'primary_email', 'alternate_email',
         'status', 'dealer_status', 'distributor_status',
+        'member_status', 'member_status_text', 'member_lastpaid',
         'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
         'notes', 'birthdate');
     if( isset($args['full_bio']) && $args['full_bio'] == 'yes' ) {
@@ -77,7 +90,10 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
     }
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>$fields),
+            'fields'=>$fields,
+            'utctotz'=>array('member_lastpaid'=>array('format'=>'M Y', 'timezone'=>'UTC')),
+            'maps'=>array('member_status_text'=>$maps['customer']['member_status'],)
+            ),
         array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
             'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
         ));
