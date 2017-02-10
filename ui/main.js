@@ -300,14 +300,14 @@ function ciniki_customers_main() {
                 'addTxt':'Add',
                 'addFn':'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'invoice_type\':10});',
                 },
-            'order_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':4, 
+            'order_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5, 
                 'hint':'Search orders', 'noData':'No orders found',
-                'headerValues':['Invoice #', 'Date', 'Amount', 'Status'],
-                'cellClasses':['multiline','','',''],
+                'headerValues':['Invoice #', 'PO #', 'Date', 'Amount', 'Status'],
+                'cellClasses':['','', '','',''],
                 },
-            'orders':{'label':'', 'type':'simplegrid', 'visible':'no', 'num_cols':4, 
-                'headerValues':['Invoice #', 'Date', 'Amount', 'Status'],
-                'cellClasses':['multiline','','',''],
+            'orders':{'label':'', 'type':'simplegrid', 'visible':'no', 'num_cols':5, 
+                'headerValues':['Invoice #', 'PO #', 'Date', 'Amount', 'Status'],
+                'cellClasses':['','', '','',''],
                 'limit':10,
                 'moreTxt':'More',
                 'moreFn':'M.startApp(\'ciniki.sapos.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
@@ -393,10 +393,11 @@ function ciniki_customers_main() {
         this.customer.liveSearchResultValue = function(s, f, i, j, d) {
             if( s == 'order_search' ) {
                 switch(j) {
-                    case 0: return d.invoice.invoice_number + (d.invoice.po_number!=null&&d.invoice.po_number!=''?'<span class="subtext">PO #:' + d.invoice.po_number + '</span>':'');
-                    case 1: return d.invoice.invoice_date;
-                    case 2: return d.invoice.total_amount_display;
-                    case 3: return d.invoice.status_text;
+                    case 0: return d.invoice.invoice_number; // + (d.invoice.po_number!=null&&d.invoice.po_number!=''?'<span class="subtext">PO #:' + d.invoice.po_number + '</span>':'');
+                    case 1: return d.invoice.po_number;
+                    case 2: return d.invoice.invoice_date;
+                    case 3: return d.invoice.total_amount_display;
+                    case 4: return d.invoice.status_text;
                 }
             }
             return '';
@@ -506,13 +507,21 @@ function ciniki_customers_main() {
                 if( j == 0 ) { return 'subscribed'; }
                 if( j == 1 ) { return d.subscription.name; }
             }
-            else if( s == 'invoices' || s == 'carts' || s == 'pos' || s == 'orders' ) {
+            else if( s == 'invoices' || s == 'carts' || s == 'pos' ) {
                 switch(j) {
-//                  case 0: return d.invoice.invoice_number;
                     case 0: return d.invoice.invoice_number + (d.invoice.po_number!=null&&d.invoice.po_number!=''?'<span class="subtext">PO #:' + d.invoice.po_number + '</span>':'');
                     case 1: return d.invoice.invoice_date;
                     case 2: return d.invoice.total_amount_display;
                     case 3: return d.invoice.status_text;
+                }
+            }
+            else if( s == 'orders' ) {
+                switch(j) {
+                    case 0: return d.invoice.invoice_number;
+                    case 1: return d.invoice.po_number;
+                    case 2: return d.invoice.invoice_date;
+                    case 3: return d.invoice.total_amount_display;
+                    case 4: return d.invoice.status_text;
                 }
             }
             else if( s == 'appointments' ) {
