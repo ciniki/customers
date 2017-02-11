@@ -308,6 +308,7 @@ function ciniki_customers_main() {
             'orders':{'label':'', 'type':'simplegrid', 'visible':'no', 'num_cols':5, 
                 'headerValues':['Invoice #', 'PO #', 'Date', 'Amount', 'Status'],
                 'cellClasses':['','', '','',''],
+                'sortable':'yes', 'sortTypes':['number', 'text', 'date', 'number', 'text'],
                 'limit':10,
                 'moreTxt':'More',
                 'moreFn':'M.startApp(\'ciniki.sapos.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
