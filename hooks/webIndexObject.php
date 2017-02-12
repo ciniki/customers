@@ -22,6 +22,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.21', 'msg'=>'No object ID specified'));
     }
 
+
     if( $args['object'] == 'ciniki.customers.members' ) {
         //
         // Setup the base_url for use in index
@@ -123,7 +124,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         //
         // Get the public address for the dealer
         //
-        $strsql = "SELECT id, address1, address2, city, province, postal, country "
+        $strsql = "SELECT address1, address2, city, province, postal, country "
             . "FROM ciniki_customer_addresses "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -133,11 +134,14 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.27', 'msg'=>'Dealer address not found'));
         }
+        $address_keywords = '';
         if( isset($rc['address']) ) {
             $address = $rc['address'];
             $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
                 . '/' . ($address['province'] == '' ? '-' : $address['province']) 
                 . '/' . ($address['city'] == '' ? '-' : $address['city']);
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makeAddressKeywords');
+            $address_keywords = ciniki_core_makeAddressKeywords($ciniki, $address);
         } else {
             $address = array();
             return array('stat'=>'ok');         // Require an address to be in search engine
@@ -159,7 +163,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             'object'=>'ciniki.customers.dealers',
             'object_id'=>$item['id'],
             'primary_words'=>$item['display_name'] . ' dealer dealers',
-            'secondary_words'=>$item['short_description'],
+            'secondary_words'=>$item['short_description'] . ' ' . $address_keywords,
             'tertiary_words'=>$item['full_bio'],
             'weight'=>15000,
             'url'=>$base_url . '/' . $item['permalink']
@@ -210,6 +214,8 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
                 . '/' . ($address['province'] == '' ? '-' : $address['province']) 
                 . '/' . ($address['city'] == '' ? '-' : $address['city']);
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makeAddressKeywords');
+            $address_keywords = ciniki_core_makeAddressKeywords($ciniki, $address);
         } else {
             $address = array();
             return array('stat'=>'ok');         // Require an address to be in search engine
@@ -231,7 +237,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             'object'=>'ciniki.customers.distributors',
             'object_id'=>$item['id'],
             'primary_words'=>$item['display_name'] . ' distributor distributors',
-            'secondary_words'=>$item['short_description'],
+            'secondary_words'=>$item['short_description'] . $address_keywords,
             'tertiary_words'=>$item['full_bio'],
             'weight'=>15000,
             'url'=>$base_url . '/' . $item['permalink']
