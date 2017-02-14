@@ -81,6 +81,10 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     if( !isset($customer['status']) || $customer['status'] == 0 || $customer['status'] >= 40 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.183', 'msg'=>'Login disabled, please contact us to have the problem fixed.'));
     }
+    if( isset($settings['page-account-dealers-only']) && $settings['page-account-dealers-only'] == 'yes'
+        && $customer['dealer_status'] != 10 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.218', 'msg'=>'Login disabled, please contact us to have the problem fixed.'));
+    }
 
     //
     // Check for other accounts with the same email/password or child accounts

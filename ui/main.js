@@ -313,7 +313,7 @@ function ciniki_customers_main() {
                 'moreTxt':'More',
                 'moreFn':'M.startApp(\'ciniki.sapos.customer\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
                 'addTxt':'Add',
-                'addFn':'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'invoice_type\':40});',
+                'addFn':'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'action\':\'addorder\', \'customer_id\':M.ciniki_customers_main.customer.customer_id,\'name\':M.ciniki_customers_main.customer.data.display_name,\'invoice_type\':40});',
                 },
             'pos':{'label':'', 'type':'simplegrid', 'visible':'no', 'num_cols':4, 
                 'headerValues':['Invoice #', 'Date', 'Amount', 'Status'],
