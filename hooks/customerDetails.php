@@ -183,13 +183,13 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
 //  if( isset($customer['company']) && $customer['company'] != '' ) {
 //      $details[] = array('detail'=>array('label'=>'Company', 'value'=>$customer['company']));
 //  }
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
+//    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
         if( isset($customer['phones']) ) {
             foreach($customer['phones'] as $phone) {
                 $details[] = array('detail'=>array('label'=>$phone['phone_label'], 'value'=>$phone['phone_number']));
             }
         }
-    } else {
+/*    } else {
         if( isset($customer['phone_home']) && $customer['phone_home'] != '' ) {
             $details[] = array('detail'=>array('label'=>'Home', 'value'=>$customer['phone_home']));
         }
@@ -202,8 +202,8 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
         if( isset($customer['phone_fax']) && $customer['phone_fax'] != '' ) {
             $details[] = array('detail'=>array('label'=>'Fax', 'value'=>$customer['phone_fax']));
         }
-    }
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) == 0 ) {
+    } */
+/*    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) == 0 ) { */
         if( isset($customer['emails']) ) {
             $emails = '';
             $comma = '';
@@ -218,14 +218,14 @@ function ciniki_customers_hooks_customerDetails($ciniki, $business_id, $args) {
                 $details[] = array('detail'=>array('label'=>'Email', 'value'=>$emails));
             }
         }
-    } else {
+/*    } else {
         if( isset($customer['primary_email']) && $customer['primary_email'] != '' ) {
             $details[] = array('detail'=>array('label'=>'Email', 'value'=>$customer['primary_email']));
         }
         if( isset($customer['alternate_email']) && $customer['alternate_email'] != '' ) {
             $details[] = array('detail'=>array('label'=>'Alternate', 'value'=>$customer['alternate_email']));
         }
-    }
+    } */
     if( isset($customer['addresses']) ) {
         foreach($customer['addresses'] as $a => $address) {
             $label = '';

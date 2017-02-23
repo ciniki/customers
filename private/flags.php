@@ -48,6 +48,7 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'27', 'name'=>'Start Date')),
 //      array('flag'=>array('bit'=>'28', 'name'=>'')),
         // 0x10000000
+        // FIXME: Remove these flags
         array('flag'=>array('bit'=>'29', 'name'=>'Single Phones')),      // Only allow 4 phones (home,work,cell,fax)
         array('flag'=>array('bit'=>'30', 'name'=>'Single Email')),       // Only allow one email
         array('flag'=>array('bit'=>'31', 'name'=>'Single Address')),     // Only allow one address
