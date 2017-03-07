@@ -362,7 +362,7 @@ function ciniki_customers_main() {
                 'cellClasses':['multiline', 'multiline'],
                 'noData':'No certifications',
                 'addTxt':'Add Certification',
-                'addFn':'M.startApp(\'ciniki.fatt.certs\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'certcustomer_id\':0,\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
+                'addFn':'M.startApp(\'ciniki.fatt.reports\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'certcustomer_id\':0,\'customer_id\':M.ciniki_customers_main.customer.customer_id});',
                 },
             'pastcerts':{'label':'History', 'type':'simplegrid', 'visible':'no', 'num_cols':2,
                 'sortable':'yes',
@@ -638,7 +638,7 @@ function ciniki_customers_main() {
                 return 'M.startApp(\'ciniki.services.customer\',null,\'M.ciniki_customers_main.showCustomer(null,null,"services");\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'subscription_id\':\'' + d.subscription.id + '\'});';
             }
             else if( s == 'curcerts' || s == 'pastcerts' ) {
-                return 'M.startApp(\'ciniki.fatt.certs\',null,\'M.ciniki_customers_main.showCustomer(null,null,"certs");\',\'mc\',{\'certcustomer_id\':\'' + d.cert.id + '\',\'customer_id\':M.ciniki_customers_main.customer.customer_id});';
+                return 'M.startApp(\'ciniki.fatt.reports\',null,\'M.ciniki_customers_main.showCustomer(null,null,"certs");\',\'mc\',{\'certcustomer_id\':\'' + d.cert.id + '\',\'customer_id\':M.ciniki_customers_main.customer.customer_id});';
             }
             else if( s == 'children' ) {
                 return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showCustomer(null,"' + M.ciniki_customers_main.customer.customer_id + '","children");\',\'' + d.customer.id + '\');';
