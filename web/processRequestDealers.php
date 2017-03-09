@@ -530,15 +530,16 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
                     break;
                 }
             }
-            if( isset($province_name) && $province_name != '' ) {
+            if( isset($province_name) && $province_name != '' && $province_name != '-' ) {
                 if( isset($map_country) && isset($map_country[strtolower($province_name)]['code']) ) {
                     $center_addr = $map_country[strtolower($province_name)]['code'] . ', ' . $center_addr;
                 } else {
+                    print_r("CENTER: " . $province_name);
                     $center_addr = $province_name . ', ' . $center_addr;
                 }
                 $center_zoom = 5;
             } 
-            if( isset($city_name) && $city_name != '' ) {
+            if( isset($city_name) && $city_name != '' && $city_name != '-' ) {
                 $center_addr = $city_name . ', ' . $center_addr;
                 $center_zoom = 7;
             }
