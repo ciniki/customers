@@ -1,0 +1,5 @@
+#
+# This file will upgrade the database table customers to version 1.23.
+#
+ALTER TABLE ciniki_customers ADD COLUMN discount_percent decimal(19,4) not null AFTER sales_total_prev;
+ALTER TABLE ciniki_customers COMMENT='v1.23';
