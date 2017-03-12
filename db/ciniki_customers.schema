@@ -164,13 +164,15 @@
 #                   for tax calculations for the online ordering.  If a tax_location_id is set in
 #                   for the customer, it overrides the tax calculates in sapos based on postal/zip.
 #
-# reward_level:     The current reward level they are set at.  This is used by external systems.
-# sales_total:      The current amount of sales for the year, used by external systems.
-# sales_total_prev: The last years sales amount, used by external systems.
+# reward_level:         The current reward level they are set at.  This is used by external systems.
+# sales_total:          The current amount of sales for the year, used by external systems.
+# sales_total_prev:     The last years sales amount, used by external systems.
 #
-# start_date:       The UTC date and time of the first order, typically used as a date.
+# discount_percent:  The discount percent to apply to every item ordered by this customer.
 #
-# webflags:         The flags to determine how the customer is shown within the website.
+# start_date:           The UTC date and time of the first order, typically used as a date.
+#
+# webflags:             The flags to determine how the customer is shown within the website.
 #
 #                       0x01 - Member Visible (hidden by default without this set)
 #                       0x02 - Dealer Visible (hidden by default without this set)
@@ -229,6 +231,7 @@ create table ciniki_customers (
     reward_level varchar(50) not null,
     sales_total varchar(50) not null,
     sales_total_prev varchar(50) not null,
+    discount_percent decimal(19,4) not null,
     start_date datetime not null,
     webflags tinyint unsigned not null,
     permalink varchar(250) not null,
@@ -245,4 +248,4 @@ create table ciniki_customers (
     index (company),
     index (eid),
     index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.22';
+) ENGINE='InnoDB', COMMENT='v1.23';

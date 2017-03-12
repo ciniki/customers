@@ -50,6 +50,7 @@ function ciniki_customers_objects($ciniki) {
             'reward_level'=>array('default'=>''),
             'sales_total'=>array('default'=>''),
             'sales_total_prev'=>array('default'=>''),
+            'discount_percent'=>array('default'=>'0'),
             'start_date'=>array('default'=>''),
             'webflags'=>array('default'=>'0'),
             'permalink'=>array('default'=>''),

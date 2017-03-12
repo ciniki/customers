@@ -104,7 +104,7 @@ function ciniki_customers_getFull($ciniki) {
 //      . "ciniki_customer_emails.flags AS email_flags, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
         . "connection, "
-        . "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, sales_total_prev, start_date, "
+        . "pricepoint_id, salesrep_id, tax_number, tax_location_id, reward_level, sales_total, sales_total_prev, discount_percent, start_date, "
         . "notes, primary_image_id, webflags, short_bio, full_bio "
         . "FROM ciniki_customers "
 //      . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
@@ -120,7 +120,7 @@ function ciniki_customers_getFull($ciniki) {
                 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
                 'display_name', 'display_name_format', 'company', 'department', 'title', 
                 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
-                'reward_level', 'sales_total', 'sales_total_prev', 'start_date', 
+                'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
                 'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate', 'connection'),
             'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                 'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
@@ -145,6 +145,7 @@ function ciniki_customers_getFull($ciniki) {
     $customer = $rc['customers'][0]['customer'];
     $customer['addresses'] = array();
     $customer['subscriptions'] = array();
+    $customer['discount_percent'] = ($customer['discount_percent'] == 0 ? '' : (float)$customer['discount_percent']);
 
     //
     // Get the categories and tags for the customers

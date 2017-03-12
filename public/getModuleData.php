@@ -109,7 +109,7 @@ function ciniki_customers_getModuleData($ciniki) {
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
         . "connection, "
         . "pricepoint_id, salesrep_id, tax_number, tax_location_id, "
-        . "reward_level, sales_total, sales_total_prev, start_date, webflags, "
+        . "reward_level, sales_total, sales_total_prev, discount_percent, start_date, webflags, "
         . "notes "
         . "FROM ciniki_customers "
         . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -137,7 +137,7 @@ function ciniki_customers_getModuleData($ciniki) {
                 'distributor_status', 'distributor_status_text',
                 'company', 'department', 'title', 
                 'notes', 'birthdate', 'connection', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-                'reward_level', 'sales_total', 'sales_total_prev', 'start_date', 'webflags'),
+                'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 'webflags'),
             'maps'=>array('status_text'=>$maps['customer']['status'],
                 'dealer_status_text'=>$maps['customer']['dealer_status'],
                 'distributor_status_text'=>$maps['customer']['distributor_status']),
@@ -153,6 +153,7 @@ function ciniki_customers_getModuleData($ciniki) {
         return array('stat'=>'ambiguous', 'err'=>array('code'=>'ciniki.customers.93', 'msg'=>'Multiple customers found'));
     }
     $customer = $rc['customers'][0]['customer'];
+    $customer['discount_percent_text'] = (float)$customer['discount_percent'] . '%';
     $customer['addresses'] = array();
     $customer['subscriptions'] = array();
 
