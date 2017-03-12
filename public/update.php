@@ -99,7 +99,7 @@ function ciniki_customers_update(&$ciniki) {
     // Get the existing customer name
     //
     $strsql = "SELECT status, type, prefix, first, middle, last, suffix, "
-        . "display_name, display_name_format, company, dealer_status, distributor_status "
+        . "display_name, display_name_format, company, dealer_status, distributor_status, webflags "
         . "FROM ciniki_customers "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -112,6 +112,26 @@ function ciniki_customers_update(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.143', 'msg'=>'Customer does not exist'));
     }
     $customer = $rc['customer'];
+
+    //
+    // Check if dealer status and distributor status should be changed
+    //
+    if( isset($args['status']) && $args['status'] == 60 ) {
+        if( ($customer['webflags']&0x07) > 0 ) {
+            $args['webflags'] = 0;
+        }
+    }
+
+    if( isset($args['dealer_status']) && $args['dealer_status'] == 60 ) {
+        if( ($customer['webflags']&0x02) > 0 ) {
+            $args['webflags'] = ($customer['webflags'] & !0x02);
+        }
+    }
+    if( isset($args['distributor_status']) && $args['distributor_status'] == 60 ) {
+        if( ($customer['webflags']&0x04) > 0 ) {
+            $args['webflags'] = ($customer['webflags'] & !0x04);
+        }
+    }
 
     //
     // Only allow owners to change status of customer to/from suspend/delete
