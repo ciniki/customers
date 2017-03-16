@@ -82,6 +82,7 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
     $categories = $rc['categories'];
 
 
+    require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Settings.php');
     require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Autoloader.php');
     \PhpOffice\PhpWord\Autoloader::register();
     require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/PhpWord.php');
