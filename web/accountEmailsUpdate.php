@@ -118,7 +118,6 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountEmailAdd');
                 $rc = ciniki_customers_web_accountEmailAdd($ciniki, $settings, $business_id, $customer['id'], $_POST['email_0']);
                 if( $rc['stat'] != 'ok' ) {
-                        print_r($rc);
                     $errors = 'yes';
                     $error_msg .= ($error_msg!=''?"\n":'') . $rc['err']['msg'];
                 } else {
