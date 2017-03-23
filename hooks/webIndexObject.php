@@ -122,6 +122,12 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         $item = $rc['item'];
 
         //
+        // Check if item is visible on website
+        //
+        if( ($item['webflags']&0x02) == 0 ) {
+            return array('stat'=>'ok');
+        }
+        //
         // Get the public address for the dealer
         //
         $strsql = "SELECT address1, address2, city, province, postal, country "
@@ -135,8 +141,8 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.27', 'msg'=>'Dealer address not found'));
         }
         $address_keywords = '';
-        if( isset($rc['address']) ) {
-            $address = $rc['address'];
+        if( isset($rc['rows'][0]) ) {
+            $address = $rc['rows'][0];
             $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
                 . '/' . ($address['province'] == '' ? '-' : $address['province']) 
                 . '/' . ($address['city'] == '' ? '-' : $address['city']);
@@ -147,12 +153,6 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             return array('stat'=>'ok');         // Require an address to be in search engine
         }
 
-        //
-        // Check if item is visible on website
-        //
-        if( ($item['webflags']&0x02) == 0 ) {
-            return array('stat'=>'ok');
-        }
         $object = array(
             'label'=>'Dealers',
             'title'=>$item['display_name'],
