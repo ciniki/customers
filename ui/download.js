@@ -4,85 +4,84 @@ function ciniki_customers_download() {
     // Panels
     //
     this.toggleOptions = {'no':'No', 'yes':'Yes'};
-    this.init = function() {
-        //
-        // The member list fields available to download
-        //
-        this.exportlist = new M.panel('List',
-            'ciniki_customers_download', 'exportlist',
-            'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.download.exportlist');
-        this.exportlist.data = {};
-        this.exportlist.sections = {
-            'options':{'label':'Data to include', 'aside':'yes', 'fields':{
-                'ids':{'label':'IDs for updating', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'eid':{'label':'External ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'status':{'label':'Status', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'display_name':{'label':'Full Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'prefix':{'label':'Name Prefix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'first':{'label':'First Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'middle':{'label':'Middle Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'last':{'label':'Last Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'suffix':{'label':'Name Suffix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'company':{'label':'Company', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'department':{'label':'Department', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'title':{'label':'Title', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'birthdate':{'label':'Birthdate', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'visible':{'label':'Web Visible', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+    //
+    // The member list fields available to download
+    //
+    this.exportlist = new M.panel('List',
+        'ciniki_customers_download', 'exportlist',
+        'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.download.exportlist');
+    this.exportlist.data = {};
+    this.exportlist.sections = {
+        'selector':{'label':'Select', 'aside':'yes', 'active':'no', 'fields':{}},
+        'options':{'label':'Data to include', 'aside':'yes', 'fields':{
+            'ids':{'label':'IDs for updating', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'eid':{'label':'External ID', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'type':{'label':'Customer Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'status':{'label':'Status', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'display_name':{'label':'Full Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'prefix':{'label':'Name Prefix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'first':{'label':'First Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'middle':{'label':'Middle Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'last':{'label':'Last Name', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'suffix':{'label':'Name Suffix', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'company':{'label':'Company', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'department':{'label':'Department', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'title':{'label':'Title', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'birthdate':{'label':'Birthdate', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'visible':{'label':'Web Visible', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+        }},
+        '_members':{'label':'', 'aside':'yes', 'fields':{
+            'member_status':{'label':'Member Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'member_lastpaid':{'label':'Last Paid Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'membership_type':{'label':'Membership Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'member_categories':{'label':'Categories', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'primary_image':{'label':'Image', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'primary_image_caption':{'label':'Image Caption', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'short_description':{'label':'Short Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'full_bio':{'label':'Full Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+        }},
+        '_dealers':{'label':'', 'aside':'yes', 'fields':{
+            'dealer_status':{'label':'Dealer Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+        }},
+        '_distributors':{'label':'', 'aside':'yes', 'fields':{
+            'distributor_status':{'label':'Distributor Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+        }},
+        'options3':{'label':'', 'aside':'yes', 'active':'yes', 'fields':{
+            'salesrep':{'label':'Sales Rep', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'pricepoint_name':{'label':'Pricepoint', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'pricepoint_code':{'label':'Pricepoint Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'tax_number':{'label':'Tax Number', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'tax_location_code':{'label':'Tax Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'reward_level':{'label':'Reward Level', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'sales_total':{'label':'Sales Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'sales_total_prev':{'label':'Previous Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+            'start_date':{'label':'Start Date', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+        }},
+        'options4':{'label':'Joined Contact Info', 'active':'yes', 'fields':{
+            'phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'optionnoemails':{'label':'"No Emails" option', 'type':'toggle', 'default':'no', 'toggles':{'no':'Include', 'yes':'Exclude'}},
+            'addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'links':{'label':'Websites', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+        }},
+        'options5':{'label':'Split Contact Info', 'active':'yes', 'fields':{
+            'split_phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'split_emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'split_addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'split_links':{'label':'Links', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             }},
-            '_members':{'label':'', 'aside':'yes', 'fields':{
-                'member_status':{'label':'Member Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'member_lastpaid':{'label':'Last Paid Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'membership_type':{'label':'Membership Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'member_categories':{'label':'Categories', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'primary_image':{'label':'Image', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'primary_image_caption':{'label':'Image Caption', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'short_description':{'label':'Short Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'full_bio':{'label':'Full Bio', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+        'seasons':{'label':'Season Status', 'active':'no', 'fields':{}},
+        'subscriptions':{'label':'Subscription Status', 'active':'no', 'fields':{}},
+        '_buttons':{'label':'', 'buttons':{
+            'selectall':{'label':'Select All', 'fn':'M.ciniki_customers_download.selectAll();'},
+            'download':{'label':'Download Excel', 'fn':'M.ciniki_customers_download.downloadListExcel();'},
             }},
-            '_dealers':{'label':'', 'aside':'yes', 'fields':{
-                'dealer_status':{'label':'Dealer Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            }},
-            '_distributors':{'label':'', 'aside':'yes', 'fields':{
-                'distributor_status':{'label':'Distributor Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            }},
-            'options3':{'label':'', 'aside':'yes', 'active':'yes', 'fields':{
-                'salesrep':{'label':'Sales Rep', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'pricepoint_name':{'label':'Pricepoint', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'pricepoint_code':{'label':'Pricepoint Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'tax_number':{'label':'Tax Number', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'tax_location_code':{'label':'Tax Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'reward_level':{'label':'Reward Level', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'sales_total':{'label':'Sales Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'sales_total_prev':{'label':'Previous Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'start_date':{'label':'Start Date', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            }},
-            'options4':{'label':'Joined Contact Info', 'active':'yes', 'fields':{
-                'phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'optionnoemails':{'label':'"No Emails" option', 'type':'toggle', 'default':'no', 'toggles':{'no':'Include', 'yes':'Exclude'}},
-                'addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'links':{'label':'Websites', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-            }},
-            'options5':{'label':'Split Contact Info', 'active':'yes', 'fields':{
-                'split_phones':{'label':'Phone Numbers', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'split_emails':{'label':'Emails', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'split_addresses':{'label':'Addresses', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                'split_links':{'label':'Links', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-                }},
-            'seasons':{'label':'Season Status', 'active':'no', 'fields':{}},
-            'subscriptions':{'label':'Subscription Status', 'active':'no', 'fields':{}},
-            '_buttons':{'label':'', 'buttons':{
-                'selectall':{'label':'Select All', 'fn':'M.ciniki_customers_download.selectAll();'},
-                'download':{'label':'Download Excel', 'fn':'M.ciniki_customers_download.downloadListExcel();'},
-                }},
-            };
-        this.exportlist.fieldValue = function(s, i, j, d) {
-            return M.ciniki_customers_download.exportlist.sections[s].fields[i].default;
         };
-        this.exportlist.addClose('Back');
-    }
+    this.exportlist.fieldValue = function(s, i, j, d) {
+        return M.ciniki_customers_download.exportlist.sections[s].fields[i].default;
+    };
+    this.exportlist.addClose('Back');
 
     //
     // Arguments:
@@ -160,6 +159,10 @@ function ciniki_customers_download() {
         //
         // Get seasons if enabled
         //
+        this.exportlist.sections.selector.fields = {
+            'select_member_status':{'label':'Member Status', 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Suspended'}},
+            'select_lifetime':{'label':'Lifetime Members', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            };
         if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
             && M.curBusiness.modules['ciniki.customers'].settings != null
             && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
@@ -175,9 +178,18 @@ function ciniki_customers_download() {
                         'toggles':this.toggleOptions,
                     };
                 }
+                this.exportlist.sections.selector.fields['select_season_' + season.id] = {
+                    'label':season.name, 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Inactive'},
+                    };
             }
         } else {
             this.exportlist.sections.seasons.active = 'no';
+        }
+
+        if( M.modFlagOn('ciniki.customers', 0x02) ) {
+            this.exportlist.sections.selector.active = 'yes';
+        } else {
+            this.exportlist.sections.selector.active = 'no';
         }
 
         //
@@ -341,6 +353,20 @@ function ciniki_customers_download() {
             }
         }
         var args = {'business_id':M.curBusinessID, 'columns':cols};
+        if( this.exportlist.sections.selector.active == 'yes' ) {
+            args['select_member_status'] = this.exportlist.formValue('select_member_status');
+            args['select_lifetime'] = this.exportlist.formValue('select_lifetime');
+            if( M.modFlagOn('ciniki.customers', 0x02000000) 
+                && M.curBusiness.modules['ciniki.customers'].settings != null
+                && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+                ) {
+                for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
+                    var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
+                    args['select_season_' + season.id] = this.exportlist.formValue('select_season_' + season.id);
+                }
+            }
+        }
+        console.log(args);
         if( this.exportlist.membersonly != '' ) { args.membersonly = this.exportlist.membersonly; }
         if( this.exportlist.subscription_id != '' ) { args.subscription_id = this.exportlist.subscription_id; }
         M.api.openFile('ciniki.customers.customerListExcel', args);

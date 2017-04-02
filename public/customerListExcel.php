@@ -23,6 +23,8 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         'columns'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Columns'), 
         'memberlist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Members Only'),
         'subscription_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subscription'),
+        'select_member_status'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Member Status'),
+        'select_lifetime'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Include Lifetime'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -64,33 +66,68 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         if( $column == 'optionnoemails' ) { $noemails = 'exclude'; }
     }
 
+    $selector_sql = '';
+    if( isset($args['select_member_status']) && count($args['select_member_status']) > 0 ) {
+        $selector_sql = "AND ciniki_customers.member_status IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['select_member_status']) . ") ";
+    }
+
     //
     // If seasons is enabled and requested, get the requested season names
     //
     $season_ids = array();
     $seasons = array();
     if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+        $strsql = "SELECT id, name "
+            . "FROM ciniki_customer_seasons "
+            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//            . "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $season_ids) . ") "
+            . "";
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'seasons', 'fname'=>'id', 
+                'fields'=>array('id', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $season_members_sql = '';
+        if( isset($rc['seasons']) ) {
+            $seasons = $rc['seasons'];
+            foreach($seasons as $season) {
+                // 
+                // Check each season to see if a list of statuses was passed
+                //
+                if( isset($ciniki['request']['args']['select_season_' . $season['id']]) && $ciniki['request']['args']['select_season_' . $season['id']] != '' ) {
+                    $ids = explode(',', $ciniki['request']['args']['select_season_' . $season['id']]);
+                    if( count($ids) > 0 ) {
+                        $season_members_sql .= ($season_members_sql != '' ? 'OR ' : '')
+                        . "(season_id = '" . ciniki_core_dbQuote($ciniki, $season['id']) . "' "
+                        . "AND status IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                        . ") ";
+                    }
+                }
+            }
+            if( $season_members_sql != '' ) {
+                $strsql = "SELECT DISTINCT customer_id "
+                    . "FROM ciniki_customer_season_members "
+                    . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                    . "AND ("
+                    . $season_members_sql
+                    . ") ";
+                $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer_id');
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['customers']) && count($rc['customers']) > 0 ) {
+                    $restrict_customer_ids = $rc['customers'];
+                }
+            }
+        }
         foreach($args['columns'] as $column) {
             if( preg_match("/^season-([0-9]+)$/", $column, $matches) ) {
                 $season_ids[] = $matches[1];
             }
         }
         if( count($season_ids) > 0 ) {
-            $strsql = "SELECT id, name "
-                . "FROM ciniki_customer_seasons "
-                . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-                . "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $season_ids) . ") "
-                . "";
-            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
-                array('container'=>'seasons', 'fname'=>'id', 
-                    'fields'=>array('id', 'name')),
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            if( isset($rc['seasons']) ) {
-                $seasons = $rc['seasons'];
-            }
             $strsql = "SELECT season_id, customer_id, status "
                 . "FROM ciniki_customer_season_members "
                 . "WHERE ciniki_customer_season_members.season_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $season_ids) . ") "
@@ -99,8 +136,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 . "";
             $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
                 array('container'=>'seasons', 'fname'=>'season_id', 'fields'=>array('season_id')),
-                array('container'=>'customers', 'fname'=>'customer_id', 
-                    'fields'=>array('id'=>'customer_id', 'status')),
+                array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('id'=>'customer_id', 'status')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -399,6 +435,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "FROM ciniki_customers "
             . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "AND ciniki_customers.member_status = 10 "
+            . $selector_sql
             . "ORDER BY ciniki_customers.sort_name "
             . "";
     } elseif( isset($args['subscription_id']) && $args['subscription_id'] != '' && $args['subscription_id'] > 0 ) {
@@ -437,6 +474,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "AND ciniki_subscription_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "AND ciniki_subscription_customers.customer_id = ciniki_customers.id "
             . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . $selector_sql
             . "ORDER BY ciniki_customers.sort_name "
             . "";
     } else {
@@ -471,6 +509,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "'' AS emails "
             . "FROM ciniki_customers "
             . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . $selector_sql
             . "ORDER BY ciniki_customers.sort_name "
             . "";
     }
@@ -631,6 +670,11 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     foreach($rc['customers'] as $customer) {
         $customer = $customer['customer'];
 
+        if( isset($restrict_customer_ids) 
+            && (!isset($args['select_lifetime']) || $args['select_lifetime'] != 'yes' || ($args['select_lifetime'] == 'yes' && $customer['membership_length'] != 'Lifetime'))
+            && !in_array($customer['id'], $restrict_customer_ids) ) {
+            continue;
+        }
         $col = 0;
         foreach($args['columns'] as $column) {
             if( $column == 'ids' ) {
