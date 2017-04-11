@@ -91,7 +91,7 @@ function ciniki_customers_edit() {
                 }},
             '_seasons':{'label':'Seasons', 'aside':'yes', 'active':'no', 'fields':{
                 }},
-            '_member_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
+            '_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
                 'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
                 }},
             'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{

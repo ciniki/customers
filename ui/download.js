@@ -156,71 +156,63 @@ function ciniki_customers_download() {
     }
 
     this.showExportList = function(cb, selected_season, membersonly, subscription_id) {
-        //
-        // Get seasons if enabled
-        //
-        this.exportlist.sections.selector.fields = {
-            'select_member_status':{'label':'Member Status', 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Suspended'}},
-            'select_lifetime':{'label':'Lifetime Members', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
-            };
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
-            && M.curBusiness.modules['ciniki.customers'].settings != null
-            && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
-            ) {
-            this.exportlist.sections.seasons.active = 'yes';
-            this.exportlist.sections.seasons.fields = {};
-            for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
-                var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
-                if( season.open == 'yes' ) {
-                    this.exportlist.sections.seasons.fields['season-' + season.id] = {
-                        'label':season.name, 
-                        'type':'toggle', 'default':(selected_season!=null&&selected_season==season.id?'yes':'no'), 
-                        'toggles':this.toggleOptions,
-                    };
+        M.api.getJSONCb('ciniki.customers.customerListExcelOptions', {'business_id':M.curBusinessID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            } 
+            var p = M.ciniki_customers_download.exportlist;
+            //
+            // Get seasons if enabled
+            //
+            p.sections.selector.fields = {};
+            if( M.modFlagOn('ciniki.customers', 0x400000) && rsp.customer_categories != null ) {
+                p.sections.selector.fields['select_categories'] = {'label':'Categories', 'type':'multiselect', 'none':'yes', 'options':{}};
+                for(var i in rsp.customer_categories) {
+                    p.sections.selector.fields.select_categories.options[M.eU(rsp.customer_categories[i].name)] = rsp.customer_categories[i].name;
                 }
-                this.exportlist.sections.selector.fields['select_season_' + season.id] = {
-                    'label':season.name, 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Inactive'},
-                    };
             }
-        } else {
-            this.exportlist.sections.seasons.active = 'no';
-        }
-
-        if( M.modFlagOn('ciniki.customers', 0x02) ) {
-            this.exportlist.sections.selector.active = 'yes';
-        } else {
-            this.exportlist.sections.selector.active = 'no';
-        }
-
-        //
-        // Check if subscriptions are enabled
-        //
-        if( M.curBusiness.modules['ciniki.subscriptions'] != null ) {
-            M.api.getJSONCb('ciniki.subscriptions.subscriptionList', {'business_id':M.curBusinessID}, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                } 
-                var p = M.ciniki_customers_download.exportlist;
-                p.subscriptions = rsp.subscriptions;
-                if( rsp.subscriptions.length > 0 ) {
-                    p.sections.subscriptions.active = 'yes';
-                    p.sections.subscriptions.fields = {};
-                    for(i in rsp.subscriptions) {
-                        p.sections.subscriptions.fields['subscription-' + rsp.subscriptions[i].subscription.id] = {
-                            'label':rsp.subscriptions[i].subscription.name, 
-                            'type':'toggle', 'default':'no', 'toggles':M.ciniki_customers_download.toggleOptions,
+            p.sections.selector.fields['select_member_status'] = {'label':'Member Status', 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Suspended'}};
+            p.sections.selector.fields['select_lifetime'] = {'label':'Lifetime Members', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}};
+            if( M.modFlagOn('ciniki.customers', 0x02000000) 
+                && M.curBusiness.modules['ciniki.customers'].settings != null
+                && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+                ) {
+                p.sections.seasons.active = 'yes';
+                p.sections.seasons.fields = {};
+                for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
+                    var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
+                    if( season.open == 'yes' ) {
+                        p.sections.seasons.fields['season-' + season.id] = {
+                            'label':season.name, 
+                            'type':'toggle', 'default':(selected_season!=null&&selected_season==season.id?'yes':'no'), 
+                            'toggles':M.ciniki_customers_download.toggleOptions,
                         };
                     }
+                    p.sections.selector.fields['select_season_' + season.id] = {
+                        'label':season.name, 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Inactive'},
+                        };
                 }
-                p.refresh();
-                p.show(cb);
-            });
-        } else {
-            this.exportlist.sections.subscriptions.active = 'no';
-            this.exportlist.refresh();
-            this.exportlist.show(cb);
-        }
+            } else {
+                p.sections.seasons.active = 'no';
+            }
+            
+            p.sections.selector.active = M.modFlagSet('ciniki.customers', 0x02);
+
+            p.subscriptions = rsp.subscriptions;
+            if( rsp.subscriptions != null && rsp.subscriptions.length > 0 ) {
+                p.sections.subscriptions.active = 'yes';
+                p.sections.subscriptions.fields = {};
+                for(i in rsp.subscriptions) {
+                    p.sections.subscriptions.fields['subscription-' + rsp.subscriptions[i].id] = {
+                        'label':rsp.subscriptions[i].name, 
+                        'type':'toggle', 'default':'no', 'toggles':M.ciniki_customers_download.toggleOptions,
+                    };
+                }
+            }
+            p.refresh();
+            p.show(cb);
+        });
     };
 
     this.selectAll = function() {
@@ -354,6 +346,9 @@ function ciniki_customers_download() {
         }
         var args = {'business_id':M.curBusinessID, 'columns':cols};
         if( this.exportlist.sections.selector.active == 'yes' ) {
+            if( M.modFlagOn('ciniki.customers', 0x400000) ) {
+                args['select_categories'] = this.exportlist.formValue('select_categories');
+            }
             args['select_member_status'] = this.exportlist.formValue('select_member_status');
             args['select_lifetime'] = this.exportlist.formValue('select_lifetime');
             if( M.modFlagOn('ciniki.customers', 0x02000000) 
@@ -366,9 +361,9 @@ function ciniki_customers_download() {
                 }
             }
         }
-        console.log(args);
         if( this.exportlist.membersonly != '' ) { args.membersonly = this.exportlist.membersonly; }
         if( this.exportlist.subscription_id != '' ) { args.subscription_id = this.exportlist.subscription_id; }
+        console.log(args);
         M.api.openFile('ciniki.customers.customerListExcel', args);
     };
 }

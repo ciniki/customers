@@ -12,11 +12,11 @@ function ciniki_customers_members() {
             'mc', 'medium', 'sectioned', 'ciniki.customers.members.menu');
         this.menu.data = {};
         this.menu.sections = {
+            'seasons':{'label':'Seasons', 'aside':'yes', 'visible':'no', 'list':{}},
             'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1, 
                 'cellClasses':['multiline','multiline'],
                 'hint':'name, company or email', 'noData':'No members found',
                 },
-            'seasons':{'label':'Seasons', 'visible':'no', 'list':{}},
             'members':{'label':'', 'type':'simplegrid', 'num_cols':1,
                 'headerValues':null,
                 'cellClasses':['multiline', 'multiline'],
@@ -506,6 +506,7 @@ function ciniki_customers_members() {
             && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
             ) {
             this.menu.sections.seasons.visible = 'yes';
+            this.menu.size = 'medium narrowaside';
             this.member.sections.seasons.visible = 'yes';
             this.member.sections.membership.list.member_lastpaid.visible = 'no';
             this.menu.sections.seasons.list = {};
@@ -519,6 +520,7 @@ function ciniki_customers_members() {
                 }
             }
         } else {
+            this.menu.size = 'medium';
             this.menu.sections.seasons.visible = 'no';
             this.member.sections.seasons.visible = 'no';
             this.member.sections.membership.list.member_lastpaid.visible = 'yes';

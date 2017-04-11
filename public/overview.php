@@ -19,6 +19,7 @@ function ciniki_customers_overview($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
         'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -40,6 +41,7 @@ function ciniki_customers_overview($ciniki) {
 
     $rsp = array('stat'=>'ok', 'recent'=>array());
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     //
     // Get the places and customer counts
     //
@@ -57,58 +59,90 @@ function ciniki_customers_overview($ciniki) {
     // Get the list of categories if specified
     //
     if( ($modules['ciniki.customers']['flags']&0xC00000) > 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsByType');
-        $rc = ciniki_core_tagsByType($ciniki, 'ciniki.customers', $args['business_id'], 'ciniki_customer_tags', array());
+        $strsql = "SELECT tag_type, tag_name, COUNT(customer_id) AS num_customers "
+            . "FROM ciniki_customer_tags "
+            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "GROUP BY tag_type, tag_name "
+            . "ORDER BY tag_type, tag_name "
+            . "";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'types', 'fname'=>'tag_type', 'fields'=>array('tag_type')),
+            array('container'=>'tags', 'fname'=>'tag_name', 'fields'=>array('name'=>'tag_name', 'num_customers')),
+            ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
         if( isset($rc['types']) ) {
             foreach($rc['types'] as $tid => $tag_type) {
-                if( $tag_type['type']['tag_type'] == 10 
-                    && ($modules['ciniki.customers']['flags']&0x400000) > 0 
-                    ) {
-                    $rsp['customer_categories'] = $tag_type['type']['tags'];
-                }
-                elseif( $tag_type['type']['tag_type'] == 20 
-                    && ($modules['ciniki.customers']['flags']&0x800000) > 0 
-                    ) {
-                    $rsp['customer_tags'] = $tag_type['type']['tags'];
+                if( $tag_type['tag_type'] == 10 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x400000) ) { 
+                    $rsp['customer_categories'] = $tag_type['tags'];
+                } elseif( $tag_type['tag_type'] == 20 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x800000) ) { 
+                    $rsp['customer_tags'] = $tag_type['tags'];
                 }
             }
         }
     }
 
-    //
-    // Get the recently updated customers
-    //
-    $strsql = "SELECT id, display_name, status, type, company, eid "
-        . "FROM ciniki_customers "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND status < 50 "
-        . "";
-    if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
-        $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-    }
-//  if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x04) > 0 ) {
-//      $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-//  }
-    $strsql .= "ORDER BY last_updated DESC, last, first DESC ";
-    if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
-        $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified
+    if( isset($args['category']) && $args['category'] != '' ) {
+        $strsql = "SELECT customers.id, "
+            . "customers.display_name, "
+            . "customers.status, "
+            . "customers.type, "
+            . "customers.company, "
+            . "customers.eid "
+            . "FROM ciniki_customer_tags AS tags "
+            . "JOIN ciniki_customers AS customers ON ("
+                . "tags.customer_id = customers.id "
+                . "AND customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . ") "
+            . "WHERE tags.tag_type = 10 "
+            . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
+            . "AND tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
+                'fields'=>array('id', 'display_name', 'status', 'type', 'company', 'eid')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['customers']) ) { 
+            $rsp['customers'] = $rc['customers'];
+        }
     } else {
-        $strsql .= "LIMIT 25 ";
-    }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-    $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'display_name', 'status', 'type', 'company', 'eid')),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    if( isset($rc['customers']) ) { 
-        $rsp['recent'] = $rc['customers'];
+        //
+        // Get the recently updated customers
+        //
+        $strsql = "SELECT id, display_name, status, type, company, eid "
+            . "FROM ciniki_customers "
+            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND status < 50 "
+            . "";
+        if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
+            $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+        }
+    //  if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+    //      $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
+    //  }
+        $strsql .= "ORDER BY last_updated DESC, last, first DESC ";
+        if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
+            $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified
+        } else {
+            $strsql .= "LIMIT 25 ";
+        }
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
+                'fields'=>array('id', 'display_name', 'status', 'type', 'company', 'eid')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['customers']) ) { 
+            $rsp['recent'] = $rc['customers'];
+        }
     }
 
     return $rsp;

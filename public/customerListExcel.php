@@ -23,6 +23,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         'columns'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Columns'), 
         'memberlist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Members Only'),
         'subscription_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subscription'),
+        'select_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Categories'),
         'select_member_status'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Member Status'),
         'select_lifetime'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Include Lifetime'),
         )); 
@@ -53,6 +54,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     $maps = $rc['maps'];
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteList');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 
@@ -147,6 +149,29 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                         $seasons[$sid]['customers'] = $rc['seasons'][$sid]['customers'];
                     }
                 }
+            }
+        }
+    }
+
+    //
+    // Check if categories enabled
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x400000) && isset($args['select_categories']) && count($args['select_categories']) > 0 ) {
+        $strsql = "SELECT DISTINCT customer_id "
+            . "FROM ciniki_customer_tags "
+            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tag_type = 10 "
+            . "AND tag_name IN (" . ciniki_core_dbQuoteList($ciniki, $args['select_categories']) . ") "
+            . "";
+        $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer_id');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['customers']) && count($rc['customers']) > 0 ) {
+            if( isset($restrict_customer_ids) ) {
+                $restrict_customer_ids = array_intersect($restrict_customer_ids, $rc['customers']);
+            } else {
+                $restrict_customer_ids = $rc['customers'];
             }
         }
     }
