@@ -1587,7 +1587,7 @@ function ciniki_customers_edit() {
             this.edit.forms.business.emails.active = 'no';
             this.edit.forms.business.addresses.active = 'no';
             this.edit.forms.business.links.active = 'no';
-            this.edit.forms.person._customer_categories.fields.customer_categories.tags = {};
+            this.edit.forms.person._customer_categories.fields.customer_categories.tags = [];
             if( (M.curBusiness.modules['ciniki.customers'].flags&0xC00224) > 0 ) {
                 M.api.getJSONCb('ciniki.customers.tags', {'business_id':M.curBusinessID}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
