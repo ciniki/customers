@@ -99,7 +99,7 @@ function ciniki_customers_get($ciniki) {
             . "distributor_status, distributor_status AS distributor_status_text, "
             . "prefix, first, middle, last, suffix, company, department, title, "
             . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
-            . "connection, "
+            . "connection, short_bio, full_bio, webflags, notes, "
             . "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
             . "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.sales_total_prev, ciniki_customers.discount_percent, ciniki_customers.start_date, "
