@@ -143,6 +143,8 @@ function ciniki_customers_searchQuick($ciniki) {
             . "OR c1.first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR c1.last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR c1.last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR c1.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR c1.eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR c1.company LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR c1.company LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
