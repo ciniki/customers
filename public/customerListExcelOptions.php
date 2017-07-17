@@ -53,7 +53,7 @@ function ciniki_customers_customerListExcelOptions($ciniki) {
             array('container'=>'subscriptions', 'fname'=>'id', 'fields'=>array('id', 'name', 'description', 'flags')),
             ));
         if( $rc['stat'] != 'ok' ) { 
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.subscriptions.10', 'msg'=>'Unable to retrieve subscriptions', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.219', 'msg'=>'Unable to retrieve subscriptions', 'err'=>$rc['err']));
         }
         if( isset($rc['subscriptions']) ) {
             $rsp['subscriptions'] = $rc['subscriptions'];
