@@ -218,6 +218,9 @@ function ciniki_customers_main() {
                 'onhold':{'label':'On Hold', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'40\'});'},
                 'suspended':{'label':'Suspended', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'50\'});'},
                 'deleted':{'label':'Deleted', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'60\'});'},
+                'birthdays':{'label':'Birthdays', 
+                    'visible':function() {return M.modFlagSet('ciniki.customers', 0x8000); },
+                    'fn':'M.startApp(\'ciniki.customers.birthdays\',null,\'M.ciniki_customers_main.tools.show();\');'},
                 }},
             '_connections':{'label':'', 'list':{
                 'connection':{'label':'Connections', 'fn':'M.startApp(\'ciniki.customers.connections\',null,\'M.ciniki_customers_main.tools.show();\')'},
