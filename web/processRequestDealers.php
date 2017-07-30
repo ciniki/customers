@@ -531,7 +531,9 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $busine
                 }
             }
             if( isset($province_name) && $province_name != '' && $province_name != '-' ) {
-                if( isset($map_country) && isset($map_country[strtolower($province_name)]['code']) ) {
+                if( isset($maps[strtolower($country_name)]['provinces'][strtolower($province_name)]['google']) ) {
+                    $center_addr = $maps[strtolower($country_name)]['provinces'][strtolower($province_name)]['google'] . ', ' . $center_addr;
+                } elseif( isset($map_country) && isset($map_country[strtolower($province_name)]['code']) ) {
                     $center_addr = $map_country[strtolower($province_name)]['code'] . ', ' . $center_addr;
                 } else {
                     $center_addr = $province_name . ', ' . $center_addr;

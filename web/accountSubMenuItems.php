@@ -52,11 +52,13 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_
             'url'=>$ciniki['request']['base_url'] . '/account/children');
     }
 
-    $submenu[] = array('name'=>'Change Password', 'priority'=>250, 
-        'package'=>'ciniki', 'module'=>'customers', 
-        'selected'=>($ciniki['request']['page'] == 'account' 
-            && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'changepassword')?'yes':'no',
-        'url'=>$ciniki['request']['base_url'] . '/account/changepassword');
+    if( !isset($settings['page-account-password-change']) || $settings['page-account-password-change'] == 'yes' ) {
+        $submenu[] = array('name'=>'Change Password', 'priority'=>250, 
+            'package'=>'ciniki', 'module'=>'customers', 
+            'selected'=>($ciniki['request']['page'] == 'account' 
+                && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'changepassword')?'yes':'no',
+            'url'=>$ciniki['request']['base_url'] . '/account/changepassword');
+    }
 
     $submenu[] = array('name'=>'Logout', 'priority'=>100, 
         'package'=>'ciniki', 'module'=>'customers', 
