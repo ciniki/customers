@@ -143,9 +143,16 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         $address_keywords = '';
         if( isset($rc['rows'][0]) ) {
             $address = $rc['rows'][0];
-            $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
-                . '/' . ($address['province'] == '' ? '-' : $address['province']) 
-                . '/' . ($address['city'] == '' ? '-' : $address['city']);
+            if( $item['full_bio'] == '' ) {
+                $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
+                    . '/' . ($address['province'] == '' ? '-' : $address['province']) 
+                    . '/' . ($address['city'] == '' ? '-' : $address['city']);
+            } else {
+                $item['permalink'] = 'location/' . ($address['country'] == '' ? '-' : $address['country']) 
+                    . '/' . ($address['province'] == '' ? '-' : $address['province']) 
+                    . '/' . ($address['city'] == '' ? '-' : $address['city'])
+                    . '/' . $item['permalink'];
+            }
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makeAddressKeywords');
             $address_keywords = ciniki_core_makeAddressKeywords($ciniki, $address);
         } else {
