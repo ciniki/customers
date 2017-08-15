@@ -363,7 +363,6 @@ function ciniki_customers_download() {
         }
         if( this.exportlist.membersonly != '' ) { args.membersonly = this.exportlist.membersonly; }
         if( this.exportlist.subscription_id != '' ) { args.subscription_id = this.exportlist.subscription_id; }
-        console.log(args);
         M.api.openFile('ciniki.customers.customerListExcel', args);
     };
 }

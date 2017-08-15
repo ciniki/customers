@@ -304,12 +304,21 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+    $phone_columns = array();
     if( isset($rc['customers']) ) {
         $phones = $rc['customers'];
         foreach($phones as $phone) {
             if( isset($phone['split_phones']) && count($phone['split_phones']) > $num_phone_columns ) {
                 $num_phone_columns = count($phone['split_phones']);
             }
+            if( isset($phone['split_phones']) ) {
+                foreach($phone['split_phones'] as $p) {
+                    if( !in_array(ucwords($p['phone_label']), $phone_columns) ) {
+                        $phone_columns[] = ucwords($p['phone_label']);
+                    }
+                }
+            }
+
         }
     } 
 
@@ -629,6 +638,11 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 }
             }
         }
+        elseif( $column == 'split_phone_labels' && count($phone_columns) > 0 ) {
+            foreach($phone_columns as $phone_column) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $phone_column, false); 
+            }
+        }
         elseif( $column == 'split_addresses' && $num_address_columns > 0 ) {
             for($i=0;$i<$num_address_columns;$i++) {
                 if( $ids == 'yes' ) {
@@ -655,7 +669,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'EID ' . ($i+1), false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email ' + ($i+1), false);
                 } else {
-                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email' . ($num_email_columns > 1 ? ' ' . ($i+1):''), false);
                 }
             }
         } 
@@ -766,6 +780,20 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                     }
                 }
                 while($i<$num_phone_columns) { $col+=(2+($ids=='yes'?1:0)); $i++; }
+                continue;
+            } 
+            elseif( $column == 'split_phone_labels' ) {
+                foreach($phone_columns as $label) {
+                    if( isset($phones[$customer['id']]['split_phones']) ) {
+                        foreach($phones[$customer['id']]['split_phones'] as $phone) {
+                            if( ucwords($phone['phone_label']) == $label ) {
+                                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $phone['phone_number'], false);
+                            }
+                        }
+                    }
+
+                    $col++;
+                }
                 continue;
             } 
             elseif( $column == 'split_addresses' ) {

@@ -232,11 +232,16 @@ function ciniki_customers_main() {
             }},
             'download':{'label':'Export (Advanced)', 'list':{
                 'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
+                'exportcsvcontacts':{'label':'Contacts to Excel', 'fn':'M.ciniki_customers_main.tools.exportCSVContacts();'},
             }},
 //          'import':{'label':'Import', 'list':{
 //              'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //          }},
             };
+        this.tools.exportCSVContacts = function() {
+            var args = {'business_id':M.curBusinessID, 'columns':'type::status::prefix::first::middle::last::suffix::company::split_phone_labels::split_emails::split_addresses'};
+            M.api.openFile('ciniki.customers.customerListExcel', args);
+        }
         this.tools.addClose('Back');
 
         //
