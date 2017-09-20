@@ -130,7 +130,8 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             }
         }
         if( count($season_ids) > 0 ) {
-            $strsql = "SELECT season_id, customer_id, status "
+            $strsql = "SELECT season_id, customer_id, status, "
+                . "IF(date_paid > 0, DATE_FORMAT(date_paid, '%M %d, %Y'), '') AS date_paid "
                 . "FROM ciniki_customer_season_members "
                 . "WHERE ciniki_customer_season_members.season_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $season_ids) . ") "
                 . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -138,7 +139,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 . "";
             $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
                 array('container'=>'seasons', 'fname'=>'season_id', 'fields'=>array('season_id')),
-                array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('id'=>'customer_id', 'status')),
+                array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('id'=>'customer_id', 'status', 'date_paid')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -688,7 +689,12 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         else {
             if( preg_match("/^season-([0-9]+)$/", $column, $matches) ) {
                 if( isset($seasons[$matches[1]]) ) {
-                    $value = $seasons[$matches[1]]['name'];
+                    $value = $seasons[$matches[1]]['name'] . ' Status';
+                }
+            }
+            if( preg_match("/^season-datepaid-([0-9]+)$/", $column, $matches) ) {
+                if( isset($seasons[$matches[1]]) ) {
+                    $value = $seasons[$matches[1]]['name'] . ' Date Paid';
                 }
             }
             if( preg_match("/^subscription-([0-9]+)$/", $column, $matches) ) {
@@ -726,6 +732,15 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                     && isset($maps['season_member']['status'][$seasons[$matches[1]]['customers'][$customer['id']]['status']]) 
                     ) {
                     $value = $maps['season_member']['status'][$seasons[$matches[1]]['customers'][$customer['id']]['status']];
+                } else {
+                    $col++;
+                    continue;
+                }
+            } 
+            elseif( preg_match("/^season-datepaid-([0-9]+)$/", $column, $matches) ) {
+                $value = '';
+                if( isset($seasons[$matches[1]]['customers'][$customer['id']]['date_paid'])) {
+                    $value = $seasons[$matches[1]]['customers'][$customer['id']]['date_paid'];
                 } else {
                     $col++;
                     continue;

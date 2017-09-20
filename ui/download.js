@@ -184,7 +184,12 @@ function ciniki_customers_download() {
                     var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
                     if( season.open == 'yes' ) {
                         p.sections.seasons.fields['season-' + season.id] = {
-                            'label':season.name, 
+                            'label':season.name + ' Status', 
+                            'type':'toggle', 'default':(selected_season!=null&&selected_season==season.id?'yes':'no'), 
+                            'toggles':M.ciniki_customers_download.toggleOptions,
+                        };
+                        p.sections.seasons.fields['season-datepaid-' + season.id] = {
+                            'label':' Date Paid', 
                             'type':'toggle', 'default':(selected_season!=null&&selected_season==season.id?'yes':'no'), 
                             'toggles':M.ciniki_customers_download.toggleOptions,
                         };
