@@ -46,7 +46,7 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
             . "ciniki_customers.display_name AS title, "
             . "IF(type=2,CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
             . "ciniki_customers.permalink, "
-            . "ciniki_customers.short_description "
+            . "ciniki_customers.short_bio AS description "
             . "FROM ciniki_customer_tags, ciniki_customers "
             . "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "AND ciniki_customer_tags.tag_type = '40' "
@@ -62,7 +62,7 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
             . "IF(type=2,CONCAT_WS(', ', company, last, first),CONCAT_WS(', ', last, first)) AS sname, "
             . "ciniki_customers.display_name AS title, "
             . "ciniki_customers.permalink, "
-            . "ciniki_customers.short_description "
+            . "ciniki_customers.short_bio AS description "
             . "FROM ciniki_customers "
             . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "AND ciniki_customers.member_status = 10 "
@@ -71,10 +71,8 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'categories', 'fname'=>'category',
-            'fields'=>array('id', 'name'=>'category')),
-        array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('id', 'title', 'description'=>'short_description')),
+        array('container'=>'categories', 'fname'=>'category', 'fields'=>array('id', 'name'=>'category')),
+        array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'title', 'description')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -82,10 +80,11 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
     $categories = $rc['categories'];
 
 
-    require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Settings.php');
-    require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Autoloader.php');
-    \PhpOffice\PhpWord\Autoloader::register();
-    require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/PhpWord.php');
+//    require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Settings.php');
+//    require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Autoloader.php');
+//    \PhpOffice\PhpWord\Autoloader::register();
+//    require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/PhpWord.php');
+    require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/bootstrap.php');
 
 //  $PHPWord = new PhpWord();
     $PHPWord = new \PhpOffice\PhpWord\PhpWord();
