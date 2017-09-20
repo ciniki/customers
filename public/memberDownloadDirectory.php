@@ -120,6 +120,7 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
             $section->addTitle($member['title'], 2);
             $desc = $member['description'];
             $desc = preg_replace('/\n/', "\r\n", $desc);
+            $desc = preg_replace('/\&/', "&amp;", $desc);
             $desc = preg_replace('/\<a.*href=\'(http:\/\/|)([^\']*)\'.*\>.*\<\/a\>/', '$2', $desc);
             $blocks = explode("\n", $desc);
             foreach($blocks as $block) {
