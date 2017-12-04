@@ -1,7 +1,7 @@
 #
 # Description
 # -----------
-# This table stores the various levels or group pricing for a business.  These levels
+# This table stores the various levels or group pricing for a tenant.  These levels
 # are initially configured and then customers can be assigned to a level.  Other modules
 # such as products can use this to have different prices for different levels.
 #
@@ -14,7 +14,7 @@
 # id:               The unique id number for each price point in the database.
 # uuid:             The Universal Unique ID.
 #
-# business_id:      The business the price point is attached to.  
+# tnid:             The tenant the price point is attached to.  
 # 
 # name:             The name of this level
 #
@@ -32,7 +32,7 @@
 create table ciniki_customer_pricepoints (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     name varchar(150) not null,
     code varchar(150) not null,
     sequence tinyint unsigned not null,
@@ -40,5 +40,5 @@ create table ciniki_customer_pricepoints (
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
-    index sync (business_id, uuid, last_updated)
+    index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

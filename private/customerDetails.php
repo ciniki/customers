@@ -14,7 +14,7 @@
 // <customer name="Andrew Rivett" ... />
 // <details>
 //      <detail label="Name" value="Andrew Rivett"/>
-//      <detail label="Business" value="Ciniki"/>
+//      <detail label="Tenant" value="Ciniki"/>
 //      <detail label="Home" value="647-555-5551"/>
 //      <detail label="Work" value="647-555-5552"/>
 //      <detail label="Email" value="veggiefrog@gmail.com"/>
@@ -22,13 +22,13 @@
 //      <detail label="Billing" value="355 Nowhere Road\nToronto, ON  M5V 3V6\nCanada"/>
 // </details>
 //
-function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, $args) {
+function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) {
     
     //
-    // Get the types of customers available for this business
+    // Get the types of customers available for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-    $rc = ciniki_customers_getCustomerTypes($ciniki, $business_id); 
+    $rc = ciniki_customers_getCustomerTypes($ciniki, $tnid); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -38,7 +38,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
     // Get the settings for customer module
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
-    $rc = ciniki_customers_getSettings($ciniki, $business_id); 
+    $rc = ciniki_customers_getSettings($ciniki, $tnid); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -62,7 +62,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
         . "pricepoint_id, notes "
         . "FROM ciniki_customers "
         . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
-        . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
@@ -97,7 +97,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
         $strsql = "SELECT id, customer_id, "
             . "address1, address2, city, province, postal, country, flags, phone "
             . "FROM ciniki_customer_addresses "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -123,7 +123,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
             . "FROM ciniki_subscriptions "
             . "LEFT JOIN ciniki_subscription_customers ON (ciniki_subscriptions.id = ciniki_subscription_customers.subscription_id "
                 . "AND ciniki_subscription_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "') "
-            . "WHERE ciniki_subscriptions.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_subscriptions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 10 "
             . "ORDER BY ciniki_subscriptions.name "
             . "";
@@ -146,7 +146,7 @@ function ciniki_customers__customerDetails($ciniki, $business_id, $customer_id, 
         $strsql = "SELECT id, phone_label, phone_number, flags "
             . "FROM ciniki_customer_phones "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'phones', 'fname'=>'id',

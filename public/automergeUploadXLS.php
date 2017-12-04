@@ -9,7 +9,7 @@
 // ---------
 // api_key:
 // auth_token:      
-// business_id:         The business ID to create the excel file for.
+// tnid:         The tenant ID to create the excel file for.
 // uploadfile:          The information about the file uploaded via a file form field.
 //
 // Returns
@@ -22,7 +22,7 @@ function ciniki_customers_automergeUploadXLS($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'name'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Name'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -31,10 +31,10 @@ function ciniki_customers_automergeUploadXLS($ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id
+    // Check access to tnid
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.automergeUploadXLS', 0);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.automergeUploadXLS', 0);
     if( $ac['stat'] != 'ok' ) {
         return $ac;
     }
@@ -80,8 +80,8 @@ function ciniki_customers_automergeUploadXLS($ciniki) {
     //
     // Create a new upload entry in the database
     //
-    $strsql = "INSERT INTO ciniki_customer_automerges (business_id, name, source_name, date_added, last_updated) VALUES ("
-        . "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+    $strsql = "INSERT INTO ciniki_customer_automerges (tnid, name, source_name, date_added, last_updated) VALUES ("
+        . "'" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . ", '" . ciniki_core_dbQuote($ciniki, $args['name']) . "' "
         . ", '" . ciniki_core_dbQuote($ciniki, $_FILES['uploadfile']['name']) . "' "
         . ", UTC_TIMESTAMP(), UTC_TIMESTAMP())";
@@ -107,7 +107,7 @@ function ciniki_customers_automergeUploadXLS($ciniki) {
     // Update the information in the database
     //
     $strsql = "UPDATE ciniki_customer_automerges SET status = 10, cache_name = '" . ciniki_core_dbQuote($ciniki, "automerge_" . $automerge_id) . "' "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $automerge_id) . "' ";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
     $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
@@ -125,11 +125,11 @@ function ciniki_customers_automergeUploadXLS($ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'customers');
 
     return array('stat'=>'ok', 'id'=>$automerge_id);
 }

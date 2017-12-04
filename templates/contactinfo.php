@@ -10,30 +10,30 @@
 // Returns
 // -------
 //
-function ciniki_customers_templates_contactinfo($ciniki, $business_id, $members, $args, $size='full') {
+function ciniki_customers_templates_contactinfo($ciniki, $tnid, $members, $args, $size='full') {
 
     require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/tcpdf/tcpdf.php');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheOriginal');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'tenantDetails');
 
     //
-    // Load business details
+    // Load tenant details
     //
-    $rc = ciniki_businesses_businessDetails($ciniki, $business_id);
+    $rc = ciniki_tenants_tenantDetails($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( isset($rc['details']) && is_array($rc['details']) ) {   
-        $business_details = $rc['details'];
+        $tenant_details = $rc['details'];
     } else {
-        $business_details = array();
+        $tenant_details = array();
     }
 
     //
     // Load INTL settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -44,7 +44,7 @@ function ciniki_customers_templates_contactinfo($ciniki, $business_id, $members,
     // Create a custom class for this document
     //
     class MYPDF extends TCPDF {
-        public $business_name = '';
+        public $tenant_name = '';
         public $title = '';
         public $pagenumbers = 'yes';
         public $coverpage = 'no';
@@ -319,8 +319,8 @@ function ciniki_customers_templates_contactinfo($ciniki, $business_id, $members,
 
     // Set PDF basics
     $pdf->SetCreator('Ciniki');
-    $pdf->SetAuthor($business_details['name']);
-    $pdf->footer_text = $business_details['name'];
+    $pdf->SetAuthor($tenant_details['name']);
+    $pdf->footer_text = $tenant_details['name'];
     $pdf->SetTitle($args['title']);
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
@@ -350,7 +350,7 @@ function ciniki_customers_templates_contactinfo($ciniki, $business_id, $members,
             } else {
                 $img_box_height = 100;
             }
-            $rc = ciniki_images_loadCacheOriginal($ciniki, $business_id, $args['coverpage-image'], 2000, 2000);
+            $rc = ciniki_images_loadCacheOriginal($ciniki, $tnid, $args['coverpage-image'], 2000, 2000);
             if( $rc['stat'] == 'ok' ) {
                 $image = $rc['image'];
                 $pdf->SetLineWidth(0.25);

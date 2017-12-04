@@ -1,6 +1,6 @@
 #
 # This file will upgrade the database table customers to version 1.02.
 #
-DROP INDEX business_id ON ciniki_customer_emails;
-CREATE UNIQUE INDEX business_id ON ciniki_customer_emails (customer_id, business_id, email);
+DROP INDEX tnid ON ciniki_customer_emails;
+CREATE UNIQUE INDEX tnid ON ciniki_customer_emails (customer_id, tnid, email);
 ALTER TABLE ciniki_customer_emails COMMENT='v1.03';

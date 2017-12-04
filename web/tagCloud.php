@@ -8,20 +8,20 @@
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get events for.
+// tnid:     The ID of the tenant to get events for.
 // type:            The type of the tag.
 //
 //
 // Returns
 // -------
 //
-function ciniki_customers_web_tagCloud($ciniki, $settings, $business_id, $type) {
+function ciniki_customers_web_tagCloud($ciniki, $settings, $tnid, $type) {
 
     //
-    // Load the business settings
+    // Load the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -36,10 +36,10 @@ function ciniki_customers_web_tagCloud($ciniki, $settings, $business_id, $type) 
         . "ciniki_customer_tags.permalink, "
         . "COUNT(ciniki_customers.id) AS num_tags "
         . "FROM ciniki_customer_tags, ciniki_customers "
-        . "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customer_tags.tag_type = '" . ciniki_core_dbQuote($ciniki, $type) . "' "
         . "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
-        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.status < 40 "
         . "AND ciniki_customers.member_status = 10 "
         . "AND (ciniki_customers.webflags&0x01) = 1 "

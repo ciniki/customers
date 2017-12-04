@@ -7,12 +7,12 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business to get the settings for.
+// tnid:     The ID of the tenant to get the settings for.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_getSettings($ciniki, $business_id) {
+function ciniki_customers_getSettings($ciniki, $tnid) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQuery');
-    return ciniki_core_dbDetailsQuery($ciniki, 'ciniki_customer_settings', 'business_id', $business_id, 'ciniki.customers', 'settings', '');
+    return ciniki_core_dbDetailsQuery($ciniki, 'ciniki_customer_settings', 'tnid', $tnid, 'ciniki.customers', 'settings', '');
 }

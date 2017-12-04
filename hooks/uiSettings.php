@@ -7,19 +7,19 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business to get events for.
+// tnid:     The ID of the tenant to get events for.
 //
 // Returns
 // -------
 //
-function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
+function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
 
     $rsp = array('stat'=>'ok', 'settings'=>array(), 'menu_items'=>array(), 'settings_menu_items'=>array());  
 
     //
     // Get the settings
     //
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'business_id', $business_id, 'ciniki.customers', 'settings', '');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $tnid, 'ciniki.customers', 'settings', '');
     if( $rc['stat'] == 'ok' && isset($rc['settings']) ) {
         $rsp['settings'] = $rc['settings'];
     }
@@ -31,7 +31,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
     if( isset($args['modules']['ciniki.customers']['flags']) && ($args['modules']['ciniki.customers']['flags']&0x1000) > 0 ) {
         $strsql = "SELECT id, name "
             . "FROM ciniki_customer_pricepoints "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY sequence "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -50,7 +50,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
     if( isset($args['modules']['ciniki.customers']['flags']) && ($args['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
         $strsql = "SELECT id, name, if((flags&0x02)=2,'yes','no') AS open "
             . "FROM ciniki_customer_seasons "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (flags&0x02) = 2 "
             . "ORDER BY start_date DESC "
             . "";
@@ -89,8 +89,8 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                     '0'=>'d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + ")</span>" : "");',
                     '1'=>'d.customer.status_text;',
                     ),
-                'rowStyle'=>'if( M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
-                        . '\'background: \' + M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
+                'rowStyle'=>'if( M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
+                        . '\'background: \' + M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
                     . '}',
                 'noData'=>'No customers found',
                 'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
@@ -128,8 +128,8 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
                     '0'=>'d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + "</span>" : "");',
                     '1'=>'d.customer.status_text;',
                     ),
-                'rowStyle'=>'if( M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
-                        . '\'background: \' + M.curBusiness.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
+                'rowStyle'=>'if( M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
+                        . '\'background: \' + M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
                     . '}',
                 'noData'=>'No customers found',
                 'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
@@ -176,7 +176,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $business_id, $args) {
 
     } 
 
-    if( isset($ciniki['business']['modules']['ciniki.customers']) 
+    if( isset($ciniki['tenant']['modules']['ciniki.customers']) 
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01

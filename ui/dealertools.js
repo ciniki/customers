@@ -93,23 +93,23 @@ function ciniki_customers_dealertools() {
 
         var slabel = 'Dealer';
         var plabel = 'Dealers';
-        if( M.curBusiness.customers != null ) {
-            if( M.curBusiness.customers.settings['ui-labels-dealer'] != null 
-                && M.curBusiness.customers.settings['ui-labels-dealer'] != ''
+        if( M.curTenant.customers != null ) {
+            if( M.curTenant.customers.settings['ui-labels-dealer'] != null 
+                && M.curTenant.customers.settings['ui-labels-dealer'] != ''
                 ) {
-                slabel = M.curBusiness.customers.settings['ui-labels-dealer'];
+                slabel = M.curTenant.customers.settings['ui-labels-dealer'];
             }
-            if( M.curBusiness.customers.settings['ui-labels-dealers'] != null 
-                && M.curBusiness.customers.settings['ui-labels-dealers'] != ''
+            if( M.curTenant.customers.settings['ui-labels-dealers'] != null 
+                && M.curTenant.customers.settings['ui-labels-dealers'] != ''
                 ) {
-                plabel = M.curBusiness.customers.settings['ui-labels-dealers'];
+                plabel = M.curTenant.customers.settings['ui-labels-dealers'];
             }
         }
         this.menu.title = slabel + ' Tools';
         this.dealerlist.title = 'Export ' + plabel;
         this.menu.sections.tools.list.dealerlist.label = 'Export ' + plabel + ' (Excel)';
 
-        var flags = M.curBusiness.modules['ciniki.customers'].flags;
+        var flags = M.curTenant.modules['ciniki.customers'].flags;
         this.dealerlist.sections.options2.fields.salesrep.active=((flags&0x2000)>0?'yes':'no');
         this.dealerlist.sections.options2.fields.pricepoint_name.active=((flags&0x1000)>0?'yes':'no');
         this.dealerlist.sections.options2.fields.pricepoint_code.active=((flags&0x1000)>0?'yes':'no');
@@ -123,7 +123,7 @@ function ciniki_customers_dealertools() {
     }
 
     //
-    // Grab the stats for the business from the database and present the list of orders.
+    // Grab the stats for the tenant from the database and present the list of orders.
     //
     this.showMenu = function(cb) {
         this.menu.refresh();
@@ -131,7 +131,7 @@ function ciniki_customers_dealertools() {
     };
 
     this.downloadDirectory = function() {
-        M.api.openFile('ciniki.customers.dealerDownloadDirectory', {'business_id':M.curBusinessID});
+        M.api.openFile('ciniki.customers.dealerDownloadDirectory', {'tnid':M.curTenantID});
     };
 
     this.showMemberList = function(cb) {
@@ -180,6 +180,6 @@ function ciniki_customers_dealertools() {
                 cols += (cols!=''?'::':'') + i;
             }
         }
-        M.api.openFile('ciniki.customers.dealerDownloadExcel', {'business_id':M.curBusinessID, 'columns':cols});
+        M.api.openFile('ciniki.customers.dealerDownloadExcel', {'tnid':M.curTenantID, 'columns':cols});
     };
 }

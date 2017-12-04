@@ -7,13 +7,13 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The ID of the business the request is for.
+// tnid:         The ID of the tenant the request is for.
 // email:               The email address to validate.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_checkEmailValid(&$ciniki, $business_id, $email) {
+function ciniki_customers_checkEmailValid(&$ciniki, $tnid, $email) {
     
     //
     // Make sure the string contains @ sign and a period.

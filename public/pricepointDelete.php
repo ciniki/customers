@@ -15,7 +15,7 @@ function ciniki_customers_pricepointDelete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'pricepoint_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Price Point'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -25,10 +25,10 @@ function ciniki_customers_pricepointDelete(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.pricepointDelete', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.pricepointDelete', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -42,7 +42,7 @@ function ciniki_customers_pricepointDelete(&$ciniki) {
     $strsql = "SELECT 'customers', COUNT(*) "
         . "FROM ciniki_customers "
         . "WHERE pricepoint_id = '" . ciniki_core_dbQuote($ciniki, $args['pricepoint_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.sapos', 'num');
     if( $rc['stat'] != 'ok' ) {
@@ -60,7 +60,7 @@ function ciniki_customers_pricepointDelete(&$ciniki) {
         $strsql = "SELECT 'products', COUNT(*) "
             . "FROM ciniki_product_prices "
             . "WHERE pricepoint_id = '" . ciniki_core_dbQuote($ciniki, $args['pricepoint_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.sapos', 'num');
         if( $rc['stat'] != 'ok' ) {
@@ -75,7 +75,7 @@ function ciniki_customers_pricepointDelete(&$ciniki) {
     // Delete the price point
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.pricepoint', 
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.pricepoint', 
         $args['pricepoint_id'], NULL, 0x07);
     if( $rc['stat'] != 'ok' ) {
         return $rc;

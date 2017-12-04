@@ -34,14 +34,14 @@ function ciniki_customers_phonesMove($ciniki) {
     // Get the list of home phones, and their history
     //
     $strsql = "SELECT ciniki_customers.id, "
-        . "ciniki_customers.business_id, "
+        . "ciniki_customers.tnid, "
         . "'Home' AS plabel, "
         . "ciniki_customers.phone_home AS pnum, "
         . "ciniki_customer_history.user_id, "
         . "ciniki_customer_history.session, "
         . "ciniki_customer_history.log_date "
         . "FROM ciniki_customers "
-        . "LEFT JOIN ciniki_customer_history ON (ciniki_customers.business_id = ciniki_customer_history.business_id "
+        . "LEFT JOIN ciniki_customer_history ON (ciniki_customers.tnid = ciniki_customer_history.tnid "
             . "AND ciniki_customer_history.table_name = 'ciniki_customers' "
             . "AND ciniki_customers.id = ciniki_customer_history.table_key "
             . "AND ciniki_customer_history.table_field = 'phone_home' "
@@ -51,7 +51,7 @@ function ciniki_customers_phonesMove($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id',
-            'fields'=>array('id', 'business_id', 'plabel', 'pnum', 
+            'fields'=>array('id', 'tnid', 'plabel', 'pnum', 
                 'user_id', 'session', 'log_date')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -75,11 +75,11 @@ function ciniki_customers_phonesMove($ciniki) {
         //
         // Insert the phone
         //
-        $strsql = "INSERT INTO ciniki_customer_phones (uuid, business_id, "
+        $strsql = "INSERT INTO ciniki_customer_phones (uuid, tnid, "
             . "customer_id, phone_label, phone_number, "
             . "flags, date_added, last_updated) VALUES ("
             . "'$uuid', "
-            . "'" . ciniki_core_dbQuote($ciniki, $customer['business_id']) . "', "
+            . "'" . ciniki_core_dbQuote($ciniki, $customer['tnid']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['id']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['plabel']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['pnum']) . "', "
@@ -97,16 +97,16 @@ function ciniki_customers_phonesMove($ciniki) {
         $ciniki['session']['user']['id'] = $customer['user_id'];
         $ciniki['session']['change_log_id'] = $customer['session'];
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'uuid', $uuid);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'phone_label', $customer['plabel']);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'phone_number', $customer['pnum']);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'flags', '0');
     }
     
@@ -114,14 +114,14 @@ function ciniki_customers_phonesMove($ciniki) {
     // Get the list of work phones, and their history
     //
     $strsql = "SELECT ciniki_customers.id, "
-        . "ciniki_customers.business_id, "
+        . "ciniki_customers.tnid, "
         . "'Work' AS plabel, "
         . "ciniki_customers.phone_work AS pnum, "
         . "ciniki_customer_history.user_id, "
         . "ciniki_customer_history.session, "
         . "ciniki_customer_history.log_date "
         . "FROM ciniki_customers "
-        . "LEFT JOIN ciniki_customer_history ON (ciniki_customers.business_id = ciniki_customer_history.business_id "
+        . "LEFT JOIN ciniki_customer_history ON (ciniki_customers.tnid = ciniki_customer_history.tnid "
             . "AND ciniki_customer_history.table_name = 'ciniki_customers' "
             . "AND ciniki_customers.id = ciniki_customer_history.table_key "
             . "AND ciniki_customer_history.table_field = 'phone_work' "
@@ -131,7 +131,7 @@ function ciniki_customers_phonesMove($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id',
-            'fields'=>array('id', 'business_id', 'plabel', 'pnum', 
+            'fields'=>array('id', 'tnid', 'plabel', 'pnum', 
                 'user_id', 'session', 'log_date')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -155,11 +155,11 @@ function ciniki_customers_phonesMove($ciniki) {
         //
         // Insert the phone
         //
-        $strsql = "INSERT INTO ciniki_customer_phones (uuid, business_id, "
+        $strsql = "INSERT INTO ciniki_customer_phones (uuid, tnid, "
             . "customer_id, phone_label, phone_number, "
             . "flags, date_added, last_updated) VALUES ("
             . "'$uuid', "
-            . "'" . ciniki_core_dbQuote($ciniki, $customer['business_id']) . "', "
+            . "'" . ciniki_core_dbQuote($ciniki, $customer['tnid']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['id']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['plabel']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['pnum']) . "', "
@@ -177,16 +177,16 @@ function ciniki_customers_phonesMove($ciniki) {
         $ciniki['session']['user']['id'] = $customer['user_id'];
         $ciniki['session']['change_log_id'] = $customer['session'];
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'uuid', $uuid);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'phone_label', $customer['plabel']);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'phone_number', $customer['pnum']);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'flags', '0');
     }
 
@@ -194,14 +194,14 @@ function ciniki_customers_phonesMove($ciniki) {
     // Get the list of cell phones, and their history
     //
     $strsql = "SELECT ciniki_customers.id, "
-        . "ciniki_customers.business_id, "
+        . "ciniki_customers.tnid, "
         . "'Cell' AS plabel, "
         . "ciniki_customers.phone_cell AS pnum, "
         . "ciniki_customer_history.user_id, "
         . "ciniki_customer_history.session, "
         . "ciniki_customer_history.log_date "
         . "FROM ciniki_customers "
-        . "LEFT JOIN ciniki_customer_history ON (ciniki_customers.business_id = ciniki_customer_history.business_id "
+        . "LEFT JOIN ciniki_customer_history ON (ciniki_customers.tnid = ciniki_customer_history.tnid "
             . "AND ciniki_customer_history.table_name = 'ciniki_customers' "
             . "AND ciniki_customers.id = ciniki_customer_history.table_key "
             . "AND ciniki_customer_history.table_field = 'phone_cell' "
@@ -211,7 +211,7 @@ function ciniki_customers_phonesMove($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id',
-            'fields'=>array('id', 'business_id', 'plabel', 'pnum', 
+            'fields'=>array('id', 'tnid', 'plabel', 'pnum', 
                 'user_id', 'session', 'log_date')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -235,11 +235,11 @@ function ciniki_customers_phonesMove($ciniki) {
         //
         // Insert the phone
         //
-        $strsql = "INSERT INTO ciniki_customer_phones (uuid, business_id, "
+        $strsql = "INSERT INTO ciniki_customer_phones (uuid, tnid, "
             . "customer_id, phone_label, phone_number, "
             . "flags, date_added, last_updated) VALUES ("
             . "'$uuid', "
-            . "'" . ciniki_core_dbQuote($ciniki, $customer['business_id']) . "', "
+            . "'" . ciniki_core_dbQuote($ciniki, $customer['tnid']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['id']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['plabel']) . "', "
             . "'" . ciniki_core_dbQuote($ciniki, $customer['pnum']) . "', "
@@ -257,16 +257,16 @@ function ciniki_customers_phonesMove($ciniki) {
         $ciniki['session']['user']['id'] = $customer['user_id'];
         $ciniki['session']['change_log_id'] = $customer['session'];
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'uuid', $uuid);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'phone_label', $customer['plabel']);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'phone_number', $customer['pnum']);
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $customer['business_id'], 1, 'ciniki_customer_phones', $phone_id, 
+            $customer['tnid'], 1, 'ciniki_customer_phones', $phone_id, 
             'flags', '0');
     }
 

@@ -7,14 +7,14 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The business ID to check the session user against.
+// tnid:         The tenant ID to check the session user against.
 // method:              The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
+function ciniki_customers_hooks_customerEmails($ciniki, $tnid, $args) {
 
     if( !isset($args['customer_id']) || $args['customer_id'] == '' || $args['customer_id'] == 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.15', 'msg'=>'No customer specified'));
@@ -22,10 +22,10 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
     $customer_id = $args['customer_id'];
 
     //
-    // Get the types of customers available for this business
+    // Get the types of customers available for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-    $rc = ciniki_customers_getCustomerTypes($ciniki, $business_id); 
+    $rc = ciniki_customers_getCustomerTypes($ciniki, $tnid); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -35,7 +35,7 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
     // Get the settings for customer module
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
-    $rc = ciniki_customers_getSettings($ciniki, $business_id); 
+    $rc = ciniki_customers_getSettings($ciniki, $tnid); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -58,10 +58,10 @@ function ciniki_customers_hooks_customerEmails($ciniki, $business_id, $args) {
         . "FROM ciniki_customers "
         . "LEFT JOIN ciniki_customer_emails ON ("
             . "ciniki_customers.id = ciniki_customer_emails.customer_id "
-            . "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (ciniki_customer_emails.flags&0x10) = 0 " // Not flagged as "NO NOT EMAIL"
             . ") "
-        . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',

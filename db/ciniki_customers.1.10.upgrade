@@ -2,6 +2,6 @@
 # This file will upgrade the database table customers to version 1.08.
 # This upgrade adds birthdate field
 #
-CREATE INDEX sync ON ciniki_customers(business_id, uuid, last_updated);
+CREATE INDEX sync ON ciniki_customers(tnid, uuid, last_updated);
 ALTER TABLE ciniki_customers COMMENT='v1.10';
 

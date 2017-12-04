@@ -14,7 +14,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the details for.
+// tnid:         The ID of the tenant to get the details for.
 // key:                 The detail key to get the history for.
 //
 // Returns
@@ -34,7 +34,7 @@ function ciniki_customers_getHistory($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
         ));
@@ -44,10 +44,10 @@ function ciniki_customers_getHistory($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.getHistory', 0);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.getHistory', 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -55,10 +55,10 @@ function ciniki_customers_getHistory($ciniki) {
     if( $args['field'] == 'birthdate' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
         return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history',
-            $args['business_id'], 'ciniki_customers', $args['customer_id'], $args['field'], 'date');
+            $args['tnid'], 'ciniki_customers', $args['customer_id'], $args['field'], 'date');
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customers', $args['customer_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customers', $args['customer_id'], $args['field']);
 }
 ?>

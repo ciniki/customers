@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $customer, $args) {
+function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
@@ -25,10 +25,10 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 
     //
-    // Get the business settings
+    // Get the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -41,7 +41,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
         //
         $strsql = "SELECT id, name "
             . "FROM ciniki_customer_seasons "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (flags&0x01) = 0x01 "
             . "ORDER BY end_date DESC "
             . "LIMIT 1 ";
@@ -59,7 +59,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
         //
         $strsql = "SELECT id, season_id, customer_id, status, date_paid, notes "
             . "FROM ciniki_customer_season_members "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND season_id = '" . ciniki_core_dbQuote($ciniki, $season['id']) . "' "
             . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
             . "";
@@ -79,7 +79,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
             if( $customerseason['status'] != 10 ) {
                 $update_args['status'] = 10;
             }
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.season_member', $customerseason['id'], $update_args, 0x07);
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.season_member', $customerseason['id'], $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.162', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
             }
@@ -100,7 +100,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
                 'date_paid'=>$dt->format('Y-m-d'),
                 'notes'=>'',
                 );
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.season_member', $update_args, 0x07);
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.season_member', $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.164', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
             }
@@ -111,7 +111,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
         //
         $strsql = "SELECT id, member_status, membership_length, membership_type "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -144,7 +144,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $business_id, $
             $update_args['membership_length'] = 60;
         }
         if( count($update_args) > 0 ) {
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.customer', $customer['id'], $update_args, 0x07);
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer', $customer['id'], $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.167', 'msg'=>'Unable to update the member.', 'err'=>$rc['err']));
             }

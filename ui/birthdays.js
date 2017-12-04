@@ -40,7 +40,7 @@ function ciniki_customers_birthdays() {
         //
         // Grab list of recently updated customers
         //
-        var args = {'business_id':M.curBusinessID};
+        var args = {'tnid':M.curTenantID};
         if( this.sections._tabs.selected == 'upcoming' ) {
             args['query'] = 'upcoming';
             args['days'] = 30;

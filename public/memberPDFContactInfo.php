@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the members belong to.
+// tnid:         The ID of the tenant the members belong to.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'layout'=>array('required'=>'no', 'blank'=>'no', 'default'=>'fullpage', 'name'=>'Layout',
             'validlist'=>array('contactinfo')), 
         'coverpage'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Cover Page'),
@@ -35,10 +35,10 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.memberPDFContactInfo', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.memberPDFContactInfo', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -50,7 +50,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
 //          ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
 //          $strsql = "SELECT permalink "
 //              . "FROM ciniki_customer_tags "
-//              . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//              . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //              . "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['categories']) . ") "
 //              . "";
 //          ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
@@ -70,11 +70,11 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
 //          . "ciniki_customers.permalink, "
 //          . "ciniki_customers.short_bio "
 //          . "FROM ciniki_customer_tags, ciniki_customers "
-//          . "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//          . "WHERE ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //          . "AND ciniki_customer_tags.tag_type = '40' "
 //          . "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
 //          // Check the member is visible on the website
-//          . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+//          . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //          . "AND ciniki_customers.member_status = 10 "
 //          . "";
 //      if( $args['private'] != 'yes' ) {
@@ -95,7 +95,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
             . "ciniki_customers.permalink, "
             . "ciniki_customers.short_bio "
             . "FROM ciniki_customers "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
             . "";
         if( $args['private'] != 'yes' ) {
@@ -118,7 +118,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
     //
     $strsql = "SELECT id, customer_id, email "
         . "FROM ciniki_customer_emails "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
     if( $args['private'] != 'yes' ) {
         $strsql .= "AND (flags&0x08) > 0 ";
     }
@@ -142,7 +142,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
     //
     $strsql = "SELECT id, customer_id, phone_label, phone_number, flags "
         . "FROM ciniki_customer_phones "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ";
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
     if( $args['private'] != 'yes' ) {
         $strsql .= "AND (flags&0x08) > 0 ";
     }
@@ -187,7 +187,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
     //
     if( isset($args['coverpage']) && $args['coverpage'] == 'yes' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-        $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'business_id', $args['business_id'], 'ciniki.customers', 'settings', 'members-coverpage');
+        $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $args['tnid'], 'ciniki.customers', 'settings', 'members-coverpage');
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -201,7 +201,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
     //
     $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'templates', $args['layout']);
     $fn = $rc['function_call'];
-    $rc = $fn($ciniki, $args['business_id'], $members, $args);
+    $rc = $fn($ciniki, $args['tnid'], $members, $args);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

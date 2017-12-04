@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_id, &$customer) {
+function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $tnid, &$customer) {
 
     if( isset($customer['emails'][0]['email']) ) {
         $email = $customer['emails'][0]['email'];
@@ -33,7 +33,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
     // Only 1 email allowed per account
     //
     if( isset($_POST['action']) && $_POST['action'] == 'update' ) {
-        if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
+        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
             $email_args = array();
             if( isset($_POST['email']) && $_POST['email'] != $email['address'] ) {
                 $email_args['email'] = $_POST['email'];
@@ -42,7 +42,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
             if( count($email_args) > 0 ) {
                 if( $email['id'] == 0 ) { 
                     $email_args['customer_id'] = $customer['id'];
-                    $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.email', $email_args);
+                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email', $email_args);
                     if( $rc['stat'] != 'ok' ) {
                         $errors = 'yes';
                         $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your email address.";
@@ -51,14 +51,14 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
                     }
                 } else {
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountEmailUpdate');
-                    $rc = ciniki_customers_web_accountEmailUpdate($ciniki, $settings, $business_id, $email, $_POST['email']);
+                    $rc = ciniki_customers_web_accountEmailUpdate($ciniki, $settings, $tnid, $email, $_POST['email']);
                     if( $rc['stat'] != 'ok' ) {
                         $errors = 'yes';
                         $error_msg .= ($error_msg!=''?"\n":'') . $rc['err']['msg'];
                     } else {
                         $updated = 'yes';
                     }
-//                    $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.email', $email['id'], $email_args);
+//                    $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.email', $email['id'], $email_args);
 //                    if( $rc['stat'] != 'ok' ) {
 //                        $errors = 'yes';
 //                        $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your email address.";
@@ -88,7 +88,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
                             $error_msg .= ($error_msg!=''?"\n":'') . "You must have one email address.";
                         } else {
                             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-                            $rc = ciniki_core_objectDelete($ciniki, $business_id, 'ciniki.customers.email', $email['id'], null);
+                            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.email', $email['id'], null);
                             if( $rc['stat'] != 'ok' ) {
                                 $errors = 'yes';
                                 $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your email address, please try again or contact us for help.";
@@ -99,7 +99,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
                         }
                     } elseif( $post_email != $email['address'] ) {
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountEmailUpdate');
-                        $rc = ciniki_customers_web_accountEmailUpdate($ciniki, $settings, $business_id, $email, $_POST['email_' . $email['id']]);
+                        $rc = ciniki_customers_web_accountEmailUpdate($ciniki, $settings, $tnid, $email, $_POST['email_' . $email['id']]);
                         if( $rc['stat'] != 'ok' ) {
                             $errors = 'yes';
                             $error_msg .= ($error_msg!=''?"\n":'') . $rc['err']['msg'];
@@ -116,7 +116,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
             //
             if( isset($_POST['email_0']) && $_POST['email_0'] != '' ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountEmailAdd');
-                $rc = ciniki_customers_web_accountEmailAdd($ciniki, $settings, $business_id, $customer['id'], $_POST['email_0']);
+                $rc = ciniki_customers_web_accountEmailAdd($ciniki, $settings, $tnid, $customer['id'], $_POST['email_0']);
                 if( $rc['stat'] != 'ok' ) {
                     $errors = 'yes';
                     $error_msg .= ($error_msg!=''?"\n":'') . $rc['err']['msg'];
@@ -128,7 +128,7 @@ function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $business_
         }
     }
 
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x20000000) > 0 ) {
         $form .= "<div class='input email'>"
             . "<label for='email'>Email Address" . (in_array('email', $required)?' *':'') . "</label>"
             . "<input type='text' class='text' name='email' value='" . $email['address'] . "'>"

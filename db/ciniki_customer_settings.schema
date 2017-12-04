@@ -1,10 +1,10 @@
 #
 # Description
 # -----------
-# This table stores the settings for customers for a business.
+# This table stores the settings for customers for a tenant.
 #
 # The format for display_name
-# - display-name-business-format - The format for the display name of a customer with a business
+# - display-name-tenant-format - The format for the display name of a customer with a tenant
 #
 #               company
 #               company - person
@@ -12,13 +12,13 @@
 #               person - company
 #               person [company]
 #
-# Specify if the cid (customer id) field should be displayed in the UI, if the business uses this field.
+# Specify if the cid (customer id) field should be displayed in the UI, if the tenant uses this field.
 # - use-cid - (yes|no)
 #
-# Does the business use inter-relationships tracking between customers
+# Does the tenant use inter-relationships tracking between customers
 # - use-relationships - (yes|no)
 #
-# Does the business use birthdates for customers
+# Does the tenant use birthdates for customers
 # - use-birthdate - (yes|no)
 #
 # Membership information
@@ -41,18 +41,18 @@
 #
 # Fields
 # ------
-# business_id:  The id of the business the detail is for.
+# tnid:         The id of the tenant the detail is for.
 # detail_key:   The unique key for the detail.
 # detail_value: The value stored for this key.
 # date_added:   The date and time the entry was created in the database.
 # last_updated: The date and time the entry was last updated.
 #
 create table ciniki_customer_settings (
-    business_id int not null,
+    tnid int not null,
     detail_key varchar(50) not null,
     detail_value varchar(255) not null,
     date_added datetime not null,
     last_updated datetime not null,
-    primary key (business_id, detail_key),
+    primary key (tnid, detail_key),
     index (last_updated)
 ) ENGINE=InnoDB, COMMENT='v1.01';

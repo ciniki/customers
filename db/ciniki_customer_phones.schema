@@ -7,11 +7,11 @@
 # ------
 # id:                   The id for each customer.
 # uuid:                 The Universal Unique ID.
-# business_id:          The business the customer is attached to.
+# tnid:                 The tenant the customer is attached to.
 #
 # customer_id:          The customer the address is attached to.
 #
-# phone_label:          The label for the phone number, determined by the business.
+# phone_label:          The label for the phone number, determined by the tenant.
 #                   
 # phone_number:         The phone number for the customer.
 #
@@ -28,7 +28,7 @@
 create table ciniki_customer_phones (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     customer_id int not null,
     phone_label varchar(50) not null,
     phone_number varchar(50) not null,
@@ -37,5 +37,5 @@ create table ciniki_customer_phones (
     last_updated datetime not null,
     primary key (id),
     index (customer_id),
-    index sync (business_id, uuid, last_updated)
+    index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

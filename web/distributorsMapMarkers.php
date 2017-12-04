@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_distributorsMapMarkers($ciniki, $settings, $business_id, $args) {
+function ciniki_customers_web_distributorsMapMarkers($ciniki, $settings, $tnid, $args) {
 
     $strsql = "SELECT "
         . "ciniki_customer_addresses.latitude AS y, "
@@ -19,7 +19,7 @@ function ciniki_customers_web_distributorsMapMarkers($ciniki, $settings, $busine
         . "ciniki_customers.short_description AS c, "
         . "IF(full_bio<>'', 'yes', 'no') AS d "
         . "FROM ciniki_customer_addresses, ciniki_customers "
-        . "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customer_addresses.latitude <> 0 "
         . "AND ciniki_customer_addresses.longitude <> 0 "
         . "AND (ciniki_customer_addresses.flags&0x08) > 0 "

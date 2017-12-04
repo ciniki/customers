@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id, $customer_id, $upd=0x04, $format='') {
+function ciniki_customers_customerUpdateShortDescription(&$ciniki, $tnid, $customer_id, $upd=0x04, $format='') {
     
     ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processURL');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
@@ -21,7 +21,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     $date_format = ciniki_users_dateFormat($ciniki);
 
     if( $format == '' ) {
-        $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_settings', 'business_id', $business_id,
+        $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_settings', 'tnid', $tnid,
             'ciniki.web', 'settings', 'page');
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -47,7 +47,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     $strsql = "SELECT id, member_status, dealer_status, distributor_status, short_bio, short_description, webflags "
         . "FROM ciniki_customers "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
@@ -76,7 +76,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     $strsql = "SELECT id, address1, address2, city, province, postal "
         . "FROM ciniki_customer_addresses "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (flags&0x08) > 0 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -96,7 +96,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     $strsql = "SELECT id, email "
         . "FROM ciniki_customer_emails "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (flags&0x08) > 0 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -116,7 +116,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     $strsql = "SELECT id, phone_label, phone_number, flags "
         . "FROM ciniki_customer_phones "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (flags&0x08) > 0 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -136,7 +136,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     $strsql = "SELECT id, name, url, webflags "
         . "FROM ciniki_customer_links "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (webflags&0x01) > 0 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -264,7 +264,7 @@ function ciniki_customers_customerUpdateShortDescription(&$ciniki, $business_id,
     //
     if( $desc != $customer['short_description'] ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.customer',
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer',
             $customer_id, array('short_description'=>$desc), $upd);
         if( $rc['stat'] != 'ok' ) {
             return $rc;

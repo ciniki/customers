@@ -7,12 +7,12 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business to get events for.
+// tnid:     The ID of the tenant to get events for.
 //
 // Returns
 // -------
 //
-function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
+function ciniki_customers_hooks_webIndexObject($ciniki, $tnid, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.20', 'msg'=>'No object specified'));
@@ -36,7 +36,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         $strsql = "SELECT id, display_name, member_status, webflags, permalink, "
             . "primary_image_id, short_description, full_bio "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
@@ -79,7 +79,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
             $strsql = "SELECT DISTINCT tag_name "
                 . "FROM ciniki_customer_tags "
                 . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
-                . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND tag_type = 40 "
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'tag');
@@ -109,7 +109,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         $strsql = "SELECT id, display_name, dealer_status, webflags, permalink, "
             . "primary_image_id, short_description, full_bio "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
@@ -133,7 +133,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         $strsql = "SELECT address1, address2, city, province, postal, country "
             . "FROM ciniki_customer_addresses "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (flags&0x08) = 0x08 "    // Public address
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
@@ -191,7 +191,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         $strsql = "SELECT id, display_name, distributor_status, webflags, permalink, "
             . "primary_image_id, short_description, full_bio "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
@@ -209,7 +209,7 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $business_id, $args) {
         $strsql = "SELECT id, address1, address2, city, province, postal, country "
             . "FROM ciniki_customer_addresses "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (flags&0x08) = 0x08 "    // Public address
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');

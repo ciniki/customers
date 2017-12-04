@@ -17,7 +17,7 @@ function ciniki_customers_customerDetails($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
         'phones'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Phones'),
         'emails'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Emails'),
@@ -31,15 +31,15 @@ function ciniki_customers_customerDetails($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.customerDetails', $args['customer_id']); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.customerDetails', $args['customer_id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
-    return ciniki_customers__customerDetails($ciniki, $args['business_id'], $args['customer_id'], $args);
+    return ciniki_customers__customerDetails($ciniki, $args['tnid'], $args['customer_id'], $args);
 }
 ?>

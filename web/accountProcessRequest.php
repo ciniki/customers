@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $business_id, $args) {
+function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $args) {
 
     $page = array(
         'title'=>'Account',
@@ -27,7 +27,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
         && (isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes')
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestChildren');
-        return ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, $business_id, $args);
+        return ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, $tnid, $args);
     } 
 
     //
@@ -50,7 +50,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
                     || $settings['page-account-password-change'] == 'yes')
                 ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'changePassword');
-                $rc = ciniki_customers_web_changePassword($ciniki, $ciniki['request']['business_id'], 
+                $rc = ciniki_customers_web_changePassword($ciniki, $ciniki['request']['tnid'], 
                     $_POST['oldpassword'], $_POST['newpassword']);
                 if( $rc['stat'] != 'ok' ) {
                     $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$rc['err']['msg']);
@@ -95,7 +95,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $busines
         $page['container-class'] = 'page-account-contact-details';
 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactDetails');
-        $rc = ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $settings, $business_id, array());
+        $rc = ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $settings, $tnid, array());
         if( $rc['stat'] != 'ok' ) {
             $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$rc['err']['msg'] . " Please try again or contact us for help.");
             return $rc;

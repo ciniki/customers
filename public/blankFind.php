@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This method will return a list of customers for the business which have blank first or last name.
+// This method will return a list of customers for the tenant which have blank first or last name.
 // 
 // Returns
 // -------
@@ -13,7 +13,7 @@ function ciniki_customers_blankFind($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -21,10 +21,10 @@ function ciniki_customers_blankFind($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id
+    // Check access to tnid
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.blankFind', 0);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.blankFind', 0);
     if( $ac['stat'] != 'ok' ) {
         return $ac;
     }
@@ -34,7 +34,7 @@ function ciniki_customers_blankFind($ciniki) {
     //
     $strsql = "SELECT id, first, middle, last, display_name, company "
         . "FROM ciniki_customers "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (first = '' OR last = '') "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');

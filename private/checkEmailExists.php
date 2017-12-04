@@ -2,23 +2,23 @@
 //
 // Description
 // -----------
-// This function will check if an email address exists for a business.
+// This function will check if an email address exists for a tenant.
 //
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The ID of the business the request is for.
+// tnid:         The ID of the tenant the request is for.
 // email:               The email address to validate.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_checkEmailExists(&$ciniki, $business_id, $email) {
+function ciniki_customers_checkEmailExists(&$ciniki, $tnid, $email) {
    
     $strsql = "SELECT customer_id "
         . "FROM ciniki_customer_emails "
         . "WHERE email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {

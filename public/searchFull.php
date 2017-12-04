@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to search for the customers.
+// tnid:         The ID of the tenant to search for the customers.
 // start_needle:        The search string to use.
 // limit:               (optional) The maximum number of results to return.  If not
 //                      specified, all results will be returned.
@@ -22,7 +22,7 @@ function ciniki_customers_searchFull($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
         'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'), 
         'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'), 
@@ -34,10 +34,10 @@ function ciniki_customers_searchFull($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.searchFull', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.searchFull', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -53,10 +53,10 @@ function ciniki_customers_searchFull($ciniki) {
     $maps = $rc['maps'];
 
     //
-    // Get the types of customers available for this business
+    // Get the types of customers available for this tenant
     //
 //  ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
- //   $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+ //   $rc = ciniki_customers_getCustomerTypes($ciniki, $args['tnid']); 
 //  if( $rc['stat'] != 'ok' ) { 
 //      return $rc;
 //  }
@@ -76,15 +76,15 @@ function ciniki_customers_searchFull($ciniki) {
     $strsql .= "FROM ciniki_customers AS c1 "
         . "LEFT JOIN ciniki_customer_emails ON ("
             . "c1.id = ciniki_customer_emails.customer_id "
-            . "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS c2 ON ("
             . "c1.parent_id = c2.id "
-            . "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE c1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
-    if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
+    if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x07) == 0x04 ) {
         $strsql .= "AND c1.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
     }
     if( isset($args['type']) ) {

@@ -7,26 +7,26 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business.
+// tnid:     The ID of the tenant.
 // args:            The possible arguments for.
 //
 //
 // Returns
 // -------
 //
-function ciniki_customers_hooks_businessReportBlocks(&$ciniki, $business_id, $args) {
+function ciniki_customers_hooks_tenantReportBlocks(&$ciniki, $tnid, $args) {
 
     //
     // Check to make sure the module is enabled
     //
-    if( !isset($ciniki['business']['modules']['ciniki.customers']) ) {
+    if( !isset($ciniki['tenant']['modules']['ciniki.customers']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.220', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     $blocks = array();
 
     //
-    // Return the list of blocks for the business
+    // Return the list of blocks for the tenant
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
         $blocks['ciniki.customers.birthdays'] = array(

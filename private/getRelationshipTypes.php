@@ -7,15 +7,15 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business to get the settings for.
+// tnid:     The ID of the tenant to get the settings for.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_getRelationshipTypes($ciniki, $business_id) {
-    return array('stat'=>'ok', 'types'=>array('10'=>'a business owner of',
+function ciniki_customers_getRelationshipTypes($ciniki, $tnid) {
+    return array('stat'=>'ok', 'types'=>array('10'=>'a tenant owner of',
         '-10'=>'owned by',
-        '11'=>'a business partner of',
+        '11'=>'a tenant partner of',
         '30'=>'a friend of',
         '40'=>'a relative of',
         '41'=>'a parent to',

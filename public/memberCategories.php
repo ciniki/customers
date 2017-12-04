@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get members for.
+// tnid:     The ID of the tenant to get members for.
 // type:            The type of participants to get.  Refer to participantAdd for 
 //                  more information on types.
 //
@@ -20,7 +20,7 @@ function ciniki_customers_memberCategories($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -28,10 +28,10 @@ function ciniki_customers_memberCategories($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.memberCategories', 0);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.memberCategories', 0);
     if( $ac['stat'] != 'ok' ) { 
         return $ac;
     }   
@@ -46,9 +46,9 @@ function ciniki_customers_memberCategories($ciniki) {
         . "LEFT JOIN ciniki_customer_tags ON ("
             . "ciniki_customers.id = ciniki_customer_tags.customer_id "
             . "AND ciniki_customer_tags.tag_type = '40' "
-            . "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_customers.status < 50 "
         . "AND ciniki_customers.member_status = 10 "
         . "GROUP BY tag_name "

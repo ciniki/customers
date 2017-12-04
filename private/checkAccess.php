@@ -9,7 +9,7 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The ID of the business the request is for.
+// tnid:         The ID of the tenant the request is for.
 // method:              The method requested.
 // req_id:              The ID of the customer or ID of the relationship for the 
 //                      method, or 0 if no customer or relationship specified.
@@ -17,12 +17,12 @@
 // Returns
 // -------
 //
-function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) {
+function ciniki_customers_checkAccess(&$ciniki, $tnid, $method, $req_id) {
     //
-    // Check if the business is active and the module is enabled
+    // Check if the tenant is active and the module is enabled
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'checkModuleAccess');
-    $rc = ciniki_businesses_checkModuleAccess($ciniki, $business_id, 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'checkModuleAccess');
+    $rc = ciniki_tenants_checkModuleAccess($ciniki, $tnid, 'ciniki', 'customers');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -33,10 +33,10 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     $modules = $rc['modules'];
 
     //
-    // Check if the business is active and the module is enabled
+    // Check if the tenant is active and the module is enabled
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'getUserPermissions');
-    $rc = ciniki_businesses_getUserPermissions($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'getUserPermissions');
+    $rc = ciniki_tenants_getUserPermissions($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -57,10 +57,10 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     }
 
     //
-    // Check the session user is a business owner
+    // Check the session user is a tenant owner
     //
-    if( $business_id <= 0 ) {
-        // If no business_id specified, then fail
+    if( $tnid <= 0 ) {
+        // If no tnid specified, then fail
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.35', 'msg'=>'Access denied'));
     }
 
@@ -69,7 +69,7 @@ function ciniki_customers_checkAccess(&$ciniki, $business_id, $method, $req_id) 
     // 
     // Resellers, Owners and Employees have access to everything
     //
-    if( ($ciniki['business']['user']['perms']&0x103) > 0 ) {
+    if( ($ciniki['tenant']['user']['perms']&0x103) > 0 ) {
         return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>$perms);
     }
 

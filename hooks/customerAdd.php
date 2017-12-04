@@ -11,7 +11,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
+function ciniki_customers_hooks_customerAdd(&$ciniki, $tnid, $args) {
     
     if( !isset($args['first']) ) { $args['first'] = ''; }
     if( !isset($args['last']) ) { $args['last'] = ''; }
@@ -22,10 +22,10 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $business_id, 'ciniki.customers.hooks.customerAdd', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $tnid, 'ciniki.customers.hooks.customerAdd', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -35,7 +35,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     // Get the current settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
-    $rc = ciniki_customers_getSettings($ciniki, $business_id);
+    $rc = ciniki_customers_getSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -66,7 +66,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
         $strsql = "SELECT id "
             . "FROM ciniki_customers "
             . "WHERE eid = '" . ciniki_core_dbQuote($ciniki, $args['eid']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
         if( $rc['stat'] != 'ok' ) {
@@ -87,7 +87,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
         $strsql = "SELECT id, parent_id "
             . "FROM ciniki_customers "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
         if( $rc['stat'] != 'ok' ) {
@@ -154,11 +154,11 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
         $format = 'company';
         if( isset($args['display_name_format']) && $args['display_name_format'] != '' ) {
             $format = $args['display_name_format'];
-        } elseif( !isset($settings['display-name-business-format']) 
-            || $settings['display-name-business-format'] == 'company' ) {
+        } elseif( !isset($settings['display-name-tenant-format']) 
+            || $settings['display-name-tenant-format'] == 'company' ) {
             $format = 'company';
-        } elseif( $settings['display-name-business-format'] != '' ) {
-            $format = $settings['display-name-business-format'];
+        } elseif( $settings['display-name-tenant-format'] != '' ) {
+            $format = $settings['display-name-tenant-format'];
         }
         // Format the display_name
         if( $format == 'company' ) {
@@ -209,7 +209,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     }   
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.customer', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.customer', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -220,7 +220,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     for($i=1;$i<5;$i++) {
         if( isset($args["phone_number_$i"]) && $args["phone_number_$i"] != '' ) {
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.phone',
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.phone',
                 array('customer_id'=>$customer_id,
                     'phone_label'=>$args["phone_label_$i"],
                     'phone_number'=>$args["phone_number_$i"],
@@ -237,7 +237,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     $email_id = 0;
     if( isset($args['email_address']) && $args['email_address'] != '' ) {
-        $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.email',
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email',
             array('customer_id'=>$customer_id,
                 'email'=>$args['email_address'],
                 'password'=>'',
@@ -262,7 +262,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
         || (isset($args['province']) && $args['province'] != '' )
         || (isset($args['postal']) && $args['postal'] != '' )
         ) {
-        $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.address',
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address',
             array('customer_id'=>$customer_id,
                 'flags'=>(isset($args['address_flags'])?$args['address_flags']:0x07),
                 'address1'=>$args['address1'],
@@ -284,7 +284,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     }
 
     if( isset($args['link_url_1']) && $args['link_url_1'] != '' ) {
-        $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.link',
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.link',
             array('customer_id'=>$customer_id,
                 'name'=>$args['link_name_1'],
                 'url'=>$args['link_url_1'],
@@ -305,7 +305,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
         if( !isset($args['subscriptions']) ) { $args['subscriptions'] = array(); }
         if( !isset($args['unsubscriptions']) ) { $args['unsubscriptions'] = array(); }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'subscriptions', 'private', 'updateCustomerSubscriptions');
-        $rc = ciniki_subscriptions_updateCustomerSubscriptions($ciniki, $business_id, 
+        $rc = ciniki_subscriptions_updateCustomerSubscriptions($ciniki, $tnid, 
             $customer_id, $args['subscriptions'], $args['unsubscriptions']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -317,7 +317,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     if( isset($args['customer_categories']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $business_id,
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $tnid,
             'ciniki_customer_tags', 'ciniki_customer_history',
             'customer_id', $customer_id, 10, $args['customer_categories']);
         if( $rc['stat'] != 'ok' ) {
@@ -331,7 +331,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     if( isset($args['customer_tags']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $business_id,
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $tnid,
             'ciniki_customer_tags', 'ciniki_customer_history',
             'customer_id', $customer_id, 20, $args['customer_tags']);
         if( $rc['stat'] != 'ok' ) {
@@ -345,7 +345,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     if( isset($args['member_categories']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $business_id,
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $tnid,
             'ciniki_customer_tags', 'ciniki_customer_history',
             'customer_id', $customer_id, 40, $args['member_categories']);
         if( $rc['stat'] != 'ok' ) {
@@ -359,7 +359,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     if( isset($args['dealer_categories']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $business_id,
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $tnid,
             'ciniki_customer_tags', 'ciniki_customer_history',
             'customer_id', $customer_id, 60, $args['dealer_categories']);
         if( $rc['stat'] != 'ok' ) {
@@ -373,7 +373,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     if( isset($args['distributor_categories']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $business_id,
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.customers', 'tag', $tnid,
             'ciniki_customer_tags', 'ciniki_customer_history',
             'customer_id', $customer_id, 80, $args['distributor_categories']);
         if( $rc['stat'] != 'ok' ) {
@@ -386,7 +386,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     // Update the short_description
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
-    $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $business_id, $customer_id, 0x04);
+    $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $tnid, $customer_id, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
         return $rc;
@@ -397,7 +397,7 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     //
     if( ($modules['ciniki.customers']['flags']&0x02000000) > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateSeasons');
-        $rc = ciniki_customers_customerUpdateSeasons($ciniki, $business_id, $customer_id);
+        $rc = ciniki_customers_customerUpdateSeasons($ciniki, $tnid, $customer_id);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
             return $rc;
@@ -413,11 +413,11 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $business_id, $args) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $business_id, 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $tnid, 'ciniki', 'customers');
 
     $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 
         'args'=>array('id'=>$customer_id));

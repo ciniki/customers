@@ -10,13 +10,13 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_settingChange($ciniki, $business_id, $field, $field_value) {
+function ciniki_customers_web_settingChange($ciniki, $tnid, $field, $field_value) {
 
     if( $field == 'page-members-list-format' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
         $strsql = "SELECT id "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND member_status > 0 "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -26,7 +26,7 @@ function ciniki_customers_web_settingChange($ciniki, $business_id, $field, $fiel
         $members = $rc['rows'];
 
         foreach($members as $member) {
-            $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $business_id, $member['id'], 0x04, $field_value);
+            $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $tnid, $member['id'], 0x04, $field_value);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
@@ -37,7 +37,7 @@ function ciniki_customers_web_settingChange($ciniki, $business_id, $field, $fiel
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
         $strsql = "SELECT id "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND dealer_status > 0 "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -47,7 +47,7 @@ function ciniki_customers_web_settingChange($ciniki, $business_id, $field, $fiel
         $dealers = $rc['rows'];
 
         foreach($dealers as $dealer) {
-            $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $business_id, $dealer['id'], 0x04, $field_value);
+            $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $tnid, $dealer['id'], 0x04, $field_value);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
@@ -58,7 +58,7 @@ function ciniki_customers_web_settingChange($ciniki, $business_id, $field, $fiel
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
         $strsql = "SELECT id "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND distributor_status > 0 "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -68,7 +68,7 @@ function ciniki_customers_web_settingChange($ciniki, $business_id, $field, $fiel
         $distributors = $rc['rows'];
 
         foreach($distributors as $distributor) {
-            $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $business_id, $distributor['id'], 0x04, $field_value);
+            $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $tnid, $distributor['id'], 0x04, $field_value);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }

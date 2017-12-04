@@ -7,9 +7,9 @@ function ciniki_customers_settings() {
     this.add = null;
 
     this.toggleOptions = {'no':'Off', 'yes':'On'};
-    this.formOptions = {'person':'Person', 'business':'Business'};
-    this.typeOptions = {'person':'Person', 'business':'Business'};
-    this.businessFormats = {
+    this.formOptions = {'person':'Person', 'tenant':'Tenant'};
+    this.typeOptions = {'person':'Person', 'tenant':'Tenant'};
+    this.tenantFormats = {
         'company':'Company',
         'company - person':'Company - Person',
         'person - company':'Person - Company',
@@ -42,7 +42,7 @@ function ciniki_customers_settings() {
 //              'use-birthdate':{'label':'Birthdays', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 //          }},
             'name_options':{'label':'Name Format', 'fields':{
-                'display-name-business-format':{'label':'Business', 'type':'select', 'options':this.businessFormats},
+                'display-name-tenant-format':{'label':'Tenant', 'type':'select', 'options':this.tenantFormats},
             }},
             'pricepoints':{'label':'Price Points', 'visible':'no', 'type':'simplegrid',
                 'num_cols':1,
@@ -50,7 +50,7 @@ function ciniki_customers_settings() {
                 'addFn':'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',0);',
             },
             'defaults':{'label':'Defaults', 'visible':'yes', 'fields':{
-                'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Business'}},
+                'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'tenant':'Tenant'}},
                 'defaults-edit-person-hide-company':{'label':'Hide Company', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
             'ui_labels':{'label':'Labels', 'visible':'no', 'fields':{
@@ -73,7 +73,7 @@ function ciniki_customers_settings() {
                 'addFn':'M.ciniki_customers_settings.editSeason(\'M.ciniki_customers_settings.showMain();\',0);',
             },
             'membership_types':{'label':'Membership Types', 
-                'active':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x02)>0?'yes':'no'; },
+                'active':function() {return (M.curTenant.modules['ciniki.customers'].flags&0x02)>0?'yes':'no'; },
                 'fields':{
                     'membership-type-10-active':{'label':'Regular', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                     'membership-type-20-active':{'label':'Student', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -85,7 +85,7 @@ function ciniki_customers_settings() {
                  },
             },
             'membership_prices':{'label':'Online Membership Sales', 
-                'active':function() {return (M.curBusiness.modules['ciniki.customers'].flags&0x02)>0&&M.curBusiness.modules['ciniki.sapos']!=null&&(M.curBusiness.modules['ciniki.sapos'].flags&0x08)>0?'yes':'no'; },
+                'active':function() {return (M.curTenant.modules['ciniki.customers'].flags&0x02)>0&&M.curTenant.modules['ciniki.sapos']!=null&&(M.curTenant.modules['ciniki.sapos'].flags&0x08)>0?'yes':'no'; },
                 'fields':{
                     'membership-type-10-online':{'label':'Regular', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                     'membership-type-10-name':{'label':'Regular Name', 'type':'text'},
@@ -175,12 +175,12 @@ function ciniki_customers_settings() {
         }
         this.main.fieldHistoryArgs = function(s, i) {
             if( s == 'pricepoints' ) {
-                return {'method':'ciniki.customers.pricepointHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
+                return {'method':'ciniki.customers.pricepointHistory', 'args':{'tnid':M.curTenantID, 'field':i}};
             }
             if( s == 'seasons' ) {
-                return {'method':'ciniki.customers.seasonHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
+                return {'method':'ciniki.customers.seasonHistory', 'args':{'tnid':M.curTenantID, 'field':i}};
             }
-            return {'method':'ciniki.customers.getSettingHistory', 'args':{'business_id':M.curBusinessID, 'field':i}};
+            return {'method':'ciniki.customers.getSettingHistory', 'args':{'tnid':M.curTenantID, 'field':i}};
         };
         this.main.addButton('save', 'Save', 'M.ciniki_customers_settings.saveSettings();');
         this.main.addClose('Cancel');
@@ -210,7 +210,7 @@ function ciniki_customers_settings() {
         };
         this.pricepoint.fieldHistoryArgs = function(s, i) {
             return {'method':'ciniki.customers.pricepointHistory', 
-                'args':{'business_id':M.curBusinessID, 'field':i}};
+                'args':{'tnid':M.curTenantID, 'field':i}};
         };
         this.pricepoint.addButton('save', 'Save', 'M.ciniki_customers_settings.savePricePoint();');
         this.pricepoint.addClose('Cancel');
@@ -240,7 +240,7 @@ function ciniki_customers_settings() {
         };
         this.season.fieldHistoryArgs = function(s, i) {
             return {'method':'ciniki.customers.seasonHistory', 
-                'args':{'business_id':M.curBusinessID, 'field':i}};
+                'args':{'tnid':M.curTenantID, 'field':i}};
         };
         this.season.addButton('save', 'Save', 'M.ciniki_customers_settings.saveSeason();');
         this.season.addClose('Cancel');
@@ -264,20 +264,20 @@ function ciniki_customers_settings() {
             return false;
         } 
 
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x1000) > 0 ) {
             M.ciniki_customers_settings.main.sections.pricepoints.visible = 'yes';
         } else {
             M.ciniki_customers_settings.main.sections.pricepoints.visible = 'no';
         }
         
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x02000000) > 0 ) {
             M.ciniki_customers_settings.main.sections.seasons.visible = 'yes';
         } else {
             M.ciniki_customers_settings.main.sections.seasons.visible = 'no';
         }
         
         M.ciniki_customers_settings.main.sections.ui_labels.visible = 'no';
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x01) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x01) > 0 ) {
             M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customer'].active = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customers'].active = 'yes';
@@ -285,7 +285,7 @@ function ciniki_customers_settings() {
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customer'].active = 'no';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customers'].active = 'no';
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x02) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x02) > 0 ) {
             M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-member'].active = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-members'].active = 'yes';
@@ -293,7 +293,7 @@ function ciniki_customers_settings() {
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-member'].active = 'no';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-members'].active = 'no';
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x10) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x10) > 0 ) {
             M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealer'].active = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealers'].active = 'yes';
@@ -301,7 +301,7 @@ function ciniki_customers_settings() {
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealer'].active = 'no';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-dealers'].active = 'no';
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x0100) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x0100) > 0 ) {
             M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributor'].active = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributors'].active = 'yes';
@@ -314,10 +314,10 @@ function ciniki_customers_settings() {
     }
 
     //
-    // Grab the stats for the business from the database and present the list of orders.
+    // Grab the stats for the tenant from the database and present the list of orders.
     //
     this.showMain = function(cb) {
-        var rsp = M.api.getJSONCb('ciniki.customers.getSettings', {'business_id':M.curBusinessID}, function(rsp) {
+        var rsp = M.api.getJSONCb('ciniki.customers.getSettings', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -338,7 +338,7 @@ function ciniki_customers_settings() {
     this.saveSettings = function() {
         var c = this.main.serializeForm('no');
         if( c != '' ) {
-            M.api.postJSONCb('ciniki.customers.updateSettings', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.customers.updateSettings', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -354,7 +354,7 @@ function ciniki_customers_settings() {
         if( pid != null ) { this.pricepoint.pricepoint_id = pid; }
         if( this.pricepoint.pricepoint_id > 0 ) {
             this.pricepoint.sections._buttons.buttons.delete.visible = 'yes';
-            M.api.getJSONCb('ciniki.customers.pricepointGet', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.customers.pricepointGet', {'tnid':M.curTenantID, 
                 'pricepoint_id':this.pricepoint.pricepoint_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -378,7 +378,7 @@ function ciniki_customers_settings() {
             var c = this.pricepoint.serializeForm('no');
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.customers.pricepointUpdate', 
-                    {'business_id':M.curBusinessID, 
+                    {'tnid':M.curTenantID, 
                     'pricepoint_id':M.ciniki_customers_settings.pricepoint.pricepoint_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -392,7 +392,7 @@ function ciniki_customers_settings() {
         } else {
             var c = this.pricepoint.serializeForm('yes');
             M.api.postJSONCb('ciniki.customers.pricepointAdd', 
-                {'business_id':M.curBusinessID, 'pricepoint_id':this.pricepoint.pricepoint_id}, c, function(rsp) {
+                {'tnid':M.curTenantID, 'pricepoint_id':this.pricepoint.pricepoint_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -405,7 +405,7 @@ function ciniki_customers_settings() {
     this.deletePricePoint = function() {
         if( confirm("Are you sure you want to remove this price point?") ) {
             M.api.getJSONCb('ciniki.customers.pricepointDelete', 
-                {'business_id':M.curBusinessID, 
+                {'tnid':M.curTenantID, 
                 'pricepoint_id':this.pricepoint.pricepoint_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -420,7 +420,7 @@ function ciniki_customers_settings() {
         if( pid != null ) { this.season.season_id = pid; }
         if( this.season.season_id > 0 ) {
             this.season.sections._buttons.buttons.delete.visible = 'yes';
-            M.api.getJSONCb('ciniki.customers.seasonGet', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.customers.seasonGet', {'tnid':M.curTenantID, 
                 'season_id':this.season.season_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -444,7 +444,7 @@ function ciniki_customers_settings() {
             var c = this.season.serializeForm('no');
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.customers.seasonUpdate', 
-                    {'business_id':M.curBusinessID, 
+                    {'tnid':M.curTenantID, 
                     'season_id':M.ciniki_customers_settings.season.season_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -458,7 +458,7 @@ function ciniki_customers_settings() {
         } else {
             var c = this.season.serializeForm('yes');
             M.api.postJSONCb('ciniki.customers.seasonAdd', 
-                {'business_id':M.curBusinessID, 'season_id':this.season.season_id}, c, function(rsp) {
+                {'tnid':M.curTenantID, 'season_id':this.season.season_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -471,7 +471,7 @@ function ciniki_customers_settings() {
     this.deleteSeason = function() {
         if( confirm("Are you sure you want to remove this season?") ) {
             M.api.getJSONCb('ciniki.customers.seasonDelete', 
-                {'business_id':M.curBusinessID, 
+                {'tnid':M.curTenantID, 
                 'season_id':this.season.season_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);

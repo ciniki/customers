@@ -20,7 +20,7 @@ function ciniki_customers_addFromHash($ciniki, $customer) {
     $rc = ciniki_core_dbHashToSQL($ciniki, 
         array('prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title'),
         $customer,
-        'INSERT INTO ciniki_customers (business_id, status, ',
+        'INSERT INTO ciniki_customers (tnid, status, ',
         'date_added, last_updated) VALUES ('
         'UTC_TIMESTAMP(), UTC_TIMESTAMP())');
     if( $rc['stat'] != 'ok' ) {
@@ -36,11 +36,11 @@ function ciniki_customers_addFromHash($ciniki, $customer) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'customers');
 
     return array('stat'=>'ok', 'id'=>$rc['insert_id']);
 }

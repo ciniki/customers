@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the history for.
+// tnid:         The ID of the tenant to get the history for.
 // relationship_id:     The ID of the relationship to get the history for.
 // field:               The field to get the history for.
 //
@@ -35,7 +35,7 @@ function ciniki_customers_relationshipHistory($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'relationship_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Relationship'), 
         'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'),
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
@@ -46,10 +46,10 @@ function ciniki_customers_relationshipHistory($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.relationshipHistory', $args['relationship_id']);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.relationshipHistory', $args['relationship_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -57,7 +57,7 @@ function ciniki_customers_relationshipHistory($ciniki) {
     if( $args['field'] == 'date_started'
         || $args['field'] == 'date_ended' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
-        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 
             'ciniki_customer_relationships', $args['relationship_id'], $args['field'], 'date');
     }
 
@@ -72,7 +72,7 @@ function ciniki_customers_relationshipHistory($ciniki) {
         // Check if different customer types have been enabled
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-        $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+        $rc = ciniki_customers_getCustomerTypes($ciniki, $args['tnid']); 
         if( $rc['stat'] != 'ok' ) { 
             return $rc;
         }
@@ -96,7 +96,7 @@ function ciniki_customers_relationshipHistory($ciniki) {
             $strsql .= "CASE ciniki_customers.type ";
             foreach($types as $tid => $type) {
                 $strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
-                if( $type['detail_value'] == 'business' ) {
+                if( $type['detail_value'] == 'tenant' ) {
                     $strsql .= " ciniki_customers.company ";
                 } else {
                     $strsql .= "CONCAT_WS(' ', first, last) ";
@@ -109,8 +109,8 @@ function ciniki_customers_relationshipHistory($ciniki) {
         }
         $strsql .= " FROM ciniki_customer_history "
             . "LEFT JOIN ciniki_customers ON (ciniki_customer_history.new_value = ciniki_customers.id "
-                . " AND ciniki_customers.business_id ='" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "') "
-            . " WHERE ciniki_customer_history.business_id ='" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . " AND ciniki_customers.tnid ='" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "') "
+            . " WHERE ciniki_customer_history.tnid ='" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . " AND table_name = 'ciniki_customer_relationships' "
             . " AND table_key = '" . ciniki_core_dbQuote($ciniki, $args['relationship_id']) . "' "
             . " AND ((table_field = 'related_id' AND new_value != '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "') "
@@ -123,6 +123,6 @@ function ciniki_customers_relationshipHistory($ciniki) {
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_relationships', $args['relationship_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_relationships', $args['relationship_id'], $args['field']);
 }
 ?>

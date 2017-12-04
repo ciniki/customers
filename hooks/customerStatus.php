@@ -7,20 +7,20 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The business ID to check the session user against.
+// tnid:         The tenant ID to check the session user against.
 // method:              The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_customers_hooks_customerStatus($ciniki, $business_id, $args) {
+function ciniki_customers_hooks_customerStatus($ciniki, $tnid, $args) {
     
     if( isset($args['customer_id']) && $args['customer_id'] > 0 ) {
         $strsql = "SELECT status, member_status, dealer_status, distributor_status "
             . "FROM ciniki_customers "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
         if( $rc['stat'] != 'ok' ) {

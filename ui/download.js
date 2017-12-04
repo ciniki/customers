@@ -103,25 +103,25 @@ function ciniki_customers_download() {
 
         var slabel = 'Customer';
         var plabel = 'Customers';
-        if( M.curBusiness.customers != null ) {
-            if( M.curBusiness.customers.settings['ui-labels-customer'] != null 
-                && M.curBusiness.customers.settings['ui-labels-customer'] != ''
+        if( M.curTenant.customers != null ) {
+            if( M.curTenant.customers.settings['ui-labels-customer'] != null 
+                && M.curTenant.customers.settings['ui-labels-customer'] != ''
                 ) {
-                slabel = M.curBusiness.customers.settings['ui-labels-customer'];
+                slabel = M.curTenant.customers.settings['ui-labels-customer'];
             }
-            if( M.curBusiness.customers.settings['ui-labels-customers'] != null 
-                && M.curBusiness.customers.settings['ui-labels-customers'] != ''
+            if( M.curTenant.customers.settings['ui-labels-customers'] != null 
+                && M.curTenant.customers.settings['ui-labels-customers'] != ''
                 ) {
-                plabel = M.curBusiness.customers.settings['ui-labels-customers'];
+                plabel = M.curTenant.customers.settings['ui-labels-customers'];
             }
         }
         this.exportlist.title = 'Export ' + plabel;
 
-        var flags = M.curBusiness.modules['ciniki.customers'].flags;
+        var flags = M.curTenant.modules['ciniki.customers'].flags;
 
         this.exportlist.sections._members.fields.member_status.active=((flags&0x02)>0?'yes':'no');
         this.exportlist.sections._members.fields.member_categories.active=((flags&0x04)>0?'yes':'no');
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x08) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x08) > 0 ) {
             this.exportlist.sections._members.fields.member_lastpaid.active = 'yes';
             this.exportlist.sections._members.fields.membership_length.active = 'yes';
             this.exportlist.sections._members.fields.membership_type.active = 'yes';
@@ -156,7 +156,7 @@ function ciniki_customers_download() {
     }
 
     this.showExportList = function(cb, selected_season, membersonly, subscription_id) {
-        M.api.getJSONCb('ciniki.customers.customerListExcelOptions', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.customers.customerListExcelOptions', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -175,13 +175,13 @@ function ciniki_customers_download() {
             p.sections.selector.fields['select_member_status'] = {'label':'Member Status', 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Suspended'}};
             p.sections.selector.fields['select_lifetime'] = {'label':'Lifetime Members', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}};
             if( M.modFlagOn('ciniki.customers', 0x02000000) 
-                && M.curBusiness.modules['ciniki.customers'].settings != null
-                && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+                && M.curTenant.modules['ciniki.customers'].settings != null
+                && M.curTenant.modules['ciniki.customers'].settings.seasons != null
                 ) {
                 p.sections.seasons.active = 'yes';
                 p.sections.seasons.fields = {};
-                for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
-                    var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
+                for(i in M.curTenant.modules['ciniki.customers'].settings.seasons) {
+                    var season = M.curTenant.modules['ciniki.customers'].settings.seasons[i].season;
                     if( season.open == 'yes' ) {
                         p.sections.seasons.fields['season-' + season.id] = {
                             'label':season.name + ' Status', 
@@ -328,9 +328,9 @@ function ciniki_customers_download() {
                 }
             }
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x02000000) > 0 
-            && M.curBusiness.modules['ciniki.customers'].settings != null
-            && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x02000000) > 0 
+            && M.curTenant.modules['ciniki.customers'].settings != null
+            && M.curTenant.modules['ciniki.customers'].settings.seasons != null
             ) {
             fields = this.exportlist.sections.seasons.fields;
             for(i in fields) {
@@ -340,7 +340,7 @@ function ciniki_customers_download() {
                 }
             }
         }
-        if( M.curBusiness.modules['ciniki.subscriptions'] ) {
+        if( M.curTenant.modules['ciniki.subscriptions'] ) {
             fields = this.exportlist.sections.subscriptions.fields;
             for(i in fields) {
                 if( fields[i].active != null && fields[i].active == 'no' ) { continue; }
@@ -349,7 +349,7 @@ function ciniki_customers_download() {
                 }
             }
         }
-        var args = {'business_id':M.curBusinessID, 'columns':cols};
+        var args = {'tnid':M.curTenantID, 'columns':cols};
         if( this.exportlist.sections.selector.active == 'yes' ) {
             if( M.modFlagOn('ciniki.customers', 0x400000) ) {
                 args['select_categories'] = this.exportlist.formValue('select_categories');
@@ -357,11 +357,11 @@ function ciniki_customers_download() {
             args['select_member_status'] = this.exportlist.formValue('select_member_status');
             args['select_lifetime'] = this.exportlist.formValue('select_lifetime');
             if( M.modFlagOn('ciniki.customers', 0x02000000) 
-                && M.curBusiness.modules['ciniki.customers'].settings != null
-                && M.curBusiness.modules['ciniki.customers'].settings.seasons != null
+                && M.curTenant.modules['ciniki.customers'].settings != null
+                && M.curTenant.modules['ciniki.customers'].settings.seasons != null
                 ) {
-                for(i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
-                    var season = M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season;
+                for(i in M.curTenant.modules['ciniki.customers'].settings.seasons) {
+                    var season = M.curTenant.modules['ciniki.customers'].settings.seasons[i].season;
                     args['select_season_' + season.id] = this.exportlist.formValue('select_season_' + season.id);
                 }
             }

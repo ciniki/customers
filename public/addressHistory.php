@@ -14,7 +14,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the details for.
+// tnid:         The ID of the tenant to get the details for.
 // key:                 The detail key to get the history for.
 //
 // Returns
@@ -34,7 +34,7 @@ function ciniki_customers_addressHistory($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'address_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Address'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
@@ -45,10 +45,10 @@ function ciniki_customers_addressHistory($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.addressHistory', $args['customer_id']);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.addressHistory', $args['customer_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -61,7 +61,7 @@ function ciniki_customers_addressHistory($ciniki) {
         . "WHERE ciniki_customer_addresses.id = '" . ciniki_core_dbQuote($ciniki, $args['address_id']) . "' "
         . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "AND customer_id = ciniki_customers.id "
-        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'address');
@@ -73,6 +73,6 @@ function ciniki_customers_addressHistory($ciniki) {
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_addresses', $args['address_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_addresses', $args['address_id'], $args['field']);
 }
 ?>

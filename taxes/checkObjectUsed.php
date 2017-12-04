@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_taxes_checkObjectUsed($ciniki, $modules, $business_id, $object, $object_id) {
+function ciniki_customers_taxes_checkObjectUsed($ciniki, $modules, $tnid, $object, $object_id) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
 
@@ -25,7 +25,7 @@ function ciniki_customers_taxes_checkObjectUsed($ciniki, $modules, $business_id,
         $strsql = "SELECT 'items', COUNT(*) "
             . "FROM ciniki_customers "
             . "WHERE tax_location_id = '" . ciniki_core_dbQuote($ciniki, $object_id) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.products', 'num');
         if( $rc['stat'] != 'ok' ) {

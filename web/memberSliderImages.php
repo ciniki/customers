@@ -3,13 +3,13 @@
 // Description
 // -----------
 // This funciton will return a list of the random added items in the art catalog. 
-// These are used on the homepage of the business website.
+// These are used on the homepage of the tenant website.
 //
 // Arguments
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get images for.
+// tnid:     The ID of the tenant to get images for.
 // limit:           The maximum number of images to return.
 //
 // Returns
@@ -24,7 +24,7 @@
 //      ...
 // </images>
 //
-function ciniki_customers_web_memberSliderImages($ciniki, $settings, $business_id, $list, $limit) {
+function ciniki_customers_web_memberSliderImages($ciniki, $settings, $tnid, $list, $limit) {
 
 
     if( $list == 'random' ) {
@@ -39,13 +39,13 @@ function ciniki_customers_web_memberSliderImages($ciniki, $settings, $business_i
                 . "ciniki_customer_images.customer_id = ciniki_customers.id "
                 . "AND ciniki_customers.member_status = 10 "
                 . "AND (ciniki_customers.webflags&0x01) = 0x01 "
-                . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "INNER JOIN ciniki_images ON ( "
                 . "ciniki_customer_images.image_id = ciniki_images.id "
-                . "AND ciniki_images.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_customer_images.business_id = '". ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customer_images.tnid = '". ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (ciniki_customer_images.webflags&0x01) = 0x01 "
             . "AND ciniki_customer_images.image_id > 0 "
             . "";
@@ -68,13 +68,13 @@ function ciniki_customers_web_memberSliderImages($ciniki, $settings, $business_i
                 . "ciniki_customer_images.customer_id = ciniki_customers.id "
                 . "AND ciniki_customers.member_status = 10 "
                 . "AND (ciniki_customers.webflags&0x01) = 0x01 "
-                . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "INNER JOIN ciniki_images ON ( "
                 . "ciniki_customer_images.image_id = ciniki_images.id "
-                . "AND ciniki_images.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_customer_images.business_id = '". ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customer_images.tnid = '". ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (ciniki_customer_images.webflags&0x01) = 0x01 "
             . "AND ciniki_customer_images.image_id > 0 "
             . "ORDER BY ciniki_customer_images.date_added DESC "

@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_distributorList($ciniki, $settings, $business_id, $args) {
+function ciniki_customers_web_distributorList($ciniki, $settings, $tnid, $args) {
 
 
     $tag_name = '';
@@ -22,7 +22,7 @@ function ciniki_customers_web_distributorList($ciniki, $settings, $business_id, 
             . "ciniki_customers.primary_image_id, "
             . "IF(full_bio<>'', 'yes', 'no') AS is_details "
             . "FROM ciniki_customer_addresses, ciniki_customers "
-            . "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_customer_addresses.country = '" . ciniki_core_dbQuote($ciniki, $args['country']) . "' "
             . "";
         if( isset($args['province']) && $args['province'] != '' && $args['province'] != '-' ) {
@@ -39,7 +39,7 @@ function ciniki_customers_web_distributorList($ciniki, $settings, $business_id, 
     } elseif( isset($args['category']) && $args['category'] != '' ) {
         $strsql = "SELECT tag_name FROM ciniki_customer_tags "
             . "WHERE permalink = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'tag');
         if( $rc['stat'] != 'ok' ) {
@@ -56,7 +56,7 @@ function ciniki_customers_web_distributorList($ciniki, $settings, $business_id, 
             . "ciniki_customers.primary_image_id, "
             . "IF(full_bio<>'', 'yes', 'no') AS is_details "
             . "FROM ciniki_customer_tags, ciniki_customers "
-            . "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_customer_tags.tag_type = '60' "
             . "AND ciniki_customer_tags.permalink = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
             . "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
@@ -72,7 +72,7 @@ function ciniki_customers_web_distributorList($ciniki, $settings, $business_id, 
             . "ciniki_customers.primary_image_id, "
             . "IF(full_bio<>'', 'yes', 'no') AS is_details "
             . "FROM ciniki_customers "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             // Check the distributor is visible on the website
 //          . "AND ciniki_customers.distributor_status = 10 "
             . "AND (ciniki_customers.webflags&0x04) = 0x04 "

@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get members for.
+// tnid:     The ID of the tenant to get members for.
 // type:            The type of participants to get.  Refer to participantAdd for 
 //                  more information on types.
 //
@@ -20,7 +20,7 @@ function ciniki_customers_memberList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -29,10 +29,10 @@ function ciniki_customers_memberList($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.memberList', 0);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.memberList', 0);
     if( $ac['stat'] != 'ok' ) { 
         return $ac;
     }   
@@ -48,10 +48,10 @@ function ciniki_customers_memberList($ciniki) {
     $maps = $rc['maps'];
 
     //
-    // Get the business settings
+    // Get the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -64,7 +64,7 @@ function ciniki_customers_memberList($ciniki) {
     $mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
     //
-    // Load the list of members for a business
+    // Load the list of members for a tenant
     //
     $strsql = "SELECT ciniki_customers.id, "
         . "ciniki_customers.first, "
@@ -81,16 +81,16 @@ function ciniki_customers_memberList($ciniki) {
         $strsql .= "FROM ciniki_customer_tags "
             . "LEFT JOIN ciniki_customers ON ("
                 . "ciniki_customer_tags.customer_id = ciniki_customers.id "
-                . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND ciniki_customers.member_status = 10 "
                 . ") ";
-        if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
             $strsql .= "LEFT JOIN ciniki_customer_season_members ON ("
                 . "ciniki_customers.id = ciniki_customer_season_members.customer_id "
-                . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_customer_season_members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") ";
         }
-        $strsql .= "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        $strsql .= "WHERE ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customer_tags.permalink = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
             . "AND ciniki_customer_tags.tag_type = '40' "
             . "ORDER BY sort_name, last, first, company"
@@ -111,15 +111,15 @@ function ciniki_customers_memberList($ciniki) {
             . "LEFT JOIN ciniki_customer_tags ON ("
                 . "ciniki_customers.id = ciniki_customer_tags.customer_id "
                 . "AND ciniki_customer_tags.tag_type = '40' "
-                . "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") ";
-        if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
             $strsql .= "LEFT JOIN ciniki_customer_season_members ON ("
                 . "ciniki_customers.id = ciniki_customer_season_members.customer_id "
-                . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_customer_season_members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") ";
         }
-        $strsql .="WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        $strsql .="WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
             . "AND ISNULL(ciniki_customer_tags.tag_name) "
             . "ORDER BY sort_name, last, first, company"
@@ -137,7 +137,7 @@ function ciniki_customers_memberList($ciniki) {
 //          . "ciniki_customers.membership_type AS membership_type_text, "
 //          . "ciniki_customers.company "
         $strsql .= "FROM ciniki_customers ";
-        $strsql .= "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
             . "ORDER BY sort_name, last, first, company"
             . "";
@@ -166,16 +166,16 @@ function ciniki_customers_memberList($ciniki) {
         //
         // Get the seasons if enabled for the last_paid date
         //
-        if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
             $strsql = "SELECT ciniki_customer_season_members.customer_id, "
                 . "ciniki_customer_seasons.name, "
                 . "ciniki_customer_season_members.status AS status_text, "
                 . "DATE_FORMAT(ciniki_customer_season_members.date_paid, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS date_paid "
                 . "FROM ciniki_customer_season_members, ciniki_customer_seasons "
-                . "WHERE ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "WHERE ciniki_customer_season_members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND ciniki_customer_season_members.status > 0 "
                 . "AND ciniki_customer_season_members.season_id = ciniki_customer_seasons.id "
-                . "AND ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_customer_seasons.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY ciniki_customer_season_members.customer_id, ciniki_customer_seasons.start_date DESC "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');

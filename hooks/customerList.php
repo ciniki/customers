@@ -2,23 +2,23 @@
 //
 // Description
 // -----------
-// This function will return a list of customers for a business.
+// This function will return a list of customers for a tenant.
 //
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The business ID to check the session user against.
+// tnid:         The tenant ID to check the session user against.
 // method:              The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_customers_hooks_customerList($ciniki, $business_id, $args) {
+function ciniki_customers_hooks_customerList($ciniki, $tnid, $args) {
 
     $strsql = "SELECT id, display_name "
         . "FROM ciniki_customers "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     if( isset($args['type']) && $args['type'] != '' ) {
         $strsql .= "AND type = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' ";

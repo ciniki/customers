@@ -11,7 +11,7 @@
 // Returns
 // =======
 //
-function ciniki_customers_sapos_cartItemLookup($ciniki, $business_id, $customer, $args) {
+function ciniki_customers_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
@@ -22,7 +22,7 @@ function ciniki_customers_sapos_cartItemLookup($ciniki, $business_id, $customer,
     // Get the customer settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'business_id', $business_id, 'ciniki.customers', 'settings', 'membership');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $tnid, 'ciniki.customers', 'settings', 'membership');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

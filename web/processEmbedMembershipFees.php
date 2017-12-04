@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_processEmbedMembershipFees(&$ciniki, $settings, $business_id, $args) {
+function ciniki_customers_web_processEmbedMembershipFees(&$ciniki, $settings, $tnid, $args) {
 
     $prices = array();
 
@@ -17,7 +17,7 @@ function ciniki_customers_web_processEmbedMembershipFees(&$ciniki, $settings, $b
     // Load the customers settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'business_id', $business_id, 'ciniki.customers', 'settings', 'membership');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $tnid, 'ciniki.customers', 'settings', 'membership');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

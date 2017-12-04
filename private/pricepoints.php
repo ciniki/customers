@@ -2,7 +2,7 @@
 //
 // Description
 // ===========
-// This function will return the list of pricepoints for a business
+// This function will return the list of pricepoints for a tenant
 //
 // Arguments
 // =========
@@ -12,14 +12,14 @@
 // =======
 // <rsp stat="ok" />
 //
-function ciniki_customers_pricepoints($ciniki, $business_id) {
+function ciniki_customers_pricepoints($ciniki, $tnid) {
 
     //
     // Get the sequences
     //
     $strsql = "SELECT id, sequence, name, code "
         . "FROM ciniki_customer_pricepoints "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY sequence "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');

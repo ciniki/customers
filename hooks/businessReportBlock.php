@@ -7,19 +7,19 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:     The ID of the business.
+// tnid:     The ID of the tenant.
 // args:            The possible arguments for.
 //
 //
 // Returns
 // -------
 //
-function ciniki_customers_hooks_businessReportBlock(&$ciniki, $business_id, $args) {
+function ciniki_customers_hooks_tenantReportBlock(&$ciniki, $tnid, $args) {
 
     //
     // Check to make sure the module is enabled
     //
-    if( !isset($ciniki['business']['modules']['ciniki.customers']) ) {
+    if( !isset($ciniki['tenant']['modules']['ciniki.customers']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.221', 'msg'=>"That report is not available."));
     }
 
@@ -35,17 +35,17 @@ function ciniki_customers_hooks_businessReportBlock(&$ciniki, $business_id, $arg
     //
 
     //
-    // Return the list of reports for the business
+    // Return the list of reports for the tenant
     //
     if( $args['block_ref'] == 'ciniki.customers.birthdays' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportUpcomingBirthdays');
-        return ciniki_customers_reportUpcomingBirthdays($ciniki, $business_id, $args['options']);
+        return ciniki_customers_reportUpcomingBirthdays($ciniki, $tnid, $args['options']);
     } elseif( $args['block_ref'] == 'ciniki.customers.newcustomers' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportNewCustomers');
-        return ciniki_customers_reportNewCustomers($ciniki, $business_id, $args['options']);
+        return ciniki_customers_reportNewCustomers($ciniki, $tnid, $args['options']);
     } elseif( $args['block_ref'] == 'ciniki.customers.newmembers' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportNewMembers');
-        return ciniki_customers_reportNewMembers($ciniki, $business_id, $args['options']);
+        return ciniki_customers_reportNewMembers($ciniki, $tnid, $args['options']);
     }
 
     return array('stat'=>'ok');

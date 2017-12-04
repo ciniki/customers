@@ -13,7 +13,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $email, $url) {
+function ciniki_customers_web_passwordRequestReset(&$ciniki, $tnid, $email, $url) {
     
     //  
     // Create a random password for the user
@@ -29,8 +29,8 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
     //
     $strsql = "SELECT ciniki_customer_emails.id, email, ciniki_customers.uuid, ciniki_customers.display_name "
         . "FROM ciniki_customer_emails, ciniki_customers "
-        . "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
         . "AND ciniki_customers.status < 40 "
         . "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
@@ -39,14 +39,14 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
-        error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (725)");
+        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changeTempPassword $email fail (725)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.204', 'msg'=>'Unable to reset password.', 'err'=>$rc['err']));
     }
     if( $rc['num_rows'] > 1 ) {
         $customers = $rc['rows'];
         $customer = $customers[0];
     } elseif( !isset($rc['customer']) || !isset($rc['customer']['email']) ) {
-        error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (726)");
+        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changeTempPassword $email fail (726)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.205', 'msg'=>'Unable to reset password.'));
     } else {
         $customer = $rc['customer'];
@@ -72,7 +72,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
             . "SET temp_password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "'), "
             . "temp_password_date = UTC_TIMESTAMP(), "
             . "last_updated = UTC_TIMESTAMP() "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $cust['id']) . "' "
             . "AND (flags&0x01) = 0x01 "
             . "";
@@ -80,13 +80,13 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
         $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (727)");
+            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changeTempPassword $email fail (727)");
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.206', 'msg'=>'Unable to reset password.'));
         }
 
         if( $rc['num_affected_rows'] < 1 ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (728)");
+            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changeTempPassword $email fail (728)");
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.207', 'msg'=>'Unable to reset password.'));
         }
     }
@@ -101,10 +101,10 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
     if( $customer['email'] != '' 
         && isset($ciniki['config']['ciniki.core']['system.email']) && $ciniki['config']['ciniki.core']['system.email'] != '' ) {
         //
-        // Load the business mail template
+        // Load the tenant mail template
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'private', 'loadBusinessTemplate');
-        $rc = ciniki_mail_loadBusinessTemplate($ciniki, $business_id, array('title'=>'Password reset'));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'private', 'loadTenantTemplate');
+        $rc = ciniki_mail_loadTenantTemplate($ciniki, $tnid, array('title'=>'Password reset'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -139,7 +139,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
         //
         $ciniki['emailqueue'][] = array('to'=>$customer['email'],
             'to_name'=>$customer['display_name'],
-            'business_id'=>$business_id,
+            'tnid'=>$tnid,
             'subject'=>$subject,
             'textmsg'=>$text_message,
             'htmlmsg'=>$html_message,
@@ -151,7 +151,7 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
-        error_log("WEB [" . $ciniki['business']['details']['name'] . "]: changeTempPassword $email fail (729)");
+        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changeTempPassword $email fail (729)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.208', 'msg'=>'Unable to reset password.'));
     }
 
@@ -171,14 +171,14 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $business_id, $emai
             );
 //      mail($ciniki['config']['ciniki.customers']['password.forgot.notify'], $subject, $msg, $headers, '-f' . $ciniki['config']['ciniki.core']['system.email']);
     }
-    error_log("WEB [" . $ciniki['business']['details']['name'] . "]: passwordRequestReset $email success");
+    error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: passwordRequestReset $email success");
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $business_id, 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $tnid, 'ciniki', 'customers');
 
     return array('stat'=>'ok');
 }

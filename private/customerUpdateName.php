@@ -11,13 +11,13 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_customers_customerUpdateName(&$ciniki, $business_id, $customer, $customer_id, $args) {
+function ciniki_customers_customerUpdateName(&$ciniki, $tnid, $customer, $customer_id, $args) {
 
     //
     // Get the settings for customer module
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
-    $rc = ciniki_customers_getSettings($ciniki, $business_id); 
+    $rc = ciniki_customers_getSettings($ciniki, $tnid); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -82,11 +82,11 @@ function ciniki_customers_customerUpdateName(&$ciniki, $business_id, $customer, 
         $format = 'company';
         if( isset($customer['display_name_format']) && $customer['display_name_format'] != '' ) {
             $format = $customer['display_name_format'];
-        } elseif( !isset($settings['display-name-business-format']) 
-            || $settings['display-name-business-format'] == 'company' ) {
+        } elseif( !isset($settings['display-name-tenant-format']) 
+            || $settings['display-name-tenant-format'] == 'company' ) {
             $format = 'company';
-        } elseif( $settings['display-name-business-format'] != '' ) {
-            $format = $settings['display-name-business-format'];
+        } elseif( $settings['display-name-tenant-format'] != '' ) {
+            $format = $settings['display-name-tenant-format'];
         }
         // Format the display_name
         if( $format == 'company' ) {

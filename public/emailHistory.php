@@ -10,7 +10,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the email history for.
+// tnid:         The ID of the tenant to get the email history for.
 // customer_id:         The ID of the customer to get the email history for.
 // email_id:            The ID of the email address to get this history for.
 // field:               The field to get the history of.
@@ -32,7 +32,7 @@ function ciniki_customers_emailHistory($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
@@ -44,10 +44,10 @@ function ciniki_customers_emailHistory($ciniki) {
     if( $args['field'] == 'address' ) { $args['field'] = 'email'; }
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.emailHistory', $args['customer_id']);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.emailHistory', $args['customer_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -57,7 +57,7 @@ function ciniki_customers_emailHistory($ciniki) {
     //
     $strsql = "SELECT id, customer_id "
         . "FROM ciniki_customer_emails "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
         . "";
@@ -71,6 +71,6 @@ function ciniki_customers_emailHistory($ciniki) {
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 'ciniki_customer_emails', $args['email_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_emails', $args['email_id'], $args['field']);
 }
 ?>

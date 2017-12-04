@@ -18,7 +18,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -27,10 +27,10 @@ function ciniki_customers_updateSettings(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.updateSettings', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.updateSettings', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -53,7 +53,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
     // Get the current settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
-    $rc = ciniki_customers_getSettings($ciniki, $args['business_id']);
+    $rc = ciniki_customers_getSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -64,7 +64,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
     //
     $db_updated = 0;
     $changelog_fields = array(
-        'display-name-business-format',
+        'display-name-tenant-format',
         'defaults-edit-form',
         'defaults-edit-person-hide-company',
         'membership-type-10-active',
@@ -118,8 +118,8 @@ function ciniki_customers_updateSettings(&$ciniki) {
     //
     foreach($changelog_fields as $field) {
         if( isset($ciniki['request']['args'][$field]) ) {
-            $strsql = "INSERT INTO ciniki_customer_settings (business_id, detail_key, detail_value, date_added, last_updated) "
-                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "'"
+            $strsql = "INSERT INTO ciniki_customer_settings (tnid, detail_key, detail_value, date_added, last_updated) "
+                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, $field) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args'][$field]) . "'"
                 . ", UTC_TIMESTAMP(), UTC_TIMESTAMP()) "
@@ -131,7 +131,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
                 return $rc;
             }
-            ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+            ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 
                 2, 'ciniki_customer_settings', $field, 'detail_value', $ciniki['request']['args'][$field]);
             $db_updated = 1;
             $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.setting', 
@@ -140,26 +140,26 @@ function ciniki_customers_updateSettings(&$ciniki) {
     }
 
     //
-    // Check if changing 'display-name-business-format' and update display_name in database
+    // Check if changing 'display-name-tenant-format' and update display_name in database
     //
-    if( isset($ciniki['request']['args']['display-name-business-format']) 
-        && (!isset($settings['display-name-business-format']) 
-        || $settings['display-name-business-format'] != $ciniki['request']['args']['display-name-business-format'])
+    if( isset($ciniki['request']['args']['display-name-tenant-format']) 
+        && (!isset($settings['display-name-tenant-format']) 
+        || $settings['display-name-tenant-format'] != $ciniki['request']['args']['display-name-tenant-format'])
     ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $format = $ciniki['request']['args']['display-name-business-format'];
+        $format = $ciniki['request']['args']['display-name-tenant-format'];
         $strsql = "SELECT id, uuid, display_name, display_name_format, company, "
             . "REPLACE(TRIM(CONCAT_WS(' ', prefix, first, middle, last, suffix)),'  ', ' ') AS person_name, "
             . "TRIM(CONCAT_WS(', ', last, first)) AS sort_person_name "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND display_name_format = '' "   // Only select customer that don't have override set
             . "AND type = 2 "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.153', 'msg'=>'Unable to update settings for business format', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.153', 'msg'=>'Unable to update settings for tenant format', 'err'=>$rc['err']));
         
         }
         
@@ -188,7 +188,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
                     $sort_name = $customer['company'];
                 }
                 $customer_args = array('display_name'=>$display_name, 'sort_name'=>$sort_name);
-                $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', 
+                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', 
                     $customer['id'], $customer_args, 0x06);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
@@ -206,12 +206,12 @@ function ciniki_customers_updateSettings(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
     if( $db_updated > 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-        ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+        ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'customers');
     }
 
     return array('stat'=>'ok');

@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $business_id) {
+function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $tnid) {
 
     $submenu = array();
 

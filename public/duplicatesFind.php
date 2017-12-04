@@ -13,7 +13,7 @@ function ciniki_customers_duplicatesFind($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -21,10 +21,10 @@ function ciniki_customers_duplicatesFind($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id
+    // Check access to tnid
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.duplicatesFind', 0);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.duplicatesFind', 0);
     if( $ac['stat'] != 'ok' ) {
         return $ac;
     }
@@ -39,8 +39,8 @@ function ciniki_customers_duplicatesFind($ciniki) {
         . "c1.display_name AS c1_display_name, "
         . "c2.id AS c2_id, c2.display_name AS c2_display_name "
         . "FROM ciniki_customers AS c1, ciniki_customers AS c2 "
-        . "WHERE c1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND c2.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND c1.id < c2.id "
 //      . "AND ((c1.first = c2.first and c1.last = c2.last) OR (c1.first = c2.last and c1.last = c2.first)) "
         . "AND ((c1.type = 1 AND soundex(c1.first) = soundex(c2.first) and soundex(c1.last) = soundex(c2.last)) "

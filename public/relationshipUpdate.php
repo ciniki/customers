@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the customer belongs to.
+// tnid:         The ID of the tenant the customer belongs to.
 // customer_id:         (optional) The ID of the customer that is related to related_id. 
 // relationship_id:     The ID of the relationship to change the details for.
 // relationship_type:   (optional) The type of relationship between the customer_id and
@@ -17,9 +17,9 @@
 //                      If the type is passed as a negative number, the 
 //                      relationship is reversed before storing in the database.
 //
-//                      10 - business owner (related_id is the business owned)
+//                      10 - tenant owner (related_id is the tenant owned)
 //                      -10 - owned by
-//                      11 - business partner
+//                      11 - tenant partner
 //                      30 - friend
 //                      40 - relative
 //                      41 - parent
@@ -49,7 +49,7 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'relationship_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Relationship'), 
         'relationship_type'=>array('required'=>'no', 'blank'=>'no', 
@@ -67,10 +67,10 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.relationshipUpdate', $args['customer_id']); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.relationshipUpdate', $args['customer_id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -93,7 +93,7 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     // Get the relationship types
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getRelationshipTypes');
-    $rc = ciniki_customers_getRelationshipTypes($ciniki, $args['business_id']); 
+    $rc = ciniki_customers_getRelationshipTypes($ciniki, $args['tnid']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -104,7 +104,7 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     //
     $strsql = "SELECT customer_id, relationship_type, related_id FROM ciniki_customer_relationships "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['relationship_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'relationship');
@@ -163,17 +163,17 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     
     if( isset($args['customer_id']) && $args['customer_id'] != $org_customer_id ) {
         $strsql .= ", customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
-        $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+        $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 
             2, 'ciniki_customer_relationships', $args['relationship_id'], 'customer_id', $args['customer_id']);
     }
     if( isset($args['relationship_type']) && $args['relationship_type'] != $sent_relationship_type ) {
         $strsql .= ", relationship_type = '" . ciniki_core_dbQuote($ciniki, $args['relationship_type']) . "' ";
-        $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+        $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 
             2, 'ciniki_customer_relationships', $args['relationship_id'], 'relationship_type', $args['relationship_type']);
     }
     if( isset($args['related_id']) && $args['related_id'] != $org_related_id ) {
         $strsql .= ", related_id = '" . ciniki_core_dbQuote($ciniki, $args['related_id']) . "' ";
-        $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+        $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 
             2, 'ciniki_customer_relationships', $args['relationship_id'], 'related_id', $args['related_id']);
     }
 
@@ -188,12 +188,12 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     foreach($changelog_fields as $field) {
         if( isset($args[$field]) ) {
             $strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
-            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['business_id'], 
+            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 
                 2, 'ciniki_customer_relationships', $args['relationship_id'], $field, $args[$field]);
         }
     }
     $strsql .= "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['relationship_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) { 
@@ -231,11 +231,11 @@ function ciniki_customers_relationshipUpdate(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'customers');
 
     $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.relationship', 'args'=>array('id'=>$args['relationship_id']));
 

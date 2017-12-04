@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, $business_id, $args) {
+function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, $tnid, $args) {
 
     $required = (isset($args['required'])?$args['required']:array());
 
@@ -42,7 +42,7 @@ function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, 
             . "FROM ciniki_customers "
             . "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['id']) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $_POST['child_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'child');
         if( $rc['stat'] != 'ok' ) {
@@ -72,7 +72,7 @@ function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, 
         }
         if( count($child_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
-            $rc = ciniki_customers_customerUpdateName($ciniki, $business_id, $child, $child['id'], $child_args);
+            $rc = ciniki_customers_customerUpdateName($ciniki, $tnid, $child, $child['id'], $child_args);
             if( $rc['stat'] == 'ok' ) {
                 if( isset($rc['display_name']) && $child['display_name'] != $rc['display_name'] ) {
                     $child_args['display_name'] = $rc['display_name'];
@@ -85,7 +85,7 @@ function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, 
                 }
             }
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.customer', $_POST['child_id'], $child_args);
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer', $_POST['child_id'], $child_args);
             if( $rc['stat'] != 'ok' ) {
                 $errors = 'yes';
                 $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update.";
@@ -109,7 +109,7 @@ function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, 
             $child_args['first'] = $_POST['first'];
             $child_args['last'] = $_POST['last'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'customerAdd');
-            $rc = ciniki_customers_web_customerAdd($ciniki, $business_id, $child_args);
+            $rc = ciniki_customers_web_customerAdd($ciniki, $tnid, $child_args);
             if( $rc['stat'] != 'ok' ) {
                 $errors = 'yes';
                 $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update.";
@@ -130,7 +130,7 @@ function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, 
     $strsql = "SELECT id, display_name, first, last "
         . "FROM ciniki_customers "
         . "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(

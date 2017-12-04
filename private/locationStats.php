@@ -10,13 +10,13 @@
 // Returns
 // -------
 //
-function ciniki_customers__locationStats($ciniki, $business_id, $args) {
+function ciniki_customers__locationStats($ciniki, $tnid, $args) {
     
     //
     // Get the settings for customer module
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getSettings');
-    $rc = ciniki_customers_getSettings($ciniki, $business_id); 
+    $rc = ciniki_customers_getSettings($ciniki, $tnid); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -42,12 +42,12 @@ function ciniki_customers__locationStats($ciniki, $business_id, $args) {
             . "FROM ciniki_customers "
             . "LEFT JOIN ciniki_customer_addresses USE INDEX FOR JOIN (uuid, city) ON ("
                 . "ciniki_customers.id = ciniki_customer_addresses.customer_id "
-                . "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_customers.status = 10 "
             . "";
-        if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+        if( ($ciniki['tenant']['user']['perms']&0x04) > 0 ) {
             $strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
         }
         $strsql .= "GROUP BY _country "
@@ -95,11 +95,11 @@ function ciniki_customers__locationStats($ciniki, $business_id, $args) {
                 $strsql .= "AND ciniki_customer_addresses.country = '" . ciniki_core_dbQuote($ciniki, $args['country']) . "' ";
             }
         }
-        $strsql .= "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        $strsql .= "AND ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_customers.status = 10 ";
-        if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+        if( ($ciniki['tenant']['user']['perms']&0x04) > 0 ) {
             $strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
         }
         if( !isset($args['country']) || $args['country'] != 'No Address' ) {
@@ -157,11 +157,11 @@ function ciniki_customers__locationStats($ciniki, $business_id, $args) {
                 $strsql .= "AND ciniki_customer_addresses.province = '" . ciniki_core_dbQuote($ciniki, $args['province']) . "' ";
 //          }
         }
-        $strsql .= "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        $strsql .= "AND ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_customers.status = 10 ";
-        if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+        if( ($ciniki['tenant']['user']['perms']&0x04) > 0 ) {
             $strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
         }
         $strsql .= "AND NOT ISNULL(city) "

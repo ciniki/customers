@@ -25,10 +25,10 @@ function ciniki_customers_membertools() {
         };
     this.menu.open = function(cb) {
         this.sections.memberlists.list = {};
-        if( M.curBusiness.modules['ciniki.customers'].settings != null && M.curBusiness.modules['ciniki.customers'].settings.seasons != null ) {
-            for(var i in M.curBusiness.modules['ciniki.customers'].settings.seasons) {
-                this.sections.memberlists.list[i] = {'label':M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season.name,
-                    'fn':'M.ciniki_customers_membertools.downloadPDFSeasonList(\'' + M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season.id + '\',\'' + M.curBusiness.modules['ciniki.customers'].settings.seasons[i].season.name + ' Active Members\');'};
+        if( M.curTenant.modules['ciniki.customers'].settings != null && M.curTenant.modules['ciniki.customers'].settings.seasons != null ) {
+            for(var i in M.curTenant.modules['ciniki.customers'].settings.seasons) {
+                this.sections.memberlists.list[i] = {'label':M.curTenant.modules['ciniki.customers'].settings.seasons[i].season.name,
+                    'fn':'M.ciniki_customers_membertools.downloadPDFSeasonList(\'' + M.curTenant.modules['ciniki.customers'].settings.seasons[i].season.id + '\',\'' + M.curTenant.modules['ciniki.customers'].settings.seasons[i].season.name + ' Active Members\');'};
             }
         }
         this.refresh();
@@ -137,16 +137,16 @@ function ciniki_customers_membertools() {
 
         var slabel = 'Member';
         var plabel = 'Members';
-        if( M.curBusiness.customers != null ) {
-            if( M.curBusiness.customers.settings['ui-labels-member'] != null 
-                && M.curBusiness.customers.settings['ui-labels-member'] != ''
+        if( M.curTenant.customers != null ) {
+            if( M.curTenant.customers.settings['ui-labels-member'] != null 
+                && M.curTenant.customers.settings['ui-labels-member'] != ''
                 ) {
-                slabel = M.curBusiness.customers.settings['ui-labels-member'];
+                slabel = M.curTenant.customers.settings['ui-labels-member'];
             }
-            if( M.curBusiness.customers.settings['ui-labels-members'] != null 
-                && M.curBusiness.customers.settings['ui-labels-members'] != ''
+            if( M.curTenant.customers.settings['ui-labels-members'] != null 
+                && M.curTenant.customers.settings['ui-labels-members'] != ''
                 ) {
-                plabel = M.curBusiness.customers.settings['ui-labels-members'];
+                plabel = M.curTenant.customers.settings['ui-labels-members'];
             }
         }
         this.menu.title = slabel + ' Tools';
@@ -156,17 +156,17 @@ function ciniki_customers_membertools() {
     }
 
     this.downloadDirectory = function() {
-        M.api.openFile('ciniki.customers.memberDownloadDirectory', {'business_id':M.curBusinessID});
+        M.api.openFile('ciniki.customers.memberDownloadDirectory', {'tnid':M.curTenantID});
     };
 
     this.showPDFDirectory = function(cb) {
         this.pdf.reset();
         this.pdf.data = {'layout':'fullpage', 'toc':'no', 'title':'Member Directory', 'coverpage':'no'};
         this.pdf.formtab = 'fullpage';
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
             this.pdf.forms.fullpage.categories.active = 'yes';
             this.pdf.forms.halfpage.categories.active = 'yes';
-            M.api.getJSONCb('ciniki.customers.memberCategories', {'business_id':M.curBusinessID}, function(rsp) {
+            M.api.getJSONCb('ciniki.customers.memberCategories', {'tnid':M.curTenantID}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -192,7 +192,7 @@ function ciniki_customers_membertools() {
     };
 
     this.downloadPDFDirectory = function() {
-        var args = {'business_id':M.curBusinessID};
+        var args = {'tnid':M.curTenantID};
         args['coverpage'] = this.pdf.formValue('coverpage');
         args['title'] = this.pdf.formValue('title');
         if( args['title'] == '' ) {
@@ -200,7 +200,7 @@ function ciniki_customers_membertools() {
         }
         args['toc'] = this.pdf.formValue('toc');
         args['layout'] = this.pdf.formtab;
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x04) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
             var categories = '';
             for(var i in this.pdf.sections.categories.fields) {
                 if( this.pdf.formFieldValue(this.pdf.sections.categories.fields[i], i) == 'yes' ) {
@@ -222,7 +222,7 @@ function ciniki_customers_membertools() {
     };
 
     this.downloadPDFContactInfo = function() {
-        var args = {'business_id':M.curBusinessID};
+        var args = {'tnid':M.curTenantID};
 //      args['coverpage'] = this.contactinfo.formValue('coverpage');
         args['title'] = this.contactinfo.formValue('title');
         if( args['title'] == '' ) {
@@ -235,7 +235,7 @@ function ciniki_customers_membertools() {
     };
 
     this.downloadPDFSeasonList = function(sid, title) {
-        var args = {'business_id':M.curBusinessID, 'season_id':sid};
+        var args = {'tnid':M.curTenantID, 'season_id':sid};
 //      args['coverpage'] = this.contactinfo.formValue('coverpage');
         if( title != null ) {
             args['title'] = title;

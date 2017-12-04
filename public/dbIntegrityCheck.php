@@ -16,7 +16,7 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'fix'=>array('required'=>'no', 'default'=>'no', 'name'=>'Fix Problems'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -25,10 +25,10 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.dbIntegrityCheck', 0);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.dbIntegrityCheck', 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -42,7 +42,7 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
         //
         // Update the history for ciniki_customers
         //
-        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['business_id'],
+        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['tnid'],
             'ciniki_customers', 'ciniki_customer_history', 
             array('uuid', 'eid', 'status', 'type', 'prefix', 'first', 'middle', 'last', 'suffix',
                 'display_name', 'company', 'department', 'title', 
@@ -54,7 +54,7 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
         //
         // Update the history for ciniki_customer_addresses
         //
-        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['business_id'],
+        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['tnid'],
             'ciniki_customer_addresses', 'ciniki_customer_history', 
             array('uuid', 'customer_id','flags','address1', 'address2', 
                 'city', 'province', 'postal', 'country'));
@@ -65,7 +65,7 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
         //
         // Update the history for ciniki_customer_emails
         //
-        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['business_id'],
+        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['tnid'],
             'ciniki_customer_emails', 'ciniki_customer_history', 
             array('uuid', 'customer_id','email','password', 'temp_password_date', 'flags'));
         if( $rc['stat'] != 'ok' ) {
@@ -75,7 +75,7 @@ function ciniki_customers_dbIntegrityCheck($ciniki) {
         //
         // Update the history for ciniki_customer_relationships
         //
-        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['business_id'],
+        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.customers', $args['tnid'],
             'ciniki_customer_relationships', 'ciniki_customer_history', 
             array('uuid', 'customer_id','relationship_type','related_id'));
         if( $rc['stat'] != 'ok' ) {

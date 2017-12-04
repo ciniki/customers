@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $permalink) {
+function ciniki_customers_web_memberDetails($ciniki, $settings, $tnid, $permalink) {
 
     $strsql = "SELECT ciniki_customers.id, "
         . "ciniki_customers.display_name AS member, "
@@ -30,7 +30,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
             . "AND ciniki_customer_images.image_id > 0 "
             . "AND (ciniki_customer_images.webflags&0x01) = 1 "
             . ") "
-        . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.permalink = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
         // Check the member is visible on the website
         . "AND ciniki_customers.member_status = 10 "
@@ -65,7 +65,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
     $strsql = "SELECT id, address1, address2, city, province, postal "
         . "FROM ciniki_customer_addresses "
         . "WHERE ciniki_customer_addresses.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
-        . "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_customer_addresses.flags&0x08) > 0 " // Visible on website
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -88,7 +88,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
     $strsql = "SELECT id, phone_label, phone_number "
         . "FROM ciniki_customer_phones "
         . "WHERE ciniki_customer_phones.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
-        . "AND ciniki_customer_phones.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_customer_phones.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_customer_phones.flags&0x08) > 0 "    // Visible on website
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -111,7 +111,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
     $strsql = "SELECT id, email  "
         . "FROM ciniki_customer_emails "
         . "WHERE ciniki_customer_emails.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
-        . "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_customer_emails.flags&0x08) > 0 "    // Visible on website
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -134,7 +134,7 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $business_id, $p
     $strsql = "SELECT id, name, url, description "
         . "FROM ciniki_customer_links "
         . "WHERE ciniki_customer_links.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
-        . "AND ciniki_customer_links.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_customer_links.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_customer_links.webflags&0x01) = 1 "  // Visible on website
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');

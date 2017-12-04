@@ -2,7 +2,7 @@
 # Description
 # -----------
 # The customer_addresses table stores addresses for customers
-# for a business.  
+# for a tenant.  
 #
 # There is no limit to the number of addresses 
 # a customer can have attached to their account.  Each address
@@ -14,7 +14,7 @@
 #
 # uuid:             The Universal Unique ID for the address.
 #
-# business_id:      The business the customer address is attached to.
+# tnid:             The tenant the customer address is attached to.
 #
 # customer_id:      The customer the address is attached to.
 #
@@ -52,7 +52,7 @@
 create table ciniki_customer_addresses (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     customer_id int not null,
     flags tinyint unsigned not null,
     address1 varchar(100) not null,
@@ -71,5 +71,5 @@ create table ciniki_customer_addresses (
     unique index (uuid, customer_id),
     index (city, province, country),
     index (postal),
-    index sync (business_id, uuid, last_updated)
+    index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.06';

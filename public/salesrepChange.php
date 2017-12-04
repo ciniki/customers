@@ -16,7 +16,7 @@ function ciniki_customers_salesrepChange($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'old_salesrep_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Original Sales Rep'), 
         'new_salesrep_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'New Sales Rep'), 
         ));
@@ -26,10 +26,10 @@ function ciniki_customers_salesrepChange($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.salesrepChange', 0);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.salesrepChange', 0);
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -53,7 +53,7 @@ function ciniki_customers_salesrepChange($ciniki) {
         . "ciniki_customers.display_name "
         . "FROM ciniki_customers "
         . "WHERE ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $args['old_salesrep_id']) . "' "
-        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY ciniki_customers.sort_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -71,7 +71,7 @@ function ciniki_customers_salesrepChange($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $customers = $rc['customers'];
         foreach($customers as $customer_id => $customer) {
-            $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.customers.customer', $customer_id,
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $customer_id,
                 array('salesrep_id'=>$args['new_salesrep_id']), 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -89,11 +89,11 @@ function ciniki_customers_salesrepChange($ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'customers');
 
     return array('stat'=>'ok');
 }

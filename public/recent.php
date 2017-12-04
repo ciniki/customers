@@ -18,7 +18,7 @@ function ciniki_customers_recent($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -28,26 +28,26 @@ function ciniki_customers_recent($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.recent', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.recent', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
     
     //
-    // Get the types of customers available for this business
+    // Get the types of customers available for this tenant
     //
 //  ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-//  $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+//  $rc = ciniki_customers_getCustomerTypes($ciniki, $args['tnid']); 
 //  if( $rc['stat'] != 'ok' ) { 
 //      return $rc;
 //  }
 //  $types = $rc['types'];
 
     //
-    // Get the number of customers in each status for the business, 
+    // Get the number of customers in each status for the tenant, 
     // if no rows found, then return empty array
     //
     $strsql = "SELECT id, display_name, status, type, company, eid ";
@@ -61,7 +61,7 @@ function ciniki_customers_recent($ciniki) {
 //      $strsql .= "'person' AS display_type ";
 //  }
     $strsql .= "FROM ciniki_customers "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND status < 50 "
         . "ORDER BY last_updated DESC, last, first DESC ";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {

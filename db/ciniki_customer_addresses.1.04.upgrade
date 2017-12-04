@@ -1,5 +1,5 @@
 #
 #
-CREATE INDEX sync ON ciniki_customer_addresses(business_id, uuid, last_updated);
+CREATE INDEX sync ON ciniki_customer_addresses(tnid, uuid, last_updated);
 ALTER TABLE ciniki_customer_addresses COMMENT='v1.04';
 

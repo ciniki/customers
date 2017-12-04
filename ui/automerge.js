@@ -218,7 +218,7 @@ function ciniki_customers_automerge() {
         if( cb != null ) {
             this.files.cb = cb;
         }
-        var rsp = M.api.getJSON('ciniki.customers.automergeList', {'business_id':M.curBusinessID});
+        var rsp = M.api.getJSON('ciniki.customers.automergeList', {'tnid':M.curTenantID});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -235,7 +235,7 @@ function ciniki_customers_automerge() {
         var file = document.getElementById(M.ciniki_customers_automerge.upload.panelUID + '_excel');
         var name = document.getElementById(M.ciniki_customers_automerge.upload.panelUID + '_name');
         var rsp = M.api.postJSONFile('ciniki.customers.automergeUploadXLS', 
-            {'business_id':M.curBusinessID, 'name':name.value}, file.files[0], 
+            {'tnid':M.curTenantID, 'name':name.value}, file.files[0], 
             function(rsp) {
                 if( rsp['stat'] != 'ok' ) {
                     M.api.err(rsp);
@@ -256,7 +256,7 @@ function ciniki_customers_automerge() {
     //
     this.parseFile = function(id, start) {
         var rsp = M.api.getJSONCb('ciniki.customers.automergeUploadXLSParse', 
-            {'business_id':M.curBusinessID, 'automerge_id':id, 'start':start, 'size':50000},
+            {'tnid':M.curTenantID, 'automerge_id':id, 'start':start, 'size':50000},
             function(rsp) {
                 if( rsp['stat'] != 'ok' ) {
                     M.api.err(rsp);
@@ -273,7 +273,7 @@ function ciniki_customers_automerge() {
 
     this.finishParse = function(id) {
         var rsp = M.api.getJSON('ciniki.customers.automergeUploadXLSDone', 
-            {'business_id':M.curBusinessID, 'automerge_id':id});
+            {'tnid':M.curTenantID, 'automerge_id':id});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -296,7 +296,7 @@ function ciniki_customers_automerge() {
         }
 
         var rsp = M.api.getJSON('ciniki.customers.automergeStats', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_customers_automerge.file.automerge_id});
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_customers_automerge.file.automerge_id});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -320,7 +320,7 @@ function ciniki_customers_automerge() {
         var r = confirm("Are you sure you want to delete this file?");
         if( r == true ) {
             var rsp = M.api.getJSON('ciniki.customers.automergeDelete', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_customers_automerge.file.automerge_id});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_customers_automerge.file.automerge_id});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -342,7 +342,7 @@ function ciniki_customers_automerge() {
     // 
     this.showMatch = function(i) {
         var rsp = M.api.getJSON('ciniki.toolbox.excelNextMatch', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'last_row':i});
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'last_row':i});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -357,7 +357,7 @@ function ciniki_customers_automerge() {
     //
     this.findMatches = function() {
         var rsp = M.api.getJSON('ciniki.toolbox.excelGetRows', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'rows':1});
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'rows':1});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -386,7 +386,7 @@ function ciniki_customers_automerge() {
             }
         }
         var rsp = M.api.getJSONCb('ciniki.toolbox.excelFindMatches', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'columns':columns, 'match_blank':'no'},
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'columns':columns, 'match_blank':'no'},
             function(rsp) { 
                 // alert('test');
                 alert(' Found ' + rsp['matches'] + ' matches ' + rsp['duplicates'] + ' duplicate matches'); 
@@ -411,7 +411,7 @@ function ciniki_customers_automerge() {
         } else if( advance == 'rewind' ) {
             // Reset the position back to the beginning, if this is a no auto advance review
             var rsp = M.api.getJSON('ciniki.toolbox.excelPositionSet', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':0});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':0});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -424,7 +424,7 @@ function ciniki_customers_automerge() {
             this.review.autoAdvance = 'no';
             // Get the last position
             var rsp = M.api.getJSON('ciniki.toolbox.excelPositionGet', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -433,7 +433,7 @@ function ciniki_customers_automerge() {
         }
         // Get the header row
         var rsp = M.api.getJSON('ciniki.toolbox.excelGetRows', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'rows':'1'});
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'rows':'1'});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -448,10 +448,10 @@ function ciniki_customers_automerge() {
     this.nextMatch = function(direction) {
         if( this.review.autoAdvance == 'yes' ) {
             var rsp = M.api.getJSON('ciniki.toolbox.excelNextMatch', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'last_row':M.ciniki_toolbox_excel.review.last_row, 'status':'noreview', 'direction':direction});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'last_row':M.ciniki_toolbox_excel.review.last_row, 'status':'noreview', 'direction':direction});
         } else {
             var rsp = M.api.getJSON('ciniki.toolbox.excelNextMatch', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'last_row':M.ciniki_toolbox_excel.review.last_row, 'status':'any', 'direction':direction});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'last_row':M.ciniki_toolbox_excel.review.last_row, 'status':'any', 'direction':direction});
         }
         if( rsp['stat'] != 'ok' && rsp['err']['code'] == '96' ) {
             if( this.review.autoAdvance == 'yes' ) {
@@ -477,7 +477,7 @@ function ciniki_customers_automerge() {
 
         // Set the last position
         var rsp = M.api.getJSON('ciniki.toolbox.excelPositionSet', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':M.ciniki_toolbox_excel.review.last_row});
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':M.ciniki_toolbox_excel.review.last_row});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -490,10 +490,10 @@ function ciniki_customers_automerge() {
     this.deleteRow = function(row) {
         if( this.review.autoAdvance == 'yes' ) {
             var rsp = M.api.getJSON('ciniki.toolbox.excelDeleteMatchRow', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':row});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':row});
         } else {
             var rsp = M.api.getJSON('ciniki.toolbox.excelSetRowStatus', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':row, 'status':'delete'});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':row, 'status':'delete'});
         }
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
@@ -506,7 +506,7 @@ function ciniki_customers_automerge() {
 
     this.keepRow = function(row) {
         var rsp = M.api.getJSON('ciniki.toolbox.excelSetRowStatus', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':row, 'status':'keep'});
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row':row, 'status':'keep'});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -518,7 +518,7 @@ function ciniki_customers_automerge() {
 
     this.deleteMatchesOnRows = function(row1, row2) {
         var rsp = M.api.getJSON('ciniki.toolbox.excelDeleteMatchesOnRows', 
-            {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row1':row1, 'row2':row2});
+            {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'row1':row1, 'row2':row2});
         if( rsp['stat'] != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -531,7 +531,7 @@ function ciniki_customers_automerge() {
     this.updateCell = function(s, r, c, d) {
         var rsp = M.api.getJSON('ciniki.toolbox.excelUpdateCell', 
             {
-                'business_id':M.curBusinessID, 
+                'tnid':M.curTenantID, 
                 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 
                 'row':M.ciniki_toolbox_excel.review.rows[(c-1)]['row']['id'], 
                 'col':M.ciniki_toolbox_excel.review.rows[(c-1)]['row']['cells'][r]['cell']['col'], 
@@ -554,7 +554,7 @@ function ciniki_customers_automerge() {
         var r = confirm("Are you sure you want to reset this file?");
         if( r == true ) {
             var rsp = M.api.getJSON('ciniki.toolbox.excelReset', 
-                {'business_id':M.curBusinessID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id});
+                {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;

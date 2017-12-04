@@ -3,6 +3,6 @@
 # This upgrade adds birthdate field
 #
 DROP INDEX uuid ON ciniki_customers;
-CREATE UNIQUE INDEX uuid ON ciniki_customers(uuid, business_id);
+CREATE UNIQUE INDEX uuid ON ciniki_customers(uuid, tnid);
 ALTER TABLE ciniki_customers COMMENT='v1.09';
 

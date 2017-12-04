@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the customers belong to.
+// tnid:         The ID of the tenant the customers belong to.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'columns'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Columns'), 
         'memberlist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Members Only'),
         'subscription_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subscription'),
@@ -34,10 +34,10 @@ function ciniki_customers_customerListExcel(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.customerListExcel', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.customerListExcel', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -78,10 +78,10 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     //
     $season_ids = array();
     $seasons = array();
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
         $strsql = "SELECT id, name "
             . "FROM ciniki_customer_seasons "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //            . "AND id IN (" . ciniki_core_dbQuoteIDs($ciniki, $season_ids) . ") "
             . "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -111,7 +111,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             if( $season_members_sql != '' ) {
                 $strsql = "SELECT DISTINCT customer_id "
                     . "FROM ciniki_customer_season_members "
-                    . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "AND ("
                     . $season_members_sql
                     . ") ";
@@ -134,7 +134,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 . "IF(date_paid > 0, DATE_FORMAT(date_paid, '%M %d, %Y'), '') AS date_paid "
                 . "FROM ciniki_customer_season_members "
                 . "WHERE ciniki_customer_season_members.season_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $season_ids) . ") "
-                . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_customer_season_members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY season_id, customer_id "
                 . "";
             $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -160,7 +160,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x400000) && isset($args['select_categories']) && count($args['select_categories']) > 0 ) {
         $strsql = "SELECT DISTINCT customer_id "
             . "FROM ciniki_customer_tags "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND tag_type = 10 "
             . "AND tag_name IN (" . ciniki_core_dbQuoteList($ciniki, $args['select_categories']) . ") "
             . "";
@@ -182,7 +182,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     //
     $subscription_ids = array();
     $subscriptions = array();
-    if( isset($ciniki['business']['modules']['ciniki.subscriptions']) ) {
+    if( isset($ciniki['tenant']['modules']['ciniki.subscriptions']) ) {
         foreach($args['columns'] as $column) {
             if( preg_match("/^subscription-([0-9]+)$/", $column, $matches) ) {
                 $subscription_ids[] = $matches[1];
@@ -190,7 +190,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         }
         if( count($subscription_ids) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'subscriptions', 'hooks', 'subscriptionCustomers');
-            $rc = ciniki_subscriptions_hooks_subscriptionCustomers($ciniki, $args['business_id'], 
+            $rc = ciniki_subscriptions_hooks_subscriptionCustomers($ciniki, $args['tnid'], 
                 array('subscription_ids'=>$subscription_ids));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -205,7 +205,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     $tax_locations = array();
     $strsql = "SELECT id, name, code "
         . "FROM ciniki_tax_locations "
-        . "WHERE ciniki_tax_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_tax_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.taxes', array(
         array('container'=>'locations', 'fname'=>'id', 
@@ -223,10 +223,10 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     //
     $salesreps = array();
     $strsql = "SELECT user_id AS id, eid "
-        . "FROM ciniki_business_users "
-        . "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND ciniki_business_users.package = 'ciniki' "
-        . "AND ciniki_business_users.permission_group = 'salesreps' "
+        . "FROM ciniki_tenant_users "
+        . "WHERE ciniki_tenant_users.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_tenant_users.package = 'ciniki' "
+        . "AND ciniki_tenant_users.permission_group = 'salesreps' "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.taxes', array(
         array('container'=>'reps', 'fname'=>'id', 
@@ -245,7 +245,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     $pricepoints = array();
     $strsql = "SELECT id, name, code "
         . "FROM ciniki_customer_pricepoints "
-        . "WHERE ciniki_customer_pricepoints.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customer_pricepoints.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.taxes', array(
         array('container'=>'pricepoints', 'fname'=>'id', 
@@ -265,7 +265,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     $strsql = "SELECT customer_id, "
         . "ciniki_customer_tags.tag_name AS member_categories "
         . "FROM ciniki_customer_tags "
-        . "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_customer_tags.tag_type = 40 "
         . "ORDER BY ciniki_customer_tags.customer_id "
         . "";
@@ -293,7 +293,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         . "CONCAT_WS(': ', ciniki_customer_phones.phone_label, "
             . "ciniki_customer_phones.phone_number) AS phones "
         . "FROM ciniki_customer_phones "
-        . "WHERE ciniki_customer_phones.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customer_phones.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY ciniki_customer_phones.customer_id, ciniki_customer_phones.phone_label "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -343,7 +343,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customer_addresses.province, "
             . "ciniki_customer_addresses.postal) AS addresses "
         . "FROM ciniki_customer_addresses "
-        . "WHERE ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY ciniki_customer_addresses.customer_id "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -377,7 +377,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         . "ciniki_customer_emails.email, "
         . "ciniki_customer_emails.email AS emails "
         . "FROM ciniki_customer_emails "
-        . "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     if( $noemails == 'exclude' ) {
         $strsql .= "AND (ciniki_customer_emails.flags&0x10) = 0 ";
@@ -413,7 +413,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         . "ciniki_customer_links.url, "
         . "ciniki_customer_links.url AS links "
         . "FROM ciniki_customer_links "
-        . "WHERE ciniki_customer_links.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customer_links.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY ciniki_customer_links.customer_id "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -468,7 +468,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "'' AS links, "
             . "'' AS emails "
             . "FROM ciniki_customers "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
             . $selector_sql
             . "ORDER BY ciniki_customers.sort_name "
@@ -506,9 +506,9 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "FROM ciniki_subscription_customers, ciniki_customers "
             . "WHERE ciniki_subscription_customers.subscription_id = '" . ciniki_core_dbQuote($ciniki, $args['subscription_id']) . "' "
             . "AND ciniki_subscription_customers.status = 10 "
-            . "AND ciniki_subscription_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_subscription_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_subscription_customers.customer_id = ciniki_customers.id "
-            . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . $selector_sql
             . "ORDER BY ciniki_customers.sort_name "
             . "";
@@ -543,7 +543,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "'' AS links, "
             . "'' AS emails "
             . "FROM ciniki_customers "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . $selector_sql
             . "ORDER BY ciniki_customers.sort_name "
             . "";
@@ -560,7 +560,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 'phones', 'emails', 'addresses', 'links',
                 'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
             'maps'=>array(
-                'type'=>array('1'=>'Individual', '2'=>'Business'),
+                'type'=>array('1'=>'Individual', '2'=>'Tenant'),
                 'status'=>$maps['customer']['status'], //array('10'=>'Active', '60'=>'Former'),
                 'member_status'=>$maps['customer']['member_status'], //array('10'=>'Active', '60'=>'Former'),
                 'membership_length'=>$maps['customer']['membership_length'], // array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),

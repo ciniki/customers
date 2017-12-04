@@ -12,7 +12,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the customer belongs to.
+// tnid:     The ID of the tenant the customer belongs to.
 // customer_id:     The ID of the customer to add the address to.
 // address1:        (optional) The first line of the address.
 // address2:        (optional) The second line of the address.
@@ -45,7 +45,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'address1'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address Line 1'),
         'address2'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Address Line 2'), 
@@ -67,10 +67,10 @@ function ciniki_customers_addressAdd(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.addressAdd', $args['customer_id']); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.addressAdd', $args['customer_id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -89,11 +89,11 @@ function ciniki_customers_addressAdd(&$ciniki) {
     //
     // Check if we allow multiple addresses
     // 
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x40000000) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x40000000) > 0 ) {
         $strsql = "SELECT COUNT(id) AS addresses "
             . "FROM ciniki_customer_addresses "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'num');
         if( $rc['stat'] != 'ok' ) {
@@ -128,7 +128,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
     // Add the address
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.address', $args, 0x07);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.address', $args, 0x07);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -137,7 +137,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
     // Update the short_description
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateShortDescription');
-    $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['business_id'], $args['customer_id'], 0x07);
+    $rc = ciniki_customers_customerUpdateShortDescription($ciniki, $args['tnid'], $args['customer_id'], 0x07);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -146,7 +146,7 @@ function ciniki_customers_addressAdd(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$args['customer_id']));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$args['customer_id']));
 
     return array('stat'=>'ok');
 }

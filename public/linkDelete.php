@@ -16,7 +16,7 @@ function ciniki_customers_linkDelete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'link_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Link'), 
         )); 
@@ -27,10 +27,10 @@ function ciniki_customers_linkDelete(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.linkDelete', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.linkDelete', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -40,7 +40,7 @@ function ciniki_customers_linkDelete(&$ciniki) {
     //
     $strsql = "SELECT uuid FROM ciniki_customer_links "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['link_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'link');
@@ -56,6 +56,6 @@ function ciniki_customers_linkDelete(&$ciniki) {
     // Delete the link
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    return ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.link', $args['link_id'], $uuid, 0x07);
+    return ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.link', $args['link_id'], $uuid, 0x07);
 }
 ?>

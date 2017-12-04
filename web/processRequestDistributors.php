@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will generate the distributors page for the business.
+// This function will generate the distributors page for the tenant.
 //
 // The distributor page can be referenced multiple ways depending on how th user arrives at the page.
 // /distributors/distributor-permalink
@@ -19,7 +19,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $business_id, $args) {
+function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $tnid, $args) {
 
     $uri_split = $args['uri_split'];
     
@@ -56,10 +56,10 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
     //
     // Check if anything has been updated in ciniki.customers and update the map data file
     //
-/*  $last_change = $ciniki['business']['modules']['ciniki.customers']['last_change'];
-    if( isset($ciniki['business']['modules']['ciniki.web']['last_change']) 
-        && $ciniki['business']['modules']['ciniki.web']['last_change'] > $last_change ) {
-        $last_change = $ciniki['business']['modules']['ciniki.web']['last_change'];
+/*  $last_change = $ciniki['tenant']['modules']['ciniki.customers']['last_change'];
+    if( isset($ciniki['tenant']['modules']['ciniki.web']['last_change']) 
+        && $ciniki['tenant']['modules']['ciniki.web']['last_change'] > $last_change ) {
+        $last_change = $ciniki['tenant']['modules']['ciniki.web']['last_change'];
     } */
 
     //
@@ -67,10 +67,10 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
     //
 /*  $cache_file = '';
     $cache_update = 'yes';
-    if( isset($ciniki['business']['cache_dir']) && $ciniki['business']['cache_dir'] != '' 
+    if( isset($ciniki['tenant']['cache_dir']) && $ciniki['tenant']['cache_dir'] != '' 
         && (!isset($ciniki['config']['ciniki.web']['cache']) 
             || $ciniki['config']['ciniki.web']['cache'] != 'off') ) {
-        $cache_file = $ciniki['business']['cache_dir'] . '/ciniki.web/distributors/';
+        $cache_file = $ciniki['tenant']['cache_dir'] . '/ciniki.web/distributors/';
         $depth = 1;
         foreach($uri_split as $uri_index => $uri_piece) {
             if( $uri_index < $depth ) {
@@ -118,22 +118,22 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
     // Generate the map data.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorsMapMarkers');
-    $rc = ciniki_customers_web_distributorsMapMarkers($ciniki, $settings, $ciniki['request']['business_id'], array());
+    $rc = ciniki_customers_web_distributorsMapMarkers($ciniki, $settings, $ciniki['request']['tnid'], array());
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( isset($rc['markers']) ) {
         $json = 'var gmap_data = ' . json_encode($rc['markers']) . ';';
-//      $filename = '/' . sprintf('%02d', ($ciniki['request']['business_id']%100)) . '/'
-//          . sprintf('%07d', $ciniki['request']['business_id'])
+//      $filename = '/' . sprintf('%02d', ($ciniki['request']['tnid']%100)) . '/'
+//          . sprintf('%07d', $ciniki['request']['tnid'])
 //          . '/distributors/gmap_data.js';
         $filename = '/distributors/gmap_data.js';
-        $data_filename = $ciniki['business']['web_cache_dir'] . $filename;
+        $data_filename = $ciniki['tenant']['web_cache_dir'] . $filename;
         if( !file_exists(dirname($data_filename)) ) {
             mkdir(dirname($data_filename), 0755, true);
         }
         file_put_contents($data_filename, $json);
-        $ciniki['response']['head']['scripts'][] = array('src'=>$ciniki['business']['web_cache_url'] . $filename, 
+        $ciniki['response']['head']['scripts'][] = array('src'=>$ciniki['tenant']['web_cache_url'] . $filename, 
             'type'=>'text/javascript');
     }
 
@@ -287,8 +287,8 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
         if( isset($settings['page-distributors-categories-display']) 
             && ($settings['page-distributors-categories-display'] == 'wordlist'
                 || $settings['page-distributors-categories-display'] == 'wordcloud' )
-            && isset($ciniki['business']['modules']['ciniki.customers']['flags']) 
-            && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x20) > 0 
+            && isset($ciniki['tenant']['modules']['ciniki.customers']['flags']) 
+            && ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x20) > 0 
             ) {
             $display_categories = 'yes';
         }
@@ -298,8 +298,8 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
         if( isset($settings['page-distributors-locations-display']) 
             && ($settings['page-distributors-locations-display'] == 'wordlist'
                 || $settings['page-distributors-locations-display'] == 'wordcloud' )
-            && isset($ciniki['business']['modules']['ciniki.customers']['flags']) 
-            && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x10) > 0 
+            && isset($ciniki['tenant']['modules']['ciniki.customers']['flags']) 
+            && ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x10) > 0 
             ) {
             $display_locations = 'yes';
             $base_url .= '/location';
@@ -328,7 +328,7 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
         // Get the distributor information
         //
         $rc = ciniki_customers_web_distributorDetails($ciniki, $settings, 
-            $ciniki['request']['business_id'], $distributor_permalink);
+            $ciniki['request']['tnid'], $distributor_permalink);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -337,7 +337,7 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
         $page_title = $distributor['name'];
         if( isset($image_permalink) && $image_permalink != '' ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processGalleryImage');
-            $rc = ciniki_web_processGalleryImage($ciniki, $settings, $business_id, array(
+            $rc = ciniki_web_processGalleryImage($ciniki, $settings, $tnid, array(
                 'item'=>$distributor,
                 'image_permalink'=>$image_permalink,
                 ));
@@ -468,7 +468,7 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
     if( $display_categories == 'yes' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorTagCloud');
         $base_url = $ciniki['request']['base_url'] . '/distributors/category';
-        $rc = ciniki_customers_web_tagCloud($ciniki, $settings, $ciniki['request']['business_id'], 60);
+        $rc = ciniki_customers_web_tagCloud($ciniki, $settings, $ciniki['request']['tnid'], 60);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -497,7 +497,7 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
     if( $display_locations == 'yes' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorLocationTagCloud');
         $rc = ciniki_customers_web_distributorLocationTagCloud($ciniki, $settings, 
-            $ciniki['request']['business_id'], array(
+            $ciniki['request']['tnid'], array(
                 'country'=>(isset($country_name)?$country_name:''),
                 'province'=>(isset($province_name)?$province_name:''),
             ));
@@ -558,7 +558,7 @@ function ciniki_customers_web_processRequestDistributors(&$ciniki, $settings, $b
     //
     if( $display_map == 'yes' || $display_list == 'yes' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'distributorList');
-        $rc = ciniki_customers_web_distributorList($ciniki, $settings, $ciniki['request']['business_id'], 
+        $rc = ciniki_customers_web_distributorList($ciniki, $settings, $ciniki['request']['tnid'], 
             array('format'=>'2dlist', 
                 'country'=>(isset($country_name)?$country_name:''),
                 'province'=>(isset($province_name)?$province_name:''),

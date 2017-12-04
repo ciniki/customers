@@ -15,7 +15,7 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
         'code'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Code'),
         'sequence'=>array('required'=>'no', 'blank'=>'no', 'default'=>'1', 'name'=>'Sequence'),
@@ -28,10 +28,10 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.pricePointAdd', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.pricePointAdd', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -43,7 +43,7 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
     if( $args['sequence'] == 0 ) {
         $strsql = "SELECT MAX(sequence) AS sequence "
             . "FROM ciniki_customer_pricepoints "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'max');
         if( $rc['stat'] != 'ok' ) {
@@ -71,7 +71,7 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
     // Add the price point
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.pricepoint', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.pricepoint', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
         return $rc;
@@ -83,7 +83,7 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
     //
     if( isset($args['sequence']) && $adjust_sequence == 'yes' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'pricepointUpdateSequences');
-        $rc = ciniki_customers_pricepointUpdateSequences($ciniki, $args['business_id'], 
+        $rc = ciniki_customers_pricepointUpdateSequences($ciniki, $args['tnid'], 
             $args['sequence'], -1);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -100,11 +100,11 @@ function ciniki_customers_pricePointAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'customers');
 
     return array('stat'=>'ok', 'id'=>$pricepoint_id);
 }

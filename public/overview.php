@@ -18,7 +18,7 @@ function ciniki_customers_overview($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
         'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
@@ -29,10 +29,10 @@ function ciniki_customers_overview($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.overview', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.overview', 0); 
     if( $rc['stat'] != 'ok' && $rc['stat'] != 'restricted' ) { 
         return $rc;
     }   
@@ -46,7 +46,7 @@ function ciniki_customers_overview($ciniki) {
     // Get the places and customer counts
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'locationStats');
-    $rc = ciniki_customers__locationStats($ciniki, $args['business_id'], array('start_level'=>'country'));
+    $rc = ciniki_customers__locationStats($ciniki, $args['tnid'], array('start_level'=>'country'));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -61,7 +61,7 @@ function ciniki_customers_overview($ciniki) {
     if( ($modules['ciniki.customers']['flags']&0xC00000) > 0 ) {
         $strsql = "SELECT tag_type, tag_name, COUNT(customer_id) AS num_customers "
             . "FROM ciniki_customer_tags "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "GROUP BY tag_type, tag_name "
             . "ORDER BY tag_type, tag_name "
             . "";
@@ -93,11 +93,11 @@ function ciniki_customers_overview($ciniki) {
             . "FROM ciniki_customer_tags AS tags "
             . "JOIN ciniki_customers AS customers ON ("
                 . "tags.customer_id = customers.id "
-                . "AND customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE tags.tag_type = 10 "
             . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
-            . "AND tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
@@ -116,13 +116,13 @@ function ciniki_customers_overview($ciniki) {
         //
         $strsql = "SELECT id, display_name, status, type, company, eid "
             . "FROM ciniki_customers "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND status < 50 "
             . "";
-        if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x07) == 0x04 ) {
+        if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x07) == 0x04 ) {
             $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
         }
-    //  if( isset($ciniki['business']['user']['perms']) && ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+    //  if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x04) > 0 ) {
     //      $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
     //  }
         $strsql .= "ORDER BY last_updated DESC, last, first DESC ";

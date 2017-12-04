@@ -1,7 +1,7 @@
 #
 # Description
 # -----------
-# This table stores the membership seasons for a business.  These seasons
+# This table stores the membership seasons for a tenant.  These seasons
 # can be used to keep track of who has paid for what membership seasons.
 # Seasons can be a calendar year, or Summer 2014, Winter 2014, etc.
 #
@@ -9,9 +9,9 @@
 # -------
 # id:               The ID of the season.
 # uuid:             The Universal Unique ID for the season.
-# business_id:      The ID of the business the season is attached to.
+# tnid:             The ID of the tenant the season is attached to.
 #
-# name:             The name of the season, must be unique within the business.
+# name:             The name of the season, must be unique within the tenant.
 #
 # start_date:       The first day of the season.
 # end_date:         The last day of the season.
@@ -27,7 +27,7 @@
 create table ciniki_customer_seasons (
     id bigint not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     name varchar(150) not null,
     start_date date not null,
     end_date date not null,
@@ -35,5 +35,5 @@ create table ciniki_customer_seasons (
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
-    index sync (business_id, uuid, last_updated)
+    index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

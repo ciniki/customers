@@ -60,14 +60,14 @@ function ciniki_customers_reportstatus() {
     };
 
     //
-    // Grab the stats for the business from the database and present the list of customers.
+    // Grab the stats for the tenant from the database and present the list of customers.
     //
     this.showList = function(cb, s) {
         if( s != null ) { this.list.status = s; }
         //
         // Grab list of recently updated customers
         //
-        M.api.getJSONCb('ciniki.customers.customerList', {'business_id':M.curBusinessID,
+        M.api.getJSONCb('ciniki.customers.customerList', {'tnid':M.curTenantID,
             'status':this.list.status}, function(rsp) {
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);

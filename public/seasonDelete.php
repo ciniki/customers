@@ -15,7 +15,7 @@ function ciniki_customers_seasonDelete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'season_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Season'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -25,10 +25,10 @@ function ciniki_customers_seasonDelete(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.seasonDelete', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.seasonDelete', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -42,7 +42,7 @@ function ciniki_customers_seasonDelete(&$ciniki) {
     $strsql = "SELECT 'customers', COUNT(*) "
         . "FROM ciniki_customer_season_members "
         . "WHERE season_id = '" . ciniki_core_dbQuote($ciniki, $args['season_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.sapos', 'num');
     if( $rc['stat'] != 'ok' ) {
@@ -56,7 +56,7 @@ function ciniki_customers_seasonDelete(&$ciniki) {
     // Delete the season
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.season', 
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.season', 
         $args['season_id'], NULL, 0x07);
     if( $rc['stat'] != 'ok' ) {
         return $rc;

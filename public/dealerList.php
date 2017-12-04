@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get dealers for.
+// tnid:     The ID of the tenant to get dealers for.
 // type:            The type of participants to get.  Refer to participantAdd for 
 //                  more information on types.
 //
@@ -20,7 +20,7 @@ function ciniki_customers_dealerList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -29,19 +29,19 @@ function ciniki_customers_dealerList($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.dealerList', 0);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.dealerList', 0);
     if( $ac['stat'] != 'ok' ) { 
         return $ac;
     }   
 
     //
-    // Get the business settings
+    // Get the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -53,7 +53,7 @@ function ciniki_customers_dealerList($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     //
-    // Load the list of dealers for a business
+    // Load the list of dealers for a tenant
     //
     if( isset($args['category']) && $args['category'] != '' ) {
         $strsql = "SELECT ciniki_customers.id, "
@@ -63,11 +63,11 @@ function ciniki_customers_dealerList($ciniki) {
             . "ciniki_customers.dealer_status AS dealer_status_text, "
             . "ciniki_customers.company "
             . "FROM ciniki_customer_tags, ciniki_customers "
-            . "WHERE ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customer_tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
             . "AND ciniki_customer_tags.tag_type = '60' "
             . "AND ciniki_customer_tags.customer_id = ciniki_customers.id "
-            . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.dealer_status = 10 "
             . "ORDER BY last, first, company";
     } elseif( isset($args['category']) && $args['category'] == '' ) {
@@ -81,9 +81,9 @@ function ciniki_customers_dealerList($ciniki) {
             . "LEFT JOIN ciniki_customer_tags ON ("
                 . "ciniki_customers.id = ciniki_customer_tags.customer_id "
                 . "AND ciniki_customer_tags.tag_type = '60' "
-                . "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.dealer_status > 0 AND ciniki_customers.dealer_status < 60 "
             . "AND ISNULL(ciniki_customer_tags.tag_name) "
             . "ORDER BY last, first, company";
@@ -95,7 +95,7 @@ function ciniki_customers_dealerList($ciniki) {
             . "ciniki_customers.dealer_status AS dealer_status_text, "
             . "ciniki_customers.company "
             . "FROM ciniki_customers "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.dealer_status = 10 "
             . "ORDER BY last, first, company";
     }

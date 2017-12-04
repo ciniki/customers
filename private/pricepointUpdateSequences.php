@@ -12,7 +12,7 @@
 // =======
 // <rsp stat="ok" />
 //
-function ciniki_customers_pricepointUpdateSequences($ciniki, $business_id, $new_seq, $old_seq) {
+function ciniki_customers_pricepointUpdateSequences($ciniki, $tnid, $new_seq, $old_seq) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 
@@ -21,7 +21,7 @@ function ciniki_customers_pricepointUpdateSequences($ciniki, $business_id, $new_
     //
     $strsql = "SELECT id, sequence AS number "
         . "FROM ciniki_customer_pricepoints "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     // Use the last_updated to determine which is in the proper position for duplicate numbers
     if( $new_seq < $old_seq || $old_seq == -1) {
@@ -45,7 +45,7 @@ function ciniki_customers_pricepointUpdateSequences($ciniki, $business_id, $new_
                 $strsql = "UPDATE ciniki_customer_pricepoints SET "
                     . "sequence = '" . ciniki_core_dbQuote($ciniki, $cur_number) . "' "
                     . ", last_updated = UTC_TIMESTAMP() "
-                    . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . "AND id = '" . ciniki_core_dbQuote($ciniki, $seq['id']) . "' "
                     . "";
                 $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
@@ -53,7 +53,7 @@ function ciniki_customers_pricepointUpdateSequences($ciniki, $business_id, $new_
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
                 }
                 ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 
-                    'ciniki_customer_history', $business_id, 
+                    'ciniki_customer_history', $tnid, 
                     2, 'ciniki_customer_pricepoints', $seq['id'], 'sequence', $cur_number);
                 $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.pricepoint', 
                     'args'=>array('id'=>$seq['id']));

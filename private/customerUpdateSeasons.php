@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_customerUpdateSeasons(&$ciniki, $business_id, $customer_id) {
+function ciniki_customers_customerUpdateSeasons(&$ciniki, $tnid, $customer_id) {
     
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -30,9 +30,9 @@ function ciniki_customers_customerUpdateSeasons(&$ciniki, $business_id, $custome
         . "LEFT JOIN ciniki_customer_season_members ON ("
             . "ciniki_customer_seasons.id = ciniki_customer_season_members.season_id "
             . "AND ciniki_customer_season_members.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
-            . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_customer_season_members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customer_seasons.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_customer_seasons.flags&0x02) > 0 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -75,7 +75,7 @@ function ciniki_customers_customerUpdateSeasons(&$ciniki, $business_id, $custome
             $args['season_id'] = $season_id;
             $args['customer_id'] = $customer_id;
             if( $season['season_member_id'] > 0 ) {
-                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.customers.season_member', $season['season_member_id'], $args, 0x04);
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.season_member', $season['season_member_id'], $args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
@@ -91,7 +91,7 @@ function ciniki_customers_customerUpdateSeasons(&$ciniki, $business_id, $custome
                 if( !isset($args['notes']) ) {
                     $args['notes'] = '';
                 }
-                $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.customers.season_member', $args, 0x04);
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.season_member', $args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }

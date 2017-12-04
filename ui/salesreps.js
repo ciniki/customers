@@ -97,14 +97,14 @@ function ciniki_customers_salesreps() {
     };
 
     //
-    // Grab the stats for the business from the database and present the list of customers.
+    // Grab the stats for the tenant from the database and present the list of customers.
     //
     this.showReps = function(cb, sid) {
         if( sid != null ) { this.menu.salesrep_id = sid; }
         //
         // Grab list of recently updated customers
         //
-        M.api.getJSONCb('ciniki.customers.salesrepList', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.customers.salesrepList', {'tnid':M.curTenantID, 
             'salesrep_id':this.menu.salesrep_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -137,7 +137,7 @@ function ciniki_customers_salesreps() {
         var nri = this.menu.formFieldValue(this.menu.sections._move.fields.new_salesrep_id, 'new_salesrep_id');
         if( nri != this.menu.salesrep_id ) {
             if( confirm('Are you sure you want to change the sales rep?') ) {
-                M.api.getJSONCb('ciniki.customers.salesrepChange', {'business_id':M.curBusinessID, 
+                M.api.getJSONCb('ciniki.customers.salesrepChange', {'tnid':M.curTenantID, 
                     'old_salesrep_id':this.menu.salesrep_id, 'new_salesrep_id':nri}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);

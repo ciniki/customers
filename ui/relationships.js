@@ -6,9 +6,9 @@ function ciniki_customers_relationships() {
     this.main = null;
 
     this.relationshipOptions = {
-        '10':'business owner of',
+        '10':'tenant owner of',
         '-10':'owned by',
-        '11':'a business partner of',
+        '11':'a tenant partner of',
         '30':'a friend of',
         '40':'a relative of',
         '41':'a parent to',
@@ -53,7 +53,7 @@ function ciniki_customers_relationships() {
         this.edit.liveSearchCb = function(s, i, value) {
             if( i == 'related_id' ) {
                 var rsp = M.api.getJSONBgCb('ciniki.customers.searchQuick',
-                    {'business_id':M.curBusinessID, 'start_needle':value, 'limit':25},
+                    {'tnid':M.curTenantID, 'start_needle':value, 'limit':25},
                     function(rsp) {
                         M.ciniki_customers_relationships.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_relationships.edit.panelUID + '_' + i), rsp.customers);
                     });
@@ -74,7 +74,7 @@ function ciniki_customers_relationships() {
             this.removeLiveSearch(s, 'related_id');
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.customers.relationshipHistory', 'args':{'business_id':M.curBusinessID, 
+            return {'method':'ciniki.customers.relationshipHistory', 'args':{'tnid':M.curTenantID, 
                 'customer_id':this.customer_id, 'relationship_id':this.relationship_id, 'field':i}};
         };
         this.edit.addButton('save', 'Save', 'M.ciniki_customers_relationships.saveRelationship();');
@@ -121,7 +121,7 @@ function ciniki_customers_relationships() {
         if( this.edit.relationship_id > 0 ) {
             this.edit.sections._buttons.buttons.delete.visible = 'yes';
             var rsp = M.api.getJSONCb('ciniki.customers.relationshipGet', 
-                {'business_id':M.curBusinessID, 'customer_id':this.edit.customer_id, 
+                {'tnid':M.curTenantID, 'customer_id':this.edit.customer_id, 
                 'relationship_id':this.edit.relationship_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -145,7 +145,7 @@ function ciniki_customers_relationships() {
             var c = this.edit.serializeForm('no');
             if( c != '' ) {
                 var rsp = M.api.postJSONCb('ciniki.customers.relationshipUpdate', 
-                    {'business_id':M.curBusinessID, 'customer_id':this.edit.customer_id, 
+                    {'tnid':M.curTenantID, 'customer_id':this.edit.customer_id, 
                     'relationship_id':this.edit.relationship_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -160,7 +160,7 @@ function ciniki_customers_relationships() {
             var c = this.edit.serializeForm('yes');
             if( c != '' ) {
                 var rsp = M.api.postJSONCb('ciniki.customers.relationshipAdd', 
-                    {'business_id':M.curBusinessID, 'customer_id':this.edit.customer_id}, c, function(rsp) {
+                    {'tnid':M.curTenantID, 'customer_id':this.edit.customer_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
                             return false;
@@ -176,7 +176,7 @@ function ciniki_customers_relationships() {
     this.deleteRelationship = function() {
         if( confirm("Are you sure you want to remove this relationship?") ) {
             var rsp = M.api.getJSONCb('ciniki.customers.relationshipDelete', 
-                {'business_id':M.curBusinessID, 'relationship_id':this.edit.relationship_id}, function(rsp) {
+                {'tnid':M.curTenantID, 'relationship_id':this.edit.relationship_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;

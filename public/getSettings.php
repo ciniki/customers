@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will return the customers module settings for a business.
+// This method will return the customers module settings for a tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get the settings for.
+// tnid:     The ID of the tenant to get the settings for.
 // 
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_customers_getSettings($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -28,20 +28,20 @@ function ciniki_customers_getSettings($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.getSettings', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.getSettings', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
     $modules = $rc['modules'];
     
     //
-    // Grab the settings for the business from the database
+    // Grab the settings for the tenant from the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'business_id', $args['business_id'], 'ciniki.customers', 'settings', '');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $args['tnid'], 'ciniki.customers', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -53,7 +53,7 @@ function ciniki_customers_getSettings($ciniki) {
     if( ($modules['ciniki.customers']['flags']&0x1000) > 0 ) {
         $strsql = "SELECT id, name, code, sequence, flags "
             . "FROM ciniki_customer_pricepoints "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY sequence, id "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -77,7 +77,7 @@ function ciniki_customers_getSettings($ciniki) {
             . "ciniki_customer_seasons.name, "
             . "ciniki_customer_seasons.flags "
             . "FROM  ciniki_customer_seasons "
-            . "WHERE ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customer_seasons.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY ciniki_customer_seasons.start_date DESC "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');

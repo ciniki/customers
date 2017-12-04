@@ -10,7 +10,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the phone history for.
+// tnid:         The ID of the tenant to get the phone history for.
 // customer_id:         The ID of the customer to get the phone history for.
 // phone_id:            The ID of the phone address to get this history for.
 // field:               The field to get the history of.
@@ -32,7 +32,7 @@ function ciniki_customers_phoneHistory($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'phone_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Phone'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
@@ -44,16 +44,16 @@ function ciniki_customers_phoneHistory($ciniki) {
     if( $args['field'] == 'address' ) { $args['field'] = 'phone'; }
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.phoneHistory', 0);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.phoneHistory', 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-        $args['business_id'], 'ciniki_customer_phones', $args['phone_id'], $args['field']);
+        $args['tnid'], 'ciniki_customer_phones', $args['phone_id'], $args['field']);
 }
 ?>

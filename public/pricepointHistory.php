@@ -10,7 +10,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the pricepoint history for.
+// tnid:         The ID of the tenant to get the pricepoint history for.
 // customer_id:         The ID of the customer to get the pricepoint history for.
 // pricepoint_id:           The ID of the pricepoint address to get this history for.
 // field:               The field to get the history of.
@@ -32,7 +32,7 @@ function ciniki_customers_pricepointHistory($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'pricepoint_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
         ));
@@ -42,16 +42,16 @@ function ciniki_customers_pricepointHistory($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.pricepointHistory', 0);
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.pricepointHistory', 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-        $args['business_id'], 'ciniki_customer_pricepoints', $args['pricepoint_id'], $args['field']);
+        $args['tnid'], 'ciniki_customer_pricepoints', $args['pricepoint_id'], $args['field']);
 }
 ?>

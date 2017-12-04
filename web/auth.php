@@ -8,7 +8,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $password) {
+function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password) {
     //
     // Find all the required and optional arguments
     //
@@ -16,10 +16,10 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
 
     //
-    // Load the business settings
+    // Load the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -34,8 +34,8 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
         . "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
         . "ciniki_customers.pricepoint_id "
         . "FROM ciniki_customer_emails, ciniki_customers "
-        . "WHERE ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
         . "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
         . "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "') "
@@ -48,7 +48,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
-        error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2601)");
+        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2601)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.180', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
     }
 
@@ -67,11 +67,11 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
             $customer = $rc['rows'][0];
             $customers = array($rc['rows'][0]['id']=>$rc['rows'][0]);
         } else {
-            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2059)");
+            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2059)");
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.181', 'msg'=>'Unable to authenticate.'));
         }
     } else {
-        error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (736)");
+        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (736)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.182', 'msg'=>'Unable to authenticate.'));
     }
 
@@ -89,8 +89,8 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     //
     // Check for other accounts with the same email/password or child accounts
     //
-    if( isset($ciniki['business']['modules']['ciniki.customers']['flags']) 
-        && ($ciniki['business']['modules']['ciniki.customers']['flags']&0x200000) 
+    if( isset($ciniki['tenant']['modules']['ciniki.customers']['flags']) 
+        && ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x200000) 
         ) {
         //
         // Get all the parent customer_ids
@@ -117,9 +117,9 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
                 . "ciniki_customers.pricepoint_id "
                 . "FROM ciniki_customers "
                 . "WHERE ciniki_customers.parent_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
-                . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-//              . "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-//              . "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//              . "AND ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//              . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
 //              . "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
 //              . "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
 //              . "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "') "
@@ -128,7 +128,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
             if( $rc['stat'] != 'ok' ) {
-                error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email fail (2602)");
+                error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2602)");
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.184', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
             }
             if( isset($rc['rows']) ) {
@@ -151,11 +151,11 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     //
     // Get the sequence for the customers pricepoint if set
     //
-    if( ($ciniki['business']['modules']['ciniki.customers']['flags']&0x1000) ) {
+    if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x1000) ) {
         $strsql = "SELECT id, sequence, flags "
             . "FROM ciniki_customer_pricepoints "
 //          . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer['pricepoint_id']) . "' "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -163,7 +163,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
                 'fields'=>array('id', 'sequence', 'flags')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: $email pricepoints not found");
+            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: $email pricepoints not found");
             return $rc;
         }
         if( !isset($rc['pricepoints']) ) {
@@ -175,7 +175,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
             if( isset($pricepoints[$customer['pricepoint_id']]) ) {
                 $customer['pricepoint'] = $pricepoints[$customer['pricepoint_id']];
             } else {
-                error_log("WEB [" . $ciniki['business']['details']['name'] . "]: $email pricepoints not found");
+                error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: $email pricepoints not found");
                 if( isset($customer['pricepoint']) ) {
                     unset($customer['pricepoint']);
                 }
@@ -208,7 +208,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     //
 //  session_start();
     $_SESSION['change_log_id'] = 'web.' . date('ymd.His');
-    $_SESSION['business_id'] = $ciniki['request']['business_id'];
+    $_SESSION['tnid'] = $ciniki['request']['tnid'];
     $customer['price_flags'] = 0x01;
     if( $customer['status'] < 50 ) {
         // they can see prices if not suspended/deleted
@@ -230,14 +230,14 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
         $strsql = "SELECT MAX(ciniki_customer_seasons.end_date) AS membership_expiration "
             . "FROM ciniki_customer_season_members, ciniki_customer_seasons "
             . "WHERE ciniki_customer_season_members.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
-            . "AND ciniki_customer_season_members.business_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['business_id']) . "' "
+            . "AND ciniki_customer_season_members.tnid = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['tnid']) . "' "
             . "AND ciniki_customer_season_members.status = 10 " // Active for the season
             . "AND ciniki_customer_season_members.season_id = ciniki_customer_seasons.id "
-            . "AND ciniki_customer_seasons.business_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['business_id']) . "' "
+            . "AND ciniki_customer_seasons.tnid = '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
         if( $rc['stat'] != 'ok' ) {
-            error_log("WEB [" . $ciniki['business']['details']['name'] . "]: unable to check member season $email fail (3231)");
+            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: unable to check member season $email fail (3231)");
             error_log(print_r($rc['err'], true));
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.185', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
         }
@@ -312,11 +312,11 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $business_id, $email, $p
     $ciniki['session']['customer'] = $customer;
     $ciniki['session']['customers'] = $customers;
     $ciniki['session']['children'] = $children;
-    $ciniki['session']['business_id'] = $ciniki['request']['business_id'];
+    $ciniki['session']['tnid'] = $ciniki['request']['tnid'];
     $ciniki['session']['change_log_id'] = $_SESSION['change_log_id'];
     $ciniki['session']['user'] = array('id'=>'-2');
 
-    error_log("WEB [" . $ciniki['business']['details']['name'] . "]: auth $email success");
+    error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email success");
 
     return array('stat'=>'ok');
 }

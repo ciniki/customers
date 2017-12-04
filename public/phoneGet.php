@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the phone address is attached to.
+// tnid:     The ID of the tenant the phone address is attached to.
 // customer_id:     The ID of the customer the phone address is attached to.
 // phone_id:        The ID of the phone address to be removed.
 // 
@@ -24,7 +24,7 @@ function ciniki_customers_phoneGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
         'phone_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Phone'),
         )); 
@@ -35,10 +35,10 @@ function ciniki_customers_phoneGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.phoneGet', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.phoneGet', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   

@@ -15,46 +15,46 @@ function ciniki_customers_cron_jobs(&$ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'checkModuleAccess');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'checkModuleAccess');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'dropboxDownload');
 
     //
-    // Get the list of businesses that have customers enables and dropbox flag 
+    // Get the list of tenants that have customers enables and dropbox flag 
     //
-    $strsql = "SELECT business_id "
-        . "FROM ciniki_business_modules "
+    $strsql = "SELECT tnid "
+        . "FROM ciniki_tenant_modules "
         . "WHERE package = 'ciniki' "
         . "AND module = 'customers' "
         . "AND (flags&0x0800000000) = 0x0800000000 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.1', 'msg'=>'Unable to get list of businesses with customer profiles', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.1', 'msg'=>'Unable to get list of tenants with customer profiles', 'err'=>$rc['err']));
     }
     if( !isset($rc['rows']) ) {
         return array('stat'=>'ok');
     }
-    $businesses = $rc['rows'];
+    $tenants = $rc['rows'];
     
-    foreach($businesses as $business) {
+    foreach($tenants as $tenant) {
         //
-        // Load business modules
+        // Load tenant modules
         //
-        $rc = ciniki_businesses_checkModuleAccess($ciniki, $business['business_id'], 'ciniki', 'customers');
+        $rc = ciniki_tenants_checkModuleAccess($ciniki, $tenant['tnid'], 'ciniki', 'customers');
         if( $rc['stat'] != 'ok' ) { 
-            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'ciniki.customers.214', 'msg'=>'ciniki.customers not configured', 
+            ciniki_cron_logMsg($ciniki, $tenant['tnid'], array('code'=>'ciniki.customers.214', 'msg'=>'ciniki.customers not configured', 
                 'severity'=>30, 'err'=>$rc['err']));
             continue;
         }
 
-        ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'0', 'msg'=>'Updating customers from dropbox', 'severity'=>'10'));
+        ciniki_cron_logMsg($ciniki, $tenant['tnid'], array('code'=>'0', 'msg'=>'Updating customers from dropbox', 'severity'=>'10'));
 
         //
-        // Update the business customers from dropbox
+        // Update the tenant customers from dropbox
         //
-        $rc = ciniki_customers_dropboxDownload($ciniki, $business['business_id']);
+        $rc = ciniki_customers_dropboxDownload($ciniki, $tenant['tnid']);
         if( $rc['stat'] != 'ok' ) {
-            ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'ciniki.customers.215', 'msg'=>'Unable to update customers', 
+            ciniki_cron_logMsg($ciniki, $tenant['tnid'], array('code'=>'ciniki.customers.215', 'msg'=>'Unable to update customers', 
                 'severity'=>50, 'err'=>$rc['err']));
             continue;
         }

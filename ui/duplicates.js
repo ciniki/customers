@@ -63,10 +63,10 @@ function ciniki_customers_duplicates() {
                 'cellClasses':['label', ''],
                 'dataMaps':['name', 'value'],
                 },
-            'business':{'label':'Business', 'type':'simplegrid', 'num_cols':2,
+            'tenant':{'label':'Tenant', 'type':'simplegrid', 'num_cols':2,
                 'headerValues':null,
                 'cellClasses':['label', ''],
-                'noData':'No business details',
+                'noData':'No tenant details',
                 },
             'phones':{'label':'', 'type':'simplegrid', 'num_cols':2, 'visible':'yes',
                 'headerValues':null,
@@ -132,7 +132,7 @@ function ciniki_customers_duplicates() {
             return this.data[i];
         };
         this.match2.cellValue = function(s, i, j, d) {
-            if( s == 'details' || s == 'business' || s == 'phones' ) {
+            if( s == 'details' || s == 'tenant' || s == 'phones' ) {
                 if( j == 0 ) { return d.label; }
                 if( j == 1 ) { return d.value; }
             }
@@ -294,13 +294,13 @@ function ciniki_customers_duplicates() {
     };
 
     //
-    // Grab the stats for the business from the database and present the list of customers.
+    // Grab the stats for the tenant from the database and present the list of customers.
     //
     this.showList = function(cb) {
         //
         // Grab list of recently updated customers
         //
-        var rsp = M.api.getJSONCb('ciniki.customers.duplicatesFind', {'business_id':M.curBusinessID}, function(rsp) {
+        var rsp = M.api.getJSONCb('ciniki.customers.duplicatesFind', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -314,14 +314,14 @@ function ciniki_customers_duplicates() {
 
     this.showMatch = function(cb, cid1, cid2) {
         
-        var mods = M.curBusiness.modules;
+        var mods = M.curTenant.modules;
         if( cid1 != null ) {
             this.match1.customer_id = cid1;
             this.match2.customer_id = cid2;
         }
         this.match1.sections._buttons.buttons.delete.visible = 'yes';
         this.match2.sections._buttons.buttons.delete.visible = 'yes';
-        var rsp = M.api.getJSON('ciniki.customers.getFull', {'business_id':M.curBusinessID, 'customer_id':this.match1.customer_id});
+        var rsp = M.api.getJSON('ciniki.customers.getFull', {'tnid':M.curTenantID, 'customer_id':this.match1.customer_id});
         if( rsp.stat != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -334,7 +334,7 @@ function ciniki_customers_duplicates() {
             'last':{'label':'Last', 'value':rsp.customer.last},
             'suffix':{'label':'Degrees', 'value':rsp.customer.suffix},
             };
-        this.match1.data.business = {
+        this.match1.data.tenant = {
             'company':{'label':'Company', 'value':rsp.customer.company},
             'department':{'label':'Department', 'value':rsp.customer.department},
             'title':{'label':'Title', 'value':rsp.customer.title},
@@ -351,7 +351,7 @@ function ciniki_customers_duplicates() {
             ) {
             this.match1.sections._buttons.buttons.delete.visible = 'no';
         }
-        var rsp = M.api.getJSON('ciniki.customers.getFull', {'business_id':M.curBusinessID, 'customer_id':this.match2.customer_id});
+        var rsp = M.api.getJSON('ciniki.customers.getFull', {'tnid':M.curTenantID, 'customer_id':this.match2.customer_id});
         if( rsp.stat != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -364,7 +364,7 @@ function ciniki_customers_duplicates() {
             'last':{'label':'Last', 'value':rsp.customer.last},
             'suffix':{'label':'Degrees', 'value':rsp.customer.suffix},
             };
-        this.match2.data.business = {
+        this.match2.data.tenant = {
             'company':{'label':'Company', 'value':rsp.customer.company},
             'department':{'label':'Department', 'value':rsp.customer.department},
             'title':{'label':'Title', 'value':rsp.customer.title},
@@ -412,20 +412,20 @@ function ciniki_customers_duplicates() {
             this.match1.sections.pastwineproduction.visible = 'yes';
             this.match2.sections.pastwineproduction.visible = 'yes';
             // Get appointments
-            var rsp = M.api.getJSON('ciniki.wineproduction.appointments', {'business_id':M.curBusinessID, 'customer_id':this.match1.customer_id, 'status':'unbottled'});
+            var rsp = M.api.getJSON('ciniki.wineproduction.appointments', {'tnid':M.curTenantID, 'customer_id':this.match1.customer_id, 'status':'unbottled'});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
             } 
             this.match1.data.appointments = rsp.appointments;
-            var rsp = M.api.getJSON('ciniki.wineproduction.appointments', {'business_id':M.curBusinessID, 'customer_id':this.match2.customer_id, 'status':'unbottled'});
+            var rsp = M.api.getJSON('ciniki.wineproduction.appointments', {'tnid':M.curTenantID, 'customer_id':this.match2.customer_id, 'status':'unbottled'});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
             } 
             this.match2.data.appointments = rsp.appointments;
             // Get wine production
-            var rsp = M.api.getJSON('ciniki.wineproduction.list', {'business_id':M.curBusinessID, 'customer_id':this.match1.customer_id});
+            var rsp = M.api.getJSON('ciniki.wineproduction.list', {'tnid':M.curTenantID, 'customer_id':this.match1.customer_id});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -446,7 +446,7 @@ function ciniki_customers_duplicates() {
             }
 
             // Get second customer wine production
-            var rsp = M.api.getJSON('ciniki.wineproduction.list', {'business_id':M.curBusinessID, 'customer_id':this.match2.customer_id});
+            var rsp = M.api.getJSON('ciniki.wineproduction.list', {'tnid':M.curTenantID, 'customer_id':this.match2.customer_id});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -474,7 +474,7 @@ function ciniki_customers_duplicates() {
     };
 
     this.mergeCustomers = function(cid1, cid2) {
-        var rsp = M.api.getJSONCb('ciniki.customers.merge', {'business_id':M.curBusinessID, 
+        var rsp = M.api.getJSONCb('ciniki.customers.merge', {'tnid':M.curTenantID, 
             'primary_customer_id':cid1, 'secondary_customer_id':cid2}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -487,7 +487,7 @@ function ciniki_customers_duplicates() {
     this.deleteCustomer = function(cid) {
         if( cid != null && cid > 0 ) {
             if( confirm("Are you sure you want to remove this customer?") ) {
-                var rsp = M.api.getJSONCb('ciniki.customers.delete', {'business_id':M.curBusinessID, 'customer_id':cid}, function(rsp) {
+                var rsp = M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 'customer_id':cid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;

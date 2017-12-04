@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to search for the customers.
+// tnid:         The ID of the tenant to search for the customers.
 // start_needle:        The search string to use.
 // limit:               (optional) The maximum number of results to return.  If not
 //                      specified, the maximum results will be 25.
@@ -22,7 +22,7 @@ function ciniki_customers_birthdays($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'query'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Query'),
         'days'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Days'),
         )); 
@@ -33,19 +33,19 @@ function ciniki_customers_birthdays($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.birthdays', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.birthdays', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the business settings
+    // Get the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -84,7 +84,7 @@ function ciniki_customers_birthdays($ciniki) {
             . "c.display_name, "
             . "DATE_FORMAT(c.birthdate, '%b %e, %Y') AS birthdate "
             . "FROM ciniki_customers AS c "
-            . "WHERE c.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND c.birthdate <> '0000-00-00' "
             . "AND c.birthdate < '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
             . "AND c.status = 10 "
@@ -145,7 +145,7 @@ function ciniki_customers_birthdays($ciniki) {
             . "c.display_name, "
             . "DATE_FORMAT(c.birthdate, '%b %e, %Y') AS birthdate "
             . "FROM ciniki_customers AS c "
-            . "WHERE c.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND c.birthdate = '0000-00-00' "
             . "AND c.status = 10 "
             . "AND c.type = 1 "
@@ -162,7 +162,7 @@ function ciniki_customers_birthdays($ciniki) {
             . "c.display_name, "
             . "DATE_FORMAT(c.birthdate, '%b %e, %Y') AS birthdate "
             . "FROM ciniki_customers AS c "
-            . "WHERE c.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND c.birthdate > '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
             . "AND c.status = 10 "
             . "AND c.type = 1 "
@@ -195,7 +195,7 @@ function ciniki_customers_birthdays($ciniki) {
         $strsql = "SELECT id, customer_id, email "
             . "FROM ciniki_customer_emails "
             . "WHERE customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -213,7 +213,7 @@ function ciniki_customers_birthdays($ciniki) {
         $strsql = "SELECT id, customer_id, address1, address2, city, province, postal, country "
             . "FROM ciniki_customer_addresses "
             . "WHERE customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array()),

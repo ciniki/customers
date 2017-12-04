@@ -13,7 +13,7 @@ function ciniki_customers_delete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -23,19 +23,19 @@ function ciniki_customers_delete(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.delete', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.delete', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // get the active modules for the business
+    // get the active modules for the tenant
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'getActiveModules');
-    $rc = ciniki_businesses_getActiveModules($ciniki, $args['business_id']); 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'getActiveModules');
+    $rc = ciniki_tenants_getActiveModules($ciniki, $args['tnid']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -54,7 +54,7 @@ function ciniki_customers_delete(&$ciniki) {
     // Get the uuid of the customer to be deleted
     //
     $strsql = "SELECT uuid FROM ciniki_customers "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
@@ -71,7 +71,7 @@ function ciniki_customers_delete(&$ciniki) {
     //
     $strsql = "SELECT COUNT(*) as num_children "
         . "FROM ciniki_customers "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "";
     $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.customers', 'children');
@@ -86,7 +86,7 @@ function ciniki_customers_delete(&$ciniki) {
     // Check if any modules are currently using this customer
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
-    $rc = ciniki_core_objectCheckUsed($ciniki, $args['business_id'], 'ciniki.customers.customer', $args['customer_id']);
+    $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.customers.customer', $args['customer_id']);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.68', 'msg'=>'Unable to check if customer is still being used.', 'err'=>$rc['err']));
     }
@@ -115,7 +115,7 @@ function ciniki_customers_delete(&$ciniki) {
         $strsql = "SELECT id, uuid "
             . "FROM ciniki_subscription_customers "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.subscriptions', 'item');
         if( $rc['stat'] != 'ok' ) {
@@ -125,7 +125,7 @@ function ciniki_customers_delete(&$ciniki) {
         if( isset($rc['rows']) ) {
             $subscriptions = $rc['rows'];
             foreach($subscriptions as $i => $row) {
-                $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.subscriptions.customer',
+                $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.subscriptions.customer',
                     $row['id'], $row['uuid'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -133,11 +133,11 @@ function ciniki_customers_delete(&$ciniki) {
                 }
             }
             //
-            // Update the last_change date in the business modules
+            // Update the last_change date in the tenant modules
             // Ignore the result, as we don't want to stop user updates if this fails.
             //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-            ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'subscriptions');
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+            ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'subscriptions');
         }
     }
 
@@ -147,7 +147,7 @@ function ciniki_customers_delete(&$ciniki) {
     $strsql = "SELECT id, uuid "
         . "FROM ciniki_customer_phones "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -157,7 +157,7 @@ function ciniki_customers_delete(&$ciniki) {
     if( isset($rc['rows']) ) {
         $items = $rc['rows'];
         foreach($items as $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.phone',
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.phone',
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -172,7 +172,7 @@ function ciniki_customers_delete(&$ciniki) {
     $strsql = "SELECT id, uuid "
         . "FROM ciniki_customer_addresses "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -182,7 +182,7 @@ function ciniki_customers_delete(&$ciniki) {
     if( isset($rc['rows']) ) {
         $items = $rc['rows'];
         foreach($items as $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.address',
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.address',
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -197,7 +197,7 @@ function ciniki_customers_delete(&$ciniki) {
     $strsql = "SELECT id, uuid "
         . "FROM ciniki_customer_emails "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -207,7 +207,7 @@ function ciniki_customers_delete(&$ciniki) {
     if( isset($rc['rows']) ) {
         $items = $rc['rows'];
         foreach($items as $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.email',
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.email',
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -222,7 +222,7 @@ function ciniki_customers_delete(&$ciniki) {
     $strsql = "SELECT id, uuid "
         . "FROM ciniki_customer_links "
         . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -232,7 +232,7 @@ function ciniki_customers_delete(&$ciniki) {
     if( isset($rc['rows']) ) {
         $items = $rc['rows'];
         foreach($items as $item) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.link',
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.link',
                 $item['id'], $item['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -244,7 +244,7 @@ function ciniki_customers_delete(&$ciniki) {
     //
     // Delete the customer
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.customers.customer',
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.customer',
         $args['customer_id'], $uuid, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -260,17 +260,17 @@ function ciniki_customers_delete(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'customers');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'customers');
 
     //
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$args['customer_id']));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.customers.customer', 'object_id'=>$args['customer_id']));
 
     return array('stat'=>'ok');
 }

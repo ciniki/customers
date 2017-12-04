@@ -7,14 +7,14 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The business ID to check the session user against.
+// tnid:         The tenant ID to check the session user against.
 // method:              The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_customers_hooks_formatAddress($ciniki, $business_id, $args) {
+function ciniki_customers_hooks_formatAddress($ciniki, $tnid, $args) {
 
     $label = '';
     $flags = $args['address']['flags'];

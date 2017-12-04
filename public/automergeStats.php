@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:      
-// business_id:         The business ID the excel file is connected to.
+// tnid:         The tenant ID the excel file is connected to.
 // automerge_id:            The excel ID from the table ciniki_toolbox_excel.
 //
 // Returns
@@ -21,7 +21,7 @@ function ciniki_customers_automergeStats($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'automerge_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Automerge Customer'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -30,10 +30,10 @@ function ciniki_customers_automergeStats($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id
+    // Check access to tnid
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $ac = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.automergeStats', $args['automerge_id']);
+    $ac = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.automergeStats', $args['automerge_id']);
     if( $ac['stat'] != 'ok' ) {
         return $ac;
     }

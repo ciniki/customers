@@ -16,7 +16,7 @@ function ciniki_customers_customerListExcelOptions($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -25,10 +25,10 @@ function ciniki_customers_customerListExcelOptions($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.customerListExcelOptions', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.customerListExcelOptions', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -40,13 +40,13 @@ function ciniki_customers_customerListExcelOptions($ciniki) {
     //
     // Check if subscriptions module enabled
     //
-    if( isset($ciniki['business']['modules']['ciniki.subscriptions']) ) {
+    if( isset($ciniki['tenant']['modules']['ciniki.subscriptions']) ) {
         $strsql = "SELECT ciniki_subscriptions.id, "
             . "ciniki_subscriptions.name, "
             . "ciniki_subscriptions.description, "
             . "ciniki_subscriptions.flags "
             . "FROM ciniki_subscriptions "
-            . "WHERE ciniki_subscriptions.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_subscriptions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY ciniki_subscriptions.name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.subscriptions', array(
@@ -66,7 +66,7 @@ function ciniki_customers_customerListExcelOptions($ciniki) {
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0xC00000) ) {
         $strsql = "SELECT DISTINCT tag_type, tag_name "
             . "FROM ciniki_customer_tags "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY tag_type, tag_name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(

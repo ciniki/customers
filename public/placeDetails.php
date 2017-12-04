@@ -18,7 +18,7 @@ function ciniki_customers_placeDetails($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'), 
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'), 
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'), 
@@ -31,10 +31,10 @@ function ciniki_customers_placeDetails($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.placeDetails', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.placeDetails', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -66,11 +66,11 @@ function ciniki_customers_placeDetails($ciniki) {
         if( isset($args['city']) ) {
             $strsql .= "AND ciniki_customer_addresses.city = '" . ciniki_core_dbQuote($ciniki, $args['city']) . "' ";
         }
-            $strsql .= "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            $strsql .= "AND ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.status < 50 ";
-        if( ($ciniki['business']['user']['perms']&0x04) > 0 ) {
+        if( ($ciniki['tenant']['user']['perms']&0x04) > 0 ) {
             $strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
         }
         if( !isset($args['country']) || $args['country'] != 'No Address' ) {
@@ -93,7 +93,7 @@ function ciniki_customers_placeDetails($ciniki) {
     }
 
     elseif( isset($args['province']) ) {
-        $rc = ciniki_customers__locationStats($ciniki, $args['business_id'], array(
+        $rc = ciniki_customers__locationStats($ciniki, $args['tnid'], array(
             'start_level'=>'city',
             'country'=>(isset($args['country'])?$args['country']:NULL),
             'province'=>$args['province'],
@@ -108,7 +108,7 @@ function ciniki_customers_placeDetails($ciniki) {
     }
     
     elseif( isset($args['country']) ) {
-        $rc = ciniki_customers__locationStats($ciniki, $args['business_id'], array(
+        $rc = ciniki_customers__locationStats($ciniki, $args['tnid'], array(
             'start_level'=>'province',
             'country'=>$args['country'],
             ));
@@ -122,7 +122,7 @@ function ciniki_customers_placeDetails($ciniki) {
     }
     
     else {
-        $rc = ciniki_customers__locationStats($ciniki, $args['business_id'], array('start_level'=>'country'));
+        $rc = ciniki_customers__locationStats($ciniki, $args['tnid'], array('start_level'=>'country'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }

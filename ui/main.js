@@ -77,7 +77,7 @@ function ciniki_customers_main() {
             };
         this.menu.liveSearchCb = function(s, i, value) {
             if( s == 'search' && value != '' ) {
-                M.api.getJSONBgCb('ciniki.customers.searchQuick', {'business_id':M.curBusinessID, 'start_needle':encodeURIComponent(value), 'limit':'10'}, 
+                M.api.getJSONBgCb('ciniki.customers.searchQuick', {'tnid':M.curTenantID, 'start_needle':encodeURIComponent(value), 'limit':'10'}, 
                     function(rsp) { 
                         M.ciniki_customers_main.menu.liveSearchShow('search', null, M.gE(M.ciniki_customers_main.menu.panelUID + '_' + s), rsp.customers); 
                     });
@@ -97,8 +97,8 @@ function ciniki_customers_main() {
             return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.menu.open();\',\'' + d.customer.id + '\');'; 
         };
         this.menu.liveSearchResultRowStyle = function(s, f, i, d) {
-            if( M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
-                return 'background: ' + M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status];
+            if( M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
+                return 'background: ' + M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status];
             }
         };
         this.menu.liveSearchSubmitFn = function(s, search_str) {
@@ -155,7 +155,7 @@ function ciniki_customers_main() {
             //
             // Grab list of recently updated customers
             //
-            var args = {'business_id':M.curBusinessID};
+            var args = {'tnid':M.curTenantID};
             if( this.list == 'category' ) {
                 args.category = M.eU(this.category);
             }
@@ -239,7 +239,7 @@ function ciniki_customers_main() {
 //          }},
             };
         this.tools.exportCSVContacts = function() {
-            var args = {'business_id':M.curBusinessID, 'columns':'type::status::prefix::first::middle::last::suffix::company::split_phone_labels::split_emails::split_addresses'};
+            var args = {'tnid':M.curTenantID, 'columns':'type::status::prefix::first::middle::last::suffix::company::split_phone_labels::split_emails::split_addresses'};
             M.api.openFile('ciniki.customers.customerListExcel', args);
         }
         this.tools.addClose('Back');
@@ -275,8 +275,8 @@ function ciniki_customers_main() {
             }
         }
         this.search.rowStyle = function(s, i, d) {
-            if( M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
-                return 'background: ' + M.curBusiness.customers.settings['ui-colours-customer-status-' + d.customer.status];
+            if( M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
+                return 'background: ' + M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status];
             }
         }
         this.search.addClose('Back');
@@ -468,7 +468,7 @@ function ciniki_customers_main() {
         };
         this.customer.liveSearchCb = function(s, i, value) {
             if( s == 'order_search' && value != '' ) {
-                M.api.getJSONBgCb('ciniki.sapos.invoiceSearch', {'business_id':M.curBusinessID, 'customer_id':M.ciniki_customers_main.customer.customer_id, 'invoice_type':'40', 'start_needle':value, 'limit':'10'}, 
+                M.api.getJSONBgCb('ciniki.sapos.invoiceSearch', {'tnid':M.curTenantID, 'customer_id':M.ciniki_customers_main.customer.customer_id, 'invoice_type':'40', 'start_needle':value, 'limit':'10'}, 
                     function(rsp) { 
                         M.ciniki_customers_main.customer.liveSearchShow('order_search', null, M.gE(M.ciniki_customers_main.customer.panelUID + '_' + s), rsp.invoices); 
                     });
@@ -567,8 +567,8 @@ function ciniki_customers_main() {
                     for(i in d.subscription.jobs) {
                         var job = d.subscription.jobs[i].job;
                         str += '<span';
-                        if( M.curBusiness.services.settings != null && M.curBusiness.services.settings['job-status-'+job.status+'-colour']) {
-                            str += ' style="background:' + M.curBusiness.services.settings['job-status-'+job.status+'-colour'] + '"';
+                        if( M.curTenant.services.settings != null && M.curTenant.services.settings['job-status-'+job.status+'-colour']) {
+                            str += ' style="background:' + M.curTenant.services.settings['job-status-'+job.status+'-colour'] + '"';
                         }
                         if( job.status == 1 || job.status == 2 ) {
                             str += ' onclick="event.stopPropagation();M.startApp(\'ciniki.services.job\',null,\'M.ciniki_customers_main.showCustomer();\',\'mc\',{\'subscription_id\':\'' + d.subscription.id + '\',\'customer_id\':M.ciniki_customers_main.customer.customer_id,\'service_id\':\'' + d.subscription.service_id + '\',\'name\':\'' + job.name + '\',\'pstart\':\'' + job.pstart_date + '\',\'pend\':\'' + job.pend_date + '\',\'date_due\':\'' + job.date_due + '\'});"';
@@ -750,8 +750,8 @@ function ciniki_customers_main() {
         args = {};
         if( aG != null ) { args = eval(aG); }
         var settings = null;
-        if( M.curBusiness.modules['ciniki.customers'] != null && M.curBusiness.modules['ciniki.customers'].settings != null ) {
-            settings = M.curBusiness.modules['ciniki.customers'].settings;
+        if( M.curTenant.modules['ciniki.customers'] != null && M.curTenant.modules['ciniki.customers'].settings != null ) {
+            settings = M.curTenant.modules['ciniki.customers'].settings;
         }
         //
         // Create the app container if it doesn't exist, and clear it out
@@ -770,7 +770,7 @@ function ciniki_customers_main() {
         this.childrenlabel = 'Children';
         this.parentlabel = 'Parent';
         this.parentslabel = 'Parents';
-//      if( M.curBusiness.customers != null ) {
+//      if( M.curTenant.customers != null ) {
         if( settings != null ) {
             if( settings['ui-labels-parent'] != null && settings['ui-labels-parent'] != '') {
                 this.parentLabel = settings['ui-labels-parent'];
@@ -801,12 +801,12 @@ function ciniki_customers_main() {
         this.customer.sections.parent.addTxt = 'Add ' + this.parentLabel;
         this.customer.sections.parent.changeTxt = 'Change ' + this.parentLabel;
 
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x4000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x4000) > 0 ) {
             this.tools.sections._connections.active = 'yes';
         } else {
             this.tools.sections._connections.active = 'no';
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x010000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x010000) > 0 ) {
             this.search.sections.main.num_cols = 3;
             this.search.sections.main.headerValues = ['ID', 'Name', 'Status'];
             this.search.sections.main.dataMaps = ['eid', 'display_name', 'status_text'];
@@ -816,8 +816,8 @@ function ciniki_customers_main() {
             this.search.sections.main.dataMaps = ['display_name', 'status_text'];
         }
     
-        if( M.curBusiness.modules['ciniki.businesses'] != null 
-            && (M.curBusiness.modules['ciniki.businesses'].flags&0x02) > 0 ) {
+        if( M.curTenant.modules['ciniki.tenants'] != null 
+            && (M.curTenant.modules['ciniki.tenants'].flags&0x02) > 0 ) {
             this.tools.sections.tools.list.salesreps.visible = 'yes';
         } else {
             this.tools.sections.tools.list.salesreps.visible = 'no';
@@ -828,8 +828,8 @@ function ciniki_customers_main() {
         //
         this.menu.rightbuttons = {};
         this.customer.rightbuttons = {};
-        if( M.curBusiness.permissions.owners != null 
-            || M.curBusiness.permissions.employees != null 
+        if( M.curTenant.permissions.owners != null 
+            || M.curTenant.permissions.employees != null 
             || M.userPerms&0x01 == 1    // sysadmins
             ) {
             this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.menu.open();\',\'mc\',{\'customer_id\':0});');
@@ -839,15 +839,15 @@ function ciniki_customers_main() {
 
         //
         // Setup the menu buttons to make this the home screen,
-        // if the main business menu had only one menu option available.
+        // if the main tenant menu had only one menu option available.
         // This is used for sales reps when they login and can only see customers
         //
-        if( M.ciniki_businesses_main.menu.autoopen == 'skipped' ) {
+        if( M.ciniki_tenants_main.menu.autoopen == 'skipped' ) {
             this.menu.leftbuttons = {};
             this.menu.rightbuttons = {};
             M.menuHome = this.menu;
-            this.menu.leftbuttons = M.ciniki_businesses_main.menu.leftbuttons;
-            this.menu.rightbuttons = M.ciniki_businesses_main.menu.rightbuttons;
+            this.menu.leftbuttons = M.ciniki_tenants_main.menu.leftbuttons;
+            this.menu.rightbuttons = M.ciniki_tenants_main.menu.rightbuttons;
         } else {
             this.menu.addClose('Back');
         }
@@ -864,7 +864,7 @@ function ciniki_customers_main() {
 
     this.updateChildren = function() {
         M.api.getJSONCb('ciniki.customers.getModuleData', 
-            {'business_id':M.curBusinessID, 
+            {'tnid':M.curTenantID, 
                 'customer_id':M.ciniki_customers_main.customer.customer_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -889,7 +889,7 @@ function ciniki_customers_main() {
         this.customer.sections.pastwineproduction.visible = 'no';
 
         M.api.getJSONCb('ciniki.customers.getModuleData', 
-            {'business_id':M.curBusinessID, 
+            {'tnid':M.curTenantID, 
                 'customer_id':M.ciniki_customers_main.customer.customer_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -900,19 +900,19 @@ function ciniki_customers_main() {
     }
 
     this.showCustomerFinish = function(cb, rsp, section) {
-        var mods = M.curBusiness.modules;
+        var mods = M.curTenant.modules;
         this.customer.data = rsp.customer;
         this.customer.data.details = {};
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x010000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x010000) > 0 ) {
             this.customer.data.details.eid = {'label':'ID', 'value':rsp.customer.eid};
         }
-//      if( M.curBusiness.customers != null && M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label'] != null ) {
-//          this.customer.data.details.type = {'label':'Type', 'value':M.curBusiness.customers.settings['types-'+rsp.customer.type+'-label']};
+//      if( M.curTenant.customers != null && M.curTenant.customers.settings['types-'+rsp.customer.type+'-label'] != null ) {
+//          this.customer.data.details.type = {'label':'Type', 'value':M.curTenant.customers.settings['types-'+rsp.customer.type+'-label']};
 //      }
         if( rsp.customer.status_text != null ) {
             this.customer.data.details.status_text = {'label':'Status', 'value':rsp.customer.status_text};
-            if( M.curBusiness.customers.settings['ui-colours-customer-status-' + rsp.customer.status] != null ) {
-                this.customer.data.details.status_text.style = 'background: ' + M.curBusiness.customers.settings['ui-colours-customer-status-' + rsp.customer.status];
+            if( M.curTenant.customers.settings['ui-colours-customer-status-' + rsp.customer.status] != null ) {
+                this.customer.data.details.status_text.style = 'background: ' + M.curTenant.customers.settings['ui-colours-customer-status-' + rsp.customer.status];
             }
 //          if( rsp.customer.status > 10 ) {
 //              this.customer.data.details.status_text.style = 'background: #FFD0D0;';
@@ -930,7 +930,7 @@ function ciniki_customers_main() {
         } else {
             this.customer.data.details.name = {'label':'Name', 'value':rsp.customer.display_name};
             if( rsp.customer.company != null &&  rsp.customer.company != '' ) {
-                this.customer.data.details.company = {'label':'Business', 'value':rsp.customer.company};
+                this.customer.data.details.company = {'label':'Tenant', 'value':rsp.customer.company};
             }
             if( rsp.customer.birthdate != '' ) {
                 this.customer.data.details.birthdate = {'label':'Birthday', 'value':rsp.customer.birthdate};
@@ -939,7 +939,7 @@ function ciniki_customers_main() {
         if( rsp.customer.connection != '' ) {
             this.customer.data.details.connection = {'label':'Connection', 'value':rsp.customer.connection};
         }
-//        if( (M.curBusiness.modules['ciniki.customers'].flags&0x10000000) > 0 ) {
+//        if( (M.curTenant.modules['ciniki.customers'].flags&0x10000000) > 0 ) {
             if( rsp.customer.phones != null ) {
                 for(i in rsp.customer.phones) {
                     this.customer.data.details['phone-'+i] = {'label':rsp.customer.phones[i].phone.phone_label, 'value':rsp.customer.phones[i].phone.phone_number};
@@ -959,7 +959,7 @@ function ciniki_customers_main() {
                 this.customer.data.details['phone_fax'] = {'label':'Fax', 'value':rsp.customer.phone_fax};
             }
         } */
-//      if( (M.curBusiness.modules['ciniki.customers'].flags&0x20000000) > 0 ) {
+//      if( (M.curTenant.modules['ciniki.customers'].flags&0x20000000) > 0 ) {
             if( rsp.customer.emails != null ) {
                 for(i in rsp.customer.emails) {
                     var flags = '';
@@ -1004,29 +1004,29 @@ function ciniki_customers_main() {
                 this.customer.data.details['link-'+i] = {'label':'Website', 'value':(rsp.customer.links[i].link.name!=''?rsp.customer.links[i].link.name + ' <span class="subdue">' + url + '</span>':url)};
             }
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x400000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x400000) > 0 ) {
             this.customer.data.details['customer_categories'] = {'label':'Categories', 'value':(rsp.customer.customer_categories!=null?rsp.customer.customer_categories.replace(/::/g,', '):'')};
         }
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x800000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
             this.customer.data.details['customer_tags'] = {'label':'Tags', 'value':(rsp.customer.customer_tags!=null?rsp.customer.customer_tags.replace(/::/g,', '):'')};
         }
         this.customer.data.account = {};
         // Sales Rep
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x2000) > 0 
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 
             && rsp.customer.salesrep_id_text != null && rsp.customer.salesrep_id_text != ''
             ) {
             this.customer.sections.account.visible = 'yes';
             this.customer.data.account.salesrep_id = {'label':'Sales Rep', 'value':rsp.customer.salesrep_id_text};
         }
         // Pricepoint
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x1000) > 0 
-            && M.curBusiness.customers.settings.pricepoints != null
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x1000) > 0 
+            && M.curTenant.customers.settings.pricepoints != null
             ) {
             this.customer.sections.account.visible = 'yes';
-            for(i in M.curBusiness.customers.settings.pricepoints) {
-                if( M.curBusiness.customers.settings.pricepoints[i].pricepoint.id == rsp.customer.pricepoint_id ) {
+            for(i in M.curTenant.customers.settings.pricepoints) {
+                if( M.curTenant.customers.settings.pricepoints[i].pricepoint.id == rsp.customer.pricepoint_id ) {
                     this.customer.data.account.pricepoint_id = {'label':'Price Point', 
-                        'value':M.curBusiness.customers.settings.pricepoints[i].pricepoint.name};
+                        'value':M.curTenant.customers.settings.pricepoints[i].pricepoint.name};
                     break;
                 }
             }
@@ -1035,41 +1035,41 @@ function ciniki_customers_main() {
             }
         }
         // Tax Number
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x20000) > 0 
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x20000) > 0 
             && rsp.customer.tax_number != null && rsp.customer.tax_number != ''
             ) {
             this.customer.sections.account.visible = 'yes';
             this.customer.data.account.tax_number = {'label':'Tax Number', 'value':rsp.customer.tax_number};
         }
         // Tax Location
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x40000) > 0 ) {
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x40000) > 0 ) {
             var rates = ((rsp.customer.tax_location_id_rates!=null&&rsp.customer.tax_location_id_rates!='')?' <span class="subdue">'+rsp.customer.tax_location_id_rates+'</span>':'');
             this.customer.sections.account.visible = 'yes';
             this.customer.data.account.tax_location_id = {'label':'Taxes', 'value':(rsp.customer.tax_location_id_text!=null?rsp.customer.tax_location_id_text:'Use Shipping Address') + rates};
         }
         // Reward Level
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x80000) > 0 
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x80000) > 0 
             && rsp.customer.reward_level != null && rsp.customer.reward_level != ''
             ) {
             this.customer.sections.account.visible = 'yes';
             this.customer.data.account.reward_level = {'label':'Reward Teir', 'value':rsp.customer.reward_level};
         }
         // Sales Total
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x100000) > 0 
             && rsp.customer.sales_total != null && rsp.customer.sales_total != ''
             ) {
             this.customer.sections.account.visible = 'yes';
             this.customer.data.account.sales_total = {'label':'Sales Total', 'value':rsp.customer.sales_total};
         }
         // Previous Sales Total
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x100000) > 0 
             && rsp.customer.sales_total_prev != null && rsp.customer.sales_total_prev != ''
             ) {
             this.customer.sections.account.visible = 'yes';
             this.customer.data.account.sales_total_prev = {'label':'Previous Sales', 'value':rsp.customer.sales_total_prev};
         }
         // Start Date
-        if( (M.curBusiness.modules['ciniki.customers'].flags&0x100000) > 0 
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x100000) > 0 
             && rsp.customer.start_date != null && rsp.customer.start_date != ''
             ) {
             this.customer.sections.account.visible = 'yes';
@@ -1118,9 +1118,9 @@ function ciniki_customers_main() {
         }
 
         //
-        // Make relationships visible if setup for business
+        // Make relationships visible if setup for tenant
         //
-        if( M.curBusiness.customers != null && M.curBusiness.customers.settings['use-relationships'] != null && M.curBusiness.customers.settings['use-relationships'] == 'yes' ) {
+        if( M.curTenant.customers != null && M.curTenant.customers.settings['use-relationships'] != null && M.curTenant.customers.settings['use-relationships'] == 'yes' ) {
             this.customer.sections.relationships.visible = 'yes';
         } else {
             this.customer.sections.relationships.visible = 'no';
@@ -1130,7 +1130,7 @@ function ciniki_customers_main() {
         // Check if there child accounts
         //
         if( rsp.customer.parent_id == 0 
-            && ((rsp.customer.children != null && rsp.customer.children.length > 0) || (M.curBusiness.modules['ciniki.customers'].flags&0x200000) > 0) 
+            && ((rsp.customer.children != null && rsp.customer.children.length > 0) || (M.curTenant.modules['ciniki.customers'].flags&0x200000) > 0) 
             ) {
             this.customer.sections._tabs.tabs['children'].visible = 'yes';
 //          this.customer.sections._buttons.buttons.delete.visible = 'no';
@@ -1143,9 +1143,9 @@ function ciniki_customers_main() {
         }
 
         if( rsp.customer.status > 10 
-            && M.curBusiness.permissions.salesreps != null
-            && M.curBusiness.permissions.owners == null
-            && M.curBusiness.permissions.employees == null
+            && M.curTenant.permissions.salesreps != null
+            && M.curTenant.permissions.owners == null
+            && M.curTenant.permissions.employees == null
             ) {
             this.customer.sections.invoices.addTxt = '';
             this.customer.sections.orders.addTxt = '';
@@ -1301,7 +1301,7 @@ function ciniki_customers_main() {
     this.searchCustomers = function(cb, search_str, type) {
         if( search_str != null ) { this.search.search_str = search_str; }
         if( type != null ) { this.search.search_type = type; }
-        M.api.getJSONCb('ciniki.customers.searchFull', {'business_id':M.curBusinessID, 
+        M.api.getJSONCb('ciniki.customers.searchFull', {'tnid':M.curTenantID, 
             'start_needle':this.search.search_str, 'type':this.search.search_type}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -1317,7 +1317,7 @@ function ciniki_customers_main() {
     this.deleteCustomer = function(cid) {
         if( cid != null && cid > 0 ) {
             if( confirm("Are you sure you want to remove this " + this.slabel + "?") ) {
-                M.api.getJSONCb('ciniki.customers.delete', {'business_id':M.curBusinessID, 'customer_id':cid}, function(rsp) {
+                M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 'customer_id':cid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;

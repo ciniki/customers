@@ -7,7 +7,7 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The ID of the business to get the birthdays for.
+// tnid:         The ID of the tenant to get the birthdays for.
 // args:                The options for the query.
 //
 // Additional Arguments
@@ -17,12 +17,12 @@
 // Returns
 // -------
 //
-function ciniki_customers_reportNewCustomers(&$ciniki, $business_id, $args) {
+function ciniki_customers_reportNewCustomers(&$ciniki, $tnid, $args) {
     //
-    // Get the business settings
+    // Get the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -68,7 +68,7 @@ function ciniki_customers_reportNewCustomers(&$ciniki, $business_id, $args) {
         . "c.display_name, "
         . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
         . "FROM ciniki_customers AS c "
-        . "WHERE c.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND c.status = 10 "
         . "AND c.member_status = 0 "
         . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
@@ -102,7 +102,7 @@ function ciniki_customers_reportNewCustomers(&$ciniki, $business_id, $args) {
         $strsql = "SELECT id, customer_id, email "
             . "FROM ciniki_customer_emails "
             . "WHERE customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (flags&0x10) = 0 " // Only get emails that want to receive emails
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -121,7 +121,7 @@ function ciniki_customers_reportNewCustomers(&$ciniki, $business_id, $args) {
         $strsql = "SELECT id, customer_id, address1, address2, city, province, postal, country "
             . "FROM ciniki_customer_addresses "
             . "WHERE customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (flags&0x04) = 0x04 " // Only get mailing addresses
             . "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(

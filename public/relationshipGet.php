@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the relationship from.
+// tnid:         The ID of the tenant to get the relationship from.
 // relationship_id:     The ID of the relationship to get.
 // 
 // Returns
@@ -20,7 +20,7 @@ function ciniki_customers_relationshipGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'relationship_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Relationship'),
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
         )); 
@@ -31,19 +31,19 @@ function ciniki_customers_relationshipGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.relationshipGet', $args['relationship_id']); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.relationshipGet', $args['relationship_id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the types of customers available for this business
+    // Get the types of customers available for this tenant
     //
 //  ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getCustomerTypes');
-//  $rc = ciniki_customers_getCustomerTypes($ciniki, $args['business_id']); 
+//  $rc = ciniki_customers_getCustomerTypes($ciniki, $args['tnid']); 
 //  if( $rc['stat'] != 'ok' ) { 
 //      return $rc;
 //  }
@@ -53,7 +53,7 @@ function ciniki_customers_relationshipGet($ciniki) {
     // Get the relationship types
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'getRelationshipTypes');
-    $rc = ciniki_customers_getRelationshipTypes($ciniki, $args['business_id']); 
+    $rc = ciniki_customers_getRelationshipTypes($ciniki, $args['tnid']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -78,7 +78,7 @@ function ciniki_customers_relationshipGet($ciniki) {
 //      $strsql .= "CASE ciniki_customers.type ";
 //      foreach($types as $tid => $type) {
 //          $strsql .= "WHEN " . ciniki_core_dbQuote($ciniki, $tid) . " THEN ";
-//          if( $type['detail_value'] == 'business' ) {
+//          if( $type['detail_value'] == 'tenant' ) {
 //              $strsql .= " ciniki_customers.company ";
 //          } else {
 //              $strsql .= "CONCAT_WS(' ', first, last) ";
@@ -98,7 +98,7 @@ function ciniki_customers_relationshipGet($ciniki) {
             . "AND ciniki_customer_relationships.related_id = ciniki_customers.id "
             . ")) "
         . "WHERE ciniki_customer_relationships.id = '" . ciniki_core_dbQuote($ciniki, $args['relationship_id']) . "' "
-        . "AND ciniki_customer_relationships.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_customer_relationships.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (ciniki_customer_relationships.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
             . "OR ciniki_customer_relationships.related_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
             . ") "

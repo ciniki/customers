@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the customer belongs to.
+// tnid:         The ID of the tenant the customer belongs to.
 // customer_id:         The ID of the customer to add the relationship to.
 // relationship_type:   The type of relationship between the customer_id and
 //                      the related_id.  
@@ -16,9 +16,9 @@
 //                      If the type is passed as a negative number, the 
 //                      relationship is reversed before storing in the database.
 //
-//                      10 - business owner (related_id is the business owned)
+//                      10 - tenant owner (related_id is the tenant owned)
 //                      -10 - owned by
-//                      11 - business partner
+//                      11 - tenant partner
 //                      30 - friend
 //                      40 - relative
 //                      41 - parent
@@ -48,7 +48,7 @@ function ciniki_customers_relationshipAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'relationship_type'=>array('required'=>'yes', 'blank'=>'no', 
             'validlist'=>array('10','-10','11','30', '40', '41', '-41', '42', '-42', '43', '-43', '44', '45', '46', '47'), 
@@ -65,10 +65,10 @@ function ciniki_customers_relationshipAdd(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.relationshipAdd', $args['customer_id']); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.relationshipAdd', $args['customer_id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -87,6 +87,6 @@ function ciniki_customers_relationshipAdd(&$ciniki) {
     // Add the relationship
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.customers.relationship', $args, 0x07);
+    return ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.relationship', $args, 0x07);
 }
 ?>

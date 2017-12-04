@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the dealers belong to.
+// tnid:         The ID of the tenant the dealers belong to.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'columns'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Columns'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -29,10 +29,10 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['business_id'], 'ciniki.customers.dealerDownloadExcel', 0); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.dealerDownloadExcel', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -156,33 +156,33 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
     if( $pricepoint == 'yes' ) {
         $strsql .= "LEFT JOIN ciniki_customer_pricepoints ON ("
             . "ciniki_customers.pricepoint_id = ciniki_customer_pricepoints.id "
-            . "AND ciniki_customer_pricepoints.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_pricepoints.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") ";
     }
     if( $tax_code == 'yes' ) {
         $strsql .= "LEFT JOIN ciniki_tax_locations ON ("
             . "ciniki_customers.tax_location_id = ciniki_tax_locations.id "
-            . "AND ciniki_tax_locations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_tax_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") ";
     }
     $strsql .= "LEFT JOIN ciniki_customer_tags ON ("
             . "ciniki_customers.id = ciniki_customer_tags.customer_id "
             . "AND ciniki_customer_tags.tag_type = 40 "
-            . "AND ciniki_customer_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customer_phones ON (ciniki_customers.id = ciniki_customer_phones.customer_id "
-            . "AND ciniki_customer_phones.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_phones.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id "
-            . "AND ciniki_customer_emails.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customer_addresses ON (ciniki_customers.id = ciniki_customer_addresses.customer_id "
-            . "AND ciniki_customer_addresses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customer_links ON (ciniki_customers.id = ciniki_customer_links.customer_id "
-            . "AND ciniki_customer_links.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_customer_links.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_customers.dealer_status > 0 "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -197,7 +197,7 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
                 'phones', 'emails', 'addresses', 'links',
                 'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
             'maps'=>array(
-                'type'=>array('1'=>'Individual', '2'=>'Business'),
+                'type'=>array('1'=>'Individual', '2'=>'Tenant'),
                 'dealer_status'=>array('5'=>'Prospect', '10'=>'Active', '60'=>'Inactive'),
                 ),
             'dlists'=>array('phones'=>', ', 'emails'=>', ', 'addresses'=>' - ', 'links'=>', ', 'dealer_categories'=>', ')),
