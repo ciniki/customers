@@ -40,6 +40,12 @@ function ciniki_customers_hooks_businessReportBlock(&$ciniki, $business_id, $arg
     if( $args['block_ref'] == 'ciniki.customers.birthdays' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportUpcomingBirthdays');
         return ciniki_customers_reportUpcomingBirthdays($ciniki, $business_id, $args['options']);
+    } elseif( $args['block_ref'] == 'ciniki.customers.newcustomers' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportNewCustomers');
+        return ciniki_customers_reportNewCustomers($ciniki, $business_id, $args['options']);
+    } elseif( $args['block_ref'] == 'ciniki.customers.newmembers' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportNewMembers');
+        return ciniki_customers_reportNewMembers($ciniki, $business_id, $args['options']);
     }
 
     return array('stat'=>'ok');

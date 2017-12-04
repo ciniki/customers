@@ -35,6 +35,18 @@ function ciniki_customers_hooks_businessReportBlocks(&$ciniki, $business_id, $ar
                 'days'=>array('label'=>'Number of Days', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
                 ),
             );
+        $blocks['ciniki.customers.newcustomers'] = array(
+            'name'=>'New Customers',
+            'options'=>array(
+                'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                ),
+            );
+        $blocks['ciniki.customers.newmembers'] = array(
+            'name'=>'New Members',
+            'options'=>array(
+                'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                ),
+            );
     }
 
 
