@@ -45,7 +45,7 @@ function ciniki_customers_edit() {
         this.edit.formtab = 'person';
         this.edit.formtabs = {'label':'', 'field':'type', 'tabs':{
             'person':{'label':'Person', 'field_id':1, 'form':'person'},
-            'tenant':{'label':'Tenant', 'field_id':2, 'form':'tenant'},
+            'business':{'label':'Business', 'field_id':2, 'form':'business'},
             }};
         this.edit.forms = {};
         this.edit.parent_id = 0;
@@ -109,7 +109,7 @@ function ciniki_customers_edit() {
             '_distributor_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
                 'distributor_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
                 }},
-            'tenant':{'label':'Tenant', 'aside':'yes', 'fields':{
+            'business':{'label':'Business', 'aside':'yes', 'fields':{
                 'company':{'label':'Company', 'type':'text', 'livesearch':'yes'},
                 'department':{'label':'Department', 'type':'text'},
                 'title':{'label':'Title', 'type':'text'},
@@ -246,11 +246,11 @@ function ciniki_customers_edit() {
                 'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},  // Used when linked with next button.
                 }},
             };
-        this.edit.forms.tenant = {
+        this.edit.forms.business = {
             'parent':{'label':'', 'active':'no', 'aside':'yes', 'fields':{
                 'parent_id':{'label':'Parent', 'type':'fkid', 'livesearch':'yes'},
                 }},
-            'tenant':{'label':'Tenant', 'aside':'yes', 'fields':{
+            'business':{'label':'Business', 'aside':'yes', 'fields':{
                 'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
                 'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
                 'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
@@ -607,7 +607,7 @@ function ciniki_customers_edit() {
         };
         this.edit.switchTab = function(tab) {
             M.ciniki_customers_edit.edit.forms.person._tabs.selected = tab;
-            M.ciniki_customers_edit.edit.forms.tenant._tabs.selected = tab;
+            M.ciniki_customers_edit.edit.forms.business._tabs.selected = tab;
             var p = M.ciniki_customers_edit.edit;
             p.sections._tabs.selected = tab;
             p.refreshSection('_tabs');
@@ -929,22 +929,22 @@ function ciniki_customers_edit() {
             this.edit.forms.person._phone.fields.phone_flags_2.flags = this.phoneFlags;
             this.edit.forms.person._phone.fields.phone_flags_3.active = 'yes'
             this.edit.forms.person._phone.fields.phone_flags_3.flags = this.phoneFlags;
-            this.edit.forms.tenant._phone.fields.phone_flags_1.active = 'yes'
-            this.edit.forms.tenant._phone.fields.phone_flags_1.flags = this.phoneFlags;
-            this.edit.forms.tenant._phone.fields.phone_flags_2.active = 'yes'
-            this.edit.forms.tenant._phone.fields.phone_flags_2.flags = this.phoneFlags;
-            this.edit.forms.tenant._phone.fields.phone_flags_3.active = 'yes'
-            this.edit.forms.tenant._phone.fields.phone_flags_3.flags = this.phoneFlags;
+            this.edit.forms.business._phone.fields.phone_flags_1.active = 'yes'
+            this.edit.forms.business._phone.fields.phone_flags_1.flags = this.phoneFlags;
+            this.edit.forms.business._phone.fields.phone_flags_2.active = 'yes'
+            this.edit.forms.business._phone.fields.phone_flags_2.flags = this.phoneFlags;
+            this.edit.forms.business._phone.fields.phone_flags_3.active = 'yes'
+            this.edit.forms.business._phone.fields.phone_flags_3.flags = this.phoneFlags;
             this.edit.forms.person._image.active = 'yes';
-            this.edit.forms.tenant._image.active = 'yes';
+            this.edit.forms.business._image.active = 'yes';
             this.edit.forms.person._image_caption.active = 'yes';
-            this.edit.forms.tenant._image_caption.active = 'yes';
+            this.edit.forms.business._image_caption.active = 'yes';
             this.edit.forms.person.distributor.active = 'yes';
-            this.edit.forms.tenant.distributor.active = 'yes';
+            this.edit.forms.business.distributor.active = 'yes';
             this.edit.forms.person._short_bio.active = 'yes';
-            this.edit.forms.tenant._short_bio.active = 'yes';
+            this.edit.forms.business._short_bio.active = 'yes';
             this.edit.forms.person._full_bio.active = 'yes';
-            this.edit.forms.tenant._full_bio.active = 'yes';
+            this.edit.forms.business._full_bio.active = 'yes';
         } else {
             this.addressFlags = {
                 '1':{'name':'Shipping'}, 
@@ -964,25 +964,25 @@ function ciniki_customers_edit() {
             this.edit.forms.person._phone.fields.phone_flags_1.active = 'no'
             this.edit.forms.person._phone.fields.phone_flags_2.active = 'no'
             this.edit.forms.person._phone.fields.phone_flags_3.active = 'no'
-            this.edit.forms.tenant._phone.fields.phone_flags_1.active = 'no'
-            this.edit.forms.tenant._phone.fields.phone_flags_2.active = 'no'
-            this.edit.forms.tenant._phone.fields.phone_flags_3.active = 'no'
+            this.edit.forms.business._phone.fields.phone_flags_1.active = 'no'
+            this.edit.forms.business._phone.fields.phone_flags_2.active = 'no'
+            this.edit.forms.business._phone.fields.phone_flags_3.active = 'no'
             this.edit.forms.person._image.active = 'no';
-            this.edit.forms.tenant._image.active = 'no';
+            this.edit.forms.business._image.active = 'no';
             this.edit.forms.person._image_caption.active = 'no';
-            this.edit.forms.tenant._image_caption.active = 'no';
+            this.edit.forms.business._image_caption.active = 'no';
             this.edit.forms.person.distributor.active = 'no';
-            this.edit.forms.tenant.distributor.active = 'no';
+            this.edit.forms.business.distributor.active = 'no';
             this.edit.forms.person._short_bio.active = 'no';
-            this.edit.forms.tenant._short_bio.active = 'no';
+            this.edit.forms.business._short_bio.active = 'no';
             this.edit.forms.person._full_bio.active = 'no';
-            this.edit.forms.tenant._full_bio.active = 'no';
+            this.edit.forms.business._full_bio.active = 'no';
         }
 
         this.edit.forms.person.address.fields.address_flags.flags = this.addressFlags;
-        this.edit.forms.tenant.address.fields.address_flags.flags = this.addressFlags;
+        this.edit.forms.business.address.fields.address_flags.flags = this.addressFlags;
         this.edit.forms.person.email.fields.flags.flags = this.emailFlags;
-        this.edit.forms.tenant.email.fields.flags.flags = this.emailFlags;
+        this.edit.forms.business.email.fields.flags.flags = this.emailFlags;
         this.address.sections.address.fields.flags.flags = this.addressFlags;
         this.email.sections._email.fields.flags.flags = this.emailFlags;
 
@@ -1001,96 +1001,96 @@ function ciniki_customers_edit() {
         if( M.curTenant.customers.settings != null 
             && M.curTenant.customers.settings['defaults-edit-person-hide-company'] != null
             && M.curTenant.customers.settings['defaults-edit-person-hide-company'] == 'yes' ) {
-            this.edit.forms.person.tenant.active = 'no';
+            this.edit.forms.person.business.active = 'no';
         } else {
-            this.edit.forms.person.tenant.active = 'yes';
+            this.edit.forms.person.business.active = 'yes';
         }
         //
         // Turn on or off the flag for web login based on if the module is enabled
         //
         if( M.curTenant['modules']['ciniki.web'] != null ) {
             this.edit.forms.person.email.fields.flags.active = 'yes';
-            this.edit.forms.tenant.email.fields.flags.active = 'yes';
+            this.edit.forms.business.email.fields.flags.active = 'yes';
             this.email.sections._email.fields.flags.active = 'yes';
         } else {
             this.edit.forms.person.email.fields.flags.active = 'no';
-            this.edit.forms.tenant.email.fields.flags.active = 'no';
+            this.edit.forms.business.email.fields.flags.active = 'no';
             this.email.sections._email.fields.flags.active = 'no';
         }
     
         // Birthdate
         if( (M.curTenant.modules['ciniki.customers'].flags&0x8000) > 0 ) {
             this.edit.forms.person.name.fields.birthdate.active = 'yes';
-            this.edit.forms.tenant.name.fields.birthdate.active = 'yes';
+            this.edit.forms.business.name.fields.birthdate.active = 'yes';
         } else {
             this.edit.forms.person.name.fields.birthdate.active = 'no';
-            this.edit.forms.tenant.name.fields.birthdate.active = 'no';
+            this.edit.forms.business.name.fields.birthdate.active = 'no';
         }
         // Start date
         if( (M.curTenant.modules['ciniki.customers'].flags&0x04000000) > 0 ) {
             this.edit.forms.person.account.fields.start_date.active = 'yes';
-            this.edit.forms.tenant.account.fields.start_date.active = 'yes';
+            this.edit.forms.business.account.fields.start_date.active = 'yes';
             account = 'yes';
         } else {
             this.edit.forms.person.account.fields.start_date.active = 'no';
-            this.edit.forms.tenant.account.fields.start_date.active = 'no';
+            this.edit.forms.business.account.fields.start_date.active = 'no';
         }
         // Connection - How did you hear about us?
         if( (M.curTenant.modules['ciniki.customers'].flags&0x4000) > 0 ) {
             this.edit.forms.person._connection.active = 'yes';
-            this.edit.forms.tenant._connection.active = 'yes';
+            this.edit.forms.business._connection.active = 'yes';
         } else {
             this.edit.forms.person._connection.active = 'no';
-            this.edit.forms.tenant._connection.active = 'no';
+            this.edit.forms.business._connection.active = 'no';
         }
         // eid - customer ID
         if( (M.curTenant.modules['ciniki.customers'].flags&0x10000) > 0 ) {
             this.edit.forms.person.name.fields.eid.active = 'yes';
-            this.edit.forms.tenant.tenant.fields.eid.active = 'yes';
+            this.edit.forms.business.business.fields.eid.active = 'yes';
         } else {
             this.edit.forms.person.name.fields.eid.active = 'no';
-            this.edit.forms.tenant.tenant.fields.eid.active = 'no';
+            this.edit.forms.business.business.fields.eid.active = 'no';
         }
         // Tax Number
         if( (M.curTenant.modules['ciniki.customers'].flags&0x20000) > 0 ) {
             this.edit.forms.person.account.fields.tax_number.active = 'yes';
-            this.edit.forms.tenant.account.fields.tax_number.active = 'yes';
+            this.edit.forms.business.account.fields.tax_number.active = 'yes';
             account = 'yes';
         } else {
             this.edit.forms.person.account.fields.tax_number.active = 'no';
-            this.edit.forms.tenant.account.fields.tax_number.active = 'no';
+            this.edit.forms.business.account.fields.tax_number.active = 'no';
         }
         // Rewards Level
         if( (M.curTenant.modules['ciniki.customers'].flags&0x80000) > 0 ) {
             this.edit.forms.person.account.fields.reward_level.active = 'yes';
-            this.edit.forms.tenant.account.fields.reward_level.active = 'yes';
+            this.edit.forms.business.account.fields.reward_level.active = 'yes';
             account = 'yes';
         } else {
             this.edit.forms.person.account.fields.reward_level.active = 'no';
-            this.edit.forms.tenant.account.fields.reward_level.active = 'no';
+            this.edit.forms.business.account.fields.reward_level.active = 'no';
         }
         // Sales Total
         if( (M.curTenant.modules['ciniki.customers'].flags&0x100000) > 0 ) {
             this.edit.forms.person.account.fields.sales_total.active = 'yes';
-            this.edit.forms.tenant.account.fields.sales_total.active = 'yes';
+            this.edit.forms.business.account.fields.sales_total.active = 'yes';
             this.edit.forms.person.account.fields.sales_total_prev.active = 'yes';
-            this.edit.forms.tenant.account.fields.sales_total_prev.active = 'yes';
+            this.edit.forms.business.account.fields.sales_total_prev.active = 'yes';
             account = 'yes';
         } else {
             this.edit.forms.person.account.fields.sales_total.active = 'no';
-            this.edit.forms.tenant.account.fields.sales_total.active = 'no';
+            this.edit.forms.business.account.fields.sales_total.active = 'no';
             this.edit.forms.person.account.fields.sales_total_prev.active = 'no';
-            this.edit.forms.tenant.account.fields.sales_total_prev.active = 'no';
+            this.edit.forms.business.account.fields.sales_total_prev.active = 'no';
         }
         // Display the address phone number
         if( (M.curTenant.modules['ciniki.customers'].flags&0x01000000) > 0 ) {
             this.address.sections.address.fields.phone.active = 'yes';
             this.edit.forms.person.address.fields.phone.active = 'yes';
-            this.edit.forms.tenant.address.fields.phone.active = 'yes';
+            this.edit.forms.business.address.fields.phone.active = 'yes';
         } else {
             this.address.sections.address.fields.phone.active = 'no';
             this.edit.forms.person.address.fields.phone.active = 'no';
-            this.edit.forms.tenant.address.fields.phone.active = 'no';
+            this.edit.forms.business.address.fields.phone.active = 'no';
         }
         if( M.curTenant.customers != null && M.curTenant.customers.settings != null ) {
             // Pricepoints
@@ -1098,7 +1098,7 @@ function ciniki_customers_edit() {
                 && M.curTenant.customers.settings.pricepoints != null 
                 ) {
                 this.edit.forms.person.account.fields.pricepoint_id.active = 'yes';
-                this.edit.forms.tenant.account.fields.pricepoint_id.active = 'yes';
+                this.edit.forms.business.account.fields.pricepoint_id.active = 'yes';
                 account = 'yes';
                 var pricepoints = {};
                 var s_pp = M.curTenant.customers.settings.pricepoints;
@@ -1107,19 +1107,19 @@ function ciniki_customers_edit() {
                     pricepoints[s_pp[i].pricepoint.id] = s_pp[i].pricepoint.name;
                 }
                 this.edit.forms.person.account.fields.pricepoint_id.options = pricepoints;
-                this.edit.forms.tenant.account.fields.pricepoint_id.options = pricepoints;
+                this.edit.forms.business.account.fields.pricepoint_id.options = pricepoints;
             } else {
                 this.edit.forms.person.account.fields.pricepoint_id.active = 'no';
-                this.edit.forms.tenant.account.fields.pricepoint_id.active = 'no';
+                this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
             }
             // Sales Reps 
             if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 ) {
                 this.edit.forms.person.account.fields.salesrep_id.active = 'yes';
-                this.edit.forms.tenant.account.fields.salesrep_id.active = 'yes';
+                this.edit.forms.business.account.fields.salesrep_id.active = 'yes';
                 account = 'yes';
             } else {
                 this.edit.forms.person.account.fields.salesrep_id.active = 'no';
-                this.edit.forms.tenant.account.fields.salesrep_id.active = 'no';
+                this.edit.forms.business.account.fields.salesrep_id.active = 'no';
             }
             // Tax Locations
             if( (M.curTenant.modules['ciniki.customers'].flags&0x40000) > 0 
@@ -1128,7 +1128,7 @@ function ciniki_customers_edit() {
                 && M.curTenant.taxes.settings.locations != null
                 ) {
                 this.edit.forms.person.account.fields.tax_location_id.active = 'yes';
-                this.edit.forms.tenant.account.fields.tax_location_id.active = 'yes';
+                this.edit.forms.business.account.fields.tax_location_id.active = 'yes';
                 account = 'yes';
                 var locations = {'0':'Use Shipping Address'};
 
@@ -1137,33 +1137,33 @@ function ciniki_customers_edit() {
                     locations[locs[i].location.id] = locs[i].location.name + ' [' + (locs[i].location.rates!=null?locs[i].location.rates:'None') + ']';
                 }
                 this.edit.forms.person.account.fields.tax_location_id.options = locations;
-                this.edit.forms.tenant.account.fields.tax_location_id.options = locations;
+                this.edit.forms.business.account.fields.tax_location_id.options = locations;
             } else {
                 this.edit.forms.person.account.fields.tax_location_id.active = 'no';
-                this.edit.forms.tenant.account.fields.tax_location_id.active = 'no';
+                this.edit.forms.business.account.fields.tax_location_id.active = 'no';
             }
         } else {
             this.edit.sections = this.edit.forms.person;
             this.edit.forms.person.account.fields.pricepoint_id.active = 'no';
-            this.edit.forms.tenant.account.fields.pricepoint_id.active = 'no';
+            this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
             this.edit.forms.person.account.fields.tax_location_id.active = 'no';
-            this.edit.forms.tenant.account.fields.tax_location_id.active = 'no';
+            this.edit.forms.business.account.fields.tax_location_id.active = 'no';
             this.edit.forms.person.account.fields.salesrep_id.active = 'no';
-            this.edit.forms.tenant.account.fields.salesrep_id.active = 'no';
+            this.edit.forms.business.account.fields.salesrep_id.active = 'no';
         }
         this.edit.forms.person.account.active = account;
-        this.edit.forms.tenant.account.active = account;
+        this.edit.forms.business.account.active = account;
 
         if( args.next != null && args.next != '' ) {
             this.edit.nextFn = args.next;
             this.edit.forms.person._buttons.buttons.save.label = 'Next';
-            this.edit.forms.tenant._buttons.buttons.save.label = 'Next';
+            this.edit.forms.business._buttons.buttons.save.label = 'Next';
             this.edit.rightbuttons.save.icon = 'next';
             this.edit.rightbuttons.save.label = 'Next';
         } else {
             this.edit.nextFn = null;
             this.edit.forms.person._buttons.buttons.save.label = 'Save';
-            this.edit.forms.tenant._buttons.buttons.save.label = 'Save';
+            this.edit.forms.business._buttons.buttons.save.label = 'Save';
             this.edit.rightbuttons.save.icon = 'save';
             this.edit.rightbuttons.save.label = 'Save';
         }
@@ -1188,14 +1188,14 @@ function ciniki_customers_edit() {
             membershipType['150'] = 'Reciprocal';
         }
         this.edit.forms.person.membership.fields.membership_type.toggles = membershipType;
-        this.edit.forms.tenant.membership.fields.membership_type.toggles = membershipType;
+        this.edit.forms.business.membership.fields.membership_type.toggles = membershipType;
 
         if( M.modFlagOn('ciniki.customers', 0x02) ) {
             this.edit.forms.person.membership.active = 'yes';
-            this.edit.forms.tenant.membership.active = 'yes';
+            this.edit.forms.business.membership.active = 'yes';
         } else {
             this.edit.forms.person.membership.active = 'no';
-            this.edit.forms.tenant.membership.active = 'no';
+            this.edit.forms.business.membership.active = 'no';
         }
 
         //
@@ -1213,19 +1213,19 @@ function ciniki_customers_edit() {
             }
             this.edit.distributorinfo = 'no';
 //          this.edit.forms.person.dealer.active = 'no';
-//          this.edit.forms.tenant.dealer.active = 'no';
+//          this.edit.forms.business.dealer.active = 'no';
 //          this.edit.forms.person.distributor.active = 'no';
-//          this.edit.forms.tenant.distributor.active = 'no';
+//          this.edit.forms.business.distributor.active = 'no';
 //          this.edit.forms.person.address.fields.address_flags.flags = this.memberAddressFlags;
-//          this.edit.forms.tenant.address.fields.address_flags.flags = this.memberAddressFlags;
+//          this.edit.forms.business.address.fields.address_flags.flags = this.memberAddressFlags;
 //          this.edit.forms.person.email.fields.flags.flags = this.memberEmailFlags;
-//          this.edit.forms.tenant.email.fields.flags.flags = this.memberEmailFlags;
+//          this.edit.forms.business.email.fields.flags.flags = this.memberEmailFlags;
 //            this.edit.forms.person.phone.fields.phone_flags_1.active = 'yes';
 //            this.edit.forms.person.phone.fields.phone_flags_2.active = 'yes';
 //            this.edit.forms.person.phone.fields.phone_flags_3.active = 'yes';
-//            this.edit.forms.tenant.phone.fields.phone_flags_1.active = 'yes';
-//            this.edit.forms.tenant.phone.fields.phone_flags_2.active = 'yes';
-//            this.edit.forms.tenant.phone.fields.phone_flags_3.active = 'yes';
+//            this.edit.forms.business.phone.fields.phone_flags_1.active = 'yes';
+//            this.edit.forms.business.phone.fields.phone_flags_2.active = 'yes';
+//            this.edit.forms.business.phone.fields.phone_flags_3.active = 'yes';
 //          this.address.sections.address.fields.flags.flags = this.memberAddressFlags;
             this.address.sections._latlong_buttons.active = 'no';
             this.address.sections._latlong.active = 'no';
@@ -1242,10 +1242,10 @@ function ciniki_customers_edit() {
             }
             if( settings != null && settings['ui-labels-parent'] != null ) {
                 this.edit.forms.person.parent.fields.parent_id.label = settings['ui-labels-parent'];
-                this.edit.forms.tenant.parent.fields.parent_id.label = settings['ui-labels-parent'];
+                this.edit.forms.business.parent.fields.parent_id.label = settings['ui-labels-parent'];
             } else {
                 this.edit.forms.person.parent.fields.parent_id.label = 'Parent';
-                this.edit.forms.tenant.parent.fields.parent_id.label = 'Parent';
+                this.edit.forms.business.parent.fields.parent_id.label = 'Parent';
             }
             this.edit.memberinfo = 'no';
             this.edit.dealerinfo = 'no';
@@ -1261,22 +1261,22 @@ function ciniki_customers_edit() {
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'yes';
             this.edit.forms.person.membership.fields.membership_length.active = 'yes';
             this.edit.forms.person.membership.fields.membership_type.active = 'yes';
-            this.edit.forms.tenant.membership.active = 'yes';
-            this.edit.forms.tenant.membership.label = 'Membership';
-            this.edit.forms.tenant.membership.fields.member_lastpaid.active = 'yes';
-            this.edit.forms.tenant.membership.fields.membership_length.active = 'yes';
-            this.edit.forms.tenant.membership.fields.membership_type.active = 'yes';
+            this.edit.forms.business.membership.active = 'yes';
+            this.edit.forms.business.membership.label = 'Membership';
+            this.edit.forms.business.membership.fields.member_lastpaid.active = 'yes';
+            this.edit.forms.business.membership.fields.membership_length.active = 'yes';
+            this.edit.forms.business.membership.fields.membership_type.active = 'yes';
         } else {
             this.edit.forms.person.membership.active = 'no';
             this.edit.forms.person.membership.label = 'Status';
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'no';
             this.edit.forms.person.membership.fields.membership_length.active = 'no';
             this.edit.forms.person.membership.fields.membership_type.active = 'no';
-            this.edit.forms.tenant.membership.active = 'no';
-            this.edit.forms.tenant.membership.label = 'Status';
-            this.edit.forms.tenant.membership.fields.member_lastpaid.active = 'no';
-            this.edit.forms.tenant.membership.fields.membership_length.active = 'no';
-            this.edit.forms.tenant.membership.fields.membership_type.active = 'no';
+            this.edit.forms.business.membership.active = 'no';
+            this.edit.forms.business.membership.label = 'Status';
+            this.edit.forms.business.membership.fields.member_lastpaid.active = 'no';
+            this.edit.forms.business.membership.fields.membership_length.active = 'no';
+            this.edit.forms.business.membership.fields.membership_type.active = 'no';
         }
 
         // Season Memberships
@@ -1285,11 +1285,11 @@ function ciniki_customers_edit() {
             && M.curTenant.modules['ciniki.customers'].settings['seasons'] != null
             ) {
             this.edit.forms.person._seasons.active = 'yes';
-            this.edit.forms.tenant._seasons.active = 'yes';
+            this.edit.forms.business._seasons.active = 'yes';
             this.edit.forms.person._seasons.fields = {};
-            this.edit.forms.tenant._seasons.fields = {};
+            this.edit.forms.business._seasons.fields = {};
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'no';
-            this.edit.forms.tenant.membership.fields.member_lastpaid.active = 'no';
+            this.edit.forms.business.membership.fields.member_lastpaid.active = 'no';
             for(i in M.curTenant.modules['ciniki.customers'].settings.seasons) {
                 var season = M.curTenant.modules['ciniki.customers'].settings.seasons[i].season;
                 if( season.open == 'yes' ) {
@@ -1297,23 +1297,23 @@ function ciniki_customers_edit() {
                         'label':season.name, 'type':'toggle', 'default':'0', 'toggles':this.seasonStatus};
                     this.edit.forms.person._seasons.fields['season-' + season.id + '-date_paid'] = {
                         'label':'Paid', 'type':'date'};
-                    this.edit.forms.tenant._seasons.fields['season-' + season.id + '-status'] = {
+                    this.edit.forms.business._seasons.fields['season-' + season.id + '-status'] = {
                         'label':season.name, 'type':'toggle', 'default':'0', 'toggles':this.seasonStatus};
-                    this.edit.forms.tenant._seasons.fields['season-' + season.id + '-date_paid'] = {
+                    this.edit.forms.business._seasons.fields['season-' + season.id + '-date_paid'] = {
                         'label':'Paid', 'type':'date'};
                 }
             }
         } else {
             this.edit.forms.person._seasons.active = 'no';
-            this.edit.forms.tenant._seasons.active = 'no';
+            this.edit.forms.business._seasons.active = 'no';
         }
 
         if( (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
             this.edit.forms.person._member_categories.active = 'yes';
-            this.edit.forms.tenant._member_categories.active = 'yes';
+            this.edit.forms.business._member_categories.active = 'yes';
         } else {
             this.edit.forms.person._member_categories.active = 'no';
-            this.edit.forms.tenant._member_categories.active = 'no';
+            this.edit.forms.business._member_categories.active = 'no';
         }
 
         //
@@ -1321,14 +1321,14 @@ function ciniki_customers_edit() {
         //
         if( M.modFlagSet('ciniki.customers', 0x10) == 'yes' ) {
             this.edit.forms.person.dealer.active = 'yes';
-            this.edit.forms.tenant.dealer.active = 'yes';
+            this.edit.forms.business.dealer.active = 'yes';
         } else {
             this.edit.forms.person.dealer.active = 'no';
-            this.edit.forms.tenant.dealer.active = 'no';
+            this.edit.forms.business.dealer.active = 'no';
         }
         if( (M.curTenant.modules['ciniki.customers'].flags&0x20) > 0 ) {
             this.edit.forms.person._dealer_categories.active = 'yes';
-            this.edit.forms.tenant._dealer_categories.active = 'yes';
+            this.edit.forms.business._dealer_categories.active = 'yes';
         }
 
         //
@@ -1336,14 +1336,14 @@ function ciniki_customers_edit() {
         //
         if( M.modFlagSet('ciniki.customers', 0x0100) == 'yes' ) {
             this.edit.forms.person.distributor.active = 'yes';
-            this.edit.forms.tenant.distributor.active = 'yes';
+            this.edit.forms.business.distributor.active = 'yes';
         } else {
             this.edit.forms.person.distributor.active = 'no';
-            this.edit.forms.tenant.distributor.active = 'no';
+            this.edit.forms.business.distributor.active = 'no';
         } 
         if( (M.curTenant.modules['ciniki.customers'].flags&0x200) > 0 ) {
             this.edit.forms.person._distributor_categories.active = 'yes';
-            this.edit.forms.tenant._distributor_categories.active = 'yes';
+            this.edit.forms.business._distributor_categories.active = 'yes';
         }
 
         //
@@ -1351,11 +1351,11 @@ function ciniki_customers_edit() {
         //
         if( (M.curTenant.modules['ciniki.customers'].flags&0x400000) > 0 ) {
             this.edit.forms.person._customer_categories.active = 'yes';
-            this.edit.forms.tenant._customer_categories.active = 'yes';
+            this.edit.forms.business._customer_categories.active = 'yes';
         }
         if( (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
             this.edit.forms.person._customer_tags.active = 'yes';
-            this.edit.forms.tenant._customer_tags.active = 'yes';
+            this.edit.forms.business._customer_tags.active = 'yes';
         }
 
         if( args.edit_phone_id != null && args.edit_phone_id != '' && args.customer_id != null && args.customer_id > 0 ) {
@@ -1383,69 +1383,69 @@ function ciniki_customers_edit() {
         this.edit.formtab = null;
         this.edit.formtab_field_id = null;
         this.edit.forms.person._buttons.buttons.delete.visible = 'no';
-        this.edit.forms.tenant._buttons.buttons.delete.visible = 'no';
+        this.edit.forms.business._buttons.buttons.delete.visible = 'no';
 //      this.edit.forms.person._customer_categories.active = 'no';
-//      this.edit.forms.tenant._customer_categories.active = 'no';
+//      this.edit.forms.business._customer_categories.active = 'no';
 //      this.edit.forms.person._customer_tags.active = 'no';
-//      this.edit.forms.tenant._customer_tags.active = 'no';
+//      this.edit.forms.business._customer_tags.active = 'no';
 //      this.edit.forms.person._member_categories.active = 'no';
-//      this.edit.forms.tenant._member_categories.active = 'no';
+//      this.edit.forms.business._member_categories.active = 'no';
 //      this.edit.forms.person._dealer_categories.active = 'no';
-//      this.edit.forms.tenant._dealer_categories.active = 'no';
+//      this.edit.forms.business._dealer_categories.active = 'no';
 //      this.edit.forms.person._distributor_categories.active = 'no';
-//      this.edit.forms.tenant._distributor_categories.active = 'no';
+//      this.edit.forms.business._distributor_categories.active = 'no';
         this.edit.forms.person._customer_categories.fields.customer_categories.tags = [];
-        this.edit.forms.tenant._customer_categories.fields.customer_categories.tags = [];
+        this.edit.forms.business._customer_categories.fields.customer_categories.tags = [];
         this.edit.forms.person._customer_tags.fields.customer_tags.tags = [];
-        this.edit.forms.tenant._customer_tags.fields.customer_tags.tags = [];
+        this.edit.forms.business._customer_tags.fields.customer_tags.tags = [];
         this.edit.forms.person._member_categories.fields.member_categories.tags = [];
-        this.edit.forms.tenant._member_categories.fields.member_categories.tags = [];
+        this.edit.forms.business._member_categories.fields.member_categories.tags = [];
         this.edit.forms.person._dealer_categories.fields.dealer_categories.tags = [];
-        this.edit.forms.tenant._dealer_categories.fields.dealer_categories.tags = [];
+        this.edit.forms.business._dealer_categories.fields.dealer_categories.tags = [];
         this.edit.forms.person._distributor_categories.fields.distributor_categories.tags = [];
-        this.edit.forms.tenant._distributor_categories.fields.distributor_categories.tags = [];
+        this.edit.forms.business._distributor_categories.fields.distributor_categories.tags = [];
 
         if( this.edit.customer_id > 0 ) {
             this.edit.forms.person._buttons.buttons.delete.visible = 'yes';
-            this.edit.forms.tenant._buttons.buttons.delete.visible = 'yes';
+            this.edit.forms.business._buttons.buttons.delete.visible = 'yes';
         }
 
         if( this.edit.nextFn != null && this.edit.customer_id > 0 ) {
             this.edit.forms.person._buttons.buttons.delete.visible = 'no';
-            this.edit.forms.tenant._buttons.buttons.delete.visible = 'no';
+            this.edit.forms.business._buttons.buttons.delete.visible = 'no';
             this.edit.forms.person._buttons.buttons.remove.visible = 'yes';
-            this.edit.forms.tenant._buttons.buttons.remove.visible = 'yes';
+            this.edit.forms.business._buttons.buttons.remove.visible = 'yes';
         } else {
             this.edit.forms.person._buttons.buttons.remove.visible = 'no';
-            this.edit.forms.tenant._buttons.buttons.remove.visible = 'no';
+            this.edit.forms.business._buttons.buttons.remove.visible = 'no';
         }
 
         if( this.edit.customer_id > 0 ) {
             // Edit existing customer
             if( (M.curTenant.modules['ciniki.customers'].flags&0x10000000) == 0 ) {
                 this.edit.forms.person.phones.active = 'yes';
-                this.edit.forms.tenant.phones.active = 'yes';
+                this.edit.forms.business.phones.active = 'yes';
                 this.edit.forms.person.simplephone.active = 'no';
-                this.edit.forms.tenant.simplephone.active = 'no';
+                this.edit.forms.business.simplephone.active = 'no';
             } else {
                 this.edit.forms.person.phones.active = 'no';
-                this.edit.forms.tenant.phones.active = 'no';
+                this.edit.forms.business.phones.active = 'no';
                 this.edit.forms.person.simplephone.active = 'yes';
-                this.edit.forms.tenant.simplephone.active = 'yes';
+                this.edit.forms.business.simplephone.active = 'yes';
             }
             this.edit.forms.person.emails.active = 'yes';
-            this.edit.forms.tenant.emails.active = 'yes';
+            this.edit.forms.business.emails.active = 'yes';
             this.edit.forms.person.email.active = 'no';
             this.edit.forms.person.address.active = 'no';
             this.edit.forms.person._phone.active = 'no';
             this.edit.forms.person.addresses.active = 'yes';
             this.edit.forms.person.links.active = 'yes';
             // Tenant form
-            this.edit.forms.tenant.email.active = 'no';
-            this.edit.forms.tenant.address.active = 'no';
-            this.edit.forms.tenant._phone.active = 'no';
-            this.edit.forms.tenant.addresses.active = 'yes';
-            this.edit.forms.tenant.links.active = 'yes';
+            this.edit.forms.business.email.active = 'no';
+            this.edit.forms.business.address.active = 'no';
+            this.edit.forms.business._phone.active = 'no';
+            this.edit.forms.business.addresses.active = 'yes';
+            this.edit.forms.business.links.active = 'yes';
             M.api.getJSONCb('ciniki.customers.getFull', {'tnid':M.curTenantID, 'customer_id':this.edit.customer_id, 
                 'tags':'yes', 'customer_categories':'yes', 'customer_tags':'yes', 'member_categories':'yes', 
                 'dealer_categories':'yes', 'distributor_categories':'yes', 'sales_reps':'yes', 'images':'yes'}, function(rsp) {
@@ -1457,14 +1457,14 @@ function ciniki_customers_edit() {
                     p.data = rsp.customer;
                     // Parent
                     p.forms.person.parent.active = 'no';
-                    p.forms.tenant.parent.active = 'no';
+                    p.forms.business.parent.active = 'no';
                     if( (M.curTenant.modules['ciniki.customers'].flags&0x200000) > 0 ) {
                         if( pid != null && (rsp.customer.parent == null || rsp.customer.parent.id == 0) ) {
                             p.data.parent = {'id':0, 'display_name':(pname!=null?unescape(pname):'')};
                         }
                         if( rsp.customer.num_children == null || rsp.customer.num_children == 0 || rsp.customer.parent_id > 0 ) {
                             p.forms.person.parent.active = 'yes';
-                            p.forms.tenant.parent.active = 'yes';
+                            p.forms.business.parent.active = 'yes';
                         }
                     }
                     for(i in rsp.tag_types) {
@@ -1474,59 +1474,59 @@ function ciniki_customers_edit() {
                         }
                         if( rsp.tag_types[i].type.tag_type == 10 && p.forms.person._customer_categories.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x400000) > 0 ) {
                             p.forms.person._customer_categories.fields.customer_categories.tags = tags;
-                            p.forms.tenant._customer_categories.fields.customer_categories.tags = tags;
+                            p.forms.business._customer_categories.fields.customer_categories.tags = tags;
                         }
                         else if( rsp.tag_types[i].type.tag_type == 20 && p.forms.person._customer_tags.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
                             p.forms.person._customer_tags.fields.customer_tags.tags = tags;
-                            p.forms.tenant._customer_tags.fields.customer_tags.tags = tags;
+                            p.forms.business._customer_tags.fields.customer_tags.tags = tags;
                         }
                         else if( rsp.tag_types[i].type.tag_type == 40 && (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
                             p.forms.person._member_categories.fields.member_categories.tags = tags;
-                            p.forms.tenant._member_categories.fields.member_categories.tags = tags;
+                            p.forms.business._member_categories.fields.member_categories.tags = tags;
                         }
                         else if( rsp.tag_types[i].type.tag_type == 60 && (M.curTenant.modules['ciniki.customers'].flags&0x20) > 0 ) {
                             p.forms.person._dealer_categories.fields.dealer_categories.tags = tags;
-                            p.forms.tenant._dealer_categories.fields.dealer_categories.tags = tags;
+                            p.forms.business._dealer_categories.fields.dealer_categories.tags = tags;
                         }
                         else if( rsp.tag_types[i].type.tag_type == 80 && (M.curTenant.modules['ciniki.customers'].flags&0x0200) > 0 ) {
                             p.forms.person._distributor_categories.fields.distributor_categories.tags = tags;
-                            p.forms.tenant._distributor_categories.fields.distributor_categories.tags = tags;
+                            p.forms.business._distributor_categories.fields.distributor_categories.tags = tags;
                         }
                     }
                     // Sales Reps
                     if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 ) {
                         if( rsp.salesreps != null ) {
                             p.forms.person.account.fields.salesrep_id.active = 'yes';
-                            p.forms.tenant.account.fields.salesrep_id.active = 'yes';
+                            p.forms.business.account.fields.salesrep_id.active = 'yes';
                             var reps = {'0':'None'};
                             for(i in rsp.salesreps) {
                                 reps[rsp.salesreps[i].user.id] = rsp.salesreps[i].user.name;
                             }
                             p.forms.person.account.fields.salesrep_id.options = reps;
-                            p.forms.tenant.account.fields.salesrep_id.options = reps;
+                            p.forms.business.account.fields.salesrep_id.options = reps;
                         } else {
                             p.forms.person.account.fields.salesrep_id.options = {'0':'None'};
-                            p.forms.tenant.account.fields.salesrep_id.options = {'0':'None'};
+                            p.forms.business.account.fields.salesrep_id.options = {'0':'None'};
                         }
                     } else {
                         p.forms.person.account.fields.salesrep_id.active = 'no';
-                        p.forms.tenant.account.fields.salesrep_id.active = 'no';
+                        p.forms.business.account.fields.salesrep_id.active = 'no';
                     }
                     // Display the email add
                     if( (M.curTenant.modules['ciniki.customers'].flags&0x20000000) == 0 || rsp.customer.emails == null || rsp.customer.emails.length == 0 ) {
                         p.forms.person.emails.addTxt = 'Add Email';
-                        p.forms.tenant.emails.addTxt = 'Add Email';
+                        p.forms.business.emails.addTxt = 'Add Email';
                     } else {
                         p.forms.person.emails.addTxt = '';
-                        p.forms.tenant.emails.addTxt = '';
+                        p.forms.business.emails.addTxt = '';
                     }
                     // Display the address add
                     if( (M.curTenant.modules['ciniki.customers'].flags&0x40000000) == 0 || rsp.customer.addresses == null || rsp.customer.addresses.length == 0 ) {
                         p.forms.person.addresses.addTxt = 'Add Address';
-                        p.forms.tenant.addresses.addTxt = 'Add Address';
+                        p.forms.business.addresses.addTxt = 'Add Address';
                     } else {
                         p.forms.person.addresses.addTxt = '';
-                        p.forms.tenant.addresses.addTxt = '';
+                        p.forms.business.addresses.addTxt = '';
                     }
                     M.ciniki_customers_edit.showEditSubscriptions(cb);
                 });
@@ -1534,7 +1534,7 @@ function ciniki_customers_edit() {
             this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15, 'phone_label_1':'Home', 'phone_label_2':'Work', 'phone_label_3':'Cell'};
             if( (M.curTenant.modules['ciniki.customers'].flags&0x200000) > 0 ) {
                 this.edit.forms.person.parent.active = 'yes';
-//                this.edit.forms.tenant.parent.active = 'yes';
+//                this.edit.forms.business.parent.active = 'yes';
                 if( pid != null ) {
                     this.edit.data.parent = {'id':pid, 'display_name':(pname!=null?unescape(pname):'')};
                 } else {
@@ -1542,11 +1542,11 @@ function ciniki_customers_edit() {
                 }
             } else {
                 this.edit.forms.person.parent.active = 'no';
-                this.edit.forms.tenant.parent.active = 'no';
+                this.edit.forms.business.parent.active = 'no';
             }
             if( (M.curTenant.customers.settings != null 
                 && M.curTenant.customers.settings['defaults-edit-form'] != null
-                && M.curTenant.customers.settings['defaults-edit-form'] == 'tenant') 
+                && M.curTenant.customers.settings['defaults-edit-form'] == 'business') 
                 || (type != null && type == 2) ) {
                 this.edit.data.type = 2;
             } else {
@@ -1566,27 +1566,27 @@ function ciniki_customers_edit() {
             }
             if( (M.curTenant.modules['ciniki.customers'].flags&0x10000000) == 0 ) {
                 this.edit.forms.person._phone.active = 'yes';
-                this.edit.forms.tenant._phone.active = 'yes';
+                this.edit.forms.business._phone.active = 'yes';
                 this.edit.forms.person.simplephone.active = 'no';
-                this.edit.forms.tenant.simplephone.active = 'no';
+                this.edit.forms.business.simplephone.active = 'no';
             } else {
                 this.edit.forms.person._phone.active = 'no';
-                this.edit.forms.tenant._phone.active = 'no';
+                this.edit.forms.business._phone.active = 'no';
                 this.edit.forms.person.simplephone.active = 'yes';
-                this.edit.forms.tenant.simplephone.active = 'yes';
+                this.edit.forms.business.simplephone.active = 'yes';
             }
             this.edit.forms.person.email.active = 'yes';
-            this.edit.forms.tenant.email.active = 'yes';
+            this.edit.forms.business.email.active = 'yes';
             this.edit.forms.person.address.active = 'yes';
             this.edit.forms.person.phones.active = 'no';
             this.edit.forms.person.emails.active = 'no';
             this.edit.forms.person.addresses.active = 'no';
             this.edit.forms.person.links.active = 'no';
-            this.edit.forms.tenant.address.active = 'yes';
-            this.edit.forms.tenant.phones.active = 'no';
-            this.edit.forms.tenant.emails.active = 'no';
-            this.edit.forms.tenant.addresses.active = 'no';
-            this.edit.forms.tenant.links.active = 'no';
+            this.edit.forms.business.address.active = 'yes';
+            this.edit.forms.business.phones.active = 'no';
+            this.edit.forms.business.emails.active = 'no';
+            this.edit.forms.business.addresses.active = 'no';
+            this.edit.forms.business.links.active = 'no';
             this.edit.forms.person._customer_categories.fields.customer_categories.tags = [];
             if( (M.curTenant.modules['ciniki.customers'].flags&0xC00224) > 0 ) {
                 M.api.getJSONCb('ciniki.customers.tags', {'tnid':M.curTenantID}, function(rsp) {
@@ -1602,23 +1602,23 @@ function ciniki_customers_edit() {
                         }
                         if( rsp.tag_types[i].type.tag_type == 10 && p.forms.person._customer_categories.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x400000) > 0 ) {
                             p.forms.person._customer_categories.fields.customer_categories.tags = tags;
-                            p.forms.tenant._customer_categories.fields.customer_categories.tags = tags;
+                            p.forms.business._customer_categories.fields.customer_categories.tags = tags;
                         }
                         if( rsp.tag_types[i].type.tag_type == 20 && p.forms.person._customer_tags.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
                             p.forms.person._customer_tags.fields.customer_tags.tags = tags;
-                            p.forms.tenant._customer_tags.fields.customer_tags.tags = tags;
+                            p.forms.business._customer_tags.fields.customer_tags.tags = tags;
                         }
                         if( rsp.tag_types[i].type.tag_type == 40 && (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
                             p.forms.person._member_categories.fields.member_categories.tags = tags;
-                            p.forms.tenant._member_categories.fields.member_categories.tags = tags;
+                            p.forms.business._member_categories.fields.member_categories.tags = tags;
                         }
                         if( rsp.tag_types[i].type.tag_type == 60 && (M.curTenant.modules['ciniki.customers'].flags&0x20) > 0 ) {
                             p.forms.person._dealer_categories.fields.dealer_categories.tags = tags;
-                            p.forms.tenant._dealer_categories.fields.dealer_categories.tags = tags;
+                            p.forms.business._dealer_categories.fields.dealer_categories.tags = tags;
                         }
                         if( rsp.tag_types[i].type.tag_type == 80 && (M.curTenant.modules['ciniki.customers'].flags&0x0200) > 0 ) {
                             p.forms.person._distributor_categories.fields.distributor_categories.tags = tags;
-                            p.forms.tenant._distributor_categories.fields.distributor_categories.tags = tags;
+                            p.forms.business._distributor_categories.fields.distributor_categories.tags = tags;
                         }
                     }
                     M.ciniki_customers_edit.showEditSubscriptions(cb);
@@ -1654,10 +1654,10 @@ function ciniki_customers_edit() {
                 p.data.emails = rsp.customer.emails;
                 if( (M.curTenant.modules['ciniki.customers'].flags&0x20000000) == 0 || rsp.customer.emails == null || rsp.customer.emails.length == 0 ) {
                     p.forms.person.emails.addTxt = 'Add Email';
-                    p.forms.tenant.emails.addTxt = 'Add Email';
+                    p.forms.business.emails.addTxt = 'Add Email';
                 } else {
                     p.forms.person.emails.addTxt = '';
-                    p.forms.tenant.emails.addTxt = '';
+                    p.forms.business.emails.addTxt = '';
                 }
                 p.refreshSection('emails');
                 p.show();
@@ -1675,10 +1675,10 @@ function ciniki_customers_edit() {
                 p.data.addresses = rsp.customer.addresses;
                 if( (M.curTenant.modules['ciniki.customers'].flags&0x40000000) == 0 || rsp.customer.addresses == null || rsp.customer.addresses.length == 0 ) {
                     p.forms.person.addresses.addTxt = 'Add Address';
-                    p.forms.tenant.addresses.addTxt = 'Add Address';
+                    p.forms.business.addresses.addTxt = 'Add Address';
                 } else {
                     p.forms.person.addresses.addTxt = '';
-                    p.forms.tenant.addresses.addTxt = '';
+                    p.forms.business.addresses.addTxt = '';
                 }
                 p.refreshSection('addresses');
                 p.show();
@@ -1703,7 +1703,7 @@ function ciniki_customers_edit() {
         // Get subscriptions available
         //
         this.edit.forms.person._tabs.tabs.subscriptions.visible = 'no';
-        this.edit.forms.tenant._tabs.tabs.subscriptions.visible = 'no';
+        this.edit.forms.business._tabs.tabs.subscriptions.visible = 'no';
         if( M.curTenant['modules']['ciniki.subscriptions'] != null ) {
             var rsp = M.api.getJSONCb('ciniki.subscriptions.subscriptionList', {'tnid':M.curTenantID, 
                 'customer_id':this.edit.customer_id}, function(rsp) {
@@ -1718,9 +1718,9 @@ function ciniki_customers_edit() {
                     // Add subscriptions to the form
                     if( rsp.subscriptions.length > 0 ) {
                         p.forms.person._tabs.tabs.subscriptions.visible = 'yes';
-                        p.forms.tenant._tabs.tabs.subscriptions.visible = 'yes';
+                        p.forms.business._tabs.tabs.subscriptions.visible = 'yes';
 //                      p.forms.person.subscriptions.visible = 'yes';
-//                      p.forms.tenant.subscriptions.visible = 'yes'; 
+//                      p.forms.business.subscriptions.visible = 'yes'; 
                         p.forms.person.subscriptions.fields = {};
                         var i = 0;
                         for(i in rsp.subscriptions) {
@@ -1732,11 +1732,11 @@ function ciniki_customers_edit() {
                                 p.data['subscription_' + rsp.subscriptions[i].subscription.id] = rsp.subscriptions[i].subscription.status;
                             }
                         }
-                        p.forms.tenant.subscriptions.fields = p.forms.person.subscriptions.fields;
+                        p.forms.business.subscriptions.fields = p.forms.person.subscriptions.fields;
                     } else {
-                        // Hide the subscriptions section when no tenant subscription setup
+                        // Hide the subscriptions section when no business subscription setup
                         p.forms.person.subscriptions.visible = 'no';
-                        p.forms.tenant.subscriptions.visible = 'no';
+                        p.forms.business.subscriptions.visible = 'no';
                     }
                     p.refresh();
                     p.show(cb);
@@ -1749,7 +1749,7 @@ function ciniki_customers_edit() {
             var p = M.ciniki_customers_edit.edit;
             p.subscriptions = null;
             p.forms.person.subscriptions.visible = 'no';
-            p.forms.tenant.subscriptions.visible = 'no';
+            p.forms.business.subscriptions.visible = 'no';
             p.refresh();
             p.show(cb);
             p.setupStatus();
@@ -1767,7 +1767,7 @@ function ciniki_customers_edit() {
         var sc = '';
         var uc = '';
         var type = 1;
-        if( this.edit.formtab == 'tenant' ) {
+        if( this.edit.formtab == 'business' ) {
             type = 2;
         }
         if( this.edit.subscriptions != null ) {

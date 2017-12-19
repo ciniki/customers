@@ -816,8 +816,8 @@ function ciniki_customers_main() {
             this.search.sections.main.dataMaps = ['display_name', 'status_text'];
         }
     
-        if( M.curTenant.modules['ciniki.tenants'] != null 
-            && (M.curTenant.modules['ciniki.tenants'].flags&0x02) > 0 ) {
+        if( M.curTenant.modules['ciniki.businesses'] != null 
+            && (M.curTenant.modules['ciniki.businesses'].flags&0x02) > 0 ) {
             this.tools.sections.tools.list.salesreps.visible = 'yes';
         } else {
             this.tools.sections.tools.list.salesreps.visible = 'no';
@@ -839,15 +839,15 @@ function ciniki_customers_main() {
 
         //
         // Setup the menu buttons to make this the home screen,
-        // if the main tenant menu had only one menu option available.
+        // if the main business menu had only one menu option available.
         // This is used for sales reps when they login and can only see customers
         //
         if( M.ciniki_tenants_main.menu.autoopen == 'skipped' ) {
             this.menu.leftbuttons = {};
             this.menu.rightbuttons = {};
             M.menuHome = this.menu;
-            this.menu.leftbuttons = M.ciniki_tenants_main.menu.leftbuttons;
-            this.menu.rightbuttons = M.ciniki_tenants_main.menu.rightbuttons;
+            this.menu.leftbuttons = M.ciniki_businesses_main.menu.leftbuttons;
+            this.menu.rightbuttons = M.ciniki_businesses_main.menu.rightbuttons;
         } else {
             this.menu.addClose('Back');
         }
@@ -930,7 +930,7 @@ function ciniki_customers_main() {
         } else {
             this.customer.data.details.name = {'label':'Name', 'value':rsp.customer.display_name};
             if( rsp.customer.company != null &&  rsp.customer.company != '' ) {
-                this.customer.data.details.company = {'label':'Tenant', 'value':rsp.customer.company};
+                this.customer.data.details.company = {'label':'Business', 'value':rsp.customer.company};
             }
             if( rsp.customer.birthdate != '' ) {
                 this.customer.data.details.birthdate = {'label':'Birthday', 'value':rsp.customer.birthdate};
@@ -1118,7 +1118,7 @@ function ciniki_customers_main() {
         }
 
         //
-        // Make relationships visible if setup for tenant
+        // Make relationships visible if setup for business
         //
         if( M.curTenant.customers != null && M.curTenant.customers.settings['use-relationships'] != null && M.curTenant.customers.settings['use-relationships'] == 'yes' ) {
             this.customer.sections.relationships.visible = 'yes';

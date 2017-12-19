@@ -154,11 +154,11 @@ function ciniki_customers_hooks_customerAdd(&$ciniki, $tnid, $args) {
         $format = 'company';
         if( isset($args['display_name_format']) && $args['display_name_format'] != '' ) {
             $format = $args['display_name_format'];
-        } elseif( !isset($settings['display-name-tenant-format']) 
-            || $settings['display-name-tenant-format'] == 'company' ) {
+        } elseif( !isset($settings['display-name-business-format']) 
+            || $settings['display-name-business-format'] == 'company' ) {
             $format = 'company';
-        } elseif( $settings['display-name-tenant-format'] != '' ) {
-            $format = $settings['display-name-tenant-format'];
+        } elseif( $settings['display-name-business-format'] != '' ) {
+            $format = $settings['display-name-business-format'];
         }
         // Format the display_name
         if( $format == 'company' ) {

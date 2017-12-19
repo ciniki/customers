@@ -64,7 +64,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
     //
     $db_updated = 0;
     $changelog_fields = array(
-        'display-name-tenant-format',
+        'display-name-business-format',
         'defaults-edit-form',
         'defaults-edit-person-hide-company',
         'membership-type-10-active',
@@ -140,14 +140,14 @@ function ciniki_customers_updateSettings(&$ciniki) {
     }
 
     //
-    // Check if changing 'display-name-tenant-format' and update display_name in database
+    // Check if changing 'display-name-business-format' and update display_name in database
     //
-    if( isset($ciniki['request']['args']['display-name-tenant-format']) 
-        && (!isset($settings['display-name-tenant-format']) 
-        || $settings['display-name-tenant-format'] != $ciniki['request']['args']['display-name-tenant-format'])
+    if( isset($ciniki['request']['args']['display-name-business-format']) 
+        && (!isset($settings['display-name-business-format']) 
+        || $settings['display-name-business-format'] != $ciniki['request']['args']['display-name-business-format'])
     ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $format = $ciniki['request']['args']['display-name-tenant-format'];
+        $format = $ciniki['request']['args']['display-name-business-format'];
         $strsql = "SELECT id, uuid, display_name, display_name_format, company, "
             . "REPLACE(TRIM(CONCAT_WS(' ', prefix, first, middle, last, suffix)),'  ', ' ') AS person_name, "
             . "TRIM(CONCAT_WS(', ', last, first)) AS sort_person_name "

@@ -63,10 +63,10 @@ function ciniki_customers_duplicates() {
                 'cellClasses':['label', ''],
                 'dataMaps':['name', 'value'],
                 },
-            'tenant':{'label':'Tenant', 'type':'simplegrid', 'num_cols':2,
+            'business':{'label':'Business', 'type':'simplegrid', 'num_cols':2,
                 'headerValues':null,
                 'cellClasses':['label', ''],
-                'noData':'No tenant details',
+                'noData':'No business details',
                 },
             'phones':{'label':'', 'type':'simplegrid', 'num_cols':2, 'visible':'yes',
                 'headerValues':null,
@@ -132,7 +132,7 @@ function ciniki_customers_duplicates() {
             return this.data[i];
         };
         this.match2.cellValue = function(s, i, j, d) {
-            if( s == 'details' || s == 'tenant' || s == 'phones' ) {
+            if( s == 'details' || s == 'business' || s == 'phones' ) {
                 if( j == 0 ) { return d.label; }
                 if( j == 1 ) { return d.value; }
             }
@@ -294,7 +294,7 @@ function ciniki_customers_duplicates() {
     };
 
     //
-    // Grab the stats for the tenant from the database and present the list of customers.
+    // Grab the stats for the business from the database and present the list of customers.
     //
     this.showList = function(cb) {
         //
@@ -334,7 +334,7 @@ function ciniki_customers_duplicates() {
             'last':{'label':'Last', 'value':rsp.customer.last},
             'suffix':{'label':'Degrees', 'value':rsp.customer.suffix},
             };
-        this.match1.data.tenant = {
+        this.match1.data.business = {
             'company':{'label':'Company', 'value':rsp.customer.company},
             'department':{'label':'Department', 'value':rsp.customer.department},
             'title':{'label':'Title', 'value':rsp.customer.title},
@@ -364,7 +364,7 @@ function ciniki_customers_duplicates() {
             'last':{'label':'Last', 'value':rsp.customer.last},
             'suffix':{'label':'Degrees', 'value':rsp.customer.suffix},
             };
-        this.match2.data.tenant = {
+        this.match2.data.business = {
             'company':{'label':'Company', 'value':rsp.customer.company},
             'department':{'label':'Department', 'value':rsp.customer.department},
             'title':{'label':'Title', 'value':rsp.customer.title},

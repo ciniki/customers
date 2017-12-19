@@ -35,13 +35,13 @@
 #                    50 - Suspended (show in lists, quick searches, etc)
 #                    60 - Deleted (Don't show by default, need to do advanced search to find
 #
-# type:                The type of customer, person or tenant.
+# type:                The type of customer, person or business.
 #
 #                    1 - person
-#                    2 - tenant
+#                    2 - business
 #
 # member_status:    The membership status for the customer/member.  This is only used if the
-#                    members are enabled for the tenant/club.
+#                    members are enabled for the business/club.
 #                    
 #                    0 - Not a member
 #                    10 - Active Member

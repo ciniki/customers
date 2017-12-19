@@ -7,9 +7,9 @@ function ciniki_customers_settings() {
     this.add = null;
 
     this.toggleOptions = {'no':'Off', 'yes':'On'};
-    this.formOptions = {'person':'Person', 'tenant':'Tenant'};
-    this.typeOptions = {'person':'Person', 'tenant':'Tenant'};
-    this.tenantFormats = {
+    this.formOptions = {'person':'Person', 'business':'Business'};
+    this.typeOptions = {'person':'Person', 'business':'Business'};
+    this.businessFormats = {
         'company':'Company',
         'company - person':'Company - Person',
         'person - company':'Person - Company',
@@ -42,7 +42,7 @@ function ciniki_customers_settings() {
 //              'use-birthdate':{'label':'Birthdays', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 //          }},
             'name_options':{'label':'Name Format', 'fields':{
-                'display-name-tenant-format':{'label':'Tenant', 'type':'select', 'options':this.tenantFormats},
+                'display-name-business-format':{'label':'Busines', 'type':'select', 'options':this.businessFormats},
             }},
             'pricepoints':{'label':'Price Points', 'visible':'no', 'type':'simplegrid',
                 'num_cols':1,
@@ -50,7 +50,7 @@ function ciniki_customers_settings() {
                 'addFn':'M.ciniki_customers_settings.editPricePoint(\'M.ciniki_customers_settings.showMain();\',0);',
             },
             'defaults':{'label':'Defaults', 'visible':'yes', 'fields':{
-                'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'tenant':'Tenant'}},
+                'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Busines'}},
                 'defaults-edit-person-hide-company':{'label':'Hide Company', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
             'ui_labels':{'label':'Labels', 'visible':'no', 'fields':{
@@ -314,7 +314,7 @@ function ciniki_customers_settings() {
     }
 
     //
-    // Grab the stats for the tenant from the database and present the list of orders.
+    // Grab the stats for the business from the database and present the list of orders.
     //
     this.showMain = function(cb) {
         var rsp = M.api.getJSONCb('ciniki.customers.getSettings', {'tnid':M.curTenantID}, function(rsp) {

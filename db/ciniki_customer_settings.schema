@@ -4,7 +4,7 @@
 # This table stores the settings for customers for a tenant.
 #
 # The format for display_name
-# - display-name-tenant-format - The format for the display name of a customer with a tenant
+# - display-name-business-format - The format for the display name of a customer with a tenant
 #
 #               company
 #               company - person
