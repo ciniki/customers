@@ -115,7 +115,11 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $tnid, $email, $url
         // Prepare Messages
         //
         $subject = "Password reset";
-        $url = $url . '?email=' . urlencode($customer['email']) . "&pwd=$password";
+        if( strstr($url, '?') !== false ) {
+            $url .= '&email=' . urlencode($customer['email']) . "&pwd=$password";
+        } else {
+            $url .= '?email=' . urlencode($customer['email']) . "&pwd=$password";
+        }
         $html_message = $template['html_header']
             . "<tr><td style='" . $theme['td_body'] . "'>"
             . "<p style='" . $theme['p'] . "'>You have requested a new password.  Please click on the following link to set a new password.  This link will only be valid for 2 hours.</p>"
