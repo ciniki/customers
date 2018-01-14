@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_hooks_tenantReportBlock(&$ciniki, $tnid, $args) {
+function ciniki_customers_reporting_block(&$ciniki, $tnid, $args) {
 
     //
     // Check to make sure the module is enabled
@@ -38,14 +38,14 @@ function ciniki_customers_hooks_tenantReportBlock(&$ciniki, $tnid, $args) {
     // Return the list of reports for the tenant
     //
     if( $args['block_ref'] == 'ciniki.customers.birthdays' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportUpcomingBirthdays');
-        return ciniki_customers_reportUpcomingBirthdays($ciniki, $tnid, $args['options']);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockBirthdays');
+        return ciniki_customers_reporting_blockBirthdays($ciniki, $tnid, $args['options']);
     } elseif( $args['block_ref'] == 'ciniki.customers.newcustomers' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportNewCustomers');
-        return ciniki_customers_reportNewCustomers($ciniki, $tnid, $args['options']);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockNewCustomers');
+        return ciniki_customers_reporting_blockNewCustomers($ciniki, $tnid, $args['options']);
     } elseif( $args['block_ref'] == 'ciniki.customers.newmembers' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reportNewMembers');
-        return ciniki_customers_reportNewMembers($ciniki, $tnid, $args['options']);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockNewMembers');
+        return ciniki_customers_reporting_blockNewMembers($ciniki, $tnid, $args['options']);
     }
 
     return array('stat'=>'ok');

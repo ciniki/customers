@@ -17,7 +17,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_reportNewCustomers(&$ciniki, $tnid, $args) {
+function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
     //
     // Get the tenant settings
     //
@@ -69,8 +69,7 @@ function ciniki_customers_reportNewCustomers(&$ciniki, $tnid, $args) {
         . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
         . "FROM ciniki_customers AS c "
         . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND c.status = 10 "
-        . "AND c.member_status = 0 "
+        . "AND c.member_status = 10 "
         . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
         . "ORDER BY c.start_date "
         . "";

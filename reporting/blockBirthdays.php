@@ -17,7 +17,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_reportUpcomingBirthdays(&$ciniki, $tnid, $args) {
+function ciniki_customers_reporting_blockBirthdays(&$ciniki, $tnid, $args) {
     //
     // Get the tenant settings
     //
@@ -43,7 +43,7 @@ function ciniki_customers_reportUpcomingBirthdays(&$ciniki, $tnid, $args) {
     }
     $maps = $rc['maps'];
 
-    if( isset($args['days']) && $args['days'] != '' && $args['days'] > 0 && $args['days'] < 32 ) {
+    if( isset($args['days']) && $args['days'] != '' && $args['days'] > 0 && $args['days'] < 366 ) {
         $days = $args['days'];
     } else {
         $days = 7;

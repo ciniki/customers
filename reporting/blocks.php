@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_hooks_tenantReportBlocks(&$ciniki, $tnid, $args) {
+function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
 
     //
     // Check to make sure the module is enabled
@@ -35,20 +35,19 @@ function ciniki_customers_hooks_tenantReportBlocks(&$ciniki, $tnid, $args) {
                 'days'=>array('label'=>'Number of Days', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
                 ),
             );
-        $blocks['ciniki.customers.newcustomers'] = array(
-            'name'=>'New Customers',
-            'options'=>array(
-                'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
-                ),
-            );
-        $blocks['ciniki.customers.newmembers'] = array(
-            'name'=>'New Members',
-            'options'=>array(
-                'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
-                ),
-            );
     }
-
+    $blocks['ciniki.customers.newcustomers'] = array(
+        'name'=>'New Customers',
+        'options'=>array(
+            'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+            ),
+        );
+    $blocks['ciniki.customers.newmembers'] = array(
+        'name'=>'New Members',
+        'options'=>array(
+            'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+            ),
+        );
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

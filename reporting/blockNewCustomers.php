@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// Return the report of new members
+// Return the report of new customers
 //
 // Arguments
 // ---------
@@ -12,12 +12,12 @@
 //
 // Additional Arguments
 // --------------------
-// days:                The number of days past to look for new members.
+// days:                The number of days past to look for new customers.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_reportNewMembers(&$ciniki, $tnid, $args) {
+function ciniki_customers_reporting_blockNewCustomers(&$ciniki, $tnid, $args) {
     //
     // Get the tenant settings
     //
@@ -69,7 +69,7 @@ function ciniki_customers_reportNewMembers(&$ciniki, $tnid, $args) {
         . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
         . "FROM ciniki_customers AS c "
         . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND c.member_status = 10 "
+        . "AND c.status = 10 "
         . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
         . "ORDER BY c.start_date "
         . "";
@@ -209,7 +209,7 @@ function ciniki_customers_reportNewMembers(&$ciniki, $tnid, $args) {
     // No customers 
     //
     else {
-        $chunks[] = array('type'=>'message', 'content'=>'No new members in the last ' . ($days == 1 ? 'day' : $days . ' days') . '.');
+        $chunks[] = array('type'=>'message', 'content'=>'No new customers in the last ' . ($days == 1 ? 'day' : $days . ' days') . '.');
     }
     
     return array('stat'=>'ok', 'chunks'=>$chunks);
