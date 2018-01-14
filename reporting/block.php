@@ -27,7 +27,7 @@ function ciniki_customers_reporting_block(&$ciniki, $tnid, $args) {
     // Check to make sure the report is specified
     //
     if( !isset($args['block_ref']) || !isset($args['options']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.222', 'msg'=>"No block specified."));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.224', 'msg'=>"No block specified."));
     }
 
     //

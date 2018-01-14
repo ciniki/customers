@@ -20,7 +20,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.customers']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.220', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.220', 'msg'=>"I'm sorry, the block you requested does not exist."));
     }
 
     $blocks = array();
@@ -31,6 +31,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
         $blocks['ciniki.customers.birthdays'] = array(
             'name'=>'Upcoming Birthdays',
+            'module' => 'Customers',
             'options'=>array(
                 'days'=>array('label'=>'Number of Days', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
                 ),
@@ -38,12 +39,14 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
     }
     $blocks['ciniki.customers.newcustomers'] = array(
         'name'=>'New Customers',
+        'module' => 'Customers',
         'options'=>array(
             'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
             ),
         );
     $blocks['ciniki.customers.newmembers'] = array(
         'name'=>'New Members',
+        'module' => 'Customers',
         'options'=>array(
             'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
             ),
