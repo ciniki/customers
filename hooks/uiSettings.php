@@ -29,7 +29,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
     // Get the list of price points
     //
     if( isset($args['modules']['ciniki.customers']['flags']) && ($args['modules']['ciniki.customers']['flags']&0x1000) > 0 ) {
-        $strsql = "SELECT id, name "
+        $strsql = "SELECT id, sequence, name "
             . "FROM ciniki_customer_pricepoints "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY sequence "
@@ -37,7 +37,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'pricepoints', 'fname'=>'id', 'name'=>'pricepoint',
-                'fields'=>array('id', 'name')),
+                'fields'=>array('id', 'sequence', 'name')),
             ));
         if( $rc['stat'] == 'ok' && isset($rc['pricepoints']) ) {
             $rsp['settings']['pricepoints'] = $rc['pricepoints'];
