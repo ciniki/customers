@@ -46,37 +46,39 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $tnid, $args) {
         if( !isset($rc['item']) ) {
             return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.customers.23', 'msg'=>'Object not found'));
         }
+        $item = $rc['item'];
 
         //
         // Check if item is visible on website
         //
-        if( ($rc['item']['webflags']&0x01) == 0 ) {
+        if( ($item['webflags']&0x01) == 0 ) {
             return array('stat'=>'ok');
         }
-        if( $rc['item']['member_status'] != '10' ) {
+        if( $item['member_status'] != '10' ) {
             return array('stat'=>'ok');
         }
         $object = array(
             'label'=>'Members',
-            'title'=>$rc['item']['display_name'],
+            'title'=>$item['display_name'],
             'subtitle'=>'',
             'meta'=>'',
-            'primary_image_id'=>$rc['item']['primary_image_id'],
-            'synopsis'=>$rc['item']['short_description'],
+            'primary_image_id'=>$item['primary_image_id'],
+            'synopsis'=>$item['short_description'],
             'object'=>'ciniki.customers.members',
-            'object_id'=>$rc['item']['id'],
-            'primary_words'=>$rc['item']['display_name'] . ' member members',
-            'secondary_words'=>$rc['item']['short_description'],
-            'tertiary_words'=>$rc['item']['full_bio'],
+            'object_id'=>$item['id'],
+            'primary_words'=>$item['display_name'] . ' member members',
+            'secondary_words'=>$item['short_description'],
+            'tertiary_words'=>$item['full_bio'],
             'weight'=>15000,
-            'url'=>$base_url . '/' . $rc['item']['permalink']
+            'url'=>$base_url . '/' . $item['permalink']
             );
 
         //
         // Get the categories for the member if categories enabled
         //
+        $category_permalink = '';
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x04) ) {
-            $strsql = "SELECT DISTINCT tag_name "
+            $strsql = "SELECT DISTINCT tag_name, permalink "
                 . "FROM ciniki_customer_tags "
                 . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -90,7 +92,20 @@ function ciniki_customers_hooks_webIndexObject($ciniki, $tnid, $args) {
                 foreach($rc['rows'] as $row) {
                     $object['primary_words'] .= ' ' . $row['tag_name'];
                 }
+                //
+                // NO full bio, don't go to the member page, just the listings
+                //
+                if( $item['full_bio'] == '' && isset($rc['rows'][0]['permalink']) && $rc['rows'][0]['permalink'] != '' ) {
+                    $category_permalink = '/category/' . $rc['rows'][0]['permalink'];
+                }
             }
+        }
+
+        //
+        // NO full bio, don't go to the member page, just the listings
+        //
+        if( $item['full_bio'] == '' ) {
+            $object['url'] = $base_url . $category_permalink . '#' . $item['permalink'];
         }
 
         return array('stat'=>'ok', 'object'=>$object);
