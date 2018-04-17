@@ -109,7 +109,19 @@ function ciniki_customers_customerUpdateName(&$ciniki, $tnid, $customer, $custom
             $rsp['display_name'] = ($person_name!=''?$person_name . ' [' . $company . ']':$company);
             $rsp['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $company;
         }
-    } else {
+    } 
+    //
+    // Override formatting options for IFB customers
+    //
+    elseif( $type == 10 || $type == 21 || $type == 22 || $type == 31 || $type == 32 ) {
+        $rsp['display_name'] = $person_name;
+        $rsp['sort_name'] = $sort_person_name;
+    }
+    elseif( $type == 20 || $type == 30 ) {
+        $rsp['display_name'] = $company;
+        $rsp['sort_name'] = $company;
+    } 
+    else {
         $rsp['display_name'] = $person_name;
         $rsp['sort_name'] = $sort_person_name;
     }

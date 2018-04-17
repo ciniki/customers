@@ -35,10 +35,18 @@
 #                    50 - Suspended (show in lists, quick searches, etc)
 #                    60 - Deleted (Don't show by default, need to do advanced search to find
 #
-# type:                The type of customer, person or business.
+# type:             The type of customer, person or business.
 #
-#                    1 - person
-#                    2 - business
+#                       1 - person
+#                       2 - business
+#                       # Additional types are for IFB mode
+#                       10 - Individual
+#                       20 - Family
+#                       21 - Parent
+#                       22 - Child
+#                       30 - Business
+#                       31 - Admin
+#                       32 - Employee
 #
 # member_status:    The membership status for the customer/member.  This is only used if the
 #                    members are enabled for the business/club.

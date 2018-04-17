@@ -65,9 +65,48 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
     }
 
     //
-    // Check if customers flag is set, and if the user has permissions
+    // Check if IFB or customers flag is set, and if the user has permissions
     //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x01) 
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) 
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>5600,
+            'label'=>'Customers', 
+            'edit'=>array('app'=>'ciniki.customers.ifb'),
+            'add'=>array('app'=>'ciniki.customers.ifb', 'args'=>array('edit_id'=>0)),
+            'search'=>array(
+                'method'=>'ciniki.customers.searchQuick',
+                'args'=>array(),
+                'container'=>'customers',
+                'cols'=>3,
+                'headerValues'=>array('Customers', 'Type'),
+                'cellValues'=>array(
+                    '0' => 'd.display_name;',
+                    '1' => 'd.status_text;',
+                    ),
+                'noData'=>'No customers found',
+                'edit'=>array('method'=>'ciniki.customers.ifb', 'args'=>array('customer_id'=>'d.id;')),
+                'submit'=>array('method'=>'ciniki.customers.ifb', 'args'=>array('search'=>'search_str')),
+                ),
+            );
+        if( isset($rsp['settings']['ui-labels-customers']) && $rsp['settings']['ui-labels-customers'] != '' ) {
+            $menu_item['label'] = $rsp['settings']['ui-labels-customers'];
+            $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-customers'] . ' found';
+        }
+        $rsp['menu_items'][] = $menu_item;
+        //
+        // Setup the ui app override for ifb UI
+        //
+        $rsp['uiAppOverrides'] = array(
+            'ciniki.customers.edit' => array('method'=>'ciniki.customers.ifb'),
+            );
+    } 
+    elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x01) 
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])
             || isset($args['permissions']['resellers'])
@@ -86,14 +125,14 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'cols'=>2,
                 'headerValues'=>array('Customers', 'Status'),
                 'cellValues'=>array(
-                    '0'=>'d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + ")</span>" : "");',
-                    '1'=>'d.customer.status_text;',
+                    '0'=>'d.display_name + (d.parent_name != null && d.parent_name != "" ? " <span class=\'subdue\'>(" + d.parent_name + ")</span>" : "");',
+                    '1'=>'d.status_text;',
                     ),
-                'rowStyle'=>'if( M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
-                        . '\'background: \' + M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
+                'rowStyle'=>'if( M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.status] != null ) {'
+                        . '\'background: \' + M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.status];'
                     . '}',
                 'noData'=>'No customers found',
-                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
+                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.id;')),
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
                 ),
             );
@@ -105,9 +144,6 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
     } 
 
 
-    //
-    // A salesrep only see's a reduced customer interface
-    //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x01) 
         && !isset($args['permissions']['owners'])
         && !isset($args['permissions']['employees'])
@@ -125,14 +161,14 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'cols'=>2,
                 'headerValues'=>array('Customers', 'Status'),
                 'cellValues'=>array(
-                    '0'=>'d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + "</span>" : "");',
-                    '1'=>'d.customer.status_text;',
+                    '0' => 'd.display_name + (d.parent_name != null && d.parent_name != "" ? " <span class=\'subdue\'>(" + d.parent_name + "</span>" : "");',
+                    '1' => 'd.status_text;',
                     ),
-                'rowStyle'=>'if( M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status] != null ) {'
-                        . '\'background: \' + M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.customer.status];'
+                'rowStyle'=>'if( M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.status] != null ) {'
+                        . '\'background: \' + M.curTenant.customers.settings[\'ui-colours-customer-status-\' + d.status];'
                     . '}',
                 'noData'=>'No customers found',
-                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
+                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.id;')),
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
                 ),
             );
@@ -161,10 +197,10 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'container'=>'customers',
                 'cols'=>1,
                 'cellValues'=>array(
-                    '0'=>'d.customer.display_name;',
+                    '0'=>'d.display_name;',
                     ),
                 'noData'=>'No customers found',
-                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.customer.id;')),
+                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.id;')),
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str', 'type'=>'"members"')),
                 ),
             );

@@ -27,6 +27,12 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'10', 'name'=>'Distributor Categories')),
 //      array('flag'=>array('bit'=>'11', 'name'=>'Distributor Tags')),
 //      array('flag'=>array('bit'=>'12', 'name'=>'')),
+        array('flag'=>array('bit'=>'12', 'name'=>'IFB')),          // Don't use, can't be bit shifted by javascript
+            // 
+            // The IFB mode is designed to manage Individuals, Families and Businesses.
+            // This mode sould not be used with Members, Dealers, Distributors, Children flags
+            // The IFB flag will change many aspects of the module, and how customer information is stored.
+            //
         // 0x1000
         array('flag'=>array('bit'=>'13', 'name'=>'Price Points')),
         array('flag'=>array('bit'=>'14', 'name'=>'Sales Reps')),
@@ -52,8 +58,8 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'29', 'name'=>'Single Phones')),      // Only allow 4 phones (home,work,cell,fax)
         array('flag'=>array('bit'=>'30', 'name'=>'Single Email')),       // Only allow one email
         array('flag'=>array('bit'=>'31', 'name'=>'Single Address')),     // Only allow one address
-//      array('flag'=>array('bit'=>'32', 'name'=>'')),
-        // 0x0100000000
+//        array('flag'=>array('bit'=>'32', 'name'=>'')),          // Don't use, can't be bit shifted by javascript
+        // 0x01 0000 0000
         array('flag'=>array('bit'=>'33', 'name'=>'Academics')),
 //      array('flag'=>array('bit'=>'34', 'name'=>'')),
 //      array('flag'=>array('bit'=>'35', 'name'=>'')),

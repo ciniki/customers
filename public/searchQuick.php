@@ -159,9 +159,9 @@ function ciniki_customers_searchQuick($ciniki) {
         $strsql .= "LIMIT 25 ";
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-    $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+        array('container'=>'customers', 'fname'=>'id',
             'fields'=>array('id', 'eid', 'display_name', 'parent_name', 'status', 'status_text',
                 'type', 'company', 'member_lastpaid', 'member_status', 
                 'membership_type', 'membership_type_text', 'membership_length', 'membership_length_text'),

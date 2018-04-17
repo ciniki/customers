@@ -17,7 +17,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_checkAccess(&$ciniki, $tnid, $method, $req_id) {
+function ciniki_customers_checkAccess(&$ciniki, $tnid, $method, $req_id=0) {
     //
     // Check if the tenant is active and the module is enabled
     //

@@ -24,14 +24,14 @@ function ciniki_customers_reportstatus() {
         this.list.noData = function(s) { return this.sections[s].noData; }
         this.list.cellValue = function(s, i, j, d) {
             switch(j) {
-                case 0: return d.customer.id;
-                case 1: return d.customer.display_name;
-                case 2: return d.customer.status_text;
+                case 0: return d.id;
+                case 1: return d.display_name;
+                case 2: return d.status_text;
             }
             return '';
         };
         this.list.rowFn = function(s, i, d) { 
-            return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_reportstatus.showList();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
+            return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_reportstatus.showList();\',\'mc\',{\'customer_id\':\'' + d.id + '\'});';
         };
         this.list.addClose('Back');
     }

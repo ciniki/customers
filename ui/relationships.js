@@ -60,12 +60,12 @@ function ciniki_customers_relationships() {
             }
         };
         this.edit.liveSearchResultValue = function(s, f, i, j, d) {
-            if( f == 'related_id' ) { return d.customer.name; }
+            if( f == 'related_id' ) { return d.name; }
             return '';
         };
         this.edit.liveSearchResultRowFn = function(s, f, i, j, d) {
             if( f == 'related_id' ) {
-                return 'M.ciniki_customers_relationships.edit.updateCustomer(\'' + s + '\',\'' + escape(d.customer.name) + '\',\'' + d.customer.id + '\');';
+                return 'M.ciniki_customers_relationships.edit.updateCustomer(\'' + s + '\',\'' + escape(d.name) + '\',\'' + d.id + '\');';
             }
         };
         this.edit.updateCustomer = function(s, customer_name, customer_id) {

@@ -13,6 +13,17 @@ function ciniki_customers_maps($ciniki) {
 
     $maps = array();
     $maps['customer'] = array(
+        'type'=>array(
+            '1'=>'Person',
+            '2'=>'Business',
+            '10'=>'Individual',
+            '20'=>'Family',
+            '21'=>'Parent',
+            '22'=>'Child',
+            '30'=>'Business',
+            '31'=>'Admin',
+            '32'=>'Employee',
+            ),
         'status'=>array(
             '10'=>'Active',
             '40'=>'On Hold',

@@ -31,863 +31,863 @@ function ciniki_customers_edit() {
         'company - person':'Company Name - Person',
         'person - company':'Person - Company Name',
         };
-    this.init = function() {
-        //
-        // The add/edit form
-        //
-        this.edit = new M.panel('Customer',
-            'ciniki_customers_edit', 'edit',
-            'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.edit');
-        this.edit.subscriptions = null;
-        this.edit.customer_id = 0;
-        this.edit.nextFn = null;
-        this.edit.data = {};
-        this.edit.formtab = 'person';
-        this.edit.formtabs = {'label':'', 'field':'type', 'tabs':{
-            'person':{'label':'Person', 'field_id':1, 'form':'person'},
-            'business':{'label':'Business', 'field_id':2, 'form':'business'},
-            }};
-        this.edit.forms = {};
-        this.edit.parent_id = 0;
-        this.edit.forms.person = {
-            'parent':{'label':'', 'active':'no', 'aside':'yes', 'fields':{
-                'parent_id':{'label':'Parent', 'type':'fkid', 'livesearch':'yes'},
-                }},
-            'name':{'label':'Name', 'aside':'yes', 'fields':{
-                'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
-                'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
-                'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
-                'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
-                'middle':{'label':'Middle', 'type':'text'},
-                'last':{'label':'Last', 'type':'text', 'livesearch':'yes',},
-                'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
-                'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
-            }},
-            'account':{'label':'', 'aside':'yes', 'fields':{
-                'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
-                'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
-                'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
-                'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
-                'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
-                'sales_total':{'label':'Current Sales Total', 'active':'no', 'type':'text', 'size':'small'},
-                'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
-                'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
-                }},
-            '_connection':{'label':'How did you hear about us?', 'aside':'yes', 'active':'no', 'fields':{
-                'connection':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
-                }},
-            '_customer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'customer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            '_customer_tags':{'label':'Tags', 'aside':'yes', 'active':'no', 'fields':{
-                'customer_tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
-                }},
-            'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
-                'member_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
-                'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
-                'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
-                'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
-                'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
-                }},
-            '_seasons':{'label':'Seasons', 'aside':'yes', 'active':'no', 'fields':{
-                }},
-            '_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
-                'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
-                'webflags_2':{'label':'Website', 'type':'flagtoggle', 'bit':0x02, 'field':'webflags', 'default':'off'},
-                }},
-            '_dealer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'dealer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            'distributor':{'label':'Distributor', 'aside':'yes', 'active':'no', 'fields':{
-                'distributor_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.distributorStatus},
-                'webflags_3':{'label':'Website', 'type':'flagtoggle', 'bit':0x04, 'field':'webflags', 'default':'off'},
-//              'webflags_3':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.distributorWebFlags},
-                }},
-            '_distributor_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'distributor_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            'business':{'label':'Business', 'aside':'yes', 'fields':{
-                'company':{'label':'Company', 'type':'text', 'livesearch':'yes'},
-                'department':{'label':'Department', 'type':'text'},
-                'title':{'label':'Title', 'type':'text'},
-                }},
-            '_tabs':{'label':'', 'type':'paneltabs', 'selected':'contact', 'tabs':{
-                'contact':{'label':'Contact', 'fn':'M.ciniki_customers_edit.edit.switchTab("contact");'},
-                'subscriptions':{'label':'Subscriptions', 'fn':'M.ciniki_customers_edit.edit.switchTab("subscriptions");'},
-                'website':{'label':'Website', 
-                    'visible':function() { return M.modFlagAny('ciniki.customers', 0x0112); },
-                    'fn':'M.ciniki_customers_edit.edit.switchTab("website");'},
-                'notes':{'label':'Notes', 'fn':'M.ciniki_customers_edit.edit.switchTab("notes");'},
-                }},
-            'simplephone':{'label':'Phone Numbers', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'phone_home':{'label':'Home', 'type':'text'},
-                    'phone_work':{'label':'Work', 'type':'text'},
-                    'phone_cell':{'label':'Cell', 'type':'text'},
-                    'phone_fax':{'label':'Fax', 'type':'text'},
-                }},
-            '_phone':{'label':'Phone Numbers', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'phone_label_1':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
-                    'phone_number_1':{'label':'Number', 'type':'text', 'size':'medium'},
-                    'phone_flags_1':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                    'phone_label_2':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
-                    'phone_number_2':{'label':'Number', 'type':'text', 'size':'medium'},
-                    'phone_flags_2':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                    'phone_label_3':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
-                    'phone_number_3':{'label':'Number', 'type':'text', 'size':'medium'},
-                    'phone_flags_3':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                }},
-            'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['label', ''],
-                'noData':'No phones',
-                'addTxt':'Add Phone',
-                'addFn':'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'email':{'label':'Email', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'email_address':{'label':'Primary', 'type':'text'},
-                    'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
-                }},
-            'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['', ''],
-                'noData':'No emails',
-                'addTxt':'Add Email',
-                'addFn':'M.ciniki_customers_edit.showEmailEdit(\'M.ciniki_customers_edit.updateEditEmails();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'address':{'label':'Address', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'address1':{'label':'Street', 'type':'text', 'hint':''},
-                    'address2':{'label':'', 'type':'text'},
-                    'city':{'label':'City', 'type':'text', 'size':'small', 'livesearch':'yes'},
-                    'province':{'label':'Province/State', 'type':'text', 'size':'small'},
-                    'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
-                    'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
-                    'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
-                    'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                }},
-            'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['label', ''],
-                'noData':'No addresses',
-                'addTxt':'Add Address',
-                'addFn':'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'links':{'label':'Links', 'active':'no', 'type':'simplegrid', 'num_cols':1,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['multiline', ''],
-                'noData':'No links',
-                'addTxt':'Add Link',
-                'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'subscriptions':{'label':'Subscriptions', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'subscriptions' ? 'yes' : 'hidden'); },
-                'fields':{},
-                },
-            '_image':{'label':'Website Details', 'type':'imageform', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
-                        'addDropImage':function(iid) {
-                            M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', iid, null, null);
-                            return true;
-                            },
-                        'addDropImageRefresh':'',
-                        'deleteImage':function(fid) {
-                                M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', 0, null, null);
-                                return true;
-                            },
-                        },
-                }},
-            '_image_caption':{'label':'', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'primary_image_caption':{'label':'Caption', 'type':'text'},
-                }},
-            '_short_bio':{'label':'Synopsis', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
-                }},
-            '_full_bio':{'label':'Biography', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
-                }},
-            'images':{'label':'Gallery', 'type':'simplethumbs',
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                },
-            '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'addTxt':'Add Image',
-                'addFn':'M.ciniki_customers_edit.edit.saveFirst("M.startApp(\'ciniki.customers.images\',null,\'M.ciniki_customers_edit.edit.refreshImages();\',\'mc\',{\'customer_id\':M.ciniki_customers_edit.edit.customer_id,\'add\':\'yes\'});");'
-                },
-            '_notes':{'label':'Notes', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.customerSave();'},
-                'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
-                'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},  // Used when linked with next button.
-                }},
-            };
-        this.edit.forms.business = {
-            'parent':{'label':'', 'active':'no', 'aside':'yes', 'fields':{
-                'parent_id':{'label':'Parent', 'type':'fkid', 'livesearch':'yes'},
-                }},
-            'business':{'label':'Business', 'aside':'yes', 'fields':{
-                'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
-                'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
-                'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
-                'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
-                }},
-            'account':{'label':'', 'aside':'yes', 'fields':{
-                'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
-                'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
-                'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
-                'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
-                'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
-                'sales_total':{'label':'Sales Total', 'active':'no', 'type':'text', 'size':'small'},
-                'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
-                'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
-                }},
-            'name':{'label':'Contact Person', 'aside':'yes', 'fields':{
-                'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
-                'first':{'label':'First', 'type':'text', 'livesearch':'yes'},
-                'middle':{'label':'Middle', 'type':'text'},
-                'last':{'label':'Last', 'type':'text', 'livesearch':'yes'},
-                'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
-                'department':{'label':'Department', 'type':'text'},
-                'title':{'label':'Title', 'type':'text'},
-                'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
-                }},
-            '_connection':{'label':'How did you hear about us?', 'aside':'yes', 'active':'no', 'fields':{
-                'connection':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
-                }},
-            '_customer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'customer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            '_customer_tags':{'label':'Tags', 'aside':'yes', 'active':'no', 'fields':{
-                'customer_tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
-                }},
-            'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
-                'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
-                'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
-                'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
-                'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
-                'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
-                }},
-            '_seasons':{'label':'Seasons', 'aside':'yes', 'active':'no', 'fields':{
-                }},
-            '_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
-                'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
-                'webflags_2':{'label':'Website', 'type':'flagtoggle', 'bit':0x02, 'field':'webflags', 'default':'off'},
-//              'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.dealerWebFlags},
-                }},
-            '_dealer_categories':{'label':'Dealer Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'dealer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            'distributor':{'label':'Distributor', 'aside':'yes', 'active':'no', 'fields':{
-                'distributor_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.distributorStatus},
-                'webflags_3':{'label':'Website', 'type':'flagtoggle', 'bit':0x04, 'field':'webflags', 'default':'off'},
-//              'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.distributorWebFlags},
-                }},
-            '_distributor_categories':{'label':'Distributor Categories', 'aside':'yes', 'active':'no', 'fields':{
-                'distributor_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
-                }},
-            '_tabs':{'label':'', 'type':'paneltabs', 'selected':'contact', 'tabs':{
-                'contact':{'label':'Contact', 'fn':'M.ciniki_customers_edit.edit.switchTab("contact");'},
-                'subscriptions':{'label':'Subscriptions', 'fn':'M.ciniki_customers_edit.edit.switchTab("subscriptions");'},
-                'website':{'label':'Website', 
-                    'visible':function() { return M.modFlagAny('ciniki.customers', 0x0112); },
-                    'fn':'M.ciniki_customers_edit.edit.switchTab("website");'},
-                'notes':{'label':'Notes', 'fn':'M.ciniki_customers_edit.edit.switchTab("notes");'},
-                }},
-            'simplephone':{'label':'Phone Numbers', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'phone_home':{'label':'Home', 'type':'text'},
-                    'phone_work':{'label':'Work', 'type':'text'},
-                    'phone_cell':{'label':'Cell', 'type':'text'},
-                    'phone_fax':{'label':'Fax', 'type':'text'},
-                }},
-            '_phone':{'label':'Phone Numbers', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'phone_label_1':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
-                    'phone_number_1':{'label':'Number', 'type':'text', 'size':'medium'},
-                    'phone_flags_1':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                    'phone_label_2':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
-                    'phone_number_2':{'label':'Number', 'type':'text', 'size':'medium'},
-                    'phone_flags_2':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                    'phone_label_3':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
-                    'phone_number_3':{'label':'Number', 'type':'text', 'size':'medium'},
-                    'phone_flags_3':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                }},
-            'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['label', ''],
-                'noData':'No phones',
-                'addTxt':'Add Phone',
-                'addFn':'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'email':{'label':'Email', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'email_address':{'label':'Primary', 'type':'text'},
-                    'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
-                }},
-            'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['', ''],
-                'noData':'No emails',
-                'addTxt':'Add Email',
-                'addFn':'M.ciniki_customers_edit.showEmailEdit(\'M.ciniki_customers_edit.updateEditEmails();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'address':{'label':'Address', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'address1':{'label':'Street', 'type':'text', 'hint':''},
-                    'address2':{'label':'', 'type':'text'},
-                    'city':{'label':'City', 'type':'text', 'size':'small', 'livesearch':'yes'},
-                    'province':{'label':'Province/State', 'type':'text', 'size':'small'},
-                    'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
-                    'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
-                    'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
-                    'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                }},
-            'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['label', ''],
-                'noData':'No addresses',
-                'addTxt':'Add Address',
-                'addFn':'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'links':{'label':'Links', 'active':'no', 'type':'simplegrid', 'num_cols':1,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
-                'headerValues':null,
-                'cellClasses':['multiline', ''],
-                'noData':'No links',
-                'addTxt':'Add Link',
-                'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
-                },
-            'subscriptions':{'label':'Subscriptions',
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'subscriptions' ? 'yes' : 'hidden'); },
-                'fields':{},
-                },
-            '_image':{'label':'Website Details', 'type':'imageform', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
-                        'addDropImage':function(iid) {
-                            M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', iid, null, null);
-                            return true;
-                            },
-                        'addDropImageRefresh':'',
-                        'deleteImage':function(fid) {
-                                M.ciniki_customers_edit.edit.setFieldValue(fid, 0, null, null);
-                                return true;
-                            },
-                        },
-                }},
-            '_image_caption':{'label':'', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'primary_image_caption':{'label':'Caption', 'type':'text'},
-                }},
-            '_short_bio':{'label':'Synopsis', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
-                }},
-            '_full_bio':{'label':'Biography', 'active':'no', 
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
-                }},
-            'images':{'label':'Gallery', 'type':'simplethumbs',
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                },
-            '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-                'addTxt':'Add Image',
-                'addFn':'M.ciniki_customers_edit.edit.saveFirst("M.startApp(\'ciniki.customers.images\',null,\'M.ciniki_customers_edit.edit.refreshImages();\',\'mc\',{\'customer_id\':M.ciniki_customers_edit.edit.customer_id,\'add\':\'yes\'});");'
-                },
-            '_notes':{'label':'Notes', 'active':'yes',
-                'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'); },
-                'fields':{
-                    'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.customerSave();'},
-                'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
-                'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},  // Used when linked with next button.
-                }},
-            };
-        this.edit.sectionData = function(s) {
-            if( s == 'subscriptions' ) {
-                return this.subscriptions;
-            }
-            return this.data[s];
-        };
-        this.edit.cellValue = function(s, i, j, d) {
-            if( s == 'phones' ) {
-                switch (j) {
-                    case 0: return d.phone.phone_label;
-                    case 1: return d.phone.phone_number + ((d.phone.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
-                }
-            }
-            if( s == 'emails' ) {
-                var flags = '';
-                if( (d.email.flags&0x08) > 0 ) { flags += (flags!=''?', ':'') + 'Public'; }
-                if( (d.email.flags&0x10) > 0 ) { flags += (flags!=''?', ':'') + 'No Emails'; }
-                return M.linkEmail(d.email.address) + (flags!=''?' <span class="subdue">(' + flags + ')</span>':'');
-            }
-            if( s == 'addresses' ) {
-                if( j == 0 ) { 
-                    var l = '';
-                    var cm = '';
-                    if( (d.address.flags&0x01) ) { l += cm + 'shipping'; cm =',<br/>';}
-                    if( (d.address.flags&0x02) ) { l += cm + 'billing'; cm =',<br/>';}
-                    if( (d.address.flags&0x04) ) { l += cm + 'mailing'; cm =',<br/>';}
-                    if( (d.address.flags&0x08) ) { l += cm + 'public'; cm =',<br/>';}
-                    return l;
-                } 
-                if( j == 1 ) {
-                    var v = '';
-                    if( d.address.address1 != '' ) { v += d.address.address1 + '<br/>'; }
-                    if( d.address.address2 != '' ) { v += d.address.address2 + '<br/>'; }
-                    if( d.address.city != '' ) { v += d.address.city + ''; }
-                    if( d.address.province != '' ) { v += ', ' + d.address.province + '  '; }
-                    else if( d.address.city != '' ) { v += '  '; }
-                    if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
-                    if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
-                    if( d.address.phone != '' ) { v += 'Phone: ' + d.address.phone + '<br/>'; }
-                    return v;
-                }
-            }
-            if( s == 'links' ) {
-                if( d.link.name != '' ) {
-                    return '<span class="maintext">' + d.link.name + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + M.hyperlink(d.link.url) + '</span>';
-                } else {
-                    return M.hyperlink(d.link.url) + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
-                }
-            }
-        };
-        this.edit.rowFn = function(s, i, d) { 
-            if( s == 'phones' ) {
-                return 'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.phone.id + '\');';
-            }
-            if( s == 'emails' ) {
-                return 'M.ciniki_customers_edit.showEmailEdit(\'M.ciniki_customers_edit.updateEditEmails();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.email.id + '\');';
-            }
-            if( s == 'addresses' ) {
-                return 'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.address.id + '\');';
-            }
-            if( s == 'links' ) {
-                return 'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.link.id + '\');';
-            }
-            return null;
-        };
-        this.edit.thumbFn = function(s, i, d) {
-            return 'M.startApp(\'ciniki.customers.images\',null,\'M.ciniki_customers_edit.edit.refreshImages();\',\'mc\',{\'customer_image_id\':\'' + d.image.id + '\'});';
-        };
-        this.edit.fieldValue = function(s, i, d) { 
-            if( i == 'parent_id_fkidstr' ) { return ((this.data.parent!=null&&this.data.parent.display_name!=null)?this.data.parent.display_name:''); }
-            if( i == 'parent_id' ) { return ((this.data.parent!=null&&this.data.parent.id!=null)?this.data.parent.id:0); }
-            return this.data[i]; 
-        };
-        this.edit.fieldHistoryArgs = function(s, i) {
-            if( i.substring(0,13) == 'subscription_' ) {
-                return {'method':'ciniki.subscriptions.getCustomerHistory', 'args':{'tnid':M.curTenantID, 
-                    'subscription_id':i.substring(13), 'customer_id':this.customer_id, 'field':'status'}};
-            } else {
-                return {'method':'ciniki.customers.getHistory', 'args':{'tnid':M.curTenantID, 
-                    'customer_id':this.customer_id, 'field':i}};
-            }
-        };
-        this.edit.liveSearchCb = function(s, i, value) {
-            if( i == 'parent_id' ) {
-                M.api.getJSONBgCb('ciniki.customers.searchQuick', 
-                    {'tnid':M.curTenantID, 'start_needle':value, 'limit':25}, function(rsp) { 
-                        M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp['customers']); 
-                    });
-            } else if( i == 'city' ) {
-                M.api.getJSONBgCb('ciniki.customers.addressSearchQuick', 
-                    {'tnid':M.curTenantID, 'start_needle':value, 'limit':25}, function(rsp) { 
-                        M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp['cities']); 
-                    });
-            } else if( i == 'eid' || i == 'first' || i == 'last' || i == 'company' ) {
-                M.api.getJSONBgCb('ciniki.customers.customerSearch', 
-                    {'tnid':M.curTenantID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
-                        M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp.customers); 
-                    });
-            } else if( i == 'phone_label_1' || i == 'phone_label_2' || i == 'phone_label_3' ) {
-                M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), ['Home','Work','Cell','Fax']);
-            } else if( i == 'connection' ) {
-                M.api.getJSONBgCb('ciniki.customers.connectionSearch', 
-                    {'tnid':M.curTenantID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
-                        M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp.connections); 
-                    });
-            }
-        };
-        this.edit.liveSearchResultValue = function(s, f, i, j, d) {
-            if( f == 'parent_id' || f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
-                if( d.customer.eid != null && d.customer.eid != '' ) {
-                    return d.customer.eid + ' - ' + d.customer.display_name; 
-                }
-                return d.customer.display_name; 
-            }
-            else if( f == 'city') { return d.city.name + ',' + d.city.province; }
-            else if( f == 'phone_label_1' || f == 'phone_label_2' || f == 'phone_label_3' ) { return d; }
-            else if( f == 'connection' ) {
-                return d.connection.connection;
-            }
-            return '';
-        };
-        this.edit.liveSearchResultRowFn = function(s, f, i, j, d) { 
-            if( f == 'parent_id' ) {
-                return 'M.ciniki_customers_edit.edit.updateParent(\'' + s + '\',\'' + escape(d.customer.id) + '\',\'' + escape(d.customer.display_name) + '\');'
-            }
-            else if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
-                if( this.parent_id != null && this.parent_id > 0 ) {
-                    return 'M.ciniki_customers_edit.showEdit(null,\'' + d.customer.id + '\',null,\'' + this.parent_id + '\',\'' + escape(this.parent_name) + '\');';
-                }
-                return 'M.ciniki_customers_edit.showEdit(null,' + d.customer.id + ',null,0,\'\');';
-            }
-            else if( f == 'city' ) {
-                return 'M.ciniki_customers_edit.edit.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
-            }
-            else if( f == 'phone_label_1' || f == 'phone_label_2' || f == 'phone_label_3' ) {
-                return 'M.ciniki_customers_edit.edit.updateLabel(\'' + s + '\',\'' + f + '\',\'' + escape(d) + '\');';
-            }
-            else if( f == 'connection' ) {
-                return 'M.ciniki_customers_edit.edit.updateConnection(\'' + s + '\',\'' + escape(d.connection.connection) + '\');';
-            }
-        };
-        this.edit.updateParent = function(s, cid, name) {
-            M.gE(this.panelUID + '_parent_id').value = cid;
-            M.gE(this.panelUID + '_parent_id_fkidstr').value = unescape(name);
-            this.removeLiveSearch(s, 'parent_id');
-        };
-        this.edit.updateCity = function(s, city, province, country) {
-            M.gE(this.panelUID + '_city').value = unescape(city);
-            M.gE(this.panelUID + '_province').value = unescape(province);
-            M.gE(this.panelUID + '_country').value = unescape(country);
-            this.removeLiveSearch(s, 'city');
-        };
-        this.edit.updateLabel = function(s, i, l) {
-            M.gE(this.panelUID + '_' + i).value = l;
-            this.removeLiveSearch(s, i);
-        };
-        this.edit.updateConnection = function(s, connection) {
-            M.gE(this.panelUID + '_connection').value = unescape(connection);
-            this.removeLiveSearch(s, 'connection');
-        };
-        this.edit.switchTab = function(tab) {
-            M.ciniki_customers_edit.edit.forms.person._tabs.selected = tab;
-            M.ciniki_customers_edit.edit.forms.business._tabs.selected = tab;
-            var p = M.ciniki_customers_edit.edit;
-            p.sections._tabs.selected = tab;
-            p.refreshSection('_tabs');
-            p.showHideSection('simplephone');
-            p.showHideSection('phones');
-            p.showHideSection('email');
-            p.showHideSection('emails');
-            p.showHideSection('address');
-            p.showHideSection('addresses');
-            p.showHideSection('links');
-            p.showHideSection('subscriptions');
-            p.showHideSection('_image');
-            p.showHideSection('_image_caption');
-            p.showHideSection('_short_bio');
-            p.showHideSection('_full_bio');
-            p.showHideSection('images');
-            p.showHideSection('_images');
-            p.showHideSection('_notes');
-        };
-        this.edit.saveFirst = function(nc) {
-            if( this.customer_id == 0 ) {
-                var c = this.serializeForm('yes');
-                if( this.edit.subscriptions != null ) {
-                    for(i in this.edit.subscriptions) {
-                        var fname = 'subscription_' + this.edit.subscriptions[i].subscription.id;
-                        var o = this.edit.fieldValue('subscriptions', fname, this.edit.sections.subscriptions.fields[fname]);
-                        var n = this.edit.formValue(fname);
-                        if( o != n && n > 0 ) {
-                            if( n == 10 ) {
-                                subs += sc + this.edit.subscriptions[i].subscription.id; sc=',';
-                            } else if( n == 60 ) {
-                                unsubs += uc + this.edit.subscriptions[i].subscription.id; uc=',';
-                            }
-                        }   
-                    }
-                }
-                if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
-                if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
-                c += 'type=' + type + '&';
-                M.api.postJSONCb('ciniki.customer.add', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, c,
-                    function(rsp) {
-                        if( rsp.stat != 'ok' ) {
-                            M.api.err(rsp);
-                            return false;
-                        } 
-                        M.ciniki_customers_edit.edit.customer_id = rsp.id;
-                        eval(nc);
-                    });
-            } else {
-                eval(nc);
-            }
-        }
-        this.edit.addDropImage = function(iid) {
-            if( this.customer_id == 0 ) {
-                var c = this.serializeForm('yes');
-                if( this.edit.subscriptions != null ) {
-                    for(i in this.edit.subscriptions) {
-                        var fname = 'subscription_' + this.edit.subscriptions[i].subscription.id;
-                        var o = this.edit.fieldValue('subscriptions', fname, this.edit.sections.subscriptions.fields[fname]);
-                        var n = this.edit.formValue(fname);
-                        if( o != n && n > 0 ) {
-                            if( n == 10 ) {
-                                subs += sc + this.edit.subscriptions[i].subscription.id; sc=',';
-                            } else if( n == 60 ) {
-                                unsubs += uc + this.edit.subscriptions[i].subscription.id; uc=',';
-                            }
-                        }   
-                    }
-                }
-                if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
-                if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
-                c += 'type=' + type + '&';
-                M.api.postJSONCb('ciniki.customers.add', {'tnid':M.curTenantID, 'image_id':iid}, c,
-                    function(rsp) {
-                        if( rsp.stat != 'ok' ) {
-                            M.api.err(rsp);
-                            return false;
-                        } 
-                        M.ciniki_customers_edit.edit.customer_id = rsp.id;
-                        M.ciniki_customers_edit.edit.refreshImages();
-                    });
-            } else {
-                M.api.getJSONCb('ciniki.customers.imageAdd', {'tnid':M.curTenantID, 'image_id':iid, 'name':'', 'customer_id':this.customer_id}, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    M.ciniki_customers_edit.edit.refreshImages();
-                });
-            }
-            return true;
-        };
-        this.edit.refreshImages = function() {
-            if( M.ciniki_customers_edit.edit.customer_id > 0 ) {
-                var rsp = M.api.getJSONCb('ciniki.customers.getFull', {'tnid':M.curTenantID, 'customer_id':this.customer_id, 'images':'yes'}, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    var p = M.ciniki_customers_edit.edit;
-                    p.data.images = rsp.customer.images;
-                    p.refreshSection('images');
-                    p.show();
-                });
-            }
-        }
-        this.edit.setupStatus = function() {
-        };
-        this.edit.addButton('save', 'Save', 'M.ciniki_customers_edit.customerSave();');
-        this.edit.addClose('cancel');
 
-        //
-        // The form panel to edit an address for a customer 
-        //
-        this.address = new M.panel('Customer Address',
-            'ciniki_customers_edit', 'address',
-            'mc', 'medium', 'sectioned', 'ciniki.customers.edit.address');
-        this.address.data = {'flags':15};
-        this.address.customer_id = 0;
-        this.address.address_id = 0;
-        this.address.sections = {
-            'address':{'label':'Address', 'fields':{
+    //
+    // The add/edit form
+    //
+    this.edit = new M.panel('Customer',
+        'ciniki_customers_edit', 'edit',
+        'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.edit');
+    this.edit.subscriptions = null;
+    this.edit.customer_id = 0;
+    this.edit.nextFn = null;
+    this.edit.data = {};
+    this.edit.formtab = 'person';
+    this.edit.formtabs = {'label':'', 'field':'type', 'tabs':{
+        'person':{'label':'Person', 'field_id':1, 'form':'person'},
+        'business':{'label':'Business', 'field_id':2, 'form':'business'},
+        }};
+    this.edit.forms = {};
+    this.edit.parent_id = 0;
+    this.edit.forms.person = {
+        'parent':{'label':'', 'active':'no', 'aside':'yes', 'fields':{
+            'parent_id':{'label':'Parent', 'type':'fkid', 'livesearch':'yes'},
+            }},
+        'name':{'label':'Name', 'aside':'yes', 'fields':{
+            'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
+            'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
+            'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
+            'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
+            'middle':{'label':'Middle', 'type':'text'},
+            'last':{'label':'Last', 'type':'text', 'livesearch':'yes',},
+            'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
+            'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
+        }},
+        'account':{'label':'', 'aside':'yes', 'fields':{
+            'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
+            'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
+            'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
+            'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
+            'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
+            'sales_total':{'label':'Current Sales Total', 'active':'no', 'type':'text', 'size':'small'},
+            'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
+            'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
+            }},
+        '_connection':{'label':'How did you hear about us?', 'aside':'yes', 'active':'no', 'fields':{
+            'connection':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
+            }},
+        '_customer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'customer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        '_customer_tags':{'label':'Tags', 'aside':'yes', 'active':'no', 'fields':{
+            'customer_tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
+            }},
+        'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
+            'member_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
+            'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
+            'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
+            'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
+            'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
+            }},
+        '_seasons':{'label':'Seasons', 'aside':'yes', 'active':'no', 'fields':{
+            }},
+        '_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
+            'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
+            'webflags_2':{'label':'Website', 'type':'flagtoggle', 'bit':0x02, 'field':'webflags', 'default':'off'},
+            }},
+        '_dealer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'dealer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        'distributor':{'label':'Distributor', 'aside':'yes', 'active':'no', 'fields':{
+            'distributor_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.distributorStatus},
+            'webflags_3':{'label':'Website', 'type':'flagtoggle', 'bit':0x04, 'field':'webflags', 'default':'off'},
+//              'webflags_3':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.distributorWebFlags},
+            }},
+        '_distributor_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'distributor_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        'business':{'label':'Business', 'aside':'yes', 'fields':{
+            'company':{'label':'Company', 'type':'text', 'livesearch':'yes'},
+            'department':{'label':'Department', 'type':'text'},
+            'title':{'label':'Title', 'type':'text'},
+            }},
+        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'contact', 'tabs':{
+            'contact':{'label':'Contact', 'fn':'M.ciniki_customers_edit.edit.switchTab("contact");'},
+            'subscriptions':{'label':'Subscriptions', 'fn':'M.ciniki_customers_edit.edit.switchTab("subscriptions");'},
+            'website':{'label':'Website', 
+                'visible':function() { return M.modFlagAny('ciniki.customers', 0x0112); },
+                'fn':'M.ciniki_customers_edit.edit.switchTab("website");'},
+            'notes':{'label':'Notes', 'fn':'M.ciniki_customers_edit.edit.switchTab("notes");'},
+            }},
+        'simplephone':{'label':'Phone Numbers', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
+                'phone_home':{'label':'Home', 'type':'text'},
+                'phone_work':{'label':'Work', 'type':'text'},
+                'phone_cell':{'label':'Cell', 'type':'text'},
+                'phone_fax':{'label':'Fax', 'type':'text'},
+            }},
+        '_phone':{'label':'Phone Numbers', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
+                'phone_label_1':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+                'phone_number_1':{'label':'Number', 'type':'text', 'size':'medium'},
+                'phone_flags_1':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+                'phone_label_2':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+                'phone_number_2':{'label':'Number', 'type':'text', 'size':'medium'},
+                'phone_flags_2':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+                'phone_label_3':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+                'phone_number_3':{'label':'Number', 'type':'text', 'size':'medium'},
+                'phone_flags_3':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+            }},
+        'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['label', ''],
+            'noData':'No phones',
+            'addTxt':'Add Phone',
+            'addFn':'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'email':{'label':'Email', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
+                'email_address':{'label':'Primary', 'type':'text'},
+                'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
+            }},
+        'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['', ''],
+            'noData':'No emails',
+            'addTxt':'Add Email',
+            'addFn':'M.ciniki_customers_edit.showEmailEdit(\'M.ciniki_customers_edit.updateEditEmails();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'address':{'label':'Address', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
                 'address1':{'label':'Street', 'type':'text', 'hint':''},
                 'address2':{'label':'', 'type':'text'},
                 'city':{'label':'City', 'type':'text', 'size':'small', 'livesearch':'yes'},
                 'province':{'label':'Province/State', 'type':'text', 'size':'small'},
                 'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
                 'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
-                'phone':{'label':'Phone', 'active':'no', 'type':'text', 'hint':'Helpful for deliveries'},
-                'flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                }},
-            '_latlong_buttons':{'label':'', 'buttons':{
-                '_latlong':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_customers_edit.lookupLatLong();'},
-                }},
-            '_latlong':{'label':'', 'fields':{
-                'latitude':{'label':'Latitude', 'type':'text'},
-                'longitude':{'label':'Longitude', 'type':'text'},
-                }},
-            '_notes':{'label':'Notes', 'fields':{
-                'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save address', 'fn':'M.ciniki_customers_edit.saveAddress();'},
-                'delete':{'label':'Delete address', 'fn':'M.ciniki_customers_edit.deleteAddress();'},
-                }},
-            };
-        this.address.fieldValue = function(s, i, d) { return this.data[i]; }
-        this.address.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.customers.addressHistory', 'args':{'tnid':M.curTenantID, 
-                'customer_id':this.customer_id, 'address_id':this.address_id, 'field':i}};
+                'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
+                'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+            }},
+        'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['label', ''],
+            'noData':'No addresses',
+            'addTxt':'Add Address',
+            'addFn':'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'links':{'label':'Links', 'active':'no', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['multiline', ''],
+            'noData':'No links',
+            'addTxt':'Add Link',
+            'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'subscriptions':{'label':'Subscriptions', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'subscriptions' ? 'yes' : 'hidden'); },
+            'fields':{},
+            },
+        '_image':{'label':'Website Details', 'type':'imageform', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                    'addDropImage':function(iid) {
+                        M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', iid, null, null);
+                        return true;
+                        },
+                    'addDropImageRefresh':'',
+                    'deleteImage':function(fid) {
+                            M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', 0, null, null);
+                            return true;
+                        },
+                    },
+            }},
+        '_image_caption':{'label':'', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'primary_image_caption':{'label':'Caption', 'type':'text'},
+            }},
+        '_short_bio':{'label':'Synopsis', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
+            }},
+        '_full_bio':{'label':'Biography', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
+        'images':{'label':'Gallery', 'type':'simplethumbs',
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            },
+        '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'addTxt':'Add Image',
+            'addFn':'M.ciniki_customers_edit.edit.saveFirst("M.startApp(\'ciniki.customers.images\',null,\'M.ciniki_customers_edit.edit.refreshImages();\',\'mc\',{\'customer_id\':M.ciniki_customers_edit.edit.customer_id,\'add\':\'yes\'});");'
+            },
+        '_notes':{'label':'Notes', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'); },
+            'fields':{
+                'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.customerSave();'},
+            'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
+            'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},  // Used when linked with next button.
+            }},
         };
-        this.address.liveSearchCb = function(s, i, value) {
-            if( i == 'city' ) {
-                var rsp = M.api.getJSONBgCb('ciniki.customers.addressSearchQuick', {'tnid':M.curTenantID, 'start_needle':value, 'limit':25},
-                    function(rsp) { 
-                        M.ciniki_customers_edit.address.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.address.panelUID + '_' + i), rsp['cities']); 
-                    });
-            }
-        };
-        this.address.liveSearchResultValue = function(s, f, i, j, d) {
-            if( f == 'city') { return d.city.name + ',' + d.city.province; }
-            return '';
-        };
-        this.address.liveSearchResultRowFn = function(s, f, i, j, d) { 
-            if( f == 'city' ) {
-                return 'M.ciniki_customers_edit.address.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
-            }
-        };
-        this.address.updateCity = function(s, city, province, country) {
-            M.gE(this.panelUID + '_city').value = unescape(city);
-            M.gE(this.panelUID + '_province').value = unescape(province);
-            M.gE(this.panelUID + '_country').value = unescape(country);
-            this.removeLiveSearch(s, 'city');
-        };
-        this.address.addButton('save', 'Save', 'M.ciniki_customers_edit.saveAddress();');
-        this.address.addClose('cancel');
-
-        //
-        // The form panel to edit an email for a customer 
-        //
-        this.email = new M.panel('Customer Email',
-            'ciniki_customers_edit', 'email',
-            'mc', 'medium', 'sectioned', 'ciniki.customers.edit.email');
-        this.email.data = {'flags':1};
-        this.email.customer_id = 0;
-        this.email.email_id = 0;
-        this.email.sections = {
-            '_email':{'label':'Email', 'fields':{
-                'address':{'label':'Address', 'type':'text', 'hint':''},
+    this.edit.forms.business = {
+        'parent':{'label':'', 'active':'no', 'aside':'yes', 'fields':{
+            'parent_id':{'label':'Parent', 'type':'fkid', 'livesearch':'yes'},
+            }},
+        'business':{'label':'Business', 'aside':'yes', 'fields':{
+            'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
+            'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
+            'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
+            'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
+            }},
+        'account':{'label':'', 'aside':'yes', 'fields':{
+            'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
+            'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
+            'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
+            'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
+            'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
+            'sales_total':{'label':'Sales Total', 'active':'no', 'type':'text', 'size':'small'},
+            'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
+            'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
+            }},
+        'name':{'label':'Contact Person', 'aside':'yes', 'fields':{
+            'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
+            'first':{'label':'First', 'type':'text', 'livesearch':'yes'},
+            'middle':{'label':'Middle', 'type':'text'},
+            'last':{'label':'Last', 'type':'text', 'livesearch':'yes'},
+            'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
+            'department':{'label':'Department', 'type':'text'},
+            'title':{'label':'Title', 'type':'text'},
+            'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
+            }},
+        '_connection':{'label':'How did you hear about us?', 'aside':'yes', 'active':'no', 'fields':{
+            'connection':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
+            }},
+        '_customer_categories':{'label':'Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'customer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        '_customer_tags':{'label':'Tags', 'aside':'yes', 'active':'no', 'fields':{
+            'customer_tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
+            }},
+        'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
+            'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
+            'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
+            'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
+            'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
+            'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
+            }},
+        '_seasons':{'label':'Seasons', 'aside':'yes', 'active':'no', 'fields':{
+            }},
+        '_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
+            'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
+            'webflags_2':{'label':'Website', 'type':'flagtoggle', 'bit':0x02, 'field':'webflags', 'default':'off'},
+//              'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.dealerWebFlags},
+            }},
+        '_dealer_categories':{'label':'Dealer Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'dealer_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        'distributor':{'label':'Distributor', 'aside':'yes', 'active':'no', 'fields':{
+            'distributor_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.distributorStatus},
+            'webflags_3':{'label':'Website', 'type':'flagtoggle', 'bit':0x04, 'field':'webflags', 'default':'off'},
+//              'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.distributorWebFlags},
+            }},
+        '_distributor_categories':{'label':'Distributor Categories', 'aside':'yes', 'active':'no', 'fields':{
+            'distributor_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'contact', 'tabs':{
+            'contact':{'label':'Contact', 'fn':'M.ciniki_customers_edit.edit.switchTab("contact");'},
+            'subscriptions':{'label':'Subscriptions', 'fn':'M.ciniki_customers_edit.edit.switchTab("subscriptions");'},
+            'website':{'label':'Website', 
+                'visible':function() { return M.modFlagAny('ciniki.customers', 0x0112); },
+                'fn':'M.ciniki_customers_edit.edit.switchTab("website");'},
+            'notes':{'label':'Notes', 'fn':'M.ciniki_customers_edit.edit.switchTab("notes");'},
+            }},
+        'simplephone':{'label':'Phone Numbers', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
+                'phone_home':{'label':'Home', 'type':'text'},
+                'phone_work':{'label':'Work', 'type':'text'},
+                'phone_cell':{'label':'Cell', 'type':'text'},
+                'phone_fax':{'label':'Fax', 'type':'text'},
+            }},
+        '_phone':{'label':'Phone Numbers', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
+                'phone_label_1':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+                'phone_number_1':{'label':'Number', 'type':'text', 'size':'medium'},
+                'phone_flags_1':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+                'phone_label_2':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+                'phone_number_2':{'label':'Number', 'type':'text', 'size':'medium'},
+                'phone_flags_2':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+                'phone_label_3':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+                'phone_number_3':{'label':'Number', 'type':'text', 'size':'medium'},
+                'phone_flags_3':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+            }},
+        'phones':{'label':'Phones', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['label', ''],
+            'noData':'No phones',
+            'addTxt':'Add Phone',
+            'addFn':'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'email':{'label':'Email', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
+                'email_address':{'label':'Primary', 'type':'text'},
                 'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save email', 'fn':'M.ciniki_customers_edit.saveEmail();'},
-                'password':{'label':'Set Password', 'fn':'M.ciniki_customers_edit.setPassword();'},
-                'delete':{'label':'Delete email', 'fn':'M.ciniki_customers_edit.deleteEmail();'},
-                }},
-            };
-        this.email.fieldValue = function(s, i, d) { return this.data[i]; }
-        this.email.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.customers.emailHistory', 'args':{'tnid':M.curTenantID, 
-                'customer_id':this.customer_id, 'email_id':this.email_id, 'field':i}};
+            }},
+        'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['', ''],
+            'noData':'No emails',
+            'addTxt':'Add Email',
+            'addFn':'M.ciniki_customers_edit.showEmailEdit(\'M.ciniki_customers_edit.updateEditEmails();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'address':{'label':'Address', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'fields':{
+                'address1':{'label':'Street', 'type':'text', 'hint':''},
+                'address2':{'label':'', 'type':'text'},
+                'city':{'label':'City', 'type':'text', 'size':'small', 'livesearch':'yes'},
+                'province':{'label':'Province/State', 'type':'text', 'size':'small'},
+                'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
+                'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
+                'phone':{'label':'Phone', 'type':'text', 'hint':'Helpful for deliveries'},
+                'address_flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+            }},
+        'addresses':{'label':'Addresses', 'active':'no', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['label', ''],
+            'noData':'No addresses',
+            'addTxt':'Add Address',
+            'addFn':'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'links':{'label':'Links', 'active':'no', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
+            'headerValues':null,
+            'cellClasses':['multiline', ''],
+            'noData':'No links',
+            'addTxt':'Add Link',
+            'addFn':'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,0);',
+            },
+        'subscriptions':{'label':'Subscriptions',
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'subscriptions' ? 'yes' : 'hidden'); },
+            'fields':{},
+            },
+        '_image':{'label':'Website Details', 'type':'imageform', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                    'addDropImage':function(iid) {
+                        M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', iid, null, null);
+                        return true;
+                        },
+                    'addDropImageRefresh':'',
+                    'deleteImage':function(fid) {
+                            M.ciniki_customers_edit.edit.setFieldValue(fid, 0, null, null);
+                            return true;
+                        },
+                    },
+            }},
+        '_image_caption':{'label':'', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'primary_image_caption':{'label':'Caption', 'type':'text'},
+            }},
+        '_short_bio':{'label':'Synopsis', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'short_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
+            }},
+        '_full_bio':{'label':'Biography', 'active':'no', 
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'fields':{
+                'full_bio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
+        'images':{'label':'Gallery', 'type':'simplethumbs',
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            },
+        '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+            'addTxt':'Add Image',
+            'addFn':'M.ciniki_customers_edit.edit.saveFirst("M.startApp(\'ciniki.customers.images\',null,\'M.ciniki_customers_edit.edit.refreshImages();\',\'mc\',{\'customer_id\':M.ciniki_customers_edit.edit.customer_id,\'add\':\'yes\'});");'
+            },
+        '_notes':{'label':'Notes', 'active':'yes',
+            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'); },
+            'fields':{
+                'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.customerSave();'},
+            'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
+            'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},  // Used when linked with next button.
+            }},
         };
+    this.edit.sectionData = function(s) {
+        if( s == 'subscriptions' ) {
+            return this.subscriptions;
+        }
+        return this.data[s];
+    };
+    this.edit.cellValue = function(s, i, j, d) {
+        if( s == 'phones' ) {
+            switch (j) {
+                case 0: return d.phone.phone_label;
+                case 1: return d.phone.phone_number + ((d.phone.flags&0x08)>0?' <span class="subdue">(Public)</span>':'');
+            }
+        }
+        if( s == 'emails' ) {
+            var flags = '';
+            if( (d.email.flags&0x08) > 0 ) { flags += (flags!=''?', ':'') + 'Public'; }
+            if( (d.email.flags&0x10) > 0 ) { flags += (flags!=''?', ':'') + 'No Emails'; }
+            return M.linkEmail(d.email.address) + (flags!=''?' <span class="subdue">(' + flags + ')</span>':'');
+        }
+        if( s == 'addresses' ) {
+            if( j == 0 ) { 
+                var l = '';
+                var cm = '';
+                if( (d.address.flags&0x01) ) { l += cm + 'shipping'; cm =',<br/>';}
+                if( (d.address.flags&0x02) ) { l += cm + 'billing'; cm =',<br/>';}
+                if( (d.address.flags&0x04) ) { l += cm + 'mailing'; cm =',<br/>';}
+                if( (d.address.flags&0x08) ) { l += cm + 'public'; cm =',<br/>';}
+                return l;
+            } 
+            if( j == 1 ) {
+                var v = '';
+                if( d.address.address1 != '' ) { v += d.address.address1 + '<br/>'; }
+                if( d.address.address2 != '' ) { v += d.address.address2 + '<br/>'; }
+                if( d.address.city != '' ) { v += d.address.city + ''; }
+                if( d.address.province != '' ) { v += ', ' + d.address.province + '  '; }
+                else if( d.address.city != '' ) { v += '  '; }
+                if( d.address.postal != '' ) { v += d.address.postal + '<br/>'; }
+                if( d.address.country != '' ) { v += d.address.country + '<br/>'; }
+                if( d.address.phone != '' ) { v += 'Phone: ' + d.address.phone + '<br/>'; }
+                return v;
+            }
+        }
+        if( s == 'links' ) {
+            if( d.link.name != '' ) {
+                return '<span class="maintext">' + d.link.name + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'') + '</span><span class="subtext">' + M.hyperlink(d.link.url) + '</span>';
+            } else {
+                return M.hyperlink(d.link.url) + ((d.link.webflags&0x01)>0?' <span class="subdue">(Public)</span>':'');
+            }
+        }
+    };
+    this.edit.rowFn = function(s, i, d) { 
+        if( s == 'phones' ) {
+            return 'M.ciniki_customers_edit.showPhoneEdit(\'M.ciniki_customers_edit.updateEditPhones();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.phone.id + '\');';
+        }
+        if( s == 'emails' ) {
+            return 'M.ciniki_customers_edit.showEmailEdit(\'M.ciniki_customers_edit.updateEditEmails();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.email.id + '\');';
+        }
+        if( s == 'addresses' ) {
+            return 'M.ciniki_customers_edit.showAddressEdit(\'M.ciniki_customers_edit.updateEditAddresses();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.address.id + '\');';
+        }
+        if( s == 'links' ) {
+            return 'M.ciniki_customers_edit.showLinkEdit(\'M.ciniki_customers_edit.updateEditLinks();\',M.ciniki_customers_edit.edit.customer_id,\'' + d.link.id + '\');';
+        }
+        return null;
+    };
+    this.edit.thumbFn = function(s, i, d) {
+        return 'M.startApp(\'ciniki.customers.images\',null,\'M.ciniki_customers_edit.edit.refreshImages();\',\'mc\',{\'customer_image_id\':\'' + d.image.id + '\'});';
+    };
+    this.edit.fieldValue = function(s, i, d) { 
+        if( i == 'parent_id_fkidstr' ) { return ((this.data.parent!=null&&this.data.parent.display_name!=null)?this.data.parent.display_name:''); }
+        if( i == 'parent_id' ) { return ((this.data.parent!=null&&this.data.parent.id!=null)?this.data.parent.id:0); }
+        return this.data[i]; 
+    };
+    this.edit.fieldHistoryArgs = function(s, i) {
+        if( i.substring(0,13) == 'subscription_' ) {
+            return {'method':'ciniki.subscriptions.getCustomerHistory', 'args':{'tnid':M.curTenantID, 
+                'subscription_id':i.substring(13), 'customer_id':this.customer_id, 'field':'status'}};
+        } else {
+            return {'method':'ciniki.customers.getHistory', 'args':{'tnid':M.curTenantID, 
+                'customer_id':this.customer_id, 'field':i}};
+        }
+    };
+    this.edit.liveSearchCb = function(s, i, value) {
+        if( i == 'parent_id' ) {
+            M.api.getJSONBgCb('ciniki.customers.searchQuick', 
+                {'tnid':M.curTenantID, 'start_needle':value, 'limit':25}, function(rsp) { 
+                    M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp['customers']); 
+                });
+        } else if( i == 'city' ) {
+            M.api.getJSONBgCb('ciniki.customers.addressSearchQuick', 
+                {'tnid':M.curTenantID, 'start_needle':value, 'limit':25}, function(rsp) { 
+                    M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp['cities']); 
+                });
+        } else if( i == 'eid' || i == 'first' || i == 'last' || i == 'company' ) {
+            M.api.getJSONBgCb('ciniki.customers.customerSearch', 
+                {'tnid':M.curTenantID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
+                    M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp.customers); 
+                });
+        } else if( i == 'phone_label_1' || i == 'phone_label_2' || i == 'phone_label_3' ) {
+            M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), ['Home','Work','Cell','Fax']);
+        } else if( i == 'connection' ) {
+            M.api.getJSONBgCb('ciniki.customers.connectionSearch', 
+                {'tnid':M.curTenantID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
+                    M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp.connections); 
+                });
+        }
+    };
+    this.edit.liveSearchResultValue = function(s, f, i, j, d) {
+        if( f == 'parent_id' || f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
+            if( d.eid != null && d.eid != '' ) {
+                return d.eid + ' - ' + d.display_name; 
+            }
+            return d.display_name; 
+        }
+        else if( f == 'city') { return d.city.name + ',' + d.city.province; }
+        else if( f == 'phone_label_1' || f == 'phone_label_2' || f == 'phone_label_3' ) { return d; }
+        else if( f == 'connection' ) {
+            return d.connection.connection;
+        }
+        return '';
+    };
+    this.edit.liveSearchResultRowFn = function(s, f, i, j, d) { 
+        if( f == 'parent_id' ) {
+            return 'M.ciniki_customers_edit.edit.updateParent(\'' + s + '\',\'' + escape(d.id) + '\',\'' + escape(d.display_name) + '\');'
+        }
+        else if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
+            if( this.parent_id != null && this.parent_id > 0 ) {
+                return 'M.ciniki_customers_edit.showEdit(null,\'' + d.id + '\',null,\'' + this.parent_id + '\',\'' + escape(this.parent_name) + '\');';
+            }
+            return 'M.ciniki_customers_edit.showEdit(null,' + d.id + ',null,0,\'\');';
+        }
+        else if( f == 'city' ) {
+            return 'M.ciniki_customers_edit.edit.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
+        }
+        else if( f == 'phone_label_1' || f == 'phone_label_2' || f == 'phone_label_3' ) {
+            return 'M.ciniki_customers_edit.edit.updateLabel(\'' + s + '\',\'' + f + '\',\'' + escape(d) + '\');';
+        }
+        else if( f == 'connection' ) {
+            return 'M.ciniki_customers_edit.edit.updateConnection(\'' + s + '\',\'' + escape(d.connection.connection) + '\');';
+        }
+    };
+    this.edit.updateParent = function(s, cid, name) {
+        M.gE(this.panelUID + '_parent_id').value = cid;
+        M.gE(this.panelUID + '_parent_id_fkidstr').value = unescape(name);
+        this.removeLiveSearch(s, 'parent_id');
+    };
+    this.edit.updateCity = function(s, city, province, country) {
+        M.gE(this.panelUID + '_city').value = unescape(city);
+        M.gE(this.panelUID + '_province').value = unescape(province);
+        M.gE(this.panelUID + '_country').value = unescape(country);
+        this.removeLiveSearch(s, 'city');
+    };
+    this.edit.updateLabel = function(s, i, l) {
+        M.gE(this.panelUID + '_' + i).value = l;
+        this.removeLiveSearch(s, i);
+    };
+    this.edit.updateConnection = function(s, connection) {
+        M.gE(this.panelUID + '_connection').value = unescape(connection);
+        this.removeLiveSearch(s, 'connection');
+    };
+    this.edit.switchTab = function(tab) {
+        M.ciniki_customers_edit.edit.forms.person._tabs.selected = tab;
+        M.ciniki_customers_edit.edit.forms.business._tabs.selected = tab;
+        var p = M.ciniki_customers_edit.edit;
+        p.sections._tabs.selected = tab;
+        p.refreshSection('_tabs');
+        p.showHideSection('simplephone');
+        p.showHideSection('phones');
+        p.showHideSection('email');
+        p.showHideSection('emails');
+        p.showHideSection('address');
+        p.showHideSection('addresses');
+        p.showHideSection('links');
+        p.showHideSection('subscriptions');
+        p.showHideSection('_image');
+        p.showHideSection('_image_caption');
+        p.showHideSection('_short_bio');
+        p.showHideSection('_full_bio');
+        p.showHideSection('images');
+        p.showHideSection('_images');
+        p.showHideSection('_notes');
+    };
+    this.edit.saveFirst = function(nc) {
+        if( this.customer_id == 0 ) {
+            var c = this.serializeForm('yes');
+            if( this.subscriptions != null ) {
+                for(i in this.subscriptions) {
+                    var fname = 'subscription_' + this.subscriptions[i].subscription.id;
+                    var o = this.fieldValue('subscriptions', fname, this.sections.subscriptions.fields[fname]);
+                    var n = this.formValue(fname);
+                    if( o != n && n > 0 ) {
+                        if( n == 10 ) {
+                            subs += sc + this.subscriptions[i].subscription.id; sc=',';
+                        } else if( n == 60 ) {
+                            unsubs += uc + this.subscriptions[i].subscription.id; uc=',';
+                        }
+                    }   
+                }
+            }
+            if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
+            if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
+            c += 'type=' + type + '&';
+            M.api.postJSONCb('ciniki.customer.add', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, c,
+                function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    } 
+                    M.ciniki_customers_edit.edit.customer_id = rsp.id;
+                    eval(nc);
+                });
+        } else {
+            eval(nc);
+        }
+    }
+    this.edit.addDropImage = function(iid) {
+        if( this.customer_id == 0 ) {
+            var c = this.serializeForm('yes');
+            if( this.subscriptions != null ) {
+                for(i in this.subscriptions) {
+                    var fname = 'subscription_' + this.subscriptions[i].subscription.id;
+                    var o = this.fieldValue('subscriptions', fname, this.sections.subscriptions.fields[fname]);
+                    var n = this.formValue(fname);
+                    if( o != n && n > 0 ) {
+                        if( n == 10 ) {
+                            subs += sc + this.subscriptions[i].subscription.id; sc=',';
+                        } else if( n == 60 ) {
+                            unsubs += uc + this.subscriptions[i].subscription.id; uc=',';
+                        }
+                    }   
+                }
+            }
+            if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
+            if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
+            c += 'type=' + type + '&';
+            M.api.postJSONCb('ciniki.customers.add', {'tnid':M.curTenantID, 'image_id':iid}, c,
+                function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    } 
+                    M.ciniki_customers_edit.edit.customer_id = rsp.id;
+                    M.ciniki_customers_edit.edit.refreshImages();
+                });
+        } else {
+            M.api.getJSONCb('ciniki.customers.imageAdd', {'tnid':M.curTenantID, 'image_id':iid, 'name':'', 'customer_id':this.customer_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_customers_edit.edit.refreshImages();
+            });
+        }
+        return true;
+    };
+    this.edit.refreshImages = function() {
+        if( M.ciniki_customers_edit.edit.customer_id > 0 ) {
+            var rsp = M.api.getJSONCb('ciniki.customers.getFull', {'tnid':M.curTenantID, 'customer_id':this.customer_id, 'images':'yes'}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_customers_edit.edit;
+                p.data.images = rsp.customer.images;
+                p.refreshSection('images');
+                p.show();
+            });
+        }
+    }
+    this.edit.setupStatus = function() {
+    };
+    this.edit.addButton('save', 'Save', 'M.ciniki_customers_edit.customerSave();');
+    this.edit.addClose('cancel');
 
-        this.email.addButton('save', 'Save', 'M.ciniki_customers_edit.saveEmail();');
-        this.email.addClose('cancel');
+    //
+    // The form panel to edit an address for a customer 
+    //
+    this.address = new M.panel('Customer Address',
+        'ciniki_customers_edit', 'address',
+        'mc', 'medium', 'sectioned', 'ciniki.customers.edit.address');
+    this.address.data = {'flags':15};
+    this.address.customer_id = 0;
+    this.address.address_id = 0;
+    this.address.sections = {
+        'address':{'label':'Address', 'fields':{
+            'address1':{'label':'Street', 'type':'text', 'hint':''},
+            'address2':{'label':'', 'type':'text'},
+            'city':{'label':'City', 'type':'text', 'size':'small', 'livesearch':'yes'},
+            'province':{'label':'Province/State', 'type':'text', 'size':'small'},
+            'postal':{'label':'Postal/Zip', 'type':'text', 'hint':'', 'size':'small'},
+            'country':{'label':'Country', 'type':'text', 'hint':'', 'size':'small'},
+            'phone':{'label':'Phone', 'active':'no', 'type':'text', 'hint':'Helpful for deliveries'},
+            'flags':{'label':'Options', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+            }},
+        '_latlong_buttons':{'label':'', 'buttons':{
+            '_latlong':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_customers_edit.lookupLatLong();'},
+            }},
+        '_latlong':{'label':'', 'fields':{
+            'latitude':{'label':'Latitude', 'type':'text'},
+            'longitude':{'label':'Longitude', 'type':'text'},
+            }},
+        '_notes':{'label':'Notes', 'fields':{
+            'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save address', 'fn':'M.ciniki_customers_edit.saveAddress();'},
+            'delete':{'label':'Delete address', 'fn':'M.ciniki_customers_edit.deleteAddress();'},
+            }},
+        };
+    this.address.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.address.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.customers.addressHistory', 'args':{'tnid':M.curTenantID, 
+            'customer_id':this.customer_id, 'address_id':this.address_id, 'field':i}};
+    };
+    this.address.liveSearchCb = function(s, i, value) {
+        if( i == 'city' ) {
+            var rsp = M.api.getJSONBgCb('ciniki.customers.addressSearchQuick', {'tnid':M.curTenantID, 'start_needle':value, 'limit':25},
+                function(rsp) { 
+                    M.ciniki_customers_edit.address.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.address.panelUID + '_' + i), rsp['cities']); 
+                });
+        }
+    };
+    this.address.liveSearchResultValue = function(s, f, i, j, d) {
+        if( f == 'city') { return d.city.name + ',' + d.city.province; }
+        return '';
+    };
+    this.address.liveSearchResultRowFn = function(s, f, i, j, d) { 
+        if( f == 'city' ) {
+            return 'M.ciniki_customers_edit.address.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
+        }
+    };
+    this.address.updateCity = function(s, city, province, country) {
+        M.gE(this.panelUID + '_city').value = unescape(city);
+        M.gE(this.panelUID + '_province').value = unescape(province);
+        M.gE(this.panelUID + '_country').value = unescape(country);
+        this.removeLiveSearch(s, 'city');
+    };
+    this.address.addButton('save', 'Save', 'M.ciniki_customers_edit.saveAddress();');
+    this.address.addClose('cancel');
 
-        //
-        // The form panel to edit an phone for a customer 
-        //
-        this.phone = new M.panel('Customer Phone Number',
-            'ciniki_customers_edit', 'phone',
-            'mc', 'narrow', 'sectioned', 'ciniki.customers.edit.phone');
-        this.phone.data = {'flags':1};
-        this.phone.customer_id = 0;
-        this.phone.phone_id = 0;
-        this.phone.sections = {
-            '_phone':{'label':'Phone', 'fields':{
-                'phone_label':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell, Fax', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
-                'phone_number':{'label':'Number', 'type':'text', 'size':'medium'},
-                'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save phone', 'fn':'M.ciniki_customers_edit.savePhone();'},
-                'delete':{'label':'Delete phone', 'fn':'M.ciniki_customers_edit.deletePhone();'},
-                }},
-            };
-        this.phone.fieldValue = function(s, i, d) { return this.data[i]; }
-        this.phone.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.customers.phoneHistory', 'args':{'tnid':M.curTenantID, 
-                'customer_id':this.customer_id, 'phone_id':this.phone_id, 'field':i}};
+    //
+    // The form panel to edit an email for a customer 
+    //
+    this.email = new M.panel('Customer Email',
+        'ciniki_customers_edit', 'email',
+        'mc', 'medium', 'sectioned', 'ciniki.customers.edit.email');
+    this.email.data = {'flags':1};
+    this.email.customer_id = 0;
+    this.email.email_id = 0;
+    this.email.sections = {
+        '_email':{'label':'Email', 'fields':{
+            'address':{'label':'Address', 'type':'text', 'hint':''},
+            'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save email', 'fn':'M.ciniki_customers_edit.saveEmail();'},
+            'password':{'label':'Set Password', 'fn':'M.ciniki_customers_edit.setPassword();'},
+            'delete':{'label':'Delete email', 'fn':'M.ciniki_customers_edit.deleteEmail();'},
+            }},
         };
-        this.phone.liveSearchCb = function(s, i, value) {
-            M.ciniki_customers_edit.phone.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.phone.panelUID + '_' + i), ['Home','Work','Cell','Fax']);
-        };
-        this.phone.liveSearchResultValue = function(s, f, i, j, d) {
-            return d;
-        };
-        this.phone.liveSearchResultRowFn = function(s, f, i, j, d) { 
-            return 'M.ciniki_customers_edit.phone.updateLabel(\'' + s + '\',\'' + escape(d) + '\');';
-        };
-        this.phone.updateLabel = function(s, l) {
-            M.gE(this.panelUID + '_phone_label').value = unescape(l);
-            this.removeLiveSearch(s, 'phone_label');
-        };
+    this.email.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.email.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.customers.emailHistory', 'args':{'tnid':M.curTenantID, 
+            'customer_id':this.customer_id, 'email_id':this.email_id, 'field':i}};
+    };
 
-        this.phone.addButton('save', 'Save', 'M.ciniki_customers_edit.savePhone();');
-        this.phone.addClose('cancel');
+    this.email.addButton('save', 'Save', 'M.ciniki_customers_edit.saveEmail();');
+    this.email.addClose('cancel');
 
-        //
-        // The form panel to edit a link for a customer 
-        //
-        this.link = new M.panel('Customer Website',
-            'ciniki_customers_edit', 'link',
-            'mc', 'medium', 'sectioned', 'ciniki.customers.edit.link');
-        this.link.data = {'flags':1};
-        this.link.customer_id = 0;
-        this.link.link_id = 0;
-        this.link.sections = {
-            '_link':{'label':'Website', 'fields':{
-                'name':{'label':'Name', 'type':'text', 'hint':''},
-                'url':{'label':'URL', 'type':'text', 'hint':''},
-                'webflags':{'label':'Website', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.linkFlags},
-                }},
+    //
+    // The form panel to edit an phone for a customer 
+    //
+    this.phone = new M.panel('Customer Phone Number',
+        'ciniki_customers_edit', 'phone',
+        'mc', 'narrow', 'sectioned', 'ciniki.customers.edit.phone');
+    this.phone.data = {'flags':1};
+    this.phone.customer_id = 0;
+    this.phone.phone_id = 0;
+    this.phone.sections = {
+        '_phone':{'label':'Phone', 'fields':{
+            'phone_label':{'label':'Type', 'type':'text', 'hint':'Home, Work, Cell, Fax', 'size':'medium', 'livesearch':'yes', 'livesearchempty':'yes'},
+            'phone_number':{'label':'Number', 'type':'text', 'size':'medium'},
+            'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save phone', 'fn':'M.ciniki_customers_edit.savePhone();'},
+            'delete':{'label':'Delete phone', 'fn':'M.ciniki_customers_edit.deletePhone();'},
+            }},
+        };
+    this.phone.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.phone.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.customers.phoneHistory', 'args':{'tnid':M.curTenantID, 
+            'customer_id':this.customer_id, 'phone_id':this.phone_id, 'field':i}};
+    };
+    this.phone.liveSearchCb = function(s, i, value) {
+        M.ciniki_customers_edit.phone.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.phone.panelUID + '_' + i), ['Home','Work','Cell','Fax']);
+    };
+    this.phone.liveSearchResultValue = function(s, f, i, j, d) {
+        return d;
+    };
+    this.phone.liveSearchResultRowFn = function(s, f, i, j, d) { 
+        return 'M.ciniki_customers_edit.phone.updateLabel(\'' + s + '\',\'' + escape(d) + '\');';
+    };
+    this.phone.updateLabel = function(s, l) {
+        M.gE(this.panelUID + '_phone_label').value = unescape(l);
+        this.removeLiveSearch(s, 'phone_label');
+    };
+
+    this.phone.addButton('save', 'Save', 'M.ciniki_customers_edit.savePhone();');
+    this.phone.addClose('cancel');
+
+    //
+    // The form panel to edit a link for a customer 
+    //
+    this.link = new M.panel('Customer Website',
+        'ciniki_customers_edit', 'link',
+        'mc', 'medium', 'sectioned', 'ciniki.customers.edit.link');
+    this.link.data = {'flags':1};
+    this.link.customer_id = 0;
+    this.link.link_id = 0;
+    this.link.sections = {
+        '_link':{'label':'Website', 'fields':{
+            'name':{'label':'Name', 'type':'text', 'hint':''},
+            'url':{'label':'URL', 'type':'text', 'hint':''},
+            'webflags':{'label':'Website', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.linkFlags},
+            }},
 //          '_description':{'label':'Description', 'fields':{
 //              'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
 //              }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save Website', 'fn':'M.ciniki_customers_edit.saveLink();'},
-                'delete':{'label':'Delete Website', 'fn':'M.ciniki_customers_edit.deleteLink();'},
-                }},
-            };
-        this.link.fieldValue = function(s, i, d) { return this.data[i]; }
-        this.link.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.customers.linkHistory', 'args':{'tnid':M.curTenantID, 
-                'customer_id':this.customer_id, 'link_id':this.link_id, 'field':i}};
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save Website', 'fn':'M.ciniki_customers_edit.saveLink();'},
+            'delete':{'label':'Delete Website', 'fn':'M.ciniki_customers_edit.deleteLink();'},
+            }},
         };
+    this.link.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.link.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.customers.linkHistory', 'args':{'tnid':M.curTenantID, 
+            'customer_id':this.customer_id, 'link_id':this.link_id, 'field':i}};
+    };
 
-        this.link.addButton('save', 'Save', 'M.ciniki_customers_edit.saveLink();');
-        this.link.addClose('cancel');
-    }
+    this.link.addButton('save', 'Save', 'M.ciniki_customers_edit.saveLink();');
+    this.link.addClose('cancel');
+    
 
     //
     // Arguments:
@@ -1748,8 +1748,8 @@ function ciniki_customers_edit() {
         } else {
             var p = M.ciniki_customers_edit.edit;
             p.subscriptions = null;
-            p.forms.person.subscriptions.visible = 'no';
-            p.forms.business.subscriptions.visible = 'no';
+//            p.forms.person.subscriptions.visible = 'no';
+//            p.forms.business.subscriptions.visible = 'no';
             p.refresh();
             p.show(cb);
             p.setupStatus();

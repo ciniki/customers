@@ -1,3 +1,6 @@
+Overview
+========
+
 The customers module is used to store information about customers for a
 specific tenant.  
 
@@ -26,4 +29,8 @@ The next time the Customer logs in, it will warn the UI that the
 information is new in the Customers module than the Users module, and
 would they like to update.  This will then propagate that information
 to all the users entries in the ciniki_customers table.
+
+April 2018 **New Customer Mode Added**
+
+Refer to [Individual/Families/Businesses](ifb.md)
 

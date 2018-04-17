@@ -39,6 +39,41 @@ function ciniki_customers_customerDetails($ciniki) {
         return $rc;
     }   
 
+    //
+    // Get the details for an IFB account
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerIFBDetails');
+        $rc = ciniki_customers_customerIFBDetails($ciniki, $args['tnid'], $args['customer_id'], $args);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp = $rc;
+
+
+        $rsp['module_data'] = array();
+
+        //
+        // Call the hooks to other modules for any data to attach to customer account
+        //
+/*        foreach($ciniki['modules'] as $module => $m) {
+            list($pkg, $mod) = explode('.', $module);
+            $rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'uiCustomerData');
+            if( $rc['stat'] == 'ok' ) {
+                $fn = $rc['function_call'];
+                $rc = $fn($ciniki, $args['tnid'], array(
+                    'customer_id'=>$args['customer_id'], 
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.235', 'msg'=>'Unable to get customer information.', 'err'=>$rc['err']));
+                }
+                if( isset($rc['data']) ) {  
+                }
+            }
+        } */
+        return $rsp;
+    }
+
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
     return ciniki_customers__customerDetails($ciniki, $args['tnid'], $args['customer_id'], $args);
 }

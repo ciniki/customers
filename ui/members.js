@@ -42,18 +42,18 @@ function ciniki_customers_members() {
         this.menu.liveSearchResultValue = function(s, f, i, j, d) {
             if( s == 'search' ) { 
                 switch(j) {
-                    case 0: return d.customer.display_name;
-                    case 1: if( d.customer.membership_type == '20' ) {
-                            return d.customer.membership_type_text;
+                    case 0: return d.display_name;
+                    case 1: if( d.membership_type == '20' ) {
+                            return d.membership_type_text;
                         } 
-                        return '<span class="maintext">' + d.customer.membership_type_text + '</span>' 
-                            + (d.customer.member_lastpaid!=''?'<span class="subtext">Paid: ' + d.customer.member_lastpaid + '</span>':'');
+                        return '<span class="maintext">' + d.membership_type_text + '</span>' 
+                            + (d.member_lastpaid!=''?'<span class="subtext">Paid: ' + d.member_lastpaid + '</span>':'');
                 }
             }
             return '';
         }
         this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
-            return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showMenu();\',\'' + d.customer.id + '\');'; 
+            return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showMenu();\',\'' + d.id + '\');'; 
         };
         this.menu.liveSearchSubmitFn = function(s, search_str) {
             M.startApp('ciniki.customers.main',null,'M.ciniki_customers_members.showMenu();','mc',{'type':'members', 'search':search_str});
@@ -177,14 +177,14 @@ function ciniki_customers_members() {
         this.season.liveSearchResultValue = function(s, f, i, j, d) {
             if( s == 'search' ) { 
                 switch(j) {
-                    case 0: return d.customer.display_name;
-                    case 1: return d.customer.membership_type_text;
+                    case 0: return d.display_name;
+                    case 1: return d.membership_type_text;
                 }
             }
             return '';
         }
         this.season.liveSearchResultRowFn = function(s, f, i, j, d) { 
-            return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\',\'member\':\'yes\'});';
+            return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'customer_id\':\'' + d.id + '\',\'member\':\'yes\'});';
         };
         this.season.cellValue = function(s, i, j, d) {
             switch(j) {

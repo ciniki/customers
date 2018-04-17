@@ -36,12 +36,12 @@ function ciniki_customers_distributors() {
         };
         this.menu.liveSearchResultValue = function(s, f, i, j, d) {
             if( s == 'search' ) { 
-                return d.customer.display_name;
+                return d.display_name;
             }
             return '';
         }
         this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
-            return 'M.ciniki_customers_distributors.showDistributor(\'M.ciniki_customers_distributors.showMenu();\',\'' + d.customer.id + '\');'; 
+            return 'M.ciniki_customers_distributors.showDistributor(\'M.ciniki_customers_distributors.showMenu();\',\'' + d.id + '\');'; 
         };
         this.menu.liveSearchSubmitFn = function(s, search_str) {
             M.startApp('ciniki.customers.main',null,'M.ciniki_tenants_main.showMenu();','mc',{'search': search_str,'type':'distributors'});
