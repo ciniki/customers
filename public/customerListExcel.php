@@ -560,7 +560,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 'phones', 'emails', 'addresses', 'links',
                 'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
             'maps'=>array(
-                'type'=>array('1'=>'Individual', '2'=>'Tenant'),
+                'type'=>array('1'=>'Individual', '2'=>'Business'),
                 'status'=>$maps['customer']['status'], //array('10'=>'Active', '60'=>'Former'),
                 'member_status'=>$maps['customer']['member_status'], //array('10'=>'Active', '60'=>'Former'),
                 'membership_length'=>$maps['customer']['membership_length'], // array('10'=>'Monthly', '20'=>'Yearly', '60'=>'Lifetime'),
