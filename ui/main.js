@@ -87,18 +87,18 @@ function ciniki_customers_main() {
         this.menu.liveSearchResultValue = function(s, f, i, j, d) {
             if( s == 'search' ) { 
                 switch(j) {
-                    case 0: return d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + ")</span>" : "");
-                    case 1: return d.customer.status_text;
+                    case 0: return d.display_name + (d.parent_name != null && d.parent_name != "" ? " <span class=\'subdue\'>(" + d.parent_name + ")</span>" : "");
+                    case 1: return d.status_text;
                 }
             }
             return '';
         };
         this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
-            return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.menu.open();\',\'' + d.customer.id + '\');'; 
+            return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.menu.open();\',\'' + d.id + '\');'; 
         };
         this.menu.liveSearchResultRowStyle = function(s, f, i, d) {
-            if( M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
-                return 'background: ' + M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status];
+            if( M.curTenant.customers.settings['ui-colours-customer-status-' + d.status] != null ) {
+                return 'background: ' + M.curTenant.customers.settings['ui-colours-customer-status-' + d.status];
             }
         };
         this.menu.liveSearchSubmitFn = function(s, search_str) {
