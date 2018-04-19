@@ -576,13 +576,24 @@ function ciniki_customers_edit() {
     };
     this.edit.liveSearchResultRowFn = function(s, f, i, j, d) { 
         if( f == 'parent_id' ) {
-            return 'M.ciniki_customers_edit.edit.updateParent(\'' + s + '\',\'' + escape(d.id) + '\',\'' + escape(d.display_name) + '\');'
+            if( d.customer != null ) {
+                return 'M.ciniki_customers_edit.edit.updateParent(\'' + s + '\',\'' + escape(d.customer.id) + '\',\'' + escape(d.customer.display_name) + '\');'
+            } else {
+                return 'M.ciniki_customers_edit.edit.updateParent(\'' + s + '\',\'' + escape(d.id) + '\',\'' + escape(d.display_name) + '\');'
+            }
         }
         else if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
-            if( this.parent_id != null && this.parent_id > 0 ) {
-                return 'M.ciniki_customers_edit.showEdit(null,\'' + d.id + '\',null,\'' + this.parent_id + '\',\'' + escape(this.parent_name) + '\');';
+            if( d.customer != null ) {
+                if( this.parent_id != null && this.parent_id > 0 ) {
+                    return 'M.ciniki_customers_edit.showEdit(null,\'' + d.customer.id + '\',null,\'' + this.parent_id + '\',\'' + escape(this.parent_name) + '\');';
+                }
+                return 'M.ciniki_customers_edit.showEdit(null,' + d.customer.id + ',null,0,\'\');';
+            } else {
+                if( this.parent_id != null && this.parent_id > 0 ) {
+                    return 'M.ciniki_customers_edit.showEdit(null,\'' + d.id + '\',null,\'' + this.parent_id + '\',\'' + escape(this.parent_name) + '\');';
+                }
+                return 'M.ciniki_customers_edit.showEdit(null,' + d.id + ',null,0,\'\');';
             }
-            return 'M.ciniki_customers_edit.showEdit(null,' + d.id + ',null,0,\'\');';
         }
         else if( f == 'city' ) {
             return 'M.ciniki_customers_edit.edit.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
