@@ -554,10 +554,18 @@ function ciniki_customers_edit() {
     };
     this.edit.liveSearchResultValue = function(s, f, i, j, d) {
         if( f == 'parent_id' || f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
-            if( d.eid != null && d.eid != '' ) {
-                return d.eid + ' - ' + d.display_name; 
+            // FIXME: Remove when all searched return no subarray
+            if( d.customer != null ) {
+                if( d.customer.eid != null && d.customer.eid != '' ) {
+                    return d.customer.eid + ' - ' + d.customer.display_name; 
+                }
+                return d.customer.display_name; 
+            } else {
+                if( d.eid != null && d.eid != '' ) {
+                    return d.eid + ' - ' + d.display_name; 
+                }
+                return d.display_name; 
             }
-            return d.display_name; 
         }
         else if( f == 'city') { return d.city.name + ',' + d.city.province; }
         else if( f == 'phone_label_1' || f == 'phone_label_2' || f == 'phone_label_3' ) { return d; }
