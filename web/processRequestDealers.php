@@ -218,6 +218,12 @@ function ciniki_customers_web_processRequestDealers(&$ciniki, $settings, $tnid, 
         return $rc;
     }
     if( isset($rc['markers']) ) {
+        if( isset($rc['country']) && (!isset($country_name) || $country_name == '') ) {
+            $country_name = $rc['country'];
+        }
+        if( isset($rc['province']) && (!isset($province_name) || $province_name == '') ) {
+            $province_name = $rc['province'];
+        }
         $json = 'var gmap_data = ' . json_encode($rc['markers']) . ';';
         // Removed cache map data file so it can be broken down by country
 /*      $filename = '/' . sprintf('%02d', ($ciniki['request']['tnid']%100)) . '/'

@@ -12,6 +12,8 @@
 function ciniki_customers_web_dealersMapMarkers($ciniki, $settings, $tnid, $args) {
 
     $strsql = "SELECT "
+        . "ciniki_customer_addresses.province, "
+        . "ciniki_customer_addresses.country, "
         . "ciniki_customer_addresses.latitude AS y, "
         . "ciniki_customer_addresses.longitude AS x, "
         . "ciniki_customers.display_name AS t, "
@@ -40,9 +42,29 @@ function ciniki_customers_web_dealersMapMarkers($ciniki, $settings, $tnid, $args
         return array('stat'=>'ok', 'markers'=>array());
     }
     $markers = $rc['rows'];
+    $countries = array();
+    $provinces = array();
     foreach($markers as $mid => $marker) {
         $markers[$mid]['c'] = nl2br($marker['c']);
+        if( !in_array($marker['country'], $countries) ) {
+            $countries[] = $marker['country'];
+        }
+        if( !in_array($marker['province'], $provinces) ) {
+            $provinces[] = $marker['province'];
+        }
+        unset($markers[$mid]['country']);
+        unset($markers[$mid]['province']);
     }
-    return array('stat'=>'ok', 'markers'=>$markers);
+
+    $rsp = array('stat'=>'ok', 'markers'=>$markers);
+
+    if( count($countries) == 1 ) {
+        $rsp['country'] = array_pop($countries);
+    }
+    if( count($provinces) == 1 ) {
+        $rsp['province'] = array_pop($provinces);
+    }
+
+    return $rsp;
 }
 ?>
