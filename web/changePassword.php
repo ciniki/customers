@@ -22,6 +22,7 @@ function ciniki_customers_web_changePassword($ciniki, $tnid, $oldpassword, $newp
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'logAdd');
 
     if( strlen($newpassword) < 8 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.186', 'msg'=>'New password must be longer than 8 characters.'));
@@ -44,11 +45,13 @@ function ciniki_customers_web_changePassword($ciniki, $tnid, $oldpassword, $newp
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
     if( $rc['stat'] != 'ok' ) {
+        ciniki_customers_web_logAdd($ciniki, array(), $tnid, 50, 'Change Password', $ciniki['session']['customer']['id'], $ciniki['session']['customer']['email'], $rc['err']['code'], 'Error getting temp password');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " fail (" . $rc['err']['code'] . ")");
         return $rc;
     }
 //  if( !isset($rc['user']) || !is_array($rc['user']) ) {
     if( !isset($rc['rows']) || count($rc['rows']) < 1 ) {   
+        ciniki_customers_web_logAdd($ciniki, array(), $tnid, 50, 'Change Password', $ciniki['session']['customer']['id'], $ciniki['session']['customer']['email'], 'ciniki.customers.188', 'No temp password found');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " fail (751)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.188', 'msg'=>'Unable to update password.'));
     }
@@ -64,6 +67,7 @@ function ciniki_customers_web_changePassword($ciniki, $tnid, $oldpassword, $newp
     // Perform an extra check to make sure only 1 row was found, other return error
     //
     if( $rc['num_rows'] < 1 ) {
+        ciniki_customers_web_logAdd($ciniki, array(), $tnid, 50, 'Change Password', $ciniki['session']['customer']['id'], $ciniki['session']['customer']['email'], 'ciniki.customers.189', 'No temp password found');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " fail (752)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.189', 'msg'=>'Invalid temporary password'));
     }
@@ -96,12 +100,14 @@ function ciniki_customers_web_changePassword($ciniki, $tnid, $oldpassword, $newp
     $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        ciniki_customers_web_logAdd($ciniki, array(), $tnid, 50, 'Change Password', $ciniki['session']['customer']['id'], $ciniki['session']['customer']['email'], 'ciniki.customers.189', 'Unable to update password');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " fail (753)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.190', 'msg'=>'Unable to update password.'));
     }
 
     if( $rc['num_affected_rows'] < 1 ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        ciniki_customers_web_logAdd($ciniki, array(), $tnid, 50, 'Change Password', $ciniki['session']['customer']['id'], $ciniki['session']['customer']['email'], 'ciniki.customers.189', 'Password unchanged');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " fail (754)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.191', 'msg'=>'Unable to change password.'));
     }
@@ -111,10 +117,12 @@ function ciniki_customers_web_changePassword($ciniki, $tnid, $oldpassword, $newp
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
+        ciniki_customers_web_logAdd($ciniki, array(), $tnid, 50, 'Change Password', $ciniki['session']['customer']['id'], $ciniki['session']['customer']['email'], 'ciniki.customers.189', 'Error committing changes');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " fail (755)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.192', 'msg'=>'Unable to update password.'));
     }
 
+    ciniki_customers_web_logAdd($ciniki, array(), $tnid, 10, 'Change Password', $ciniki['session']['customer']['id'], $ciniki['session']['customer']['email'], '', 'Success');
     error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: changePassword " . $ciniki['session']['customer']['email'] . " success");
 
     //

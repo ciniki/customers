@@ -89,6 +89,13 @@ function ciniki_customers_maps($ciniki) {
             0x08=>'P',
             ),
         );
+    $maps['log'] = array(
+        'status'=>array(
+            '10' => 'Success',
+            '30' => 'Warning',
+            '50' => 'Error',
+            ),
+        );
     
     return array('stat'=>'ok', 'maps'=>$maps);
 }
