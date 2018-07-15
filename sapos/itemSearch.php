@@ -17,6 +17,13 @@ function ciniki_customers_sapos_itemSearch($ciniki, $tnid, $args) {
     }
 
     //
+    // Check if search for membership
+    //
+    if( strncasecmp($args['start_needle'], 'membership', strlen($args['start_needle'])) != 0 ) {
+        return array('stat'=>'ok', 'items'=>array());
+    }
+
+    //
     // Get the customer settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
