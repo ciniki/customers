@@ -53,7 +53,7 @@ function ciniki_customers_delete(&$ciniki) {
     //
     // Get the uuid of the customer to be deleted
     //
-    $strsql = "SELECT uuid FROM ciniki_customers "
+    $strsql = "SELECT uuid, type FROM ciniki_customers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "";
@@ -65,6 +65,7 @@ function ciniki_customers_delete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.66', 'msg'=>'Unable to find existing customer'));
     }
     $uuid = $rc['customer']['uuid'];
+    $customer_type = $rc['customer']['type'];
 
     //
     // Check if this customer is a parent
@@ -79,7 +80,12 @@ function ciniki_customers_delete(&$ciniki) {
         return $rc;
     }
     if( isset($rc['children']) && $rc['children'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.67', 'msg'=>'There are children attached to this account, unable to delete.'));
+        if( $customer_type == 20 ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.310', 'msg'=>'There are children attached to this account, unable to delete.'));
+        } elseif( $customer_type == 2 || $customer_type == 30 ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.311', 'msg'=>'There are admins or employees attached to this account, unable to delete.'));
+        }
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.67', 'msg'=>'There are customer accounts to this account, unable to delete.'));
     }
 
     //

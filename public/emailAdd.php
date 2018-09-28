@@ -28,7 +28,7 @@ function ciniki_customers_emailAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
-        'address'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email Address'),
+        'address'=>array('required'=>'yes', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Email Address'),
         'password'=>array('required'=>'no', 'blank'=>'no', 'default'=>'', 'name'=>'Password'),
         'temp_password'=>array('required'=>'no', 'blank'=>'no', 'default'=>'', 'name'=>'Temporary Password'),
         'temp_password_date'=>array('required'=>'no', 'blank'=>'no', 'default'=>'', 'name'=>'Temporary Password Date'),

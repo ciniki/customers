@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function return the details for a customer when the tenant IFB flag is enabled.
+// This function return the details for a customer when the tenant IFB/Accounts flag is enabled.
 //
 // Arguments
 // ---------
@@ -10,12 +10,12 @@
 // Returns
 // -------
 //
-function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args) {
+function ciniki_customers__accountDetails($ciniki, $tnid, $customer_id, $args) {
  
     $rsp = array('stat'=>'ok');
 
     //
-    // Load the customer
+    // Load the details of the requested customer. This may or may not be the parent account.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerLoad');
     $rc = ciniki_customers_customerLoad($ciniki, $tnid, $customer_id);
@@ -34,45 +34,52 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
     }
     $rsp['customer_details'] = $rc['details'];
 
-    if( $rsp['customer']['type'] == 10 ) {
-        return $rsp;
-    }
-    
     //
-    // Load parent if any
+    // Load account details if any
     //
     if( isset($rsp['customer']['parent_id']) && $rsp['customer']['parent_id'] > 0 ) {
+        //
+        // Load the account customer, the rsp['customer'] is then the requested customer information
+        //
         $rc = ciniki_customers_customerLoad($ciniki, $tnid, $rsp['customer']['parent_id']);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.232', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
         }
-        $rsp['parent'] = $rc['customer'];
-        $rc = ciniki_customers_processDetails($ciniki, $tnid, $rsp['parent'], array(
-            'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'
-            ));
+        $rsp['account'] = $rc['customer'];
+
+        //
+        // Process the account details
+        //
+        $rc = ciniki_customers_processDetails($ciniki, $tnid, $rsp['account'], array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.255', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
         }
-        if( $rsp['parent']['type'] == 20 ) {
-            $rsp['family_details'] = $rc['details'];
-        } elseif( $rsp['parent']['type'] == 30 ) {
-            $rsp['business_details'] = $rc['details'];
-        }
+        $rsp['account_details'] = $rc['details'];
+    }
+    else {
+        //
+        // The customer requested is the account
+        $rsp['account'] = $rsp['customer'];
+        $rsp['account_details'] = $rsp['customer_details'];
+    }
+
+    $name = array_shift($rsp['account_details']);
+    $rsp['account_name'] = array(array('id'=>$rsp['account']['id'], 'display_name'=>$name['value']));
+
+    if( $rsp['account']['type'] == 10 ) {
+        return $rsp;
     }
 
     //
     // Load any child accounts for the customer or the parent
     //
     $rsp['child_accounts'] = array();
-    if( $rsp['customer']['type'] == 20 || $rsp['customer']['type'] == 30 || $rsp['customer']['parent_id'] > 0 ) {
+    if( $rsp['account']['type'] == 20 || $rsp['account']['type'] == 30 ) {
         $strsql = "SELECT id, type, display_name "
-            . "FROM ciniki_customers ";
-        if( $rsp['customer']['type'] == 20 || $rsp['customer']['type'] == 30 ) {
-            $strsql .= "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $rsp['customer']['id']) . "' ";
-        } else {
-            $strsql .= "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $rsp['customer']['parent_id']) . "' ";
-        }
-        $strsql .= "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "FROM ciniki_customers "
+            . "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $rsp['account']['id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY display_name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -87,8 +94,9 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
     //
     // The details for business/parent accounts and children
     //
-    $rsp['parent_details'] = array();
-    $rsp['admin_details'] = array();
+//    $rsp['parent_details'] = array();
+//    $rsp['admin_details'] = array();
+    $rsp['parents'] = array();
     $rsp['children'] = array();
 
     if( isset($rsp['child_accounts']) ) {
@@ -109,7 +117,8 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.238', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
                 }
-                $rsp['parent_details'] = array_merge($rsp['parent_details'], $rc['details']);
+//                $rsp['parent_details'] = array_merge($rsp['parent_details'], $rc['details']);
+                $rsp['parents'][] = $customer;
             }
             elseif( $customer['type'] == 22 ) {
                 $rsp['children'][] = $customer;
@@ -122,7 +131,8 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.254', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
                 }
-                $rsp['admin_details'] = array_merge($rsp['admin_details'], $rc['details']);
+//                $rsp['admin_details'] = array_merge($rsp['admin_details'], $rc['details']);
+                $rsp['parents'][] = $customer;
             }
             elseif( $customer['type'] == 32 ) {
                 $rsp['children'][] = $customer;

@@ -30,7 +30,7 @@ function ciniki_customers_emailUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
         'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Email ID'), 
-        'address'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email Address'), 
+        'address'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Email Address'), 
         'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 

@@ -77,21 +77,22 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
         $menu_item = array(
             'priority'=>5600,
             'label'=>'Customers', 
-            'edit'=>array('app'=>'ciniki.customers.ifb'),
-            'add'=>array('app'=>'ciniki.customers.ifb', 'args'=>array('edit_id'=>0)),
+            'edit'=>array('app'=>'ciniki.customers.accounts'),
+            'add'=>array('app'=>'ciniki.customers.accounts', 'args'=>array('edit_id'=>0)),
             'search'=>array(
                 'method'=>'ciniki.customers.searchQuick',
                 'args'=>array(),
                 'container'=>'customers',
                 'cols'=>3,
-                'headerValues'=>array('Customers', 'Type'),
+                'headerValues'=>array('Business/Family', 'Customers', 'Type'),
                 'cellValues'=>array(
-                    '0' => 'd.display_name;',
-                    '1' => 'd.status_text;',
+                    '0' => 'd.parent_name;',
+                    '1' => 'd.display_name;',
+                    '2' => 'd.type_text;',
                     ),
                 'noData'=>'No customers found',
-                'edit'=>array('method'=>'ciniki.customers.ifb', 'args'=>array('customer_id'=>'d.id;')),
-                'submit'=>array('method'=>'ciniki.customers.ifb', 'args'=>array('search'=>'search_str')),
+                'edit'=>array('method'=>'ciniki.customers.accounts', 'args'=>array('customer_id'=>'d.id;')),
+                'submit'=>array('method'=>'ciniki.customers.accounts', 'args'=>array('search'=>'search_str')),
                 ),
             );
         if( isset($rsp['settings']['ui-labels-customers']) && $rsp['settings']['ui-labels-customers'] != '' ) {
@@ -100,10 +101,10 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
         }
         $rsp['menu_items'][] = $menu_item;
         //
-        // Setup the ui app override for ifb UI
+        // Setup the ui app override for accounts UI
         //
         $rsp['uiAppOverrides'] = array(
-            'ciniki.customers.edit' => array('method'=>'ciniki.customers.ifb'),
+            'ciniki.customers.edit' => array('method'=>'ciniki.customers.accounts'),
             );
     } 
     elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x01) 

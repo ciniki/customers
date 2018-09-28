@@ -11,7 +11,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_customerDetails($ciniki) {
+function ciniki_customers_accountDetails($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -19,10 +19,6 @@ function ciniki_customers_customerDetails($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
-        'phones'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Phones'),
-        'emails'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Emails'),
-        'addresses'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Addresses'),
-        'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Subscriptions'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -34,17 +30,17 @@ function ciniki_customers_customerDetails($ciniki) {
     // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.customerDetails', $args['customer_id']); 
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.accountDetails'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the details for an IFB account
+    // Get the details for the account
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerIFBDetails');
-        $rc = ciniki_customers_customerIFBDetails($ciniki, $args['tnid'], $args['customer_id'], $args);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'accountDetails');
+        $rc = ciniki_customers__accountDetails($ciniki, $args['tnid'], $args['customer_id'], $args);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -53,13 +49,16 @@ function ciniki_customers_customerDetails($ciniki) {
         $rsp['data_tabs'] = array();
 
         //
-        // Build list of child ids
+        // Build list of child ids, if the requested customer is a family or business
         //
         $uiDataArgs = array();
-        if( isset($rsp['children']) && $rsp['customer']['type'] == 20 || $rsp['customer']['type'] == 30 ) {
+        if( ($rsp['customer']['type'] == 20 || $rsp['customer']['type'] == 30) && isset($rsp['children']) ) {
             $uiDataArgs['customer_ids'] = array($args['customer_id']);
-            if( isset($rsp['parent']) ) {
-                $uiDataArgs['customer_ids'][] = $rsp['parent']['id'];
+//            if( isset($rsp['parent']) ) {
+//                $uiDataArgs['customer_ids'][] = $rsp['parent']['id'];
+//            }
+            foreach($rsp['parents'] as $parent) {
+                $uiDataArgs['customer_ids'][] = $parent['id'];
             }
             foreach($rsp['children'] as $child) {
                 $uiDataArgs['customer_ids'][] = $child['id'];

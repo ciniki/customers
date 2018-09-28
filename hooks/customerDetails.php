@@ -179,53 +179,27 @@ function ciniki_customers_hooks_customerDetails($ciniki, $tnid, $args) {
     // Build the details array
     //
     $details = array();
-    $details[] = array('detail'=>array('label'=>'Name', 'value'=>$customer['display_name']));
-//  if( isset($customer['company']) && $customer['company'] != '' ) {
-//      $details[] = array('detail'=>array('label'=>'Company', 'value'=>$customer['company']));
-//  }
-//    if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
-        if( isset($customer['phones']) ) {
-            foreach($customer['phones'] as $phone) {
-                $details[] = array('detail'=>array('label'=>$phone['phone_label'], 'value'=>$phone['phone_number']));
-            }
+    if( !isset($args['name']) || $args['name'] == 'yes' ) {
+        $details[] = array('detail'=>array('label'=>'Name', 'value'=>$customer['display_name']));
+    }
+    if( isset($customer['phones']) ) {
+        foreach($customer['phones'] as $phone) {
+            $details[] = array('detail'=>array('label'=>$phone['phone_label'], 'value'=>$phone['phone_number']));
         }
-/*    } else {
-        if( isset($customer['phone_home']) && $customer['phone_home'] != '' ) {
-            $details[] = array('detail'=>array('label'=>'Home', 'value'=>$customer['phone_home']));
+    }
+    if( isset($customer['emails']) ) {
+        $emails = '';
+        $comma = '';
+        foreach($customer['emails'] as $e => $email) {
+            $emails .= $comma . $email['email']['address'];
+            $comma = ', ';
         }
-        if( isset($customer['phone_work']) && $customer['phone_work'] != '' ) {
-            $details[] = array('detail'=>array('label'=>'Work', 'value'=>$customer['phone_work']));
+        if( count($customer['emails']) > 1 ) {
+            $details[] = array('detail'=>array('label'=>'Emails', 'value'=>$emails));
+        } else {
+            $details[] = array('detail'=>array('label'=>'Email', 'value'=>$emails));
         }
-        if( isset($customer['phone_cell']) && $customer['phone_cell'] != '' ) {
-            $details[] = array('detail'=>array('label'=>'Cell', 'value'=>$customer['phone_cell']));
-        }
-        if( isset($customer['phone_fax']) && $customer['phone_fax'] != '' ) {
-            $details[] = array('detail'=>array('label'=>'Fax', 'value'=>$customer['phone_fax']));
-        }
-    } */
-/*    if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x20000000) == 0 ) { */
-        if( isset($customer['emails']) ) {
-            $emails = '';
-            $comma = '';
-            foreach($customer['emails'] as $e => $email) {
-                $emails .= $comma . $email['email']['address'];
-                $comma = ', ';
-    //          $details[] = array('detail'=>array('label'=>'Email', 'value'=>$email['email']['address']));
-            }
-            if( count($customer['emails']) > 1 ) {
-                $details[] = array('detail'=>array('label'=>'Emails', 'value'=>$emails));
-            } else {
-                $details[] = array('detail'=>array('label'=>'Email', 'value'=>$emails));
-            }
-        }
-/*    } else {
-        if( isset($customer['primary_email']) && $customer['primary_email'] != '' ) {
-            $details[] = array('detail'=>array('label'=>'Email', 'value'=>$customer['primary_email']));
-        }
-        if( isset($customer['alternate_email']) && $customer['alternate_email'] != '' ) {
-            $details[] = array('detail'=>array('label'=>'Alternate', 'value'=>$customer['alternate_email']));
-        }
-    } */
+    }
     if( isset($customer['addresses']) ) {
         foreach($customer['addresses'] as $a => $address) {
             $label = '';
@@ -235,7 +209,7 @@ function ciniki_customers_hooks_customerDetails($ciniki, $tnid, $args) {
                 if( ($flags&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
                 if( ($flags&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
                 if( ($flags&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
-                if( ($flags&0x04) == 0x08 ) { $label .= $comma . 'Public'; $comma = ', ';}
+                if( ($flags&0x08) == 0x08 ) { $label .= $comma . 'Public'; $comma = ', ';}
             }
             if( $label == '' ) { 
                 $label = 'Address'; 

@@ -1388,7 +1388,8 @@ function ciniki_customers_edit() {
         }
         else if( args.edit_link_id != null && args.edit_link_id != '' && args.customer_id != null && args.customer_id > 0 ) {
             this.showLinkEdit(cb, args.customer_id, args.edit_link_id);
-        } else {
+        } 
+        else {
             this.showEdit(cb, args.customer_id, args.category, (args.parent_id!=null?args.parent_id:0), args.parent_name, args.type);
         }
 

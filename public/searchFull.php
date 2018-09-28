@@ -71,6 +71,7 @@ function ciniki_customers_searchFull($ciniki) {
         . "c1.status, "
         . "c1.status AS status_text, "
         . "c1.type, "
+        . "c1.type AS type_text, "
         . "c1.company, "
         . "c1.eid ";
     $strsql .= "FROM ciniki_customers AS c1 "
@@ -106,8 +107,6 @@ function ciniki_customers_searchFull($ciniki) {
             . "OR c1.company LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR c1.company LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-//          . "OR CONCAT_WS(' ', first, last) LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-//          . "OR CONCAT_WS(' ', first, last) LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
         . "ORDER BY c1.type DESC, c1.sort_name, c1.last, c1.first ";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
@@ -115,11 +114,16 @@ function ciniki_customers_searchFull($ciniki) {
     }
 
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-    $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'display_name', 'parent_name', 'status', 'status_text', 'type', 'company', 'eid'),
-            'maps'=>array('status_text'=>$maps['customer']['status']),
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+        array('container'=>'customers', 'fname'=>'id',
+            'fields'=>array(
+                'id', 'display_name', 'parent_name', 'status', 'status_text', 
+                'type', 'type_text', 'company', 'eid'),
+            'maps'=>array(
+                'status_text'=>$maps['customer']['status'], 
+                'type_text'=>$maps['customer']['type'],
+                ),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

@@ -27,7 +27,7 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'10', 'name'=>'Distributor Categories')),
 //      array('flag'=>array('bit'=>'11', 'name'=>'Distributor Tags')),
 //      array('flag'=>array('bit'=>'12', 'name'=>'')),
-        array('flag'=>array('bit'=>'12', 'name'=>'IFB')),          // Don't use, can't be bit shifted by javascript
+        array('flag'=>array('bit'=>'12', 'name'=>'IFB')),
             // 
             // The IFB mode is designed to manage Individuals, Families and Businesses.
             // This mode sould not be used with Members, Dealers, Distributors, Children flags

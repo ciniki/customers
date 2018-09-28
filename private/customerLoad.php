@@ -77,6 +77,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "sales_total_prev, "
         . "discount_percent, "
         . "start_date, "
+        . "connection, "
         . "notes "
         . "FROM ciniki_customers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -92,7 +93,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
                 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
                 'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
-                'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes'),
+                'birthdate', 'short_bio', 'full_bio', 'webflags', 'connection', 'notes'),
             'maps'=>array(
                 'type_text'=>$maps['customer']['type'],
                 'status_text'=>$maps['customer']['status'],
@@ -158,29 +159,29 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
     // IFB parsing
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) ) {
-        $customer['cell_phone_id'] = 0;
-        $customer['cell_phone'] = '';
-        $customer['home_phone_id'] = 0;
-        $customer['home_phone'] = '';
-        $customer['work_phone_id'] = 0;
-        $customer['work_phone'] = '';
-        $customer['fax_phone_id'] = 0;
-        $customer['fax_phone'] = '';
+        $customer['phone_cell_id'] = 0;
+        $customer['phone_cell'] = '';
+        $customer['phone_home_id'] = 0;
+        $customer['phone_home'] = '';
+        $customer['phone_work_id'] = 0;
+        $customer['phone_work'] = '';
+        $customer['phone_fax_id'] = 0;
+        $customer['phone_fax'] = '';
         $extras = array();
-        if( isset($rc['phones']) ) {
-            foreach($rc['phones'] as $phone) {
-                if( $phone['phone_label'] == 'Cell' && $phone['phone_number'] != '' && $customer['cell_phone'] != '' ) {
-                    $customer['cell_phone_id'] = $phone['id'];
-                    $customer['cell_phone'] = $phone['phone_number'];
-                } elseif( $phone['phone_label'] == 'Home' && $phone['phone_number'] != '' && $customer['home_phone'] != '' ) {
-                    $customer['home_phone_id'] = $phone['id'];
-                    $customer['home_phone'] = $phone['phone_number'];
-                } elseif( $phone['phone_label'] == 'Work' && $phone['phone_number'] != '' && $customer['work_phone'] != '' ) {
-                    $customer['work_phone_id'] = $phone['id'];
-                    $customer['work_phone'] = $phone['phone_number'];
-                } elseif( $phone['phone_label'] == 'Fax' && $phone['phone_number'] != '' && $customer['fax_phone'] != '' ) {
-                    $customer['fax_phone_id'] = $phone['id'];
-                    $customer['fax_phone'] = $phone['phone_number'];
+        if( isset($customer['phones']) ) {
+            foreach($customer['phones'] as $phone) {
+                if( $phone['phone_label'] == 'Cell' && $phone['phone_number'] != '' ) {
+                    $customer['phone_cell_id'] = $phone['id'];
+                    $customer['phone_cell'] = $phone['phone_number'];
+                } elseif( $phone['phone_label'] == 'Home' && $phone['phone_number'] != '' ) {
+                    $customer['phone_home_id'] = $phone['id'];
+                    $customer['phone_home'] = $phone['phone_number'];
+                } elseif( $phone['phone_label'] == 'Work' && $phone['phone_number'] != '' ) {
+                    $customer['phone_work_id'] = $phone['id'];
+                    $customer['phone_work'] = $phone['phone_number'];
+                } elseif( $phone['phone_label'] == 'Fax' && $phone['phone_number'] != '' ) {
+                    $customer['phone_fax_id'] = $phone['id'];
+                    $customer['phone_fax'] = $phone['phone_number'];
                 } elseif( $phone['phone_number'] != '' ) {
                     $extras[] = $phone;
                 }
@@ -191,18 +192,18 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         //
         if( count($extras) > 0 ) {
             foreach($extras as $extra) {
-                if( $customer['cell_phone'] != '' ) {
-                    $customer['cell_phone_id'] = $phone['id'];
-                    $customer['cell_phone'] = $phone['phone_number'];
-                } elseif( $customer['home_phone'] != '' ) {
-                    $customer['home_phone_id'] = $phone['id'];
-                    $customer['home_phone'] = $phone['phone_number'];
-                } elseif( $customer['work_phone'] != '' ) {
-                    $customer['work_phone_id'] = $phone['id'];
-                    $customer['work_phone'] = $phone['phone_number'];
-                } elseif( $customer['fax_phone'] != '' ) {
-                    $customer['fax_phone_id'] = $phone['id'];
-                    $customer['fax_phone'] = $phone['phone_number'];
+                if( $customer['phone_cell'] != '' ) {
+                    $customer['phone_cell_id'] = $phone['id'];
+                    $customer['phone_cell'] = $phone['phone_number'];
+                } elseif( $customer['phone_home'] != '' ) {
+                    $customer['phone_home_id'] = $phone['id'];
+                    $customer['phone_home'] = $phone['phone_number'];
+                } elseif( $customer['phone_work'] != '' ) {
+                    $customer['phone_work_id'] = $phone['id'];
+                    $customer['phone_work'] = $phone['phone_number'];
+                } elseif( $customer['phone_fax'] != '' ) {
+                    $customer['phone_fax_id'] = $phone['id'];
+                    $customer['phone_fax'] = $phone['phone_number'];
                 }
             }
         }
@@ -260,6 +261,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 $customer['mailing_country'] = $customer['addresses'][0]['country'];
                 $customer['mailing_flags'] = $customer['addresses'][0]['flags'];
             } else {
+                $customer['mailing_flags'] = ($customer['addresses'][0]['flags']&0xfd);         // Remove billing 0x02 flag
                 $customer['billing_address_id'] = $customer['addresses'][0]['id'];
                 $customer['billing_address1'] = $customer['addresses'][0]['address1'];
                 $customer['billing_address2'] = $customer['addresses'][0]['address2'];
@@ -269,13 +271,13 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 $customer['billing_country'] = $customer['addresses'][0]['country'];
             }
             if( isset($customer['addresses'][1]['flags']) && $customer['billing_address_id'] == 0 ) {
-                $customer['billing_address_id'] = $customer['addresses'][0]['id'];
-                $customer['billing_address1'] = $customer['addresses'][0]['address1'];
-                $customer['billing_address2'] = $customer['addresses'][0]['address2'];
-                $customer['billing_city'] = $customer['addresses'][0]['city'];
-                $customer['billing_province'] = $customer['addresses'][0]['province'];
-                $customer['billing_postal'] = $customer['addresses'][0]['postal'];
-                $customer['billing_country'] = $customer['addresses'][0]['country'];
+                $customer['billing_address_id'] = $customer['addresses'][1]['id'];
+                $customer['billing_address1'] = $customer['addresses'][1]['address1'];
+                $customer['billing_address2'] = $customer['addresses'][1]['address2'];
+                $customer['billing_city'] = $customer['addresses'][1]['city'];
+                $customer['billing_province'] = $customer['addresses'][1]['province'];
+                $customer['billing_postal'] = $customer['addresses'][1]['postal'];
+                $customer['billing_country'] = $customer['addresses'][1]['country'];
             }
         }
     }
@@ -317,4 +319,3 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
     return array('stat'=>'ok', 'customer'=>$customer);
 }
 ?>
-

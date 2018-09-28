@@ -32,6 +32,7 @@ function ciniki_customers_searchQuick($ciniki) {
         'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Dealers'), 
         'distributors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Dealers'), 
         'distributor_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Search Distributors'), 
+        'types'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Types'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -74,11 +75,13 @@ function ciniki_customers_searchQuick($ciniki) {
     // Get the number of customers in each status for the tenant, 
     // if no rows found, then return empty array
     //
-    $strsql = "SELECT DISTINCT c1.id, c1.display_name, IFNULL(c2.display_name, '') AS parent_name, "
+    $strsql = "SELECT DISTINCT c1.id, if(c1.type=20 OR c1.type = 30, '', c1.display_name) AS display_name, "
+        . "IFNULL(c2.display_name, if(c1.type=20 OR c1.type = 30, c1.display_name, '')) AS parent_name, "
         . "c1.parent_id, "
         . "c1.status, "
         . "c1.status AS status_text, "
         . "c1.type, "
+        . "c1.type AS type_text, "
         . "c1.company, "
         . "c1.eid, "
         . "IFNULL(DATE_FORMAT(c1.member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS member_lastpaid, "
@@ -138,6 +141,10 @@ function ciniki_customers_searchQuick($ciniki) {
     if( isset($args['distributors']) && $args['distributors'] == 'yes' ) {
         $strsql .= "AND c1.distributor_status > 0 ";
     }
+    if( isset($args['types']) && is_array($args['types']) && count($args['types']) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+        $strsql .= "AND c1.type IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['types']) . ") ";
+    }
     $args['start_needle'] = preg_replace("/([^\s]) ([^\s])/", '$1%$2', $args['start_needle']);
     $strsql .= "AND (c1.first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR c1.first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
@@ -163,9 +170,10 @@ function ciniki_customers_searchQuick($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id',
             'fields'=>array('id', 'eid', 'display_name', 'parent_name', 'status', 'status_text',
-                'type', 'company', 'member_lastpaid', 'member_status', 
+                'type', 'type_text', 'company', 'member_lastpaid', 'member_status', 
                 'membership_type', 'membership_type_text', 'membership_length', 'membership_length_text'),
             'maps'=>array('status_text'=>$maps['customer']['status'],
+                'type_text'=>$maps['customer']['type'],
                 'membership_type_text'=>$maps['customer']['membership_type'],
                 'member_length_text'=>$maps['customer']['membership_length'],
                 )),

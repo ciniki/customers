@@ -37,6 +37,11 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
         . "FROM ciniki_customer_emails, ciniki_customers "
         . "WHERE ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        //
+        // Don't allow children and employees to login
+        // Only allow person, business, individual, parent, admin
+        // 
+        . "AND ciniki_customers.type IN (1, 2, 10, 21, 31) "
         . "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
         . "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
         . "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "') "

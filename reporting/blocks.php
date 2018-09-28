@@ -2,12 +2,12 @@
 //
 // Description
 // -----------
-// This function will return the list of options for the module that can be set for the website.
+// This function will return the list of available blocks to the ciniki.reporting module.
 //
 // Arguments
 // ---------
 // ciniki:
-// tnid:     The ID of the tenant.
+// tnid:     
 // args:            The possible arguments for.
 //
 //
@@ -44,13 +44,15 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
             ),
         );
-    $blocks['ciniki.customers.newmembers'] = array(
-        'name'=>'New Members',
-        'module' => 'Customers',
-        'options'=>array(
-            'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
-            ),
-        );
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02) ) {
+        $blocks['ciniki.customers.newmembers'] = array(
+            'name'=>'New Members',
+            'module' => 'Customers',
+            'options'=>array(
+                'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                ),
+            );
+    }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

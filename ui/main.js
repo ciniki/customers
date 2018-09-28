@@ -262,24 +262,24 @@ function ciniki_customers_main() {
         this.search.sectionData = function(s) { return this.data; }
         this.search.cellValue = function(s, i, j, d) { 
             switch(j) {
-                case 0: return d.customer.display_name + (d.customer.parent_name != null && d.customer.parent_name != "" ? " <span class=\'subdue\'>(" + d.customer.parent_name + ")</span>" : "");
-                case 1: return d.customer.status_text;
+                case 0: return d.display_name + (d.parent_name != null && d.parent_name != "" ? " <span class=\'subdue\'>(" + d.parent_name + ")</span>" : "");
+                case 1: return d.status_text;
             }
         };
         this.search.rowFn = function(s, i, d) { 
             if( M.ciniki_customers_main.search.search_type == 'members' ) {
-                return 'M.startApp(\'ciniki.customers.members\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
+                return 'M.startApp(\'ciniki.customers.members\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.id + '\'});';
             } else if( M.ciniki_customers_main.search.search_type == 'dealers' ) {
-                return 'M.startApp(\'ciniki.customers.dealers\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
+                return 'M.startApp(\'ciniki.customers.dealers\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.id + '\'});';
             } else if( M.ciniki_customers_main.search.search_type == 'distributors' ) {
-                return 'M.startApp(\'ciniki.customers.distributors\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.customer.id + '\'});';
+                return 'M.startApp(\'ciniki.customers.distributors\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.id + '\'});';
             } else {
-                return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.searchCustomers(null, M.ciniki_customers_main.search.search_str);\',\'' + d.customer.id + '\');'; 
+                return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.searchCustomers(null, M.ciniki_customers_main.search.search_str);\',\'' + d.id + '\');'; 
             }
         }
         this.search.rowStyle = function(s, i, d) {
-            if( M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status] != null ) {
-                return 'background: ' + M.curTenant.customers.settings['ui-colours-customer-status-' + d.customer.status];
+            if( M.curTenant.customers.settings['ui-colours-customer-status-' + d.status] != null ) {
+                return 'background: ' + M.curTenant.customers.settings['ui-colours-customer-status-' + d.status];
             }
         }
         this.search.addClose('Back');
@@ -750,6 +750,12 @@ function ciniki_customers_main() {
     // aG - The arguments to be parsed into args
     //
     this.start = function(cb, appPrefix, aG) {
+        // 
+        // Check if redirect required to accounts
+        //
+        if( M.modFlagOn('ciniki.customers', 0x8000) ) {
+            M.startApp('ciniki.customers.accounts',null,cb,appPrefix,aG)
+        }
         args = {};
         if( aG != null ) { args = eval(aG); }
         var settings = null;
@@ -773,7 +779,6 @@ function ciniki_customers_main() {
         this.childrenlabel = 'Children';
         this.parentlabel = 'Parent';
         this.parentslabel = 'Parents';
-//      if( M.curTenant.customers != null ) {
         if( settings != null ) {
             if( settings['ui-labels-parent'] != null && settings['ui-labels-parent'] != '') {
                 this.parentLabel = settings['ui-labels-parent'];

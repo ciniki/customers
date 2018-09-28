@@ -37,6 +37,13 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
     $rsp = array('stat'=>'ok', 'num_issues'=>0);
 
     //
+    // Check to make sure the ifb flag has not been set yet
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.269', 'msg'=>'IFB Already Enabled'));
+    }
+
+    //
     // Check for more than 2 emails
     //
     $strsql = "SELECT customers.id, customers.display_name, COUNT(emails.id) AS num_items "
@@ -176,6 +183,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
         //  
         // Turn off autocommit
         //  
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
@@ -206,7 +214,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
         if( isset($rc['customers']) ) {
             $customers = $rc['customers'];
             //
-            // Find the children for each parent
+            // Find the children for each parent account
             //
             foreach($customers as $customer_id => $customer) {
                 if( $customer['parent_id'] > 0 ) {
@@ -227,7 +235,8 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                 //
                 if( $customer['type'] == 1 && $customer['parent_id'] == 0 && !isset($customer['children']) ) {
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $customer_id, array(
-                        'type'=>10,
+                        'company' => '',
+                        'type' => 10,
                         ), 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -274,13 +283,16 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                     //
                     // Convert children
                     //
-                    foreach($customer['children'] as $child) {
-                        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $child['id'], array(
-                            'type'=>22,
-                            ), 0x04);
-                        if( $rc['stat'] != 'ok' ) {
-                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.251', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                    if( isset($customer['children']) ) {
+                        foreach($customer['children'] as $child) {
+                            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $child['id'], array(
+                                'parent_id' => $family_id, 
+                                'type'=>22,
+                                ), 0x04);
+                            if( $rc['stat'] != 'ok' ) {
+                                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.251', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                            }
                         }
                     }
                 }
@@ -289,48 +301,183 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                 //
                 elseif( $customer['type'] == 2 ) {
                     //
-                    // Setup the business
+                    // Check if the contact name is already setup as a child
                     //
-                    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.customer', array(
-                        'eid' => $customer['eid'] . '', 
-                        'type' => 30,
-                        'display_name' => $customer['display_name'],
-                        'sort_name' => $customer['display_name'],
-                        'company' => $customer['display_name'],
-                        'first' => '',
-                        'middle' => '',
-                        'last' => '',
-                        'connection' => $customer['connection'],
-                        'start_date' => $customer['start_date'],
-                        ), 0x04);
-                    if( $rc['stat'] != 'ok' ) {
-                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.248', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                    $admin_customer_id = 0;
+                    if( $customer['first'] != '' && $customer['last'] != '' && isset($customer['children']) ) {
+                        foreach($customer['children'] as $child) {
+                            if( $child['first'] == $customer['first'] && $child['last'] == $customer['last'] ) {
+                                $admin_customer_id = $child['id'];
+                            }
+                        }
                     }
-                    $business_id = $rc['id'];
 
                     //
-                    // Convert customer to admin
+                    // When the contact person is also setup a child customer, then a new business record doesn't need to be added.
                     //
-                    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $customer_id, array(
-                        'type' => 31,
-                        'parent_id' => $business_id, 
-                        ), 0x04);
-                    if( $rc['stat'] != 'ok' ) {
-                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.252', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                    if( $admin_customer_id > 0 ) {
+                        //
+                        // Convert business to account
+                        //
+                        $customer['type'] = 30;
+                        $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $customer, $customer['id'], array());
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.227', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
+                        }
+                        $display_name = $rc['display_name'];
+                        $sort_name = $rc['sort_name'];
+                        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $customer_id, array(
+                            'type' => 30,
+                            'parent_id' => 0,
+                            'display_name' => $display_name,
+                            'sort_name' => $sort_name,
+                            ), 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.252', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                        }
+                        $business_id = $customer['id'];
+                    } else {
+                        //
+                        // Setup the business
+                        //
+                        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.customer', array(
+                            'eid' => $customer['eid'] . '', 
+                            'type' => 30,
+                            'display_name' => $customer['company'],
+                            'sort_name' => $customer['company'],
+                            'company' => $customer['company'],
+                            'first' => '',
+                            'middle' => '',
+                            'last' => '',
+                            'connection' => $customer['connection'],
+                            'start_date' => $customer['start_date'],
+                            ), 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.248', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                        }
+                        $business_id = $rc['id'];
+
+                        //
+                        // Convert any FATT registrations to the new company
+                        //
+                        $strsql = "SELECT id, customer_id, student_id "
+                            . "FROM ciniki_fatt_offering_registrations "
+                            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+                            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . "";
+                        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.313', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                        }
+                        if( isset($rc['rows']) ) {
+                            $regs = $rc['rows'];
+                            foreach($regs as $reg) {    
+                                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.offeringregistration', $reg['id'], array('customer_id'=>$business_id), 0x04);
+                                if( $rc['stat'] != 'ok' ) {
+                                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.314', 'msg'=>'Unable to update registration', 'err'=>$rc['err']));
+                                }
+                            }
+                        }
+
+                        //
+                        // Convert any FATT AEDs to the new company
+                        //
+                        $strsql = "SELECT id, customer_id "
+                            . "FROM ciniki_fatt_aeds "
+                            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+                            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . "";
+                        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.313', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                        }
+                        if( isset($rc['rows']) ) {
+                            $aeds = $rc['rows'];
+                            foreach($aeds as $aed) {    
+                                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.fatt.aed', $aed['id'], array('customer_id'=>$business_id), 0x04);
+                                if( $rc['stat'] != 'ok' ) {
+                                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.315', 'msg'=>'Unable to update aed', 'err'=>$rc['err']));
+                                }
+                            }
+                        }
+
+                        //
+                        // Convert any Sapos Invoices to the new company
+                        //
+                        $strsql = "SELECT id, customer_id "
+                            . "FROM ciniki_sapos_invoices "
+                            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+                            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . "";
+                        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.313', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                        }
+                        if( isset($rc['rows']) ) {
+                            $aeds = $rc['rows'];
+                            foreach($aeds as $aed) {    
+                                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.sapos.invoice', $aed['id'], array('customer_id'=>$business_id), 0x04);
+                                if( $rc['stat'] != 'ok' ) {
+                                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.316', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+                                }
+                            }
+                        }
+
+                        //
+                        // Convert customer to admin
+                        //
+                        $customer['type'] = 31;
+                        $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $customer, $customer['id'], array());
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.227', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
+                        }
+                        $display_name = $rc['display_name'];
+                        $sort_name = $rc['sort_name'];
+                        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $customer_id, array(
+                            'type' => 31,
+                            'parent_id' => $business_id, 
+                            'display_name' => $display_name,
+                            'sort_name' => $sort_name,
+                            'company' => '',
+                            ), 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.252', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                        }
                     }
 
                     //
                     // Convert employees
                     //
-                    foreach($customer['children'] as $child) {
-                        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $child['id'], array(
-                            'type' => 32,
-                            ), 0x04);
-                        if( $rc['stat'] != 'ok' ) {
-                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.253', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                    if( isset($customer['children']) ) {
+                        foreach($customer['children'] as $child) {
+                            //
+                            // Update the name for the child
+                            //
+                            $child['type'] = 32;
+                            $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $child, $child['id'], array());
+                            if( $rc['stat'] != 'ok' ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.227', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
+                            }
+                            $display_name = $rc['display_name'];
+                            $sort_name = $rc['sort_name'];
+
+                            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $child['id'], array(
+                                'parent_id' => $business_id, 
+                                'display_name' => $display_name,
+                                'sort_name' => $sort_name,
+                                'company' => '',
+                                'type' => ($admin_customer_id == $child['id'] ? 31 : 32),
+                                ), 0x04);
+                            if( $rc['stat'] != 'ok' ) {
+                                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.253', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                            }
                         }
                     }
                 }
@@ -338,9 +485,18 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
         }
         
         //
-        // FIXME: Everything succeeded, set the IFB flag
+        // Everything succeeded, set the IFB flag
         //
-
+        $strsql = "UPDATE ciniki_tenant_modules SET flags = (flags | 0x0800) "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND module = 'customers' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+        $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.270', 'msg'=>'Unable to set IFB flag', 'err'=>$rc['err']));
+        }
 
         //
         // Commit the database changes

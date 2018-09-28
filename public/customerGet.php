@@ -18,6 +18,7 @@ function ciniki_customers_customerGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
+        'parent_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -59,7 +60,27 @@ function ciniki_customers_customerGet($ciniki) {
     }
     $maps = $rc['maps'];
 
+    //
+    // get parent information
+    //
+    if( isset($args['parent_id']) && $args['parent_id'] > 0 ) {
+        $strsql = "SELECT id, type, display_name "
+            . "FROM ciniki_customers "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.317', 'msg'=>'Unable to load parent', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['parent']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.318', 'msg'=>'Unable to find requested parent'));
+        }
+        $parent = $rc['parent'];
+    }
+
     if( $args['customer_id'] == 0 ) {
+        $dt = new DateTime('now', new DateTimezone($intl_timezone));
         $customer = array(
             'id' => 0,
             'type' => 10,
@@ -89,22 +110,33 @@ function ciniki_customers_customerGet($ciniki) {
             'notes' => '',
             );
         //
+        // Setup the default type for adding under a parent to be child or employee
+        //
+        if( isset($parent) ) {
+            $customer['parent_id'] = $parent['id'];
+            if( $parent['type'] == 20 ) {
+                $customer['type'] = 22;
+            } elseif( $parent['type'] == 30 ) {
+                $customer['type'] = 32;
+            }
+        }
+        //
         // Setup IFB mode defaults
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) ) {
-            $customer['cell_phone_id'] = 0;
-            $customer['cell_phone'] = '';
-            $customer['home_phone_id'] = 0;
-            $customer['home_phone'] = '';
-            $customer['work_phone_id'] = 0;
-            $customer['work_phone'] = '';
-            $customer['fax_phone_id'] = 0;
-            $customer['fax_phone'] = '';
+            $customer['phone_cell_id'] = 0;
+            $customer['phone_cell'] = '';
+            $customer['phone_home_id'] = 0;
+            $customer['phone_home'] = '';
+            $customer['phone_work_id'] = 0;
+            $customer['phone_work'] = '';
+            $customer['phone_fax_id'] = 0;
+            $customer['phone_fax'] = '';
             $customer['primary_email_id'] = 0;
-            $customer['primary_email'] = 0;
+            $customer['primary_email'] = '';
             $customer['primary_email_flags'] = 0x01;
             $customer['secondary_email_id'] = 0;
-            $customer['secondary_email'] = 0;
+            $customer['secondary_email'] = '';
             $customer['secondary_email_flags'] = 0x01;
             $customer['mailing_address_id'] = 0;
             $customer['mailing_address1'] = '';
@@ -142,7 +174,7 @@ function ciniki_customers_customerGet($ciniki) {
         //
         if( isset($modules['ciniki.subscriptions']) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'subscriptions', 'hooks', 'customerSubscriptions');
-            $rc = ciniki_subscriptions_hooks_customerSubscriptions($ciniki, $args['tnid'], array('customer_id'=>$args['customer_id'], 'idlist'=>'yes'));
+            $rc = ciniki_subscriptions_hooks_customerSubscriptions($ciniki, $args['tnid'], array('customer_id'=>$args['customer_id']));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
@@ -151,9 +183,39 @@ function ciniki_customers_customerGet($ciniki) {
             }
         }
 
+/* Not required here, in customerDetails
+        //
+        // Build list of child ids
+        //
+        $uiDataArgs = array();
+        if( isset($customer['children']) && count($customer['children']) > 0 ) {
+            $uiDataArgs['customer_ids'] = array();
+            foreach($customer['children'] as $child) {
+                $uiDataArgs['customer_ids'][] = $child['id'];
+            }
+        } else {
+            $uiDataArgs['customer_id'] = $customer['id'];
+        }
+
         //
         // Load additional information from hooks
         //
+      
+        $customer['data_tabs'] = array();
+        foreach($ciniki['tenant']['modules'] as $module) {
+            list($pkg, $mod) = explode('.', $module);
+            $rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'uiCustomersData');
+            if( $rc['stat'] != 'ok' ) {
+                continue;
+            }
+            $fn = $rc['function_call']; 
+            $rc = $fn($ciniki, $args['tnid'], $uiDataArgs);
+            if( isset($rc['tabs']) ) {
+                foreach($rc['tabs'] as $tab) {
+                    $customer['data_tabs'][] = $tab;
+                }
+            }
+        } */
     }
 
     $rsp = array('stat'=>'ok', 'customer'=>$customer);
@@ -165,8 +227,10 @@ function ciniki_customers_customerGet($ciniki) {
         . "FROM ciniki_customers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND status = 10 "
+        . "AND type = 20 "
         . "ORDER BY display_name "
         . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'families', 'fname'=>'id', 'fields'=>array('id', 'display_name')),
         ));
@@ -182,6 +246,7 @@ function ciniki_customers_customerGet($ciniki) {
         . "FROM ciniki_customers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND status = 10 "
+        . "AND type = 30 "
         . "ORDER BY display_name "
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -202,10 +267,26 @@ function ciniki_customers_customerGet($ciniki) {
             return $rc;
         }
         if( isset($rc['subscriptions']) ) {
+            // Add default status of 60
+            foreach($rc['subscriptions'] as $sid => $subscription) {
+                if( $args['customer_id'] > 0 ) {
+                    $rc['subscriptions'][$sid]['status'] = 60;
+                }
+            }
+            // Check if customer is subscribed to any lists
+            if( isset($customer['subscriptions']) ) {
+                foreach($customer['subscriptions'] as $sid => $subscription) {
+                    if( isset($rc['subscriptions'][$subscription['subscription']['id']]) ) {
+                        $rc['subscriptions'][$subscription['subscription']['id']]['status'] = 10;
+                    } else {
+                        $rc['subscriptions'][$subscription['subscription']['id']]['status'] = 60;
+                    }
+                }
+            }
             //
             // Convert from ID hash to array, this will keep it sorted properly in javascript
             //
-            $customer['subscriptions'] = array_values($rc['subscriptions']);
+            $rsp['subscriptions'] = array_values($rc['subscriptions']);
         }
     }
 

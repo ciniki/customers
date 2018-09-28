@@ -31,7 +31,7 @@ function ciniki_customers_processDetails($ciniki, $tnid, $customer, $args) {
         }
         if( count($customer['emails']) > 1 ) {
             $details[] = array('label'=>'Emails', 'value'=>$emails);
-        } else {
+        } elseif( $emails != '' ) {
             $details[] = array('label'=>'Email', 'value'=>$emails);
         }
     }
@@ -51,10 +51,10 @@ function ciniki_customers_processDetails($ciniki, $tnid, $customer, $args) {
             }
             $joined_address = '';
             if( isset($address['address1']) && $address['address1'] != '' ) {
-                $joined_address .= $address['address']['address1'] . "\n";
+                $joined_address .= $address['address1'] . "\n";
             }
             if( isset($address['address2']) && $address['address2'] != '' ) {
-                $joined_address .= $address['address']['address2'] . "\n";
+                $joined_address .= $address['address2'] . "\n";
             }
             $city = '';
             $comma = '';
