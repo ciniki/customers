@@ -753,9 +753,9 @@ function ciniki_customers_main() {
         // 
         // Check if redirect required to accounts
         //
-//        if( M.modFlagOn('ciniki.customers', 0x8000) ) {
-//            M.startApp('ciniki.customers.accounts',null,cb,appPrefix,aG)
-//        }
+        if( M.modFlagOn('ciniki.customers', 0x0800) ) {
+            return M.startApp('ciniki.customers.accounts',null,cb,appPrefix,aG)
+        }
         args = {};
         if( aG != null ) { args = eval(aG); }
         var settings = null;
