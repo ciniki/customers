@@ -21,9 +21,20 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $
     $base_url = $args['base_url'];
 
     //
+    // Check if IFB/Accounts flag set
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800)
+        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'contactinfo' 
+        ) {
+        array_shift($ciniki['request']['uri_split']);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactInfo');
+        return ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $settings, $tnid, $args);
+    }
+    //
     // Check for Children update
     //
-    if( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'children' 
+    elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800)
+        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'children' 
         && (isset($settings['page-account-children-update']) && $settings['page-account-children-update'] == 'yes')
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestChildren');
@@ -85,7 +96,8 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $
     //
     // Check for contact details update
     //
-    elseif( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'contactdetails' 
+    elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000)
+        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'contactdetails' 
         && ((isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes')
             || (isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes')
             || (isset($settings['page-account-email-update']) && $settings['page-account-email-update'] == 'yes')
@@ -119,7 +131,8 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $
     //
     // Check for other accounts
     //
-    elseif( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'accounts' ) {
+    elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000)
+        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'accounts' ) {
         $page['breadcrumbs'][] = array('name'=>'Accounts', 'url'=>$ciniki['request']['domain_base_url'] . '/account/accounts');
         $page['title'] = 'Choose Account';
 

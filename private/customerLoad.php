@@ -46,6 +46,8 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "status AS status_text, "
         . "eid, "
         . "display_name, "
+        . "sort_name, "
+        . "permalink, "
         . "primary_image_id, "
         . "member_status, "
         . "member_status AS member_status_text, "
@@ -86,7 +88,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'parent_id', 'type', 'type_text', 'eid', 'display_name', 'primary_image_id', 
+            'fields'=>array('id', 'parent_id', 'type', 'type_text', 'eid', 'display_name', 'sort_name', 'permalink', 'primary_image_id', 
                 'status', 'status_text',
                 'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
                 'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 

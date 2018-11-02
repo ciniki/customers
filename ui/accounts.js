@@ -405,6 +405,7 @@ function ciniki_customers_accounts() {
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'visible':function() { return M.ciniki_customers_accounts.edit.nextFn != '' ? 'no' : 'yes'; }, 'fn':'M.ciniki_customers_accounts.edit.save();'},
             'next':{'label':'Next', 'visible':function() { return M.ciniki_customers_accounts.edit.nextFn != '' ? 'yes' : 'no'; }, 'fn':'M.ciniki_customers_accounts.edit.save();'},
+            'setpassword':{'label':'Set Password', 'visible':function() { return M.ciniki_customers_accounts.edit.customer_id > 0 && (M.ciniki_customers_accounts.edit.formtab == 'individual' || M.ciniki_customers_accounts.edit.formtab == 'parent' || M.ciniki_customers_accounts.edit.formtab == 'admin') ? 'yes' : 'no'; }, 'fn':'M.ciniki_customers_accounts.edit.setPassword();'},
             'delete':{'label':'Delete', 
                 'visible':function() { return M.ciniki_customers_accounts.edit.customer_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_customers_accounts.edit.remove();'},
@@ -662,6 +663,26 @@ function ciniki_customers_accounts() {
             p.show(cb);
         });
     }
+    this.edit.setPassword = function() {
+        var np = prompt("Please enter a new password for the customer: ");
+        if( np != null ) {
+            if( np.length < 8 ) {
+                alert("The password must be a minimum of 8 characters long");
+                return false;
+            }
+            else {
+                M.api.postJSONCb('ciniki.customers.customerSetPassword',
+                    {'tnid':M.curTenantID, 'customer_id':this.customer_id}, 'newpassword=' + M.eU(np), 
+                    function(rsp) {
+                        if( rsp.stat != 'ok' ) {    
+                            M.api.err(rsp);
+                            return false;
+                        }
+                        alert("Password has been set");
+                    });
+            }
+        }
+    };
     // Setup the billing address based on mailing_flags
     this.edit.showHideBilling = function() {
         for(var i in this.forms) {

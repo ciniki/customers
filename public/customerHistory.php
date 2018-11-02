@@ -74,7 +74,7 @@ function ciniki_customers_customerHistory($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
         $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.customers', 'keys', 'table_key');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.312', 'msg'=>'Unable to get history', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.319', 'msg'=>'Unable to get history', 'err'=>$rc['err']));
         }
         if( isset($rc['keys']) && count($rc['keys']) > 0 ) {
             error_log(print_r($rc, true));

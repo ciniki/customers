@@ -369,7 +369,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                             . "";
                         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
                         if( $rc['stat'] != 'ok' ) {
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.313', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.324', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
                         }
                         if( isset($rc['rows']) ) {
                             $regs = $rc['rows'];
@@ -392,7 +392,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                             . "";
                         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
                         if( $rc['stat'] != 'ok' ) {
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.313', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.325', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
                         }
                         if( isset($rc['rows']) ) {
                             $aeds = $rc['rows'];
@@ -447,7 +447,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                             ), 0x04);
                         if( $rc['stat'] != 'ok' ) {
                             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.252', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.335', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
                         }
                     }
 

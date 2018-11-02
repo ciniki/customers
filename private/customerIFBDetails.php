@@ -20,7 +20,7 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerLoad');
     $rc = ciniki_customers_customerLoad($ciniki, $tnid, $customer_id);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.231', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.327', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
     }
     $rsp['customer'] = $rc['customer'];
 
@@ -30,7 +30,7 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'processDetails');
     $rc = ciniki_customers_processDetails($ciniki, $tnid, $rsp['customer'], array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.233', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.328', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
     }
     $rsp['customer_details'] = $rc['details'];
 
@@ -44,14 +44,14 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
     if( isset($rsp['customer']['parent_id']) && $rsp['customer']['parent_id'] > 0 ) {
         $rc = ciniki_customers_customerLoad($ciniki, $tnid, $rsp['customer']['parent_id']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.232', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.329', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
         }
         $rsp['parent'] = $rc['customer'];
         $rc = ciniki_customers_processDetails($ciniki, $tnid, $rsp['parent'], array(
             'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.255', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.330', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
         }
         if( $rsp['parent']['type'] == 20 ) {
             $rsp['family_details'] = $rc['details'];
@@ -79,7 +79,7 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
             array('container'=>'customers', 'fname'=>'id', 'fields'=>array('id', 'display_name')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.234', 'msg'=>'Unable to load customers', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.331', 'msg'=>'Unable to load customers', 'err'=>$rc['err']));
         }
         $rsp['child_accounts'] = isset($rc['customers']) ? $rc['customers'] : array();
     }
@@ -98,7 +98,7 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
             //
             $rc = ciniki_customers_customerLoad($ciniki, $tnid, $child['id']);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.237', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.332', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
             }
             $customer = $rc['customer'];
             if( $customer['type'] == 21 ) {
@@ -107,7 +107,7 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
                 //
                 $rc = ciniki_customers_processDetails($ciniki, $tnid, $customer, array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.238', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.333', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
                 }
                 $rsp['parent_details'] = array_merge($rsp['parent_details'], $rc['details']);
             }
@@ -120,7 +120,7 @@ function ciniki_customers_customerIFBDetails($ciniki, $tnid, $customer_id, $args
                 //
                 $rc = ciniki_customers_processDetails($ciniki, $tnid, $customer, array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.254', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.334', 'msg'=>'Unable to process results', 'err'=>$rc['err']));
                 }
                 $rsp['admin_details'] = array_merge($rsp['admin_details'], $rc['details']);
             }

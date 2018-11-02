@@ -24,7 +24,7 @@ function ciniki_customers_customerSetPassword(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
-        'email_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'), 
+        'email_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Email'), 
         'newpassword'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'New Password'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -49,17 +49,17 @@ function ciniki_customers_customerSetPassword(&$ciniki) {
         . "FROM ciniki_customer_emails "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
+//        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['email_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
-    if( !isset($rc['email']) ) {
+    if( !isset($rc['rows']) || count($rc['rows']) == 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.63', 'msg'=>'Customer email does not exist, unable to set the password.'));
     }
-    $email = $rc['email'];
+    $emails = $rc['rows'];
 
     //  
     // Turn off autocommit
@@ -75,28 +75,31 @@ function ciniki_customers_customerSetPassword(&$ciniki) {
     }   
 
     //
-    // Set the password
+    // Set the password on all emails attached to the account, that way
+    // they can use whichever email they want to login
     //
-    $strsql = "UPDATE ciniki_customer_emails "
-        . "SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $args['newpassword']) . "'), "
-        . "temp_password = '', "
-        . "last_updated = UTC_TIMESTAMP() "
-        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $email['id']) . "' "
-        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
-    $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
-    if( $rc['stat'] != 'ok' ) {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.64', 'msg'=>'Unable to update password.'));
-    }
+    foreach($emails as $email) {
+        $strsql = "UPDATE ciniki_customer_emails "
+            . "SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $args['newpassword']) . "'), "
+            . "temp_password = '', "
+            . "last_updated = UTC_TIMESTAMP() "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $email['id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+        $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.64', 'msg'=>'Unable to update password.'));
+        }
     
-    $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-        $args['tnid'], 2, 'ciniki_customer_emails', $args['email_id'], 'password', '');
-    if( $email['temp_password'] != '' ) {
         $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
-            $args['tnid'], 2, 'ciniki_customer_emails', $args['email_id'], 'temp_password', '');
+            $args['tnid'], 2, 'ciniki_customer_emails', $email['id'], 'password', '');
+        if( $email['temp_password'] != '' ) {
+            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
+                $args['tnid'], 2, 'ciniki_customer_emails', $email['id'], 'temp_password', '');
+        }
     }
 
     //
