@@ -195,6 +195,26 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
         }   
 
         //
+        // Load all the addresses
+        //
+        $strsql = "SELECT id, customer_id, address1, address2, city, province, postal, country, flags "
+            . "FROM ciniki_customer_addresses "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY customer_id, id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array()),
+            array('container'=>'addresses', 'fname'=>'id', 
+                'fields'=>array('id', 'customer_id', 'address1', 'address2', 'city', 'province', 'postal', 'country')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.344', 'msg'=>'Unable to load customer addresses', 'err'=>$rc['err']));
+        }
+        $addresses = isset($rc['customers']) ? $rc['customers'] : array();
+
+        //
         // Load all the customers basic information
         //
         $strsql = "SELECT id, eid, parent_id, type, display_name, prefix, first, middle, last, suffix, company, connection, start_date "
@@ -358,6 +378,20 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.248', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
                         }
                         $business_id = $rc['id'];
+
+                        //
+                        // Check of addresses to setup
+                        //
+                        if( isset($addresses[$customer['id']]['addresses']) ) {
+                            foreach($addresses[$customer['id']]['addresses'] as $address) {
+                                $address['customer_id'] = $business_id;
+                                $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.address', $address, 0x04);
+                                if( $rc['stat'] != 'ok' ) {
+                                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.345', 'msg'=>'Unable to update ' . $customer['display_name'], 'err'=>$rc['err']));
+                                }
+                            }
+                        }
 
                         //
                         // Convert any FATT registrations to the new company

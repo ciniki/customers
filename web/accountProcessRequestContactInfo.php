@@ -43,6 +43,38 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
         }
     }
     elseif( ($ciniki['session']['account']['type'] == 20 || $ciniki['session']['account']['type'] == 30) 
+        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'add' 
+        ) {
+        $args['form_url'] = $base_url . '/' . $ciniki['request']['uri_split'][0];
+        $args['customer_id'] = 0;
+        if( $ciniki['session']['account']['type'] == 20 ) { 
+            if( isset($ciniki['request']['uri_split'][1]) && $ciniki['request']['uri_split'][1] == 'parent' ) {
+                $args['type'] = 21;
+            } else {
+                $args['type'] = 22;
+            }
+        } elseif( $ciniki['session']['account']['type'] == 30 ) { 
+            if( isset($ciniki['request']['uri_split'][1]) && $ciniki['request']['uri_split'][1] == 'admin' ) {
+                $args['type'] = 31;
+            } else {
+                $args['type'] = 32;
+            }
+        }
+            
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactForm');
+        $rc = ciniki_customers_web_accountProcessRequestContactForm($ciniki, $settings, $tnid, $args);
+        if( $rc['stat'] == 'updated' ) {
+            Header("Location: " . $base_url);
+            exit;
+        }
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.337', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
+        }
+        foreach($rc['blocks'] as $block) {
+            $page['blocks'][] = $block;
+        }
+    }
+    elseif( ($ciniki['session']['account']['type'] == 20 || $ciniki['session']['account']['type'] == 30) 
         && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] != '' 
         ) {
         //
@@ -167,6 +199,7 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
                     'headers' => 'yes',
                     'columns' => array(
                         array('label' => 'Name', 'field' => 'display_name'),
+                        array('label' => '<a href="' . $base_url . '/add/parent">Add</a>', 'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
                     ),
                     'rows' => $ciniki['session']['account']['parents'],
                 );
@@ -177,6 +210,7 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
                     'headers' => 'yes',
                     'columns' => array(
                         array('label' => 'Name', 'field' => 'display_name'),
+                        array('label' => '<a href="' . $base_url . '/add">Add</a>', 'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
                     ),
                     'rows' => $ciniki['session']['account']['children'],
                 );
@@ -189,7 +223,7 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
                     'headers' => 'yes',
                     'columns' => array(
                         array('label' => 'Name', 'field' => 'display_name'),
-                        array('label' => '', 'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
+                        array('label' => '<a href="' . $base_url . '/add/admin">Add</a>', 'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
                     ),
                     'rows' => $ciniki['session']['account']['parents'],
                 );
@@ -200,7 +234,8 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
                     'headers' => 'yes',
                     'columns' => array(
                         array('label' => 'Name', 'field' => 'display_name'),
-                        array('label' => '', 'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
+                        array('label' => '<a href="' . $base_url . '/add">Add</a>', 
+                            'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
                     ),
                     'rows' => $ciniki['session']['account']['children'],
                 );

@@ -320,7 +320,8 @@ function ciniki_customers_customerUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.295', 'msg'=>'Unable to remove address', 'err'=>$rc['err']));
                 }
             }
-            $args['mailing_flags'] = ($args['mailing_flags']&0xfd);
+            //$args['mailing_flags'] = ($args['mailing_flags']&0xfd);
+            $args['mailing_flags'] |= 0x02;
         }
         // Update
         elseif( $customer['billing_address_id'] > 0 ) {

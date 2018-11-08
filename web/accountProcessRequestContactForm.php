@@ -15,12 +15,12 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
     //
     // Check the customer id is specified, or in the session
     //
-    if( isset($args['customer_id']) && $args['customer_id'] > 0 ) {
+    if( isset($args['customer_id']) && $args['customer_id'] >= 0 ) {
         $customer_id = $args['customer_id'];
     } elseif( isset($ciniki['session']['customer']['id']) && $ciniki['session']['customer']['id'] > 0 ) {
         $customer_id = $ciniki['session']['customer']['id'];
     } else {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.338', 'msg'=>'Invalid account'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.338', 'msg'=>'Invalid account'));
     }
 
     $blocks = array();
@@ -38,20 +38,272 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
     //
     // Load the customer details
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerLoad');
-    $rc = ciniki_customers_customerLoad($ciniki, $tnid, $customer_id);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.230', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+    if( $customer_id == 0 ) {
+        if( !isset($args['type']) ) {
+            if( $ciniki['session']['account']['type'] == 20 ) { 
+                $args['type'] = 22;
+            } elseif( $ciniki['session']['account']['type'] == 30 ) { 
+                $args['type'] = 32;
+            } else {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.343', 'msg'=>'Invalid account'));
+            }
+        }
+        $customer = array(
+            'id' => 0,
+            'parent_id' => isset($ciniki['session']['account']['id']) ? $ciniki['session']['account']['id'] : 0,
+            'uuid' => '',
+            'display_name' => '',
+            'type' => $args['type'],
+            'prefix' => '',
+            'first' => '',
+            'middle' => '',
+            'last' => '',
+            'suffix' => '',
+            'company' => '',
+            'primary_email' => '',
+            'secondary_email' => '',
+            'phone_cell' => '',
+            'phone_home' => '',
+            'phone_work' => '',
+            'phone_fax' => '',
+            'mailing_address1' => '',
+            'mailing_address2' => '',
+            'mailing_city' => '',
+            'mailing_province' => '',
+            'mailing_postal' => '',
+            'mailing_country' => '',
+            'mailing_flags' => 0x06,
+            'billing_address1' => '',
+            'billing_address2' => '',
+            'billing_city' => '',
+            'billing_province' => '',
+            'billing_postal' => '',
+            'billing_country' => '',
+            );
+    } else {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerLoad');
+        $rc = ciniki_customers_customerLoad($ciniki, $tnid, $customer_id);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.230', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+        }
+        $customer = $rc['customer'];
     }
-    $customer = $rc['customer'];
+
+    //
+    // Check for adding a parent/child/admin/employee
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+    if( isset($_POST['action']) && $_POST['action'] == 'add' ) {
+        //
+        // Setup transaction
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+        $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.customers');
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
+        }   
+        $errors = 'no';
+        $updated = 'no';
+        foreach($customer as $field => $value) {
+            if( $field == 'id' || $field == 'type' ) {
+                continue;
+            }
+            if( isset($_POST[$field]) ) {
+                $customer[$field] = trim($_POST[$field]);
+            }
+        }
+        if( isset($_POST['type']) && $_POST['type'] > 0 ) {
+            if( $customer['type'] == 21 && $_POST['type'] == 22 ) {
+                $customer['type'] = 22;
+            } elseif( $customer['type'] == 22 && $_POST['type'] == 21 ) {
+                $customer['type'] = 21;
+            } elseif( $customer['type'] == 31 && $_POST['type'] == 32 ) {
+                $customer['type'] = 32;
+            } elseif( $customer['type'] == 32 && $_POST['type'] == 31 ) {
+                $customer['type'] = 31;
+            }
+        }
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
+        $rc = ciniki_customers_customerUpdateName($ciniki, $tnid, $customer, 0, $customer);
+        if( $rc['stat'] == 'ok' ) {
+            $customer['display_name'] = $rc['display_name'];
+            $customer['sort_name'] = $rc['sort_name'];
+            $customer['permalink'] = $rc['permalink'];
+        }
+        //
+        // add the customer record
+        //
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.customer', $customer, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            if( $ciniki['session']['account']['type'] == 10 ) {
+                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the account');
+            } elseif( $customer['type'] == 21 ) {
+                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the Parent/Guardian');
+            } elseif( $customer['type'] == 22 ) {
+                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the child');
+            } elseif( $customer['type'] == 31 ) {
+                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the administrator');
+            } elseif( $customer['type'] == 32 ) {
+                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the employee');
+            }
+            $errors = 'yes';
+        } else {
+            $updated = 'yes';
+            $customer_id = $rc['id'];
+            $customer['id'] = $rc['id'];
+            $customer['uuid'] = $rc['uuid'];
+
+            //
+            // add the emails
+            //
+            $fields = array(
+                'primary_email' => array('name'=>'Primary Email'),
+                'secondary_email' => array('name'=>'Secondary Email'),
+                );
+            foreach($fields as $field => $details) {
+                if( !isset($_POST[$field]) && in_array($field, $required) ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'You must provide a ' . $details['name'] . ' address');
+                    $errors = 'yes';
+                } elseif( isset($_POST[$field]) && $_POST[$field] != '' ) {
+                    if( !preg_match("/^[^ ]+\@[^ ]+\.[^ ]+$/", trim($_POST[$field])) ) {
+                        $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'The ' . $details['name'] . ' is not a valid email address format.');
+                        $errors = 'yes';
+                    } else {
+                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email', array(
+                            'customer_id'=>$customer_id,
+                            'email'=>trim($_POST[$field]),
+                            'flags'=>0x01,
+                            ), 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add email address');
+                            $errors = 'yes';
+                        } else {
+                            $updated = 'yes';
+                        }
+                    }
+                }
+            }
+
+            //
+            // Check for phone changes
+            //
+            foreach(['phone_home', 'phone_work', 'phone_cell', 'phone_fax'] as $field) {
+                if( isset($_POST[$field]) ) {
+                    $label = ucfirst(str_replace('phone_', '', $field));
+                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.phone', array(
+                        'customer_id'=>$customer_id,
+                        'phone_label'=>$label,
+                        'phone_number'=>trim($_POST[$field]),
+                        'flags'=>0,
+                        ), 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add phone number');
+                        $errors = 'yes';
+                    } else {
+                        $updated = 'yes';
+                    }
+                }
+            }
+
+            //
+            // Check for address updates
+            //
+            $_POST['mailing_flags'] = (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : 0x06);
+            if( isset($_POST['billingflag']) ) {
+                if( $_POST['billingflag'] == 'yes' ) {
+                    $_POST['mailing_flags'] |= 0x02;
+                } elseif( $_POST['billingflag'] == 'no' ) {
+                    $_POST['mailing_flags'] = ($_POST['mailing_flags']&0xfd);
+                }
+            }
+            $mailing_country = isset($_POST['mailing_country']) ? $_POST['mailing_country'] : $customer['mailing_country'];
+            if( isset($_POST['mailing_province_code_' . $mailing_country]) ) {
+                $_POST['mailing_province'] = $_POST['mailing_province_code_' . $mailing_country];
+            }
+
+            //
+            // Check if secondary address needs to be updated.
+            // This must be done first incase any changes to mailing flags
+            //
+            if( ($_POST['mailing_flags']&0x02) == 0 ) {
+                $billing_country = isset($_POST['billing_country']) ? $_POST['billing_country'] : $customer['billing_country'];
+                if( isset($_POST['billing_province_code_' . $billing_country]) ) {
+                    $_POST['billing_province'] = $_POST['billing_province_code_' . $billing_country];
+                }
+                $addr = array(
+                    'customer_id' => $customer_id,
+                    'address1' => (isset($_POST['billing_address1']) ? $_POST['billing_address1'] : (isset($customer['billing_address1']) ? $customer['billing_address1'] : '')),
+                    'address2' => (isset($_POST['billing_address2']) ? $_POST['billing_address2'] : (isset($customer['billing_address2']) ? $customer['billing_address2'] : '')),
+                    'city' => (isset($_POST['billing_city']) ? $_POST['billing_city'] : (isset($customer['billing_city']) ? $customer['billing_city'] : '')),
+                    'province' => (isset($_POST['billing_province']) ? $_POST['billing_province'] : (isset($customer['billing_province']) ? $customer['billing_province'] : '')),
+                    'postal' => (isset($_POST['billing_postal']) ? $_POST['billing_postal'] : (isset($customer['billing_postal']) ? $customer['billing_postal'] : '')),
+                    'country' => (isset($_POST['billing_country']) ? $_POST['billing_country'] : (isset($customer['billing_country']) ? $customer['billing_country'] : '')),
+                    'flags' => 0x02,
+                    );
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.341', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                }
+            } 
+
+            //
+            // Check if any changes to mailing address
+            //
+            if( isset($_POST['mailing_address1']) || isset($_POST['mailing_address2']) || isset($_POST['mailing_city']) 
+                || isset($_POST['mailing_province']) || isset($_POST['mailing_postal']) || isset($_POST['mailing_country']) 
+                || $_POST['mailing_flags'] != $customer['mailing_flags']
+                ) {
+                $addr = array(
+                    'customer_id' => $customer_id,
+                    'address1' => (isset($_POST['mailing_address1']) ? $_POST['mailing_address1'] : (isset($customer['mailing_address1']) ? $customer['mailing_address1'] : '')),
+                    'address2' => (isset($_POST['mailing_address2']) ? $_POST['mailing_address2'] : (isset($customer['mailing_address2']) ? $customer['mailing_address2'] : '')),
+                    'city' => (isset($_POST['mailing_city']) ? $_POST['mailing_city'] : (isset($customer['mailing_city']) ? $customer['mailing_city'] : '')),
+                    'province' => (isset($_POST['mailing_province']) ? $_POST['mailing_province'] : (isset($customer['mailing_province']) ? $customer['mailing_province'] : '')),
+                    'postal' => (isset($_POST['mailing_postal']) ? $_POST['mailing_postal'] : (isset($customer['mailing_postal']) ? $customer['mailing_postal'] : '')),
+                    'country' => (isset($_POST['mailing_country']) ? $_POST['mailing_country'] : (isset($customer['mailing_country']) ? $customer['mailing_country'] : '')),
+                    'flags' => (isset($_POST['mailing_flags']) ? $_POST['mailing_flags'] : (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : '')),
+                    );
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.293', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                }
+            } 
+
+            //
+            // Add to the session
+            //
+            if( $customer['type'] == 21 || $customer['type'] == 31 ) {
+                $ciniki['session']['account']['parents'][] = $customer;
+                usort($ciniki['session']['account']['parents'], function($a, $b) {
+                    return strcmp($a['display_name'], $b['display_name']);
+                    });
+                $_SESSION['account']['parents'] = $ciniki['session']['account']['parents'];
+            } else {
+                $ciniki['session']['account']['children'][] = $customer;
+                usort($ciniki['session']['account']['children'], function($a, $b) {
+                    return strcmp($a['display_name'], $b['display_name']);
+                    });
+                $_SESSION['account']['children'] = $ciniki['session']['account']['children'];
+            }
+            if( $errors == 'no' ) {
+                ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
+                return array('stat'=>'updated');
+            } else {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            }
+        }
+    }
     
     //
     // Check for any updates
     //
-    if( isset($_POST['action']) && $_POST['action'] == 'update' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+    elseif( isset($_POST['action']) && $_POST['action'] == 'update' ) {
         $errors = 'no';
         $updated = 'no';
         //
@@ -150,7 +402,7 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
                             usort($ciniki['session']['account']['parents'], function($a, $b) {
                                 return strcmp($a['display_name'], $b['display_name']);
                                 });
-                            $_SESSION['account']['parents'] = $ciniki['session']['account']['parents'];
+                            $_SESSION['account']['children'] = $ciniki['session']['account']['children'];
                             $_SESSION['account']['parents'] = $ciniki['session']['account']['parents'];
                         }
                     }
@@ -271,6 +523,141 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
             }
         }
 
+        //
+        // Check for address updates
+        //
+        $_POST['mailing_flags'] = (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : 0x06);
+        if( isset($_POST['billingflag']) ) {
+            if( $_POST['billingflag'] == 'yes' ) {
+                $_POST['mailing_flags'] |= 0x02;
+            } elseif( $_POST['billingflag'] == 'no' ) {
+                $_POST['mailing_flags'] = ($_POST['mailing_flags']&0xfd);
+            }
+        }
+        $mailing_country = isset($_POST['mailing_country']) ? $_POST['mailing_country'] : $customer['mailing_country'];
+        if( isset($_POST['mailing_province_code_' . $mailing_country]) ) {
+            $_POST['mailing_province'] = $_POST['mailing_province_code_' . $mailing_country];
+        }
+
+        //
+        // Check if secondary address needs to be updated.
+        // This must be done first incase any changes to mailing flags
+        //
+        if( ($_POST['mailing_flags']&0x02) == 0 ) {
+            $billing_country = isset($_POST['billing_country']) ? $_POST['billing_country'] : $customer['billing_country'];
+            if( isset($_POST['billing_province_code_' . $billing_country]) ) {
+                $_POST['billing_province'] = $_POST['billing_province_code_' . $billing_country];
+            }
+            $addr = array(
+                'customer_id' => $customer_id,
+                'address1' => (isset($_POST['billing_address1']) ? $_POST['billing_address1'] : (isset($customer['billing_address1']) ? $customer['billing_address1'] : '')),
+                'address2' => (isset($_POST['billing_address2']) ? $_POST['billing_address2'] : (isset($customer['billing_address2']) ? $customer['billing_address2'] : '')),
+                'city' => (isset($_POST['billing_city']) ? $_POST['billing_city'] : (isset($customer['billing_city']) ? $customer['billing_city'] : '')),
+                'province' => (isset($_POST['billing_province']) ? $_POST['billing_province'] : (isset($customer['billing_province']) ? $customer['billing_province'] : '')),
+                'postal' => (isset($_POST['billing_postal']) ? $_POST['billing_postal'] : (isset($customer['billing_postal']) ? $customer['billing_postal'] : '')),
+                'country' => (isset($_POST['billing_country']) ? $_POST['billing_country'] : (isset($customer['billing_country']) ? $customer['billing_country'] : '')),
+                'flags' => (isset($_POST['billing_flags']) ? $_POST['billing_flags'] : (isset($customer['billing_flags']) ? $customer['billing_flags'] : '')),
+                );
+            //
+            // Check if address blank, then remove
+            //
+            if( $addr['address1'] == '' && $addr['address2'] == '' 
+                && $addr['city'] == '' && $addr['province'] == '' && $addr['postal'] == '' && $addr['country'] == '' 
+                ) {
+                if( $customer['billing_address_id'] > 0 ) {
+                    $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.address', $customer['billing_address_id'], null, 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.339', 'msg'=>'Unable to remove address', 'err'=>$rc['err']));
+                    }
+                }
+                $_POST['mailing_flags'] |= 0x02;
+            }
+            // Update
+            elseif( $customer['billing_address_id'] > 0 ) {
+                $update_args = array();
+                foreach(['address1', 'address2', 'city', 'province', 'postal', 'country'] as $field) {
+                    if( isset($_POST['billing_' . $field]) && $_POST['billing_' . $field] != $customer['billing_' . $field] ) {
+                        $update_args[$field] = $_POST['billing_' . $field];
+                    }
+                }
+                if( count($update_args) > 0 ) {
+                    $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $customer['billing_address_id'], $update_args, 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.340', 'msg'=>'Unable to update address', 'err'=>$rc['err']));
+                    }
+                }
+            } 
+            // Add
+            else {
+                $addr['flags'] = 0x02;
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.341', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                }
+            }
+        } 
+        // Check if secondary address should be deleted
+        elseif( ($_POST['mailing_flags']&0x02) == 0x02 && $customer['billing_address_id'] > 0 ) {
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.address', $customer['billing_address_id'], null, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.342', 'msg'=>'Unable to remove address', 'err'=>$rc['err']));
+            }
+            $customer['billing_address_id'] = 0;
+        }
+
+        //
+        // Check if any changes to mailing address
+        //
+        if( isset($_POST['mailing_address1']) || isset($_POST['mailing_address2']) || isset($_POST['mailing_city']) 
+            || isset($_POST['mailing_province']) || isset($_POST['mailing_postal']) || isset($_POST['mailing_country']) 
+            || $_POST['mailing_flags'] != $customer['mailing_flags']
+            ) {
+            $addr = array(
+                'customer_id' => $customer_id,
+                'address1' => (isset($_POST['mailing_address1']) ? $_POST['mailing_address1'] : (isset($customer['mailing_address1']) ? $customer['mailing_address1'] : '')),
+                'address2' => (isset($_POST['mailing_address2']) ? $_POST['mailing_address2'] : (isset($customer['mailing_address2']) ? $customer['mailing_address2'] : '')),
+                'city' => (isset($_POST['mailing_city']) ? $_POST['mailing_city'] : (isset($customer['mailing_city']) ? $customer['mailing_city'] : '')),
+                'province' => (isset($_POST['mailing_province']) ? $_POST['mailing_province'] : (isset($customer['mailing_province']) ? $customer['mailing_province'] : '')),
+                'postal' => (isset($_POST['mailing_postal']) ? $_POST['mailing_postal'] : (isset($customer['mailing_postal']) ? $customer['mailing_postal'] : '')),
+                'country' => (isset($_POST['mailing_country']) ? $_POST['mailing_country'] : (isset($customer['mailing_country']) ? $customer['mailing_country'] : '')),
+                'flags' => (isset($_POST['mailing_flags']) ? $_POST['mailing_flags'] : (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : '')),
+                );
+            //
+            // Check if address blank, then remove
+            //
+            if( $addr['address1'] == '' && $addr['address2'] == '' 
+                && $addr['city'] == '' && $addr['province'] == '' && $addr['postal'] == '' && $addr['country'] == '' 
+                ) {
+                if( $customer['mailing_address_id'] > 0 ) {
+                    $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.address', $customer['mailing_address_id'], null, 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.292', 'msg'=>'Unable to remove address', 'err'=>$rc['err']));
+                    }
+                }
+            }
+            elseif( $addr['address1'] != '' || $addr['address2'] != '' || $addr['city'] != '' || $addr['province'] != '' || $addr['postal'] != '' || $addr['country'] != '' ) {
+                if( $customer['mailing_address_id'] == 0 ) {
+                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.293', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                    }
+                } else {
+                    $update_args = array();
+                    foreach(['address1', 'address2', 'city', 'province', 'postal', 'country', 'flags'] as $field) {
+                        if( isset($addr[$field]) && $addr[$field] != $customer['mailing_' . $field] ) {
+                            $update_args[$field] = $addr[$field];
+                        }
+                    }
+                    if( count($update_args) > 0 ) {
+                        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $customer['mailing_address_id'], $update_args, 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.294', 'msg'=>'Unable to update address', 'err'=>$rc['err']));
+                        }
+                    }
+                }
+            }
+        }
+
         if( $errors == 'no' ) {
             return array('stat'=>'updated');
         }
@@ -279,9 +666,13 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
     //
     // Display the form
     //
-    $form = "<form action='' method='POST'>"
-        . "<input type='hidden' name='action' value='update'>"
-        . "<div class='contact-details-form'>";
+    $form = "<form action='' method='POST'>";
+    if( $customer['id'] == 0 ) {
+        $form .= "<input type='hidden' name='action' value='add'>";
+    } else {
+        $form .= "<input type='hidden' name='action' value='update'>";
+    }
+    $form .= "<div class='contact-details-form'>";
     $form .= "<div class='contact-details-section contact-details-form-name'>";
     $form .= "<div class='input first'>"
         . "<label for='first'>First Name" . (in_array('first', $required)?' *':'') . "</label>"
@@ -341,7 +732,9 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
         . "<label for='mailing_country'>Country" . (in_array('mailing_country', $required)?' *':'') . "</label>"
         . "<select id='mailing_country_code' type='select' class='select' name='mailing_country' onchange='updateMailingProvince()'>"
         . "<option value=''></option>";
-    $selected_country = 'Canada';
+    if( $customer['mailing_country'] == '' ) {
+        $customer['mailing_country'] = 'Canada';
+    }
     foreach($country_codes as $country_code => $country_name) {
         $form .= "<option value='" . $country_code . "' " 
             . (($country_code == $customer['mailing_country'] || $country_name == $customer['mailing_country'])?' selected':'')
@@ -357,6 +750,9 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
             . (isset($province_codes[$selected_country])?" style='display:none;'":"")
             . "value='" . $customer['mailing_province'] . "'>";
     $js = '';
+    if( $customer['mailing_province'] == '' ) {
+        $customer['mailing_province'] = 'ON';
+    }
     foreach($province_codes as $country_code => $provinces) {
         $form .= "<select id='mailing_province_code_{$country_code}' type='select' class='select' "
             . (($country_code != $selected_country)?" style='display:none;'":"")
@@ -391,8 +787,100 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
         . "</script>";
     $form .= "</div>";
 
-
     // Billing Address
+    $form .= "<div class='contact-details-section contact-details-form-billing'>";
+    $form .= "<div class='input'>";
+    $form .= "<label for='billingflag'>Same billing address</label>"
+        . "<select id='billingflag' name='billingflag' type='select' class='select' onchange='updateBillingForm();'>";
+    if( ($customer['mailing_flags']&0x02) == 0x02 ) {
+        $form .= "<option value='yes' selected>Yes</option>"
+            . "<option value='no'>No</option>";
+    } else {
+        $form .= "<option value='yes'>Yes</option>"
+            . "<option value='no' selected>No</option>";
+    }
+    $form .= "</select>"
+        . "</div>";
+    if( ($customer['mailing_flags']&0x02) == 0x02 ) {
+        $form .= "<div id='billingform' style='display:none;'>";
+    } else {
+        $form .= "<div id='billingform'>";
+    }
+    $form .= "<div class='input billing_address1'>"
+        . "<label for='billing_address1'>Billing Address Line 1" . (in_array('billing_address1', $required)?' *':'') . "</label>"
+        . "<input type='text' class='text' name='billing_address1' value='" . $customer['billing_address1'] . "'>"
+        . "</div>";
+    $form .= "<div class='input billing_address2'>"
+        . "<label for='billing_address2'>Line 2" . (in_array('billing_address2', $required)?' *':'') . "</label>"
+        . "<input type='text' class='text' name='billing_address2' value='" . $customer['billing_address2'] . "'>"
+        . "</div>";
+    $form .= "<div class='input billing_city'>"
+        . "<label for='billing_city'>City" . (in_array('billing_city', $required)?' *':'') . "</label>"
+        . "<input type='text' class='text' name='billing_city' value='" . $customer['billing_city'] . "'>"
+        . "</div>";
+    $form .= "<div class='input billing_country'>"
+        . "<label for='billing_country'>Country" . (in_array('billing_country', $required)?' *':'') . "</label>"
+        . "<select id='billing_country_code' type='select' class='select' name='billing_country' onchange='updateBillingProvince()'>"
+        . "<option value=''></option>";
+    $selected_country = 'Canada';
+    foreach($country_codes as $country_code => $country_name) {
+        $form .= "<option value='" . $country_code . "' " 
+            . (($country_code == $customer['billing_country'] || $country_name == $customer['billing_country'])?' selected':'')
+            . ">" . $country_name . "</option>";
+        if( $country_code == $customer['billing_country'] || $country_name == $customer['billing_country'] ) {
+            $selected_country = $country_code;
+        }
+    }
+    $form .= "</select></div>";
+    $form .= "<div class='input billing_province'>"
+        . "<label for='billing_province'>State/Province" . (in_array('billing_province', $required)?' *':'') . "</label>"
+        . "<input id='billing_province_text' type='text' class='text' name='billing_province' "
+            . (isset($province_codes[$selected_country])?" style='display:none;'":"")
+            . "value='" . $customer['billing_province'] . "'>";
+    $js = '';
+    foreach($province_codes as $country_code => $provinces) {
+        $form .= "<select id='billing_province_code_{$country_code}' type='select' class='select' "
+            . (($country_code != $selected_country)?" style='display:none;'":"")
+            . "name='billing_province_code_{$country_code}' >"
+            . "<option value=''></option>";
+        $js .= "document.getElementById('billing_province_code_" . $country_code . "').style.display='none';";
+        foreach($provinces as $province_code => $province_name) {
+            $form .= "<option value='" . $province_code . "'" 
+                . (($province_code == $customer['billing_province'] || $province_name == $customer['billing_province'])?' selected':'')
+                . ">" . $province_name . "</option>";
+        }
+        $form .= "</select>";
+    }
+    $form .= "</div>";
+    $form .= "<div class='input billing_postal'>"
+        . "<label for='billing_postal'>ZIP/Postal Code" . (in_array('billing_postal', $required)?' *':'') . "</label>"
+        . "<input type='text' class='text' name='billing_postal' value='" . $customer['billing_postal'] . "'>"
+        . "</div>";
+    $form .= "</div>"; // End wrapper div id billingform 
+    $form .= "<script type='text/javascript'>"
+        . "function updateBillingForm() {"
+            . "var f = document.getElementById('billingflag').value;"
+            . "if(f=='yes'){"
+                . "document.getElementById('billingform').style.display = 'none';"
+            . "}else{"
+                . "document.getElementById('billingform').style.display = 'block';"
+            . "}"
+            . "console.log('updateform');"
+        . "}"
+        . "function updateBillingProvince() {"
+            . "var cc = document.getElementById('billing_country_code');"
+            . "var pr = document.getElementById('billing_province_text');"
+            . "var pc = document.getElementById('billing_province_code_'+cc.value);"
+            . $js
+            . "if( pc != null ) {"
+                . "pc.style.display='';"
+                . "pr.style.display='none';"
+            . "}else{"
+                . "pr.style.display='';"
+            . "}"
+        . "}"
+        . "</script>";
+    $form .= "</div>";
 
     // Check if option should be option for parent/admin  f family/company
     if( in_array($customer['type'], [21,22,31,32]) ) {
@@ -433,396 +921,11 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
 
     $form .= "<div class='submit'><input type='submit' class='submit' value='Save'></div>";
     $form .= "</form>";
-
-/*
-    if( isset($email_form) ) {
-        $form .= $email_form;
-    }
-    if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' ) {
-        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
-            $form .= "<div class='input phone_cell'>"
-                . "<label for='phone_cell'>Cell Phone Number" . (in_array('phone_cell', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='phone_cell' value='" . $customer['phone_cell'] . "'>"
-                . "</div>";
-        } else {
-            // FIXME: Manage multiple phones
-        }
-    }
-    if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
-        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x40000000) > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'countryCodes');
-            $rc = ciniki_core_countryCodes($ciniki);
-            $country_codes = $rc['countries'];
-            $province_codes = $rc['provinces'];
-            $form .= "<div class='input address1'>"
-                . "<label for='address1'>Street Address 1" . (in_array('address1', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='address1' value='" . $address['address1'] . "'>"
-                . "</div>";
-            $form .= "<div class='input address2'>"
-                . "<label for='address2'>Street Address 2" . (in_array('address2', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='address2' value='" . $address['address2'] . "'>"
-                . "</div>";
-            $form .= "<div class='input city'>"
-                . "<label for='city'>City" . (in_array('city', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='city' value='" . $address['city'] . "'>"
-                . "</div>";
-            $form .= "<div class='input country'>"
-                . "<label for='country'>Country" . (in_array('country', $required)?' *':'') . "</label>"
-                . "<select id='country_code' type='select' class='select' name='country' onchange='updateProvince()'>"
-                . "<option value=''></option>";
-            $selected_country = '';
-            foreach($country_codes as $country_code => $country_name) {
-                $form .= "<option value='" . $country_code . "' " 
-                    . (($country_code == $address['country'] || $country_name == $address['country'])?' selected':'')
-                    . ">" . $country_name . "</option>";
-                if( $country_code == $address['country'] || $country_name == $address['country'] ) {
-                    $selected_country = $country_code;
-                }
-            }
-            $form .= "</select></div>";
-            $form .= "<div class='input province'>"
-                . "<label for='province'>State/Province" . (in_array('province', $required)?' *':'') . "</label>"
-                . "<input id='province_text' type='text' class='text' name='province' "
-                    . (isset($province_codes[$selected_country])?" style='display:none;'":"")
-                    . "value='" . $address['province'] . "'>";
-            $js = '';
-            foreach($province_codes as $country_code => $provinces) {
-                $form .= "<select id='province_code_{$country_code}' type='select' class='select' "
-                    . (($country_code != $selected_country)?" style='display:none;'":"")
-                    . "name='province_code_{$country_code}' >"
-                    . "<option value=''></option>";
-                $js .= "document.getElementById('province_code_" . $country_code . "').style.display='none';";
-                foreach($provinces as $province_code => $province_name) {
-                    $form .= "<option value='" . $province_code . "'" 
-                        . (($province_code == $address['province'] || $province_name == $address['province'])?' selected':'')
-                        . ">" . $province_name . "</option>";
-                }
-                $form .= "</select>";
-            }
-            $form .= "</div>";
-            $form .= "<div class='input postal'>"
-                . "<label for='postal'>ZIP/Postal Code" . (in_array('postal', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='postal' value='" . $address['postal'] . "'>"
-                . "</div>";
-            $form .= "<script type='text/javascript'>"
-                . "function updateProvince() {"
-                    . "var cc = document.getElementById('country_code');"
-                    . "var pr = document.getElementById('province_text');"
-                    . "var pc = document.getElementById('province_code_'+cc.value);"
-                    . $js
-                    . "if( pc != null ) {"
-                        . "pc.style.display='';"
-                        . "pr.style.display='none';"
-                    . "}else{"
-                        . "pr.style.display='';"
-                    . "}"
-                . "}"
-                . "</script>";
-        } else {
-            // FIXME: Manage multiple addresses
-        }
-    } 
-    */
     $form .= "</div>";
 
     $blocks[] = array('type'=>'content', 'html'=>$form);
-    //$blocks[] = array('type'=>'content', 'html'=>'<pre>' . print_r($customer, true) . '</pre>');
+//    $blocks[] = array('type'=>'content', 'html'=>'<pre>' . print_r($customer, true) . '</pre>');
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
-
-    //
-    // Get the customer details
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
-    $rc = ciniki_customers__customerDetails($ciniki, $tnid, $ciniki['session']['customer']['id'], array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.178', 'msg'=>'Unable to find your information. Please try again or contact us for help.', 'err'=>$rc['err']));
-    } elseif( !isset($rc['customer']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.179', 'msg'=>'Unable to find your information. Please try again or contact us for help.', 'err'=>$rc['err']));
-    }
-    $customer = $rc['customer'];
-    if( isset($customer['emails'][0]['email']) ) {
-        $email = $customer['emails'][0]['email'];
-        $emails = $customer['emails'];
-    } else {
-        $email = array('id'=>'0', 'address'=>'');
-        $emails = array();
-    }
-    if( isset($customer['phones']) ) {
-        $phones = $customer['phones'];
-    } else {
-        $phones = array();
-    }
-    if( isset($customer['addresses'][0]['address']) ) {
-        $address = $customer['addresses'][0]['address'];
-        $addresses = $customer['addresses'];
-    } else {
-        $address = array('id'=>'0', 'address1'=>'', 'address2'=>'', 'city'=>'', 'province'=>'', 'postal'=>'', 'country'=>'');
-        $addresses = array();
-    }
-
-    if( $customer['first'] == $email['address'] ) {
-        $customer['first'] = '';
-    }
-
-    //
-    // Check for updates
-    //
-    $error_msg = '';
-    $updated = 'no';
-    $errors = 'no';
-    if( isset($_POST['action']) && $_POST['action'] == 'update' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        //
-        // Check if name is updated
-        //
-        $customer_args = array();
-        if( isset($_POST['first']) && $_POST['first'] != $customer['first'] ) {
-            $customer_args['first'] = $_POST['first'];
-            $customer['first'] = $_POST['first'];
-        }
-        if( isset($_POST['last']) && $_POST['last'] != $customer['last'] ) {
-            $customer_args['last'] = $_POST['last'];
-            $customer['last'] = $_POST['last'];
-        }
-        //
-        // Max of Home, Work, Cell, Fax number for a customer
-        //
-        if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' 
-            && ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x10000000) > 0
-            ) {
-                if( isset($_POST['phone_cell']) && $_POST['phone_cell'] != $customer['phone_cell'] ) {
-                    $customer_args['phone_cell'] = $_POST['phone_cell'];
-                    $customer['phone_cell'] = $_POST['phone_cell'];
-                }
-                // FIXME: Add other phones here
-        }
-        if( ((!isset($customer_args['first']) && $customer['first'] == '') || (isset($customer_args['first']) && $customer_args['first'] == ''))
-            && ((!isset($customer_args['last']) && $customer['last'] == '') || (isset($customer_args['last']) && $customer_args['last'] == ''))
-            ) {
-            if( isset($_POST['email']) && $_POST['email'] != '' ) {
-                $customer_args['first'] = $_POST['email'];
-            } else {
-                $customer_args['first'] = $email['address'];
-            }
-        }
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
-        $rc = ciniki_customers_customerUpdateName($ciniki, $tnid, $customer, $customer['id'], $customer_args);
-        if( $rc['stat'] == 'ok' ) {
-            if( isset($rc['display_name']) && $customer['display_name'] != $rc['display_name'] ) {
-                $customer_args['display_name'] = $rc['display_name'];
-            }
-            if( isset($rc['sort_name']) && $customer['sort_name'] != $rc['sort_name'] ) {
-                $customer_args['sort_name'] = $rc['sort_name'];
-            }
-            if( isset($rc['permalink']) && $customer['permalink'] != $rc['permalink'] ) {
-                $customer_args['permalink'] = $rc['permalink'];
-            }
-        }
-        if( count($customer_args) > 0 ) {
-            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer', $customer['id'], $customer_args);
-            if( $rc['stat'] != 'ok' ) {
-                $errors = 'yes';
-                $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your contact information.";
-            } else {
-                $updated = 'yes';
-            }
-        }
-
-
-        //
-        // Check address
-        //
-        $address_args = array();
-        if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
-            if( isset($_POST['address1']) && $_POST['address1'] != $address['address1'] ) {
-                $address_args['address1'] = $_POST['address1'];
-                $address['address1'] = $_POST['address1'];
-            }
-            if( isset($_POST['address2']) && $_POST['address2'] != $address['address2'] ) {
-                $address_args['address2'] = $_POST['address2'];
-                $address['address2'] = $_POST['address2'];
-            }
-            if( isset($_POST['city']) && $_POST['city'] != $address['city'] ) {
-                $address_args['city'] = $_POST['city'];
-                $address['city'] = $_POST['city'];
-            }
-            if( isset($_POST['country']) && isset($_POST['province_code_' . $_POST['country']]) ) {
-                if( isset($_POST['province_code_' . $_POST['country']]) && $_POST['province_code_' . $_POST['country']] != $address['province'] ) {
-                    $address_args['province'] = $_POST['province_code_' . $_POST['country']];
-                    $address['province'] = $_POST['province_code_' . $_POST['country']];
-                }
-            } else {
-                if( isset($_POST['province']) && $_POST['province'] != $address['province'] ) {
-                    $address_args['province'] = $_POST['province'];
-                    $address['province'] = $_POST['province'];
-                }
-            }
-            if( isset($_POST['postal']) && $_POST['postal'] != $address['postal'] ) {
-                $address_args['postal'] = $_POST['postal'];
-                $address['postal'] = $_POST['postal'];
-            }
-            if( isset($_POST['country']) && $_POST['country'] != $address['country'] ) {
-                $address_args['country'] = $_POST['country'];
-                $address['country'] = $_POST['country'];
-            }
-            if( count($address_args) > 0 ) {
-                if( $address['id'] == 0 ) {
-                    $address_args['customer_id'] = $customer['id'];
-                    if( !isset($address_args['address1']) ) { $address_args['address1'] = ''; }
-                    if( !isset($address_args['address2']) ) { $address_args['address2'] = ''; }
-                    if( !isset($address_args['city']) ) { $address_args['city'] = ''; }
-                    if( !isset($address_args['province']) ) { $address_args['province'] = ''; }
-                    if( !isset($address_args['postal']) ) { $address_args['postal'] = ''; }
-                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $address_args);
-                    if( $rc['stat'] != 'ok' ) {
-                        $errors = 'yes';
-                        $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your address.";
-                    } else {
-                        $updated = 'yes';
-                    }
-                } else {
-                    $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $address['id'], $address_args);
-                    if( $rc['stat'] != 'ok' ) {
-                        $errors = 'yes';
-                        $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your address.";
-                    } else {
-                        $updated = 'yes';
-                    }
-                }
-            }
-        }
-    }
-
-    //
-    // Check emails
-    //
-    if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountEmailsUpdate');
-        $rc = ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $tnid, $customer);
-        if( $rc['stat'] != 'ok' ) {
-            $errors = 'yes';
-        } else {
-            $email_form = $rc['form'];
-            if( $rc['updated'] == 'yes' ) {
-                $updated = 'yes';
-            }
-            if( isset($rc['errors']) && $rc['errors'] == 'yes' ) {
-                $errors = 'yes';
-                if( isset($rc['error_msg']) ) {
-                    $error_msg .= ($error_msg!=''?"\n":'') . $rc['error_msg'];
-                } else {
-                    $error_msg .= ($error_msg!=''?"\n":'') . "Unable to update your email address.";
-                }
-            }
-        }
-    }
-
-    //
-    // Setup the form
-    //
-    $form = "<div class='contact-details-form'>";
-    $form .= "<div class='contact-details-form-name'>";
-    $form .= "<div class='input first'>"
-        . "<label for='first'>First Name" . (in_array('first', $required)?' *':'') . "</label>"
-        . "<input type='text' class='text' name='first' value='" . $customer['first'] . "'>"
-        . "</div>";
-    $form .= "<div class='input last'>"
-        . "<label for='last'>Last Name" . (in_array('last', $required)?' *':'') . "</label>"
-        . "<input type='text' class='text' name='last' value='" . $customer['last'] . "'>"
-        . "</div>";
-    $form .= "</div>";
-
-    if( isset($email_form) ) {
-        $form .= $email_form;
-    }
-    if( isset($settings['page-account-phone-update']) && $settings['page-account-phone-update'] == 'yes' ) {
-        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x10000000) > 0 ) {
-            $form .= "<div class='input phone_cell'>"
-                . "<label for='phone_cell'>Cell Phone Number" . (in_array('phone_cell', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='phone_cell' value='" . $customer['phone_cell'] . "'>"
-                . "</div>";
-        } else {
-            // FIXME: Manage multiple phones
-        }
-    }
-    if( isset($settings['page-account-address-update']) && $settings['page-account-address-update'] == 'yes' ) {
-        if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x40000000) > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'countryCodes');
-            $rc = ciniki_core_countryCodes($ciniki);
-            $country_codes = $rc['countries'];
-            $province_codes = $rc['provinces'];
-            $form .= "<div class='input address1'>"
-                . "<label for='address1'>Street Address 1" . (in_array('address1', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='address1' value='" . $address['address1'] . "'>"
-                . "</div>";
-            $form .= "<div class='input address2'>"
-                . "<label for='address2'>Street Address 2" . (in_array('address2', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='address2' value='" . $address['address2'] . "'>"
-                . "</div>";
-            $form .= "<div class='input city'>"
-                . "<label for='city'>City" . (in_array('city', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='city' value='" . $address['city'] . "'>"
-                . "</div>";
-            $form .= "<div class='input country'>"
-                . "<label for='country'>Country" . (in_array('country', $required)?' *':'') . "</label>"
-                . "<select id='country_code' type='select' class='select' name='country' onchange='updateProvince()'>"
-                . "<option value=''></option>";
-            $selected_country = '';
-            foreach($country_codes as $country_code => $country_name) {
-                $form .= "<option value='" . $country_code . "' " 
-                    . (($country_code == $address['country'] || $country_name == $address['country'])?' selected':'')
-                    . ">" . $country_name . "</option>";
-                if( $country_code == $address['country'] || $country_name == $address['country'] ) {
-                    $selected_country = $country_code;
-                }
-            }
-            $form .= "</select></div>";
-            $form .= "<div class='input province'>"
-                . "<label for='province'>State/Province" . (in_array('province', $required)?' *':'') . "</label>"
-                . "<input id='province_text' type='text' class='text' name='province' "
-                    . (isset($province_codes[$selected_country])?" style='display:none;'":"")
-                    . "value='" . $address['province'] . "'>";
-            $js = '';
-            foreach($province_codes as $country_code => $provinces) {
-                $form .= "<select id='province_code_{$country_code}' type='select' class='select' "
-                    . (($country_code != $selected_country)?" style='display:none;'":"")
-                    . "name='province_code_{$country_code}' >"
-                    . "<option value=''></option>";
-                $js .= "document.getElementById('province_code_" . $country_code . "').style.display='none';";
-                foreach($provinces as $province_code => $province_name) {
-                    $form .= "<option value='" . $province_code . "'" 
-                        . (($province_code == $address['province'] || $province_name == $address['province'])?' selected':'')
-                        . ">" . $province_name . "</option>";
-                }
-                $form .= "</select>";
-            }
-            $form .= "</div>";
-            $form .= "<div class='input postal'>"
-                . "<label for='postal'>ZIP/Postal Code" . (in_array('postal', $required)?' *':'') . "</label>"
-                . "<input type='text' class='text' name='postal' value='" . $address['postal'] . "'>"
-                . "</div>";
-            $form .= "<script type='text/javascript'>"
-                . "function updateProvince() {"
-                    . "var cc = document.getElementById('country_code');"
-                    . "var pr = document.getElementById('province_text');"
-                    . "var pc = document.getElementById('province_code_'+cc.value);"
-                    . $js
-                    . "if( pc != null ) {"
-                        . "pc.style.display='';"
-                        . "pr.style.display='none';"
-                    . "}else{"
-                        . "pr.style.display='';"
-                    . "}"
-                . "}"
-                . "</script>";
-        } else {
-            // FIXME: Manage multiple addresses
-        }
-    }
-    $form .= "</div>";
-
-    return array('stat'=>'ok', 'updated'=>$updated, 'form'=>$form, 'customer'=>$customer, 'email'=>$email, 'address'=>$address, 'errors'=>$errors, 'error_msg'=>$error_msg);
 }
 ?>
