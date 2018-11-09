@@ -734,7 +734,7 @@ function ciniki_customers_accounts() {
                 var fname = 'subscription_' + this.subscriptions[i].id;
                 var o = this.fieldValue('subscriptions', fname, this.sections.subscriptions.fields[fname]);
                 var n = this.formValue(fname);
-                if( o != n && n > 0 ) {
+                if( this.customer_id == 0 || (o != n && n > 0) ) {
                     if( n == 10 ) {
                         subs += sc + this.subscriptions[i].id; sc=',';
                     } else if( n == 60 ) {
