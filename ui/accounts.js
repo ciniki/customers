@@ -458,7 +458,9 @@ function ciniki_customers_accounts() {
         'name':{'label':'Business Name', 'aside':'yes', 'fields':{
             'company':{'label':'', 'hidelabel':'yes', 'type':'text'},
             }},
-        'emails':this.edit.forms.individual.emails,
+        'emails':{'label':'Email', 'aside':'yes', 'fields':{
+            'primary_email':{'label':'Primary Email', 'type':'text'},
+            }},
 //        '_connection':this.edit.forms.individual._connection,
         'phones':{'label':'Phone Numbers', 'aside':'yes', 'fields':{
             'phone_cell':{'label':'Cell', 'visible':'no', 'type':'text'},
@@ -619,7 +621,7 @@ function ciniki_customers_accounts() {
             if( p.data.type == 30 ) {
                 p.forms.business.phones.fields.phone_cell.visible = (rsp.customer.phone_cell != '' ? 'yes' : 'no');
                 p.forms.business.phones.fields.phone_home.visible = (rsp.customer.phone_home != '' ? 'yes' : 'no');
-                p.forms.business.emails.active = (rsp.customer.primary_email != '' ? 'yes' : 'no');
+//                p.forms.business.emails.active = (rsp.customer.primary_email != '' ? 'yes' : 'no');
             } else if( p.data.type == 20 ) {
                 p.forms.business.emails.active = (rsp.customer.primary_email != '' ? 'yes' : 'no');
             } else {
