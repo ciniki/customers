@@ -65,6 +65,10 @@ function ciniki_customers_accountSearch($ciniki) {
         . "IFNULL(parents.status, customers.status) AS status, "
         . "IFNULL(parents.status, customers.status) AS status_text "
         . "FROM ciniki_customers AS customers "
+        . "LEFT JOIN ciniki_customer_emails AS emails ON ("
+            . "customers.id = emails.customer_id "
+            . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "LEFT JOIN ciniki_customers AS parents ON ("
             . "customers.parent_id > 0 "
             . "AND customers.parent_id = parents.id "
@@ -76,6 +80,9 @@ function ciniki_customers_accountSearch($ciniki) {
             . "OR customers.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR parents.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR parents.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR emails.email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR emails.email LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR emails.email LIKE '%@" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
         . "";
     if( isset($args['type']) && $args['type'] != '' ) {
