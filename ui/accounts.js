@@ -351,9 +351,9 @@ function ciniki_customers_accounts() {
                 'active':function() {return M.modFlagSet('ciniki.customers', 0x0800); },
                 },
             'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
-            'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
+            'first':{'label':'First', 'type':'text', 'livesearch':'yes', 'livesearchcols':3},
             'middle':{'label':'Middle', 'type':'text'},
-            'last':{'label':'Last', 'type':'text', 'livesearch':'yes',},
+            'last':{'label':'Last', 'type':'text', 'livesearch':'yes', 'livesearchcols':3},
             'birthdate':{'label':'Birthday', 'type':'date', 'separator':'yes',
                 'active':function() {return M.modFlagSet('ciniki.customers', 0x8000); },
                 },
@@ -426,7 +426,7 @@ function ciniki_customers_accounts() {
     this.edit.forms.parent = {
         '_family':{'label':'Family', 'aside':'yes', 
             'fields':{
-                'parent_id':{'label':'', 'hidelabel':'yes', 'type':'select', 'options':this.edit.families, 'complex_options':{'value':'id', 'name':'name'}},
+                'parent_id':{'label':'', 'hidelabel':'yes', 'type':'select', 'options':this.edit.families, 'complex_options':{'value':'id', 'name':'display_name'}},
             }},
         'name':this.edit.forms.individual.name,
         'emails':this.edit.forms.individual.emails,
@@ -441,7 +441,7 @@ function ciniki_customers_accounts() {
     this.edit.forms.child = {
         '_family':{'label':'Family', 'aside':'yes', 
             'fields':{
-                'parent_id':{'label':'', 'hidelabel':'yes', 'type':'select', 'options':this.edit.families, 'complex_options':{'value':'id', 'name':'name'}},
+                'parent_id':{'label':'', 'hidelabel':'yes', 'type':'select', 'options':this.edit.families, 'complex_options':{'value':'id', 'name':'display_name'}},
             }},
         'name':this.edit.forms.individual.name,
         'emails':this.edit.forms.individual.emails,
@@ -520,7 +520,12 @@ function ciniki_customers_accounts() {
         return this.data[i];
     }
     this.edit.liveSearchCb = function(s, i, value) {
-        if( i == 'mailing_city' || i == 'billing_city' ) {
+        if( i == 'first' || i == 'last' || i == 'company' ) {
+            M.api.getJSONBgCb('ciniki.customers.customerSearch', 
+                {'tnid':M.curTenantID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
+                    M.ciniki_customers_accounts.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_accounts.edit.panelUID + '_' + i), rsp.customers); 
+                });
+        } else if( i == 'mailing_city' || i == 'billing_city' ) {
             M.api.getJSONBgCb('ciniki.customers.addressSearchQuick', 
                 {'tnid':M.curTenantID, 'start_needle':value, 'limit':25}, function(rsp) { 
                     M.ciniki_customers_accounts.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_accounts.edit.panelUID + '_' + i), rsp.cities); 
@@ -533,6 +538,22 @@ function ciniki_customers_accounts() {
         }
     }
     this.edit.liveSearchResultValue = function(s, f, i, j, d) {
+        if( f == 'first' || f == 'last' || f == 'company' ) { 
+            // FIXME: Remove when all searched return no subarray
+            if( d.customer != null ) {
+                switch(j) {
+                    case 0: return d.parent_name;
+                    case 1: return d.display_name;
+                    case 2: return d.type_text;
+                }
+            } else {
+                switch(j) {
+                    case 0: return d.parent_name;
+                    case 1: return d.display_name;
+                    case 2: return d.type_text;
+                }
+            }
+        }
         if( f == 'mailing_city' || f == 'billing_city' ) { 
             return d.city.name + ',' + d.city.province; 
         } else if( f == 'connection' ) {
@@ -541,7 +562,20 @@ function ciniki_customers_accounts() {
         return '';
     }
     this.edit.liveSearchResultRowFn = function(s, f, i, j, d) { 
-        if( f == 'mailing_city' || f == 'billing_city' ) {
+        if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
+            if( d.customer != null ) {
+                if( this.parent_id != null && this.parent_id > 0 ) {
+                    return 'M.ciniki_customers_accounts.edit.open(null,\'' + d.customer.id + '\',null,\'' + this.parent_id + '\');';
+                }
+                return 'M.ciniki_customers_accounts.edit.open(null,' + d.customer.id + ',null,0);';
+            } else {
+                if( this.parent_id != null && this.parent_id > 0 ) {
+                    return 'M.ciniki_customers_accounts.edit.open(null,\'' + d.id + '\',null,\'' + this.parent_id + '\');';
+                }
+                return 'M.ciniki_customers_accounts.edit.open(null,' + d.id + ',null,0);';
+            }
+        }
+        else if( f == 'mailing_city' || f == 'billing_city' ) {
             return 'M.ciniki_customers_accounts.edit.updateCity(\'' + s + '\',\'' + escape(d.city.name) + '\',\'' + escape(d.city.province) + '\',\'' + escape(d.city.country) + '\');';
         }
         else if( f == 'connection' ) {
@@ -753,10 +787,19 @@ function ciniki_customers_accounts() {
                         M.api.err(rsp);
                         return false;
                     } 
-                    M.ciniki_customers_accounts.edit.close();
+                    var p = M.ciniki_customers_accounts.edit;
+                    if( p.nextFn != null && p.nextFn != '' ) {
+                        eval(p.nextFn + '(' + p.customer_id + ');');
+                    } else {
+                        M.ciniki_customers_accounts.edit.close();
+                    }
                 });
             } else {
-                this.close();
+                if( this.nextFn != null && this.nextFn != '' ) {
+                    eval(this.nextFn + '(' + this.customer_id + ');');
+                } else {
+                    this.close();
+                }
             }
         } else {
             var c = this.serializeForm('yes');

@@ -232,7 +232,7 @@ function ciniki_customers_customerGet($ciniki) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'families', 'fname'=>'id', 'fields'=>array('id', 'display_name')),
+        array('container'=>'customers', 'fname'=>'id', 'fields'=>array('id', 'display_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.267', 'msg'=>'Unable to load families', 'err'=>$rc['err']));
