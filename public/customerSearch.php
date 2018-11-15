@@ -25,7 +25,7 @@ function ciniki_customers_customerSearch($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field',
-            'validlist'=>array('eid', 'name', 'first', 'last', 'company', 'display_name')), 
+            'validlist'=>array('eid', 'name', 'first', 'last', 'company', 'display_name', 'family', 'business')), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -93,25 +93,38 @@ function ciniki_customers_customerSearch($ciniki) {
             $strsql .= "AND c1.parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' ";
         }
         $args['start_needle'] = preg_replace("/([^\s]) ([^\s])/", '$1%$2', $args['start_needle']);
-        $strsql .= "AND (c1.first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c1.first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c1.last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c1.last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c1.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c1.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c1.eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c2.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR c2.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR email LIKE '%@" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . ") "
-            . "ORDER BY c1.type DESC, c1.sort_name, c1.last, c1.first DESC ";
+        if( isset($args['field']) && $args['field'] == 'family' ) {
+            $strsql .= "AND (c1.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . ") "
+                . "AND c1.type = 20 ";
+        } elseif( isset($args['field']) && $args['field'] == 'business' ) {
+            error_log('business');
+            $strsql .= "AND (c1.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . ") "
+                . "AND c1.type = 30 ";
+        } else {
+            $strsql .= "AND (c1.first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c2.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c2.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR email LIKE '%@" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . ") ";
+        }
+        $strsql .= "ORDER BY c1.type DESC, c1.sort_name, c1.last, c1.first DESC ";
         if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
             $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified
         } else {
             $strsql .= "LIMIT 25 ";
         }
-
+error_log($strsql);
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'customers', 'fname'=>'id',

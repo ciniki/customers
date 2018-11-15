@@ -413,9 +413,8 @@ function ciniki_customers_accounts() {
         };
     // Families
     this.edit.forms.family = {
-        'name':{'label':'Family Name', 'aside':'yes', 
-            'fields':{
-                'company':{'label':'', 'hidelabel':'', 'type':'text'},
+        'name':{'label':'Family Name', 'aside':'yes', 'fields':{
+            'company':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchcols':3},
             }},
         'mailing':this.edit.forms.individual.mailing,
         'billing':this.edit.forms.individual.billing,
@@ -456,7 +455,7 @@ function ciniki_customers_accounts() {
     // Business Forms
     this.edit.forms.business = {
         'name':{'label':'Business Name', 'aside':'yes', 'fields':{
-            'company':{'label':'', 'hidelabel':'yes', 'type':'text'},
+            'company':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchcols':3},
             }},
         'emails':{'label':'Email', 'aside':'yes', 'fields':{
             'primary_email':{'label':'Primary Email', 'type':'text'},
@@ -520,7 +519,19 @@ function ciniki_customers_accounts() {
         return this.data[i];
     }
     this.edit.liveSearchCb = function(s, i, value) {
-        if( i == 'first' || i == 'last' || i == 'company' ) {
+        if( i == 'company' && this.sections.name.label == 'Family Name') {
+            M.api.getJSONBgCb('ciniki.customers.customerSearch', 
+                {'tnid':M.curTenantID, 'start_needle':value, 'field':'family', 'limit':25}, function(rsp) { 
+                    M.ciniki_customers_accounts.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_accounts.edit.panelUID + '_' + i), rsp.customers); 
+                });
+        }
+        else if( i == 'company' && this.sections.name.label == 'Business Name') {
+            M.api.getJSONBgCb('ciniki.customers.customerSearch', 
+                {'tnid':M.curTenantID, 'start_needle':value, 'field':'business', 'limit':25}, function(rsp) { 
+                    M.ciniki_customers_accounts.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_accounts.edit.panelUID + '_' + i), rsp.customers); 
+                });
+        }
+        else if( i == 'first' || i == 'last' || i == 'company' ) {
             M.api.getJSONBgCb('ciniki.customers.customerSearch', 
                 {'tnid':M.curTenantID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
                     M.ciniki_customers_accounts.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_accounts.edit.panelUID + '_' + i), rsp.customers); 
