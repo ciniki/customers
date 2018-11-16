@@ -99,7 +99,6 @@ function ciniki_customers_customerSearch($ciniki) {
                 . ") "
                 . "AND c1.type = 20 ";
         } elseif( isset($args['field']) && $args['field'] == 'business' ) {
-            error_log('business');
             $strsql .= "AND (c1.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR c1.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . ") "
@@ -124,7 +123,6 @@ function ciniki_customers_customerSearch($ciniki) {
         } else {
             $strsql .= "LIMIT 25 ";
         }
-error_log($strsql);
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'customers', 'fname'=>'id',
