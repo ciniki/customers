@@ -289,9 +289,9 @@ function ciniki_customers_customerAdd(&$ciniki) {
     }
 
     //
-    // Check if type changes, parent_id should also change
+    // Check if individual and force parent_id to zero
     //
-    if( isset($args['type']) && $args['type'] == 10 && $args['parent_id'] > 0 ) {
+    if( isset($args['type']) && $args['type'] == 10 ) {
         $args['parent_id'] = 0;
     }
 
