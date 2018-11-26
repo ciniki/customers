@@ -97,6 +97,11 @@ function ciniki_customers_duplicateDetails($ciniki) {
                     $rsp['details' . $cust][] = array('label'=>'Billing', 'value'=>$addr);
                 }
             }
+        } else {
+            $rsp['details' . $cust][] = array('label'=>'Mailing', 'value'=>'');
+            if( ($rc['customer']['mailing_flags']&0x02) == 0x02 ) {
+                $rsp['details' . $cust][] = array('label'=>'Billing', 'value'=>'');
+            }
         }
         if( $rc['customer']['billing_address_id'] > 0 ) {
             $addr = $rc['customer']['billing_address1'];
@@ -118,6 +123,8 @@ function ciniki_customers_duplicateDetails($ciniki) {
             if( $addr != '' ) {
                 $rsp['details' . $cust][] = array('label'=>'Billing', 'value'=>$addr);
             }
+        } elseif( ($rc['customer']['mailing_flags']&0x02) == 0 ) {
+            $rsp['details' . $cust][] = array('label'=>'Billing', 'value'=>'');
         }
         
         $rsp['details' . $cust][] = array('label'=>'Notes', 'value'=>$rc['customer']['notes']);

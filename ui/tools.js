@@ -158,7 +158,6 @@ function ciniki_customers_tools() {
                 M.api.err(rsp);
                 return false;
             } 
-            console.log(rsp);
             var p = M.ciniki_customers_tools.duplicate;
             p.data = rsp;
             p.sections = {

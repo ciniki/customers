@@ -59,7 +59,6 @@ function ciniki_customers_duplicatesFind($ciniki) {
 //            . ") "
         . "ORDER BY c1_display_name, c1.id "
         . "";
-        error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'matches', 'fname'=>'match_id', 'name'=>'match',
