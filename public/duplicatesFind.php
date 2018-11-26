@@ -43,13 +43,23 @@ function ciniki_customers_duplicatesFind($ciniki) {
         . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND c1.id < c2.id "
 //      . "AND ((c1.first = c2.first and c1.last = c2.last) OR (c1.first = c2.last and c1.last = c2.first)) "
-        . "AND ((c1.type = 1 AND soundex(c1.first) = soundex(c2.first) and soundex(c1.last) = soundex(c2.last)) "
-            . "OR (c1.type = 1 AND soundex(c1.first) = soundex(c2.last) and soundex(c1.last) = soundex(c2.first)) "
-            . "OR (c1.type = 2 AND soundex(c1.company) = soundex(c2.company)) "
-            . "OR (soundex(c1.display_name) = soundex(c2.display_name)) "
+        . "AND ("
+            . "((c1.type = 1 OR c1.type = 10 OR c1.type = 21 OR c1.type = 22 OR c1.type = 31 OR c1.type = 32) "
+                . "AND (c2.type = 1 OR c2.type = 10 OR c1.type = 21 OR c1.type = 22 OR c1.type = 31 OR c1.type = 32)"
+                . "AND ("
+                    . "(c1.first <> '' AND c1.last <> '' AND soundex(c1.first) = soundex(c2.first) AND soundex(c1.last) = soundex(c2.last)) "
+                    . "OR (c1.first <> '' AND c1.last <> '' AND soundex(c1.first) = soundex(c2.last) AND soundex(c1.last) = soundex(c2.first)) "
+                . ")) "
+            . "OR ((c1.type = 2 OR c1.type = 20 OR c1.type = 30) AND (c2.type = 2 OR c2.type = 20 OR c2.type = 30) AND soundex(c1.company) = soundex(c2.company)) "
             . ") "
+//        . "AND ((c1.type = 1 AND soundex(c1.first) = soundex(c2.first) and soundex(c1.last) = soundex(c2.last)) "
+//            . "OR (c1.type = 1 AND soundex(c1.first) = soundex(c2.last) and soundex(c1.last) = soundex(c2.first)) "
+//            . "OR (c1.type = 2 AND soundex(c1.company) = soundex(c2.company)) "
+//            . "OR (soundex(c1.display_name) = soundex(c2.display_name)) "
+//            . ") "
         . "ORDER BY c1_display_name, c1.id "
         . "";
+        error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'matches', 'fname'=>'match_id', 'name'=>'match',

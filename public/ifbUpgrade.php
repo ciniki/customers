@@ -342,7 +342,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                         $customer['type'] = 30;
                         $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $customer, $customer['id'], array());
                         if( $rc['stat'] != 'ok' ) {
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.227', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.373', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
                         }
                         $display_name = $rc['display_name'];
                         $sort_name = $rc['sort_name'];
@@ -468,7 +468,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                         $customer['type'] = 31;
                         $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $customer, $customer['id'], array());
                         if( $rc['stat'] != 'ok' ) {
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.227', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.374', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
                         }
                         $display_name = $rc['display_name'];
                         $sort_name = $rc['sort_name'];
@@ -496,7 +496,7 @@ function ciniki_customers_ifbUpgrade(&$ciniki) {
                             $child['type'] = 32;
                             $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $child, $child['id'], array());
                             if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.227', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.375', 'msg'=>'Unable to process customer name', 'err'=>$rc['err']));
                             }
                             $display_name = $rc['display_name'];
                             $sort_name = $rc['sort_name'];

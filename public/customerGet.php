@@ -158,7 +158,7 @@ function ciniki_customers_customerGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerLoad');
         $rc = ciniki_customers_customerLoad($ciniki, $args['tnid'], $args['customer_id']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.230', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.379', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
         }
         $customer = $rc['customer'];
 

@@ -26,7 +26,7 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
     // Double check the account is logged in, should never reach this spot
     //
     if( !isset($ciniki['session']['account']['id']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.164', 'msg'=>'Not logged in'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.359', 'msg'=>'Not logged in'));
     }
 
     //
@@ -36,7 +36,7 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactForm');
         $rc = ciniki_customers_web_accountProcessRequestContactForm($ciniki, $settings, $tnid, $args);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.337', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.364', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
         }
         foreach($rc['blocks'] as $block) {
             $page['blocks'][] = $blocks;
@@ -68,7 +68,7 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
             exit;
         }
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.337', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.366', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
         }
         foreach($rc['blocks'] as $block) {
             $page['blocks'][] = $block;
@@ -99,7 +99,7 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
             }
         }
         if( $customer_id == 0 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.fatt.164', 'msg'=>'Invalid account'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.352', 'msg'=>'Invalid account'));
         }
         $args['customer_id'] = $customer_id;
         //

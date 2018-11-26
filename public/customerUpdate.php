@@ -382,7 +382,7 @@ function ciniki_customers_customerUpdate(&$ciniki) {
             if( $customer['mailing_address_id'] > 0 ) {
                 $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.address', $customer['mailing_address_id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.292', 'msg'=>'Unable to remove address', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.368', 'msg'=>'Unable to remove address', 'err'=>$rc['err']));
                 }
             }
         }
@@ -390,7 +390,7 @@ function ciniki_customers_customerUpdate(&$ciniki) {
             if( $customer['mailing_address_id'] == 0 ) {
                 $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.address', $addr, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.293', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.369', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
                 }
             } else {
                 $update_args = array();
@@ -402,7 +402,7 @@ function ciniki_customers_customerUpdate(&$ciniki) {
                 if( count($update_args) > 0 ) {
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.address', $customer['mailing_address_id'], $update_args, 0x04);
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.294', 'msg'=>'Unable to update address', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.367', 'msg'=>'Unable to update address', 'err'=>$rc['err']));
                     }
                 }
             }

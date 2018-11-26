@@ -271,7 +271,7 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.293', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.370', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
                 }
             } 
 
@@ -592,7 +592,7 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
                 $addr['flags'] = 0x02;
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.341', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.371', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
                 }
             }
         } 

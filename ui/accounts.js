@@ -103,6 +103,7 @@ function ciniki_customers_accounts() {
             });
         }
     }
+    this.menu.addButton('tools', 'Tools', 'M.startApp(\'ciniki.customers.tools\',null,\'M.cinik_customers_accounts.menu.open();\');');
     this.menu.addClose('Back');
 
     //
@@ -1022,7 +1023,7 @@ function ciniki_customers_accounts() {
         }
     }
     this.changecustomer.addClose('Cancel');
-
+/*
     //
     // The tools panel
     //
@@ -1030,9 +1031,9 @@ function ciniki_customers_accounts() {
     this.tools.data = {};
     this.tools.sections = {
         'reports':{'label':'Reports', 'list':{
-            'onhold':{'label':'On Hold', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{\'status\':\'40\'});'},
-            'suspended':{'label':'Suspended', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{\'status\':\'50\'});'},
-            'deleted':{'label':'Deleted', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{\'status\':\'60\'});'},
+//            'onhold':{'label':'On Hold', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{\'status\':\'40\'});'},
+//            'suspended':{'label':'Suspended', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{\'status\':\'50\'});'},
+//            'deleted':{'label':'Deleted', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{\'status\':\'60\'});'},
             'birthdays':{'label':'Birthdays', 
                 'visible':function() {return M.modFlagSet('ciniki.customers', 0x8000); },
                 'fn':'M.startApp(\'ciniki.customers.birthdays\',null,\'M.ciniki_customers_accounts.tools.show();\');'},
@@ -1041,14 +1042,14 @@ function ciniki_customers_accounts() {
             'connection':{'label':'Connections', 'fn':'M.startApp(\'ciniki.customers.connections\',null,\'M.ciniki_customers_accounts.tools.show();\')'},
             }},
         'tools':{'label':'Cleanup', 'list':{
-            'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_accounts.tools.show();\');'},
+//            'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_accounts.tools.show();\');'},
             'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_accounts.tools.show();\');'},
-            'salesreps':{'label':'Sales Reps', 'visible':'no', 'fn':'M.startApp(\'ciniki.customers.salesreps\', null, \'M.ciniki_customers_accounts.tools.show();\');'},
+//            'salesreps':{'label':'Sales Reps', 'visible':'no', 'fn':'M.startApp(\'ciniki.customers.salesreps\', null, \'M.ciniki_customers_accounts.tools.show();\');'},
         }},
-        'download':{'label':'Export (Advanced)', 'list':{
-            'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{});'},
-            'exportcsvcontacts':{'label':'Contacts to Excel', 'fn':'M.ciniki_customers_accounts.tools.exportCSVContacts();'},
-        }},
+//        'download':{'label':'Export (Advanced)', 'list':{
+//            'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_accounts.tools.show();\',\'mc\',{});'},
+//            'exportcsvcontacts':{'label':'Contacts to Excel', 'fn':'M.ciniki_customers_accounts.tools.exportCSVContacts();'},
+//        }},
         };
     this.tools.exportCSVContacts = function() {
         var args = {'tnid':M.curTenantID, 'columns':'type::status::prefix::first::middle::last::suffix::company::split_phone_labels::split_emails::split_addresses'};
@@ -1058,8 +1059,7 @@ function ciniki_customers_accounts() {
         this.show(cb);
     }
     this.tools.addClose('Back');
-
-
+*/
     //
     // The main start function
     //
@@ -1076,7 +1076,6 @@ function ciniki_customers_accounts() {
             alert('App Error');
             return false;
         } 
-
 
 
         if( args.next != null && args.next != '' ) {

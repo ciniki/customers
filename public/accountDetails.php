@@ -77,7 +77,7 @@ function ciniki_customers_accountDetails($ciniki) {
                 $fn = $rc['function_call'];
                 $rc = $fn($ciniki, $args['tnid'], $uiDataArgs);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.235', 'msg'=>'Unable to get customer information.', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.372', 'msg'=>'Unable to get customer information.', 'err'=>$rc['err']));
                 }
                 if( isset($rc['tabs']) ) {
                     foreach($rc['tabs'] as $tab) {
