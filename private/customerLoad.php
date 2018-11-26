@@ -104,7 +104,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 'distributor_status_text'=>$maps['customer']['distributor_status'],
                 ),
             'utctotz'=>array(
-                'birthdate'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                'birthdate'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                 'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                 ), 
