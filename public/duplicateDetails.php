@@ -74,6 +74,52 @@ function ciniki_customers_duplicateDetails($ciniki) {
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
             $rsp['details' . $cust][] = array('label'=>'Birthday', 'value'=>$rc['customer']['birthdate']);
         }
+        if( $rc['customer']['mailing_address_id'] > 0 ) {
+            $addr = $rc['customer']['mailing_address1'];
+            if( $rc['customer']['mailing_address2'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['mailing_address2'];
+            }
+            if( $rc['customer']['mailing_city'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['mailing_city'];
+            }
+            if( $rc['customer']['mailing_province'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['mailing_province'];
+            }
+            if( $rc['customer']['mailing_postal'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['mailing_postal'];
+            }
+            if( $rc['customer']['mailing_country'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['mailing_country'];
+            }
+            if( $addr != '' ) {
+                $rsp['details' . $cust][] = array('label'=>'Mailing', 'value'=>$addr);
+                if( ($rc['customer']['mailing_flags']&0x02) == 0x02 ) {
+                    $rsp['details' . $cust][] = array('label'=>'Billing', 'value'=>$addr);
+                }
+            }
+        }
+        if( $rc['customer']['billing_address_id'] > 0 ) {
+            $addr = $rc['customer']['billing_address1'];
+            if( $rc['customer']['billing_address2'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['billing_address2'];
+            }
+            if( $rc['customer']['billing_city'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['billing_city'];
+            }
+            if( $rc['customer']['billing_province'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['billing_province'];
+            }
+            if( $rc['customer']['billing_postal'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['billing_postal'];
+            }
+            if( $rc['customer']['billing_country'] != '' ) {
+                $addr .= ($addr != '' ? ', ' : '') . $rc['customer']['billing_country'];
+            }
+            if( $addr != '' ) {
+                $rsp['details' . $cust][] = array('label'=>'Billing', 'value'=>$addr);
+            }
+        }
+        
         $rsp['details' . $cust][] = array('label'=>'Notes', 'value'=>$rc['customer']['notes']);
 
         //
