@@ -28,7 +28,7 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
     //
     // The required fields
     //
-    $required = array('first', 'last', 'primary_email');
+    $required = array('first', 'last');
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'countryCodes');
     $rc = ciniki_core_countryCodes($ciniki);
@@ -134,169 +134,184 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
             $customer['sort_name'] = $rc['sort_name'];
             $customer['permalink'] = $rc['permalink'];
         }
-        //
-        // add the customer record
-        //
-        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.customer', $customer, 0x04);
-        if( $rc['stat'] != 'ok' ) {
-            if( $ciniki['session']['account']['type'] == 10 ) {
-                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the account');
-            } elseif( $customer['type'] == 21 ) {
-                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the Parent/Guardian');
-            } elseif( $customer['type'] == 22 ) {
-                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the child');
-            } elseif( $customer['type'] == 31 ) {
-                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the administrator');
-            } elseif( $customer['type'] == 32 ) {
-                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the employee');
-            }
-            $errors = 'yes';
-        } else {
-            $updated = 'yes';
-            $customer_id = $rc['id'];
-            $customer['id'] = $rc['id'];
-            $customer['uuid'] = $rc['uuid'];
 
-            //
-            // add the emails
-            //
-            $fields = array(
-                'primary_email' => array('name'=>'Primary Email'),
-                'secondary_email' => array('name'=>'Secondary Email'),
-                );
-            foreach($fields as $field => $details) {
-                if( !isset($_POST[$field]) && in_array($field, $required) ) {
-                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'You must provide a ' . $details['name'] . ' address');
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
+            if( isset($_POST['birthdate']) ) {
+                $ts = strtotime($_POST['birthdate']);
+                if( $ts === FALSE ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to understand birthdate, please enter a proper date.');
                     $errors = 'yes';
-                } elseif( isset($_POST[$field]) && $_POST[$field] != '' ) {
-                    if( !preg_match("/^[^ ]+\@[^ ]+\.[^ ]+$/", trim($_POST[$field])) ) {
-                        $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'The ' . $details['name'] . ' is not a valid email address format.');
+                } else {
+                    $customer['birthdate'] = strftime("%Y-%m-%d", $ts);
+                }
+            }
+        }
+
+        //
+        // Add the customer record
+        //
+        if( $errors == 'no' ) {
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.customer', $customer, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                if( $ciniki['session']['account']['type'] == 10 ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the account');
+                } elseif( $customer['type'] == 21 ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the Parent/Guardian');
+                } elseif( $customer['type'] == 22 ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the child');
+                } elseif( $customer['type'] == 31 ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the administrator');
+                } elseif( $customer['type'] == 32 ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add the employee');
+                }
+                $errors = 'yes';
+            } else {
+                $updated = 'yes';
+                $customer_id = $rc['id'];
+                $customer['id'] = $rc['id'];
+                $customer['uuid'] = $rc['uuid'];
+
+                //
+                // add the emails
+                //
+                $fields = array(
+                    'primary_email' => array('name'=>'Primary Email'),
+                    'secondary_email' => array('name'=>'Secondary Email'),
+                    );
+                foreach($fields as $field => $details) {
+                    if( !isset($_POST[$field]) && in_array($field, $required) ) {
+                        $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'You must provide a ' . $details['name'] . ' address');
                         $errors = 'yes';
-                    } else {
-                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email', array(
+                    } elseif( isset($_POST[$field]) && $_POST[$field] != '' ) {
+                        if( !preg_match("/^[^ ]+\@[^ ]+\.[^ ]+$/", trim($_POST[$field])) ) {
+                            $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'The ' . $details['name'] . ' is not a valid email address format.');
+                            $errors = 'yes';
+                        } else {
+                            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email', array(
+                                'customer_id'=>$customer_id,
+                                'email'=>trim($_POST[$field]),
+                                'flags'=>0x01,
+                                ), 0x04);
+                            if( $rc['stat'] != 'ok' ) {
+                                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add email address');
+                                $errors = 'yes';
+                            } else {
+                                $updated = 'yes';
+                            }
+                        }
+                    }
+                }
+
+                //
+                // Check for phone changes
+                //
+                foreach(['phone_home', 'phone_work', 'phone_cell', 'phone_fax'] as $field) {
+                    if( isset($_POST[$field]) ) {
+                        $label = ucfirst(str_replace('phone_', '', $field));
+                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.phone', array(
                             'customer_id'=>$customer_id,
-                            'email'=>trim($_POST[$field]),
-                            'flags'=>0x01,
+                            'phone_label'=>$label,
+                            'phone_number'=>trim($_POST[$field]),
+                            'flags'=>0,
                             ), 0x04);
                         if( $rc['stat'] != 'ok' ) {
-                            $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add email address');
+                            $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add phone number');
                             $errors = 'yes';
                         } else {
                             $updated = 'yes';
                         }
                     }
                 }
-            }
 
-            //
-            // Check for phone changes
-            //
-            foreach(['phone_home', 'phone_work', 'phone_cell', 'phone_fax'] as $field) {
-                if( isset($_POST[$field]) ) {
-                    $label = ucfirst(str_replace('phone_', '', $field));
-                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.phone', array(
-                        'customer_id'=>$customer_id,
-                        'phone_label'=>$label,
-                        'phone_number'=>trim($_POST[$field]),
-                        'flags'=>0,
-                        ), 0x04);
-                    if( $rc['stat'] != 'ok' ) {
-                        $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to add phone number');
-                        $errors = 'yes';
-                    } else {
-                        $updated = 'yes';
+                //
+                // Check for address updates
+                //
+                $_POST['mailing_flags'] = (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : 0x06);
+                if( isset($_POST['billingflag']) ) {
+                    if( $_POST['billingflag'] == 'yes' ) {
+                        $_POST['mailing_flags'] |= 0x02;
+                    } elseif( $_POST['billingflag'] == 'no' ) {
+                        $_POST['mailing_flags'] = ($_POST['mailing_flags']&0xfd);
                     }
                 }
-            }
+                $mailing_country = isset($_POST['mailing_country']) ? $_POST['mailing_country'] : $customer['mailing_country'];
+                if( isset($_POST['mailing_province_code_' . $mailing_country]) ) {
+                    $_POST['mailing_province'] = $_POST['mailing_province_code_' . $mailing_country];
+                }
 
-            //
-            // Check for address updates
-            //
-            $_POST['mailing_flags'] = (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : 0x06);
-            if( isset($_POST['billingflag']) ) {
-                if( $_POST['billingflag'] == 'yes' ) {
-                    $_POST['mailing_flags'] |= 0x02;
-                } elseif( $_POST['billingflag'] == 'no' ) {
-                    $_POST['mailing_flags'] = ($_POST['mailing_flags']&0xfd);
+                //
+                // Check if secondary address needs to be updated.
+                // This must be done first incase any changes to mailing flags
+                //
+                if( ($_POST['mailing_flags']&0x02) == 0 ) {
+                    $billing_country = isset($_POST['billing_country']) ? $_POST['billing_country'] : $customer['billing_country'];
+                    if( isset($_POST['billing_province_code_' . $billing_country]) ) {
+                        $_POST['billing_province'] = $_POST['billing_province_code_' . $billing_country];
+                    }
+                    $addr = array(
+                        'customer_id' => $customer_id,
+                        'address1' => (isset($_POST['billing_address1']) ? $_POST['billing_address1'] : (isset($customer['billing_address1']) ? $customer['billing_address1'] : '')),
+                        'address2' => (isset($_POST['billing_address2']) ? $_POST['billing_address2'] : (isset($customer['billing_address2']) ? $customer['billing_address2'] : '')),
+                        'city' => (isset($_POST['billing_city']) ? $_POST['billing_city'] : (isset($customer['billing_city']) ? $customer['billing_city'] : '')),
+                        'province' => (isset($_POST['billing_province']) ? $_POST['billing_province'] : (isset($customer['billing_province']) ? $customer['billing_province'] : '')),
+                        'postal' => (isset($_POST['billing_postal']) ? $_POST['billing_postal'] : (isset($customer['billing_postal']) ? $customer['billing_postal'] : '')),
+                        'country' => (isset($_POST['billing_country']) ? $_POST['billing_country'] : (isset($customer['billing_country']) ? $customer['billing_country'] : '')),
+                        'flags' => 0x02,
+                        );
+                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.341', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                    }
+                } 
+
+                //
+                // Check if any changes to mailing address
+                //
+                if( isset($_POST['mailing_address1']) || isset($_POST['mailing_address2']) || isset($_POST['mailing_city']) 
+                    || isset($_POST['mailing_province']) || isset($_POST['mailing_postal']) || isset($_POST['mailing_country']) 
+                    || $_POST['mailing_flags'] != $customer['mailing_flags']
+                    ) {
+                    $addr = array(
+                        'customer_id' => $customer_id,
+                        'address1' => (isset($_POST['mailing_address1']) ? $_POST['mailing_address1'] : (isset($customer['mailing_address1']) ? $customer['mailing_address1'] : '')),
+                        'address2' => (isset($_POST['mailing_address2']) ? $_POST['mailing_address2'] : (isset($customer['mailing_address2']) ? $customer['mailing_address2'] : '')),
+                        'city' => (isset($_POST['mailing_city']) ? $_POST['mailing_city'] : (isset($customer['mailing_city']) ? $customer['mailing_city'] : '')),
+                        'province' => (isset($_POST['mailing_province']) ? $_POST['mailing_province'] : (isset($customer['mailing_province']) ? $customer['mailing_province'] : '')),
+                        'postal' => (isset($_POST['mailing_postal']) ? $_POST['mailing_postal'] : (isset($customer['mailing_postal']) ? $customer['mailing_postal'] : '')),
+                        'country' => (isset($_POST['mailing_country']) ? $_POST['mailing_country'] : (isset($customer['mailing_country']) ? $customer['mailing_country'] : '')),
+                        'flags' => (isset($_POST['mailing_flags']) ? $_POST['mailing_flags'] : (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : '')),
+                        );
+                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.370', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
+                    }
+                } 
+
+                //
+                // Add to the session
+                //
+                if( $customer['type'] == 21 || $customer['type'] == 31 ) {
+                    $ciniki['session']['account']['parents'][] = $customer;
+                    usort($ciniki['session']['account']['parents'], function($a, $b) {
+                        return strcmp($a['display_name'], $b['display_name']);
+                        });
+                    $_SESSION['account']['parents'] = $ciniki['session']['account']['parents'];
+                } else {
+                    $ciniki['session']['account']['children'][] = $customer;
+                    usort($ciniki['session']['account']['children'], function($a, $b) {
+                        return strcmp($a['display_name'], $b['display_name']);
+                        });
+                    $_SESSION['account']['children'] = $ciniki['session']['account']['children'];
                 }
             }
-            $mailing_country = isset($_POST['mailing_country']) ? $_POST['mailing_country'] : $customer['mailing_country'];
-            if( isset($_POST['mailing_province_code_' . $mailing_country]) ) {
-                $_POST['mailing_province'] = $_POST['mailing_province_code_' . $mailing_country];
-            }
-
-            //
-            // Check if secondary address needs to be updated.
-            // This must be done first incase any changes to mailing flags
-            //
-            if( ($_POST['mailing_flags']&0x02) == 0 ) {
-                $billing_country = isset($_POST['billing_country']) ? $_POST['billing_country'] : $customer['billing_country'];
-                if( isset($_POST['billing_province_code_' . $billing_country]) ) {
-                    $_POST['billing_province'] = $_POST['billing_province_code_' . $billing_country];
-                }
-                $addr = array(
-                    'customer_id' => $customer_id,
-                    'address1' => (isset($_POST['billing_address1']) ? $_POST['billing_address1'] : (isset($customer['billing_address1']) ? $customer['billing_address1'] : '')),
-                    'address2' => (isset($_POST['billing_address2']) ? $_POST['billing_address2'] : (isset($customer['billing_address2']) ? $customer['billing_address2'] : '')),
-                    'city' => (isset($_POST['billing_city']) ? $_POST['billing_city'] : (isset($customer['billing_city']) ? $customer['billing_city'] : '')),
-                    'province' => (isset($_POST['billing_province']) ? $_POST['billing_province'] : (isset($customer['billing_province']) ? $customer['billing_province'] : '')),
-                    'postal' => (isset($_POST['billing_postal']) ? $_POST['billing_postal'] : (isset($customer['billing_postal']) ? $customer['billing_postal'] : '')),
-                    'country' => (isset($_POST['billing_country']) ? $_POST['billing_country'] : (isset($customer['billing_country']) ? $customer['billing_country'] : '')),
-                    'flags' => 0x02,
-                    );
-                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
-                if( $rc['stat'] != 'ok' ) {
-                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.341', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
-                }
-            } 
-
-            //
-            // Check if any changes to mailing address
-            //
-            if( isset($_POST['mailing_address1']) || isset($_POST['mailing_address2']) || isset($_POST['mailing_city']) 
-                || isset($_POST['mailing_province']) || isset($_POST['mailing_postal']) || isset($_POST['mailing_country']) 
-                || $_POST['mailing_flags'] != $customer['mailing_flags']
-                ) {
-                $addr = array(
-                    'customer_id' => $customer_id,
-                    'address1' => (isset($_POST['mailing_address1']) ? $_POST['mailing_address1'] : (isset($customer['mailing_address1']) ? $customer['mailing_address1'] : '')),
-                    'address2' => (isset($_POST['mailing_address2']) ? $_POST['mailing_address2'] : (isset($customer['mailing_address2']) ? $customer['mailing_address2'] : '')),
-                    'city' => (isset($_POST['mailing_city']) ? $_POST['mailing_city'] : (isset($customer['mailing_city']) ? $customer['mailing_city'] : '')),
-                    'province' => (isset($_POST['mailing_province']) ? $_POST['mailing_province'] : (isset($customer['mailing_province']) ? $customer['mailing_province'] : '')),
-                    'postal' => (isset($_POST['mailing_postal']) ? $_POST['mailing_postal'] : (isset($customer['mailing_postal']) ? $customer['mailing_postal'] : '')),
-                    'country' => (isset($_POST['mailing_country']) ? $_POST['mailing_country'] : (isset($customer['mailing_country']) ? $customer['mailing_country'] : '')),
-                    'flags' => (isset($_POST['mailing_flags']) ? $_POST['mailing_flags'] : (isset($customer['mailing_flags']) ? $customer['mailing_flags'] : '')),
-                    );
-                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $addr, 0x04);
-                if( $rc['stat'] != 'ok' ) {
-                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.370', 'msg'=>'Unable to add address', 'err'=>$rc['err']));
-                }
-            } 
-
-            //
-            // Add to the session
-            //
-            if( $customer['type'] == 21 || $customer['type'] == 31 ) {
-                $ciniki['session']['account']['parents'][] = $customer;
-                usort($ciniki['session']['account']['parents'], function($a, $b) {
-                    return strcmp($a['display_name'], $b['display_name']);
-                    });
-                $_SESSION['account']['parents'] = $ciniki['session']['account']['parents'];
-            } else {
-                $ciniki['session']['account']['children'][] = $customer;
-                usort($ciniki['session']['account']['children'], function($a, $b) {
-                    return strcmp($a['display_name'], $b['display_name']);
-                    });
-                $_SESSION['account']['children'] = $ciniki['session']['account']['children'];
-            }
-            if( $errors == 'no' ) {
-                ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
-                return array('stat'=>'updated');
-            } else {
-                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            }
+        }
+        if( $errors == 'no' ) {
+            ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
+            return array('stat'=>'updated');
+        } else {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
         }
     }
     
@@ -341,6 +356,18 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
                 $customer_args['type'] = 32;
             } elseif( $customer['type'] == 32 && $_POST['type'] == 31 ) {
                 $customer_args['type'] = 31;
+            }
+        }
+
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
+            if( isset($_POST['birthdate']) ) {
+                $ts = strtotime($_POST['birthdate']);
+                if( $ts === FALSE ) {
+                    $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to understand birthdate, please enter a proper date.');
+                    $errors = 'yes';
+                } else {
+                    $customer_args['birthdate'] = strftime("%Y-%m-%d", $ts);
+                }
             }
         }
 
@@ -682,6 +709,12 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
         . "<label for='last'>Last Name" . (in_array('last', $required)?' *':'') . "</label>"
         . "<input type='text' class='text' name='last' value='" . $customer['last'] . "'>"
         . "</div>";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
+        $form .= "<div class='input birthdate'>"
+            . "<label for='last'>Birthday" . (in_array('birthdate', $required)?' *':'') . "</label>"
+            . "<input type='text' class='text' name='birthdate' value='" . $customer['birthdate'] . "'>"
+            . "</div>";
+    }
     $form .= "</div>";
     // Email
     $form .= "<div class='contact-details-section contact-details-form-email'>";
