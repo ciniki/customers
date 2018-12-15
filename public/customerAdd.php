@@ -386,7 +386,7 @@ function ciniki_customers_customerAdd(&$ciniki) {
         'flags' => ($billing_address_id > 0 ? 0x04 : 0x06),     
         );
     //
-    // Check if any changes to mailing address
+    // Add the mailing address
     //
     if( $addr['address1'] != '' || $addr['address2'] != '' || $addr['city'] != '' || $addr['province'] != '' || $addr['postal'] != '' || $addr['country'] != '' ) {
         $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.address', $addr, 0x04);

@@ -83,7 +83,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
 
     if( $customer['type'] == 10 ) {
         $account = $customer;
-        $account['parent_child_ids'] = $customer['id'];
+        $account['parent_child_ids'] = array($customer['id']);
     } else {
         if( !isset($customer['parent_id']) || $customer['parent_id'] == 0 ) {
             ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.182', 'Account does not exist');

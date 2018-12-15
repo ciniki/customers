@@ -59,6 +59,7 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
             'middle' => '',
             'last' => '',
             'suffix' => '',
+            'birthdate' => '',
             'company' => '',
             'primary_email' => '',
             'secondary_email' => '',
@@ -136,7 +137,7 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
         }
 
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000) ) {
-            if( isset($_POST['birthdate']) ) {
+            if( isset($_POST['birthdate']) && $_POST['birthdate'] != '' ) {
                 $ts = strtotime($_POST['birthdate']);
                 if( $ts === FALSE ) {
                     $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Unable to understand birthdate, please enter a proper date.');
@@ -309,7 +310,7 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
         }
         if( $errors == 'no' ) {
             ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
-            return array('stat'=>'updated');
+            return array('stat'=>'updated', 'id'=>$customer_id);
         } else {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
         }
@@ -698,6 +699,11 @@ function ciniki_customers_web_accountProcessRequestContactForm($ciniki, $setting
         $form .= "<input type='hidden' name='action' value='add'>";
     } else {
         $form .= "<input type='hidden' name='action' value='update'>";
+    }
+    if( isset($_GET['r']) && $_GET['r'] != '' ) {
+        $form .= "<input type='hidden' name='redirect' value='" . $_GET['r'] . "'>";
+    } elseif( isset($_POST['redirect']) && $_POST['redirect'] != '' ) {
+        $form .= "<input type='hidden' name='redirect' value='" . $_POST['redirect'] . "'>";
     }
     $form .= "<div class='contact-details-form'>";
     $form .= "<div class='contact-details-section contact-details-form-name'>";

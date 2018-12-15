@@ -35,11 +35,19 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
     if( $ciniki['session']['account']['type'] == 10 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactForm');
         $rc = ciniki_customers_web_accountProcessRequestContactForm($ciniki, $settings, $tnid, $args);
+        if( $rc['stat'] == 'updated' ) {
+            if( isset($_POST['redirect']) && $_POST['redirect'] != '' ) {
+                Header("Location: " . $_POST['redirect'] . (isset($rc['id']) ? '?id=' . $rc['id'] : ''));
+            } else {
+                Header("Location: " . $base_url);
+            }
+            exit;
+        }
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.364', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.364', 'msg'=>'Unable to process request'));
         }
         foreach($rc['blocks'] as $block) {
-            $page['blocks'][] = $blocks;
+            $page['blocks'][] = $block;
         }
     }
     elseif( ($ciniki['session']['account']['type'] == 20 || $ciniki['session']['account']['type'] == 30) 
@@ -64,7 +72,11 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactForm');
         $rc = ciniki_customers_web_accountProcessRequestContactForm($ciniki, $settings, $tnid, $args);
         if( $rc['stat'] == 'updated' ) {
-            Header("Location: " . $base_url);
+            if( isset($_POST['redirect']) && $_POST['redirect'] != '' ) {
+                Header("Location: " . $_POST['redirect'] . (isset($rc['id']) ? '?id=' . $rc['id'] : ''));
+            } else {
+                Header("Location: " . $base_url);
+            }
             exit;
         }
         if( $rc['stat'] != 'ok' ) {
@@ -175,7 +187,11 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestContactForm');
             $rc = ciniki_customers_web_accountProcessRequestContactForm($ciniki, $settings, $tnid, $args);
             if( $rc['stat'] == 'updated' ) {
-                Header("Location: " . $base_url);
+                if( isset($_POST['redirect']) && $_POST['redirect'] != '' ) {
+                    Header("Location: " . $_POST['redirect']);
+                } else {
+                    Header("Location: " . $base_url);
+                }
                 exit;
             }
             if( $rc['stat'] != 'ok' ) {
@@ -204,17 +220,16 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
                     'rows' => $ciniki['session']['account']['parents'],
                 );
             }
-            if( count($ciniki['session']['account']['children']) > 0 ) {
-                $page['blocks'][] = array('type'=>'table',
-                    'title' => 'Children',
-                    'headers' => 'yes',
-                    'columns' => array(
-                        array('label' => 'Name', 'field' => 'display_name'),
-                        array('label' => '<a href="' . $base_url . '/add">Add</a>', 'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
-                    ),
-                    'rows' => $ciniki['session']['account']['children'],
-                );
-            }
+            $page['blocks'][] = array('type'=>'table',
+                'title' => 'Children',
+                'headers' => 'yes',
+                'empty' => 'No children',
+                'columns' => array(
+                    array('label' => 'Name', 'field' => 'display_name'),
+                    array('label' => '<a href="' . $base_url . '/add">Add</a>', 'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
+                ),
+                'rows' => $ciniki['session']['account']['children'],
+            );
 
         } elseif( $ciniki['session']['account']['type'] == 30 ) {
             if( count($ciniki['session']['account']['parents']) > 0 ) {
@@ -228,18 +243,17 @@ function ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $setting
                     'rows' => $ciniki['session']['account']['parents'],
                 );
             }
-            if( count($ciniki['session']['account']['children']) > 0 ) {
-                $page['blocks'][] = array('type'=>'table',
-                    'title' => 'Employees',
-                    'headers' => 'yes',
-                    'columns' => array(
-                        array('label' => 'Name', 'field' => 'display_name'),
-                        array('label' => '<a href="' . $base_url . '/add">Add</a>', 
-                            'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
-                    ),
-                    'rows' => $ciniki['session']['account']['children'],
-                );
-            }
+            $page['blocks'][] = array('type'=>'table',
+                'title' => 'Employees',
+                'headers' => 'yes',
+                'empty' => 'No employees',
+                'columns' => array(
+                    array('label' => 'Name', 'field' => 'display_name'),
+                    array('label' => '<a href="' . $base_url . '/add">Add</a>', 
+                        'strsub' => '<a href="' . $base_url . '/{_uuid_}">Edit</a><a href="' . $base_url . '/{_uuid_}/remove">Remove</a>'),
+                ),
+                'rows' => $ciniki['session']['account']['children'],
+            );
         }
     } else {
         $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Invalid request, please try again or contact us for help.');
