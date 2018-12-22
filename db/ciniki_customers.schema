@@ -125,6 +125,8 @@
 # birthdate:            The birthdate of the customer.
 #
 # connection:           How did you hear about us?
+#
+# language:             The customers preferred language.
 # 
 # pricepoint_id:        The price point the customer/member/dealer/distributor is at.  This refers
 #                       to the ciniki_product_price_points table and must be enabled in ciniki.products to work.
@@ -198,6 +200,7 @@ create table ciniki_customers (
     notes varchar(6000) not null,
     birthdate date not null,
     connection varchar(250) not null,
+    language varchar(50) not null,
     pricepoint_id int not null,
     salesrep_id int not null,
     tax_number varchar(50) not null,
@@ -222,4 +225,4 @@ create table ciniki_customers (
     index (company),
     index (eid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.23';
+) ENGINE='InnoDB', COMMENT='v1.24';

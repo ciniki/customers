@@ -26,7 +26,6 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'9', 'name'=>'Distributors')),
         array('flag'=>array('bit'=>'10', 'name'=>'Distributor Categories')),
 //      array('flag'=>array('bit'=>'11', 'name'=>'Distributor Tags')),
-//      array('flag'=>array('bit'=>'12', 'name'=>'')),
         array('flag'=>array('bit'=>'12', 'name'=>'Accounts')),
             // 
             // The IFB mode is designed to manage Individuals, Families and Businesses.
@@ -61,7 +60,7 @@ function ciniki_customers_flags($ciniki, $modules) {
 //        array('flag'=>array('bit'=>'32', 'name'=>'')),          // Don't use, can't be bit shifted by javascript
         // 0x01 0000 0000
         array('flag'=>array('bit'=>'33', 'name'=>'Academics')),
-//      array('flag'=>array('bit'=>'34', 'name'=>'')),
+        array('flag'=>array('bit'=>'34', 'name'=>'Language')),
 //      array('flag'=>array('bit'=>'35', 'name'=>'')),
         array('flag'=>array('bit'=>'36', 'name'=>'Dropbox')),               // Allow updates from dropbox
         );

@@ -1,0 +1,5 @@
+#
+# Add the preferred language field
+#
+ALTER TABLE ciniki_customers ADD COLUMN language varchar(50) not null AFTER connection;
+ALTER TABLE ciniki_customers COMMENT='v1.24';

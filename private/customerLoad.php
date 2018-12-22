@@ -80,6 +80,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "discount_percent, "
         . "start_date, "
         . "connection, "
+        . "language, "
         . "notes "
         . "FROM ciniki_customers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -95,7 +96,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
                 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
                 'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
-                'birthdate', 'short_bio', 'full_bio', 'webflags', 'connection', 'notes'),
+                'birthdate', 'short_bio', 'full_bio', 'webflags', 'connection', 'language', 'notes'),
             'maps'=>array(
                 'type_text'=>$maps['customer']['type'],
                 'status_text'=>$maps['customer']['status'],

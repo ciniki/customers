@@ -454,6 +454,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.dealer_status, "
             . "ciniki_customers.distributor_status, "
             . "ciniki_customers.connection, "
+            . "ciniki_customers.language, "
             . "ciniki_customers.pricepoint_id, "
             . "ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, "
@@ -490,6 +491,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.dealer_status, "
             . "ciniki_customers.distributor_status, "
             . "ciniki_customers.connection, "
+            . "ciniki_customers.language, "
             . "ciniki_customers.pricepoint_id, "
             . "ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, "
@@ -529,6 +531,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.dealer_status, "
             . "ciniki_customers.distributor_status, "
             . "ciniki_customers.connection, "
+            . "ciniki_customers.language, "
             . "ciniki_customers.pricepoint_id, "
             . "ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, "
@@ -555,7 +558,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 'company', 'display_name', 'type', 'visible', 
                 'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 'member_categories',
                 'dealer_status', 'distributor_status',
-                'connection', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
+                'connection', 'language', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
                 'reward_level', 'sales_total', 'sales_total_prev', 'start_date',
                 'phones', 'emails', 'addresses', 'links',
                 'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),

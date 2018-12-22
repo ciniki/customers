@@ -943,6 +943,9 @@ function ciniki_customers_main() {
             if( rsp.customer.birthdate != '' ) {
                 this.customer.data.details.birthdate = {'label':'Birthday', 'value':rsp.customer.birthdate};
             }
+            if( rsp.customer.language != '' ) {
+                this.customer.data.details.language = {'label':'Language', 'value':rsp.customer.language};
+            }
         }
         if( rsp.customer.connection != '' ) {
             this.customer.data.details.connection = {'label':'Connection', 'value':rsp.customer.connection};

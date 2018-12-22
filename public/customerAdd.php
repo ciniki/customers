@@ -63,6 +63,7 @@ function ciniki_customers_customerAdd(&$ciniki) {
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
         'birthdate'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
         'connection'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Connection'), 
+        'language'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Language'), 
         'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Start Date'), 
         'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Subscriptions'),
         'unsubscriptions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Unsubscriptions'),

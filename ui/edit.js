@@ -62,6 +62,7 @@ function ciniki_customers_edit() {
             'last':{'label':'Last', 'type':'text', 'livesearch':'yes',},
             'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
             'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
+            'language':{'label':'Language', 'active':'no', 'type':'text'},
         }},
         'account':{'label':'', 'aside':'yes', 'fields':{
             'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
@@ -275,6 +276,7 @@ function ciniki_customers_edit() {
             'department':{'label':'Department', 'type':'text'},
             'title':{'label':'Title', 'type':'text'},
             'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
+            'language':{'label':'Language', 'active':'no', 'type':'text'},
             }},
         '_connection':{'label':'How did you hear about us?', 'aside':'yes', 'active':'no', 'fields':{
             'connection':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
@@ -1044,6 +1046,14 @@ function ciniki_customers_edit() {
         } else {
             this.edit.forms.person.name.fields.birthdate.active = 'no';
             this.edit.forms.business.name.fields.birthdate.active = 'no';
+        }
+        // Language
+        if( M.modFlagOn('ciniki.customers', 0x0200000000) ) {
+            this.edit.forms.person.name.fields.language.active = 'yes';
+            this.edit.forms.business.name.fields.language.active = 'yes';
+        } else {
+            this.edit.forms.person.name.fields.language.active = 'no';
+            this.edit.forms.business.name.fields.language.active = 'no';
         }
         // Start date
         if( (M.curTenant.modules['ciniki.customers'].flags&0x04000000) > 0 ) {
