@@ -144,6 +144,7 @@ function ciniki_customers_web_accountAdd(&$ciniki, $tnid, $args) {
             'permalink' => ciniki_core_makePermalink($ciniki, trim($args['parent_name'])),
             'sort_name' => trim($args['parent_name']),
             'start_date' => $args['start_date'],
+            'connection' => (isset($args['connection']) ? $args['connection'] : ''),
             );
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.customer', $parent, 0x04);
         if( $rc['stat'] != 'ok' ) {
@@ -161,6 +162,7 @@ function ciniki_customers_web_accountAdd(&$ciniki, $tnid, $args) {
             'company' => trim($args['parent_name']),
             'sort_name' => trim($args['parent_name']),
             'start_date' => $args['start_date'],
+            'connection' => (isset($args['connection']) ? $args['connection'] : ''),
             );
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.customer', $parent, 0x04);
         if( $rc['stat'] != 'ok' ) {
