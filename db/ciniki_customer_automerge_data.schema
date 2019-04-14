@@ -40,6 +40,5 @@ create table ciniki_customer_automerge_data (
     status tinyint unsigned not null,
     data varchar(10000) not null,
     primary key (automerge_id, row, col),
-    index (status),
-    index (data)
+    index (status)
 ) ENGINE='InnoDB', COMMENT='v1.01';
