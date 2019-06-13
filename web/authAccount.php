@@ -68,6 +68,11 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
     if( isset($rc['rows'][0]) ) {
         $customer = $rc['rows'][0];
     } else {
+        //
+        // FIXME: Add account lock if too many failed attempts. Code is already in auth.php.
+        //
+
+
         ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.354', 'Email address does not exist');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (3403)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.321', 'msg'=>'Unable to authenticate.'));

@@ -36,8 +36,12 @@
 # membership-type-40-online         - (yes|now) Family membership e-commerce
 # membership-type-lifetime-price    - Lifetime membership price
 # membership-type-lifetime-online   - (yes|now) Lifetime membership e-commerce
-
-# 
+#
+# If the page-account-allowed-attempts setting in the ciniki.web module is set to
+# anything above 0 then the following settings are used to store the email to be sent to the customer.
+# weblogin-locked-email-subject     - The subject of the message to be sent to the customer
+# weblogin-locked-email-message     - The email message content to be sent to the customer
+# weblogin-locked-admin-emails      - The email addresses, comma delimited of who received the email when a login is locked
 #
 # Fields
 # ------
@@ -50,9 +54,9 @@
 create table ciniki_customer_settings (
     tnid int not null,
     detail_key varchar(50) not null,
-    detail_value varchar(255) not null,
+    detail_value varchar(10000) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (tnid, detail_key),
     index (last_updated)
-) ENGINE=InnoDB, COMMENT='v1.01';
+) ENGINE=InnoDB, COMMENT='v1.02';

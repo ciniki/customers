@@ -42,19 +42,37 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
         . "ciniki_customers.first, ciniki_customers.last, ciniki_customers.display_name, "
         . "ciniki_customer_emails.email, ciniki_customers.status, ciniki_customers.member_status, ciniki_customers.membership_type, "
         . "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
-        . "ciniki_customers.pricepoint_id "
+        . "ciniki_customers.pricepoint_id, "
+        . "ciniki_customer_emails.id AS email_id, "
+        . "ciniki_customer_emails.failed_logins, "
+        . "ciniki_customer_emails.flags, "
+        . "TIMESTAMPDIFF(HOUR, UTC_TIMESTAMP(), ciniki_customer_emails.date_locked) AS lock_age "
         . "FROM ciniki_customer_emails, ciniki_customers "
         . "WHERE ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        //
-        // Don't allow children and employees to login
-        // Only allow person, business, individual, parent, admin
-        // 
         . "AND ciniki_customers.type IN (1, 2, 10, 21, 31) "
         . "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
-        . "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
+        . "";
+    if( isset($settings['page-account-allowed-attempts']) && $settings['page-account-allowed-attempts'] > 0 
+        && isset($settings['page-account-lock-hours']) && $settings['page-account-lock-hours'] > 0 
+        ) {
+        $lock_hour_dt = new DateTime('now', new DateTimeZone('UTC'));
+        $lock_hour_dt->sub(new DateInterval('PT' . $settings['page-account-lock-hours'] . 'H'));
+        $strsql .= "AND ("
+            . "(ciniki_customer_emails.flags&0x80) = 0 "
+            . "OR "
+            . "ciniki_customer_emails.date_locked < '" . ciniki_core_dbQuote($ciniki, $lock_hour_dt->format('Y-m-d H:i:s')) . "' "
+            . ") ";
+    } else {
+        $strsql .= "AND (ciniki_customer_emails.flags&0x80) = 0 ";
+    }
+    $strsql .= "AND ciniki_customer_emails.customer_id = ciniki_customers.id "
         . "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "') "
         . "";
+    //
+    // Don't allow children and employees to login
+    // Only allow person, business, individual, parent, admin
+    // 
     if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) && isset($settings['page-account-child-logins']) && $settings['page-account-child-logins'] == 'no' ) {
         $strsql .= "AND ciniki_customers.parent_id = 0 ";
     }
@@ -71,25 +89,43 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
     //
     // Allow for email address to be attached to multiple accounts
     //
-    if( isset($rc['rows']) ) {
+    if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
         $children = array();
-        if( count($rc['rows']) > 1 ) {
+        if( count($rc['rows']) == 1 ) {
+            $customer = $rc['rows'][0];
+            $customers = array($rc['rows'][0]['id']=>$rc['rows'][0]);
+        } else {
             $customer = $rc['rows'][0];
             $customers = array();
             foreach($rc['rows'] as $cust) {
                 $customers[$cust['id']] = $cust;
             }
-        } elseif( count($rc['rows']) == 1 ) {
-            $customer = $rc['rows'][0];
-            $customers = array($rc['rows'][0]['id']=>$rc['rows'][0]);
-        } else {
-            ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.181', 'Email address does not exist or password incorrect');
-            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2059)");
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.181', 'msg'=>'Unable to authenticate.'));
-        }
+        } 
     } else {
+        //
+        // Check if autolock is enabled, lookup email
+        // FIXME: This is not yet in the authAccount file
+        //
+        $account_locked = 'no';
+        if( isset($settings['page-account-allowed-attempts']) && $settings['page-account-allowed-attempts'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'authFailedLogin');
+            $rc = ciniki_customers_web_authFailedLogin($ciniki, $settings, $tnid, $email);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.351', 'msg'=>'Unable to load email', 'err'=>$rc['err']));
+            }
+            if( isset($rc['locked']) ) {
+                $account_locked = $rc['locked'];
+            }
+        }
+
+        //
+        // Return error
+        //
         ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.182', 'Email address does not exist');
         error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (736)");
+        if( $account_locked == 'yes' ) {
+            return array('stat'=>'locked', 'err'=>array('code'=>'ciniki.customers.392', 'msg'=>'Unable to authenticate, account locked.'));
+        } 
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.182', 'msg'=>'Unable to authenticate.'));
     }
 
@@ -104,6 +140,19 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
         && $customer['dealer_status'] != 10 ) {
         ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', $customer['id'], $email, 'ciniki.customers.218', 'Not a dealer');
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.218', 'msg'=>'Login disabled, please contact us to have the problem fixed.'));
+    }
+
+    //
+    // Check for account locked, and if lock-hours specified, then still within the lock-hours
+    // 
+    if( isset($settings['page-account-lock-hours']) && $settings['page-account-lock-hours'] > 0 ) {
+        $lock_hours = $settings['page-account-lock-hours'];
+    } else {
+        $lock_hours = 0;
+    }
+    if( ($customer['flags']&0x80) == 0x80 && ($lock_hours == 0 || $lock_hours < $customer['lock_age']) ) {
+        ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', $customer['id'], $email, 'ciniki.customers.390', 'Not a dealer');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.390', 'msg'=>'Login disabled, please contact us to have the problem fixed.'));
     }
 
     //
@@ -223,6 +272,21 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
 //              'flags'=>$rc['pricepoint']['flags'],
 //              );
 //      }
+    }
+
+    //
+    // Reset the failed_logins back to zero
+    //
+    if( $customer['failed_logins'] > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.email', $customer['email_id'], array(
+            'failed_logins' => 0,
+            'flags' => $customer['flags'] & 0xFF7F,
+            'date_locked' => '',
+            ), 0x07);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.181', 'msg'=>'Unable to update the email'));
+        }
     }
 
     //

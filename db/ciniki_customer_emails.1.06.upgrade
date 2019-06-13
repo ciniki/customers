@@ -1,0 +1,6 @@
+#
+# Add the details to track login attempts
+#
+ALTER TABLE ciniki_customer_emails ADD COLUMN failed_logins int not null AFTER flags;
+ALTER TABLE ciniki_customer_emails ADD COLUMN date_locked datetime not null AFTER failed_logins;
+ALTER TABLE ciniki_customer_emails COMMENT='v1.06';

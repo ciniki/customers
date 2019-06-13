@@ -92,6 +92,8 @@ function ciniki_customers_objects($ciniki) {
             'temp_password'=>array('default'=>''),
             'temp_password_date'=>array('default'=>''),
             'flags'=>array('default'=>'1'),
+            'failed_logins'=>array('name'=>'Failed Logins', 'default'=>'0'),
+            'date_locked'=>array('name'=>'Date Locked', 'default'=>''),
             ),
         'history_table'=>'ciniki_customer_history',
         );
