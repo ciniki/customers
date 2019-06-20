@@ -29,7 +29,10 @@
 #                       0x10 - Send no emails
 #                       0x20 - Secondary email, use only if first a problem **future**
 #                       0x40 - 
-#                       0x80 - 
+#                       0x80 - Locked, too many failed login attempts
+#
+# failed_logins:        The number of failed login attempts in a row.
+# date_locked:          The UTC date and time the email was locked for login.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -44,10 +47,12 @@ create table ciniki_customer_emails (
     temp_password varchar(41) not null,
     temp_password_date datetime not null,
     flags tinyint unsigned not null,
+    failed_logins int not null,
+    date_locked datetime not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index uuid (uuid, tnid),
     index (customer_id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

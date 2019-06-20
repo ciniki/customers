@@ -16,11 +16,11 @@ function ciniki_customers_cron_jobs(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'checkModuleAccess');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'dropboxDownload');
 
     //
     // Get the list of tenants that have customers enables and dropbox flag 
     //
+
     $strsql = "SELECT tnid "
         . "FROM ciniki_tenant_modules "
         . "WHERE package = 'ciniki' "
@@ -52,6 +52,7 @@ function ciniki_customers_cron_jobs(&$ciniki) {
         //
         // Update the tenant customers from dropbox
         //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'dropboxDownload');
         $rc = ciniki_customers_dropboxDownload($ciniki, $tenant['tnid']);
         if( $rc['stat'] != 'ok' ) {
             ciniki_cron_logMsg($ciniki, $tenant['tnid'], array('code'=>'ciniki.customers.215', 'msg'=>'Unable to update customers', 

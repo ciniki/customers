@@ -1,0 +1,5 @@
+#
+# Increase the size of the detail_value for settings to store the locked account email message
+#
+ALTER TABLE ciniki_customer_settings MODIFY COLUMN detail_value varchar(10000) not null;
+ALTER TABLE ciniki_customer_settings COMMENT='v1.02';

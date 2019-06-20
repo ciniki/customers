@@ -14,26 +14,26 @@
 #
 # Fields
 # ------
-# id:                 The id for each customer.
-# uuid:                Universal Unique ID
+# id:               The id for each customer.
+# uuid:             Universal Unique ID
 #
-# tnid:               The tenant the customer is attached to.
+# tnid:             The tenant the customer is attached to.
 #
-# eid:                The ID for the customer, specified by the tenant.  This is a field
-#                    used for outside reference, no internal linking should be done with
-#                    this field.
+# eid:              The ID for the customer, specified by the tenant.  This is a field
+#                   used for outside reference, no internal linking should be done with
+#                   this field.
 # 
 # parent_id:        The ID of the parent customer/account.  This allows for master tenant
-#                    to be the head office, and each location the child with their own account.
+#                   to be the head office, and each location the child with their own account.
 #
-# status:            The current status of this customer.  If the status is < 40 they are
-#                    still able to login via the website.
+# status:           The current status of this customer.  If the status is < 40 they are
+#                   still able to login via the website.
 #
-#                    0 - unknown
-#                    10 - Active
-#                    40 - On Hold
-#                    50 - Suspended (show in lists, quick searches, etc)
-#                    60 - Deleted (Don't show by default, need to do advanced search to find
+#                       0 - unknown
+#                      10 - Active
+#                      40 - On Hold
+#                      50 - Suspended (show in lists, quick searches, etc)
+#                      60 - Deleted (Don't show by default, need to do advanced search to find
 #
 # type:             The type of customer, person or business.
 #
@@ -48,22 +48,22 @@
 #                       31 - Admin
 #                       32 - Employee
 #
-# member_status:    The membership status for the customer/member.  This is only used if the
-#                    members are enabled for the business/club.
+# member_status:        The membership status for the customer/member.  This is only used if the
+#                       members are enabled for the business/club.
 #                    
-#                    0 - Not a member
-#                    10 - Active Member
-#                    60 - Suspended Member
+#                            0 - Not a member
+#                           10 - Active Member
+#                           60 - Suspended Member
 #
 # member_lastpaid:      The UTC date and time of the last membership payment.  This is used to know
 #                       who is behind or not.
 #
 # membership_length:    The length of membership, which is used to know who is paid up and who is not.
 #
-#                        0 - unknown
-#                       10 - monthly **future**  
-#                       20 - yearly
-#                       60 - lifetime (no expiry)
+#                            0 - unknown
+#                           10 - monthly **future**  
+#                           20 - yearly
+#                           60 - lifetime (no expiry)
 #
 # membership_type:    The type of membership, if a member, otherwise it will be zero.
 #                    
@@ -153,6 +153,10 @@
 #                           0x02 - Dealer Visible (hidden by default without this set)
 #                           0x04 - Distributor Visible (hidden by default without this set)
 #                           0x08 - 
+#                           0x10 - 
+#                           0x20 - 
+#                           0x40 - 
+#                           0x80 - 
 #
 # permalink:                The permalink for the customer/member to be displayed on the website.
 # primary_image_id:         The ID of the main image to show for the member.
