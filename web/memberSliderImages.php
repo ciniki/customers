@@ -51,7 +51,7 @@ function ciniki_customers_web_memberSliderImages($ciniki, $settings, $tnid, $lis
             . "";
         if( $limit != '' && $limit > 0 && is_int($limit) ) {
             $strsql .= "ORDER BY RAND() "
-                . "LIMIT $limit ";
+                . "LIMIT " . intval($limit) . " ";
         } else {
             $strsql .= "ORDER BY RAND() "
                 . "LIMIT 15 ";
@@ -80,7 +80,7 @@ function ciniki_customers_web_memberSliderImages($ciniki, $settings, $tnid, $lis
             . "ORDER BY ciniki_customer_images.date_added DESC "
             . "";
         if( $limit != '' && $limit > 0 && is_int($limit) ) {
-            $strsql .= "LIMIT $limit ";
+            $strsql .= "LIMIT " . intval($limit) . " ";
         } else {
             $strsql .= "LIMIT 15";
         }
