@@ -61,7 +61,7 @@ function ciniki_customers_web_authFailedLogin(&$ciniki, $settings, $tnid, $email
         foreach($emails as $email) { 
             // Check if already locked
             if( ($email['flags']&0x80) == 0x80 ) {
-                continue;
+                return array('stat'=>'ok', 'locked'=>'yes');
             }
             $failed_logins = $email['failed_logins'] + 1;
             if( $failed_logins >= $settings['page-account-allowed-attempts'] ) {

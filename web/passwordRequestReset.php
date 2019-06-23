@@ -29,7 +29,11 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $tnid, $email, $url
     //
     // Get the username for the account
     //
-    $strsql = "SELECT ciniki_customer_emails.id, email, ciniki_customers.uuid, ciniki_customers.display_name "
+    $strsql = "SELECT ciniki_customer_emails.id, "
+        . "email, "
+        . "ciniki_customer_emails.flags, "
+        . "ciniki_customers.uuid, "
+        . "ciniki_customers.display_name "
         . "FROM ciniki_customer_emails, ciniki_customers "
         . "WHERE ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -55,6 +59,13 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $tnid, $email, $url
     } else {
         $customer = $rc['customer'];
         $customers = $rc['rows'];
+    }
+
+    //
+    // Checked for locked accounts
+    //
+    if( ($customer['flags']&0x80) == 0x80 ) {
+        return array('stat'=>'locked');
     }
 
     //
