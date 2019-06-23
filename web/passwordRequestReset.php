@@ -62,11 +62,12 @@ function ciniki_customers_web_passwordRequestReset(&$ciniki, $tnid, $email, $url
     }
 
     //
-    // Checked for locked accounts
+    // If required to blocked locked accounts from resetting passwords, this will need to be an option
+    // added for the tenant to decide if this should be an option.
     //
-    if( ($customer['flags']&0x80) == 0x80 ) {
-        return array('stat'=>'locked');
-    }
+//    if( ($customer['flags']&0x80) == 0x80 ) {
+//        return array('stat'=>'locked');
+//    }
 
     //
     // Turn off autocommit

@@ -34,7 +34,7 @@ function ciniki_customers_web_changeTempPassword($ciniki, $tnid, $email, $temppa
     // Check temp password
     // Must change password within 2 hours (7200 seconds)
     //
-    $strsql = "SELECT id, email "
+    $strsql = "SELECT id, email, flags "
         . "FROM ciniki_customer_emails "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
@@ -87,6 +87,9 @@ function ciniki_customers_web_changeTempPassword($ciniki, $tnid, $email, $temppa
         //
         $strsql = "UPDATE ciniki_customer_emails "
             . "SET password = SHA1('" . ciniki_core_dbQuote($ciniki, $newpassword) . "'), "
+            . "flags = (flags&~0x80), "
+            . "failed_logins = 0, "
+            . "date_locked = '', "
             . "temp_password = '', "
             . "last_updated = UTC_TIMESTAMP() "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $user['id']) . "' "
