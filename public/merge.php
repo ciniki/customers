@@ -283,11 +283,11 @@ function ciniki_customers_merge($ciniki) {
     }
 
     //
-    // Merge addresses
+    // Get existing addresses
     //
     $strsql = "SELECT id, uuid, flags, CONCAT_WS('-',address1,city,province) AS addr "
         . "FROM ciniki_customer_addresses "
-        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -300,12 +300,16 @@ function ciniki_customers_merge($ciniki) {
     $existing_addresses = isset($rc['addresses']) ? $rc['addresses'] : array();
     $mailing_id = 0;
     $billing_id = 0;
+    $public_id = 0;
     foreach($existing_addresses as $addr) {
         if( ($addr['flags']&0x02) ) {
             $billing_id = $addr['id'];
         }
         if( ($addr['flags']&0x04) ) {
             $mailing_id = $addr['id'];
+        }
+        if( ($addr['flags']&0x08) ) {
+            $public_id = $addr['id'];
         }
     }
 
@@ -324,14 +328,17 @@ function ciniki_customers_merge($ciniki) {
     }
     $addresses = $rc['rows'];
     foreach($addresses as $i => $row) {
-        if( !isset($existing_addresses[$row['addr']]) && ($billing_id == 0 || $mailing_id == 0) ) {
+        if( !isset($existing_addresses[$row['addr']]) && ($billing_id == 0 || $mailing_id == 0 || $public_id == 0) ) {
             if( $billing_id > 0 && ($row['flags']&0x02) == 0x02 ) {
                 $row['flags'] = $row['flags']&0xFFFD; 
             }
             if( $mailing_id > 0 && ($row['flags']&0x04) == 0x04 ) {
                 $row['flags'] = $row['flags']&0xFFFB; 
             }
-            if( ($row['flags']&0x06) > 0 ) {
+            if( $public_id > 0 && ($row['flags']&0x08) == 0x08 ) {
+                $row['flags'] = $row['flags']&0xFFF8; 
+            }
+            if( ($row['flags']&0x0F) > 0 ) {
                 $strsql = "UPDATE ciniki_customer_addresses "
                     . "SET customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
                     . ", last_updated = UTC_TIMESTAMP() "
@@ -350,6 +357,40 @@ function ciniki_customers_merge($ciniki) {
                         'customer_id', $args['primary_customer_id']);
                 }
             }
+        }
+    }
+
+    //
+    // Merge child accounts
+    //
+    $strsql = "SELECT id "
+        . "FROM ciniki_customers "
+        . "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.112', 'msg'=>'Unable to customer addresses', 'err'=>$rc['err']));
+    }
+    $children = $rc['rows'];
+    foreach($children as $i => $row) {
+        $strsql = "UPDATE ciniki_customers "
+            . "SET parent_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
+            . ", last_updated = UTC_TIMESTAMP() "
+            . "WHERE id = '" . $row['id'] . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.customers');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.393', 'msg'=>'Unable to update customer children', 'err'=>$rc['err']));
+        }
+        if( $rc['num_affected_rows'] == 1 ) {
+            // Record update as merge action
+            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', 
+                $args['tnid'], 4, 'ciniki_customers', $row['id'], 
+                'parent_id', $args['primary_customer_id']);
         }
     }
 

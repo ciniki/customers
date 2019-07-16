@@ -53,7 +53,7 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
     //
     // Get the customer details and emails
     //
-    $strsql = "SELECT ciniki_customers.id, eid, type, permalink, prefix, first, middle, last, suffix, "
+    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, permalink, prefix, first, middle, last, suffix, "
         . "display_name, sort_name, display_name_format, company, department, title, salesrep_id, "
         . "status, dealer_status, distributor_status, "
         . "phone_home, phone_work, phone_cell, phone_fax, "
@@ -66,7 +66,7 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
         . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'eid', 'type', 'permalink',
+            'fields'=>array('id', 'eid', 'parent_id', 'type', 'permalink',
                 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'display_name_format', 
                 'status', 'dealer_status', 'distributor_status',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
@@ -89,6 +89,24 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
 //  }
 
     $customer = $rc['customers'][0]['customer'];
+
+    //
+    // If parent id, get the parent name
+    //
+    if( $customer['parent_id'] > 0 ) {
+        $strsql = "SELECT id, display_name "
+            . "FROM ciniki_customers "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer['parent_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.376', 'msg'=>'Unable to load parent', 'err'=>$rc['err']));
+        }
+        $customer['parent_name'] = isset($rc['parent']['display_name']) ? $rc['parent']['display_name'] : 'None';
+    } else {
+        $customer['parent_name'] = 'None';
+    }
 
     //
     // Get the customer addresses
@@ -161,6 +179,27 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
     }
 
     //
+    // Get the children for the customer
+    //
+    if( isset($args['children']) && $args['children'] == 'yes' ) {
+        $strsql = "SELECT id, display_name "
+            . "FROM ciniki_customers "
+            . "WHERE parent_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'children', 'fname'=>'id',
+                'fields'=>array('id', 'display_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['children']) ) {
+            $customer['children'] = $rc['children'];
+        }
+    }
+
+    //
     // Build the details array
     //
     $details = array();
@@ -225,6 +264,7 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
             if( $city != '' ) {
                 $joined_address .= $city . "\n";
             }
+            $customer['addresses'][$a]['address']['label'] = $label;
             $customer['addresses'][$a]['address']['joined'] = $joined_address;
             $details[] = array('detail'=>array('label'=>$label, 'value'=>$joined_address));
         }
