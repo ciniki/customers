@@ -63,7 +63,7 @@ function ciniki_customers_merge($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCopyModuleHistory');
-    $strsql = "SELECT id, "
+    $strsql = "SELECT id, display_name, "
         . "prefix, first, middle, last, suffix, company, department, title, "
         . "birthdate, "
         . "notes "
@@ -74,7 +74,7 @@ function ciniki_customers_merge($ciniki) {
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'prefix', 'first', 'middle', 'last', 'suffix', 
+            'fields'=>array('id', 'display_name', 'prefix', 'first', 'middle', 'last', 'suffix', 
                 'company', 'department', 'title', 'birthdate', 
                 'notes')),
         ));
@@ -552,7 +552,9 @@ function ciniki_customers_merge($ciniki) {
             $fn = $rc['function_call'];
             $rc = $fn($ciniki, $args['tnid'], array(
                 'primary_customer_id'=>$args['primary_customer_id'], 
+                'primary_display_name'=>$primary['display_name'],
                 'secondary_customer_id'=>$args['secondary_customer_id'], 
+                'secondary_display_name'=>$secondary['display_name'],
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.124', 'msg'=>'Unable to merge customer.', 'err'=>$rc['err']));
