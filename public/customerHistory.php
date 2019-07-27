@@ -77,7 +77,6 @@ function ciniki_customers_customerHistory($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.319', 'msg'=>'Unable to get history', 'err'=>$rc['err']));
         }
         if( isset($rc['keys']) && count($rc['keys']) > 0 ) {
-            error_log(print_r($rc, true));
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
             return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_emails', $rc['keys'], 'email');
         }
