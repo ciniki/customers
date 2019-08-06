@@ -268,11 +268,11 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
                     $page['title'] .= ' - ' . $rc['img']['title'];
                 }
                 $block = array('type'=>'galleryimage', 'section'=>'gallery-primary-image', 'primary'=>'yes', 'image'=>$rc['img']);
-                if( $rc['prev'] != null ) {
-                    $block['prev'] = array('url'=>$base_url . '/gallery/' . $rc['prev']['permalink'], 'image_id'=>$rc['prev']['image_id    ']);
+                if( isset($rc['prev']['image_id']) ) {
+                    $block['prev'] = array('url'=>$base_url . '/gallery/' . $rc['prev']['permalink'], 'image_id'=>$rc['prev']['image_id']);
                 }
-                if( $rc['next'] != null ) {
-                    $block['next'] = array('url'=>$base_url . '/gallery/' . $rc['next']['permalink'], 'image_id'=>$rc['next']['image_id    ']);
+                if( isset($rc['next']['image_id']) ) {
+                    $block['next'] = array('url'=>$base_url . '/gallery/' . $rc['next']['permalink'], 'image_id'=>$rc['next']['image_id']);
                 }
                 $page['blocks'][] = $block;
                 $page['blocks'][] = array('type'=>'gallery', 'title'=>'Additional Images', 'section'=>'gallery-images', 'base_url'=>$base_url . '/gallery', 'images'=>$member['images']);
