@@ -35,7 +35,7 @@ function ciniki_customers_edit() {
     //
     // The add/edit form
     //
-    this.edit = new M.panel('Customer',
+    this.edit = new M.panel('Contact',
         'ciniki_customers_edit', 'edit',
         'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.edit');
     this.edit.subscriptions = null;
@@ -55,7 +55,10 @@ function ciniki_customers_edit() {
             }},
         'name':{'label':'Name', 'aside':'yes', 'fields':{
             'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
-            'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
+            'eid':{'label':'External ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
+            'callsign':{'label':'Callsign', 'type':'text', 'size':'small',
+                'visible':function() { return M.modFlagSet('ciniki.customers', 0x0400); },
+                },
             'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
             'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
             'middle':{'label':'Middle', 'type':'text'},
@@ -253,7 +256,7 @@ function ciniki_customers_edit() {
             }},
         'business':{'label':'Business', 'aside':'yes', 'fields':{
             'status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.customerStatus},
-            'eid':{'label':'Customer ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
+            'eid':{'label':'External ID', 'type':'text', 'active':'no', 'livesearch':'yes'},
             'company':{'label':'Name', 'type':'text', 'livesearch':'yes'},
             'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
             }},
@@ -268,6 +271,9 @@ function ciniki_customers_edit() {
             'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
             }},
         'name':{'label':'Contact Person', 'aside':'yes', 'fields':{
+            'callsign':{'label':'Callsign', 'type':'text', 'size':'small',
+                'visible':function() { return M.modFlagSet('ciniki.customers', 0x0400); },
+                },
             'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
             'first':{'label':'First', 'type':'text', 'livesearch':'yes'},
             'middle':{'label':'Middle', 'type':'text'},
@@ -743,7 +749,7 @@ function ciniki_customers_edit() {
     //
     // The form panel to edit an address for a customer 
     //
-    this.address = new M.panel('Customer Address',
+    this.address = new M.panel('Address',
         'ciniki_customers_edit', 'address',
         'mc', 'medium', 'sectioned', 'ciniki.customers.edit.address');
     this.address.data = {'flags':15};
@@ -809,7 +815,7 @@ function ciniki_customers_edit() {
     //
     // The form panel to edit an email for a customer 
     //
-    this.email = new M.panel('Customer Email',
+    this.email = new M.panel('Email',
         'ciniki_customers_edit', 'email',
         'mc', 'medium', 'sectioned', 'ciniki.customers.edit.email');
     this.email.data = {'flags':1};
@@ -838,7 +844,7 @@ function ciniki_customers_edit() {
     //
     // The form panel to edit an phone for a customer 
     //
-    this.phone = new M.panel('Customer Phone Number',
+    this.phone = new M.panel('Phone Number',
         'ciniki_customers_edit', 'phone',
         'mc', 'narrow', 'sectioned', 'ciniki.customers.edit.phone');
     this.phone.data = {'flags':1};
@@ -880,7 +886,7 @@ function ciniki_customers_edit() {
     //
     // The form panel to edit a link for a customer 
     //
-    this.link = new M.panel('Customer Website',
+    this.link = new M.panel('Website',
         'ciniki_customers_edit', 'link',
         'mc', 'medium', 'sectioned', 'ciniki.customers.edit.link');
     this.link.data = {'flags':1};
@@ -1019,6 +1025,23 @@ function ciniki_customers_edit() {
         // Turn off account section by default
         var account = 'no';
 
+        if( M.modOn('ciniki.sapos') || M.modOn('ciniki.poma') || M.modOn('ciniki.products') ) {
+            this.edit.title = 'Customers';
+        }
+        if( M.modOn('ciniki.sapos') || M.modOn('ciniki.poma') ) {
+            this.edit.forms.person.name.fields.status.toggles = {
+                '10':'Active', 
+                '40':'On Hold', 
+                '50':'Suspended', 
+                '60':'Deleted', 
+                };
+        } else {
+            this.edit.forms.person.name.fields.status.toggles = {
+                '10':'Active', 
+                '60':'Deleted', 
+                };
+        }
+        this.edit.forms.business.business.fields.status.toggles = this.edit.forms.person.name.fields.status.toggles;
         if( M.curTenant.customers.settings != null 
             && M.curTenant.customers.settings['defaults-edit-person-hide-company'] != null
             && M.curTenant.customers.settings['defaults-edit-person-hide-company'] == 'yes' ) {
@@ -1262,13 +1285,16 @@ function ciniki_customers_edit() {
 //          this.phone.sections._phone.fields.flags.flags = this.memberPhoneFlags;
 //          this.email.sections._email.fields.flags.flags = this.memberEmailFlags;
         } else {
-            this.edit.title = 'Customer';
-            if( M.curTenant.customers != null 
+            this.edit.title = 'Contact';
+            if( M.modOn('ciniki.sapos') || M.modOn('ciniki.poma') || M.modOn('ciniki.products') ) {
+                this.edit.title = 'Customer';
+            }
+/*            if( M.curTenant.customers != null 
                 && M.curTenant.customers.settings['ui-labels-customer'] != null 
                 && M.curTenant.customers.settings['ui-labels-customer'] != '' 
                 ) {
                 this.edit.title = M.curTenant.customers.settings['ui-labels-customer'];
-            }
+            } */
             if( settings != null && settings['ui-labels-parent'] != null ) {
                 this.edit.forms.person.parent.fields.parent_id.label = settings['ui-labels-parent'];
                 this.edit.forms.business.parent.fields.parent_id.label = settings['ui-labels-parent'];

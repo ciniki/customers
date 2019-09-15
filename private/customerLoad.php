@@ -58,6 +58,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "dealer_status AS dealer_status_text, "
         . "distributor_status, "
         . "distributor_status AS distributor_status_text, "
+        . "callsign, "
         . "prefix, "
         . "first, "
         . "middle, "
@@ -93,7 +94,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 'status', 'status_text',
                 'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
                 'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
-                'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
+                'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
                 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
                 'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
                 'birthdate', 'short_bio', 'full_bio', 'webflags', 'connection', 'language', 'notes'),

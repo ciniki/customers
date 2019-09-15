@@ -25,7 +25,7 @@ function ciniki_customers_flags($ciniki, $modules) {
         // 0x0100
         array('flag'=>array('bit'=>'9', 'name'=>'Distributors')),
         array('flag'=>array('bit'=>'10', 'name'=>'Distributor Categories')),
-//      array('flag'=>array('bit'=>'11', 'name'=>'Distributor Tags')),
+        array('flag'=>array('bit'=>'11', 'name'=>'Callsigns')),
         array('flag'=>array('bit'=>'12', 'name'=>'Accounts')),
             // 
             // The IFB mode is designed to manage Individuals, Families and Businesses.

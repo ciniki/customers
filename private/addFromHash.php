@@ -18,7 +18,7 @@ function ciniki_customers_addFromHash($ciniki, $customer) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
     $rc = ciniki_core_dbHashToSQL($ciniki, 
-        array('prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title'),
+        array('callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title'),
         $customer,
         'INSERT INTO ciniki_customers (tnid, status, ',
         'date_added, last_updated) VALUES ('

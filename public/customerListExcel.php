@@ -438,7 +438,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     $objPHPExcel = new PHPExcel();
 
     if( isset($args['membersonly']) && $args['membersonly'] == 'yes' ) {
-        $strsql = "SELECT ciniki_customers.id, eid, prefix, first, middle, last, suffix, "
+        $strsql = "SELECT ciniki_customers.id, eid, callsign, prefix, first, middle, last, suffix, "
             . "company, department, title, display_name, "
             . "ciniki_customers.type, "
             . "ciniki_customers.status, "
@@ -475,7 +475,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ORDER BY ciniki_customers.sort_name "
             . "";
     } elseif( isset($args['subscription_id']) && $args['subscription_id'] != '' && $args['subscription_id'] > 0 ) {
-        $strsql = "SELECT ciniki_customers.id, eid, prefix, first, middle, last, suffix, "
+        $strsql = "SELECT ciniki_customers.id, eid, callsign, prefix, first, middle, last, suffix, "
             . "company, department, title, display_name, "
             . "ciniki_customers.type, "
             . "ciniki_customers.status, "
@@ -515,7 +515,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ORDER BY ciniki_customers.sort_name "
             . "";
     } else {
-        $strsql = "SELECT ciniki_customers.id, eid, prefix, first, middle, last, suffix, "
+        $strsql = "SELECT ciniki_customers.id, eid, callsign, prefix, first, middle, last, suffix, "
             . "company, department, title, display_name, "
             . "ciniki_customers.type, "
             . "ciniki_customers.status, "
@@ -554,7 +554,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'eid', 'status', 'prefix', 'first', 'middle', 'last', 'suffix',
+            'fields'=>array('id', 'eid', 'status', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix',
                 'company', 'display_name', 'type', 'visible', 
                 'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 'member_categories',
                 'dealer_status', 'distributor_status',
@@ -593,6 +593,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             case 'ids': $value = 'ID'; break;
             case 'eid': $value = 'EID'; break;
             case 'status': $value = 'Status'; break;
+            case 'callsign': $value = 'Callsign'; break;
             case 'prefix': $value = 'Prefix'; break;
             case 'first': $value = 'First'; break;
             case 'middle': $value = 'Middle'; break;

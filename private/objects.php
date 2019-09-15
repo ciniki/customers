@@ -25,6 +25,7 @@ function ciniki_customers_objects($ciniki) {
             'membership_type'=>array('default'=>'0'),
             'dealer_status'=>array('default'=>'0'),
             'distributor_status'=>array('default'=>'0'),
+            'callsign'=>array('name'=>'Callsign', 'default'=>''),
             'prefix'=>array('default'=>''),
             'first'=>array(),
             'middle'=>array('default'=>''),

@@ -54,6 +54,7 @@ function ciniki_customers_main() {
                 'noData':'No categories',
                 },
             'places':{'label':'Countries', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
+                'visible':'no',
                 'headerValues':null,
                 'noData':'No customers',
                 'limit':5,
@@ -215,8 +216,14 @@ function ciniki_customers_main() {
         this.tools.data = {};
         this.tools.sections = {
             'reports':{'label':'Reports', 'list':{
-                'onhold':{'label':'On Hold', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'40\'});'},
-                'suspended':{'label':'Suspended', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'50\'});'},
+                'onhold':{'label':'On Hold', 
+                    'visible':function() { return M.modOn('ciniki.sapos') || M.modOn('ciniki.poma') || M.modOn('ciniki.products') ? 'yes' : 'no'; },
+                    'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'40\'});',
+                    },
+                'suspended':{'label':'Suspended', 
+                    'visible':function() { return M.modOn('ciniki.sapos') || M.modOn('ciniki.poma') || M.modOn('ciniki.products') ? 'yes' : 'no'; },
+                    'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'50\'});',
+                    },
                 'deleted':{'label':'Deleted', 'fn':'M.startApp(\'ciniki.customers.reportstatus\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{\'status\':\'60\'});'},
                 'birthdays':{'label':'Birthdays', 
                     'visible':function() {return M.modFlagSet('ciniki.customers', 0x8000); },
@@ -773,8 +780,12 @@ function ciniki_customers_main() {
         } 
 
         // Setup ui labels
-        this.slabel = 'Customer';
-        this.plabel = 'Customers';
+        this.slabel = 'Contact';
+        this.plabel = 'Contacts';
+        if( M.modOn('ciniki.sapos') || M.modOn('ciniki.poma') || M.modOn('ciniki.products') ) {
+            this.slabel = 'Customer';
+            this.plabel = 'Customers';
+        }
         this.childlabel = 'Child';
         this.childrenlabel = 'Children';
         this.parentlabel = 'Parent';
@@ -792,15 +803,30 @@ function ciniki_customers_main() {
             if( settings['ui-labels-children'] != null && settings['ui-labels-children'] != '') {
                 this.childrenlabel = settings['ui-labels-children'];
             }
-            if( settings['ui-labels-customer'] != null && settings['ui-labels-customer'] != '') {
+/*            if( settings['ui-labels-customer'] != null && settings['ui-labels-customer'] != '') {
                 this.slabel = settings['ui-labels-customer'];
             }
             if( settings['ui-labels-customers'] != null && settings['ui-labels-customers'] != '') {
                 this.plabel = settings['ui-labels-customers'];
-            }
+            } */
         }
         this.menu.title = this.plabel;
+        this.menu.size = 'medium';
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x400000) > 0 
+            || (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0
+            ) {
+            this.menu.size = 'medium narrowaside';
+        }
+        // Check if sidebar places should be shown
+        if( M.curTenant.modules['ciniki.customers'].settings != null 
+            && M.curTenant.modules['ciniki.customers'].settings['ui-show-places'] != null
+            && M.curTenant.modules['ciniki.customers'].settings['ui-show-places'] == 'yes'
+            ) {
+            this.menu.sections.places.visible = 'yes';
+            this.menu.size = 'medium narrowaside';
+        }
         this.customer.title = this.slabel;
+        this.customer.sections.details.label = this.slabel;
 //      this.customer.sections._buttons.buttons.delete.label = 'Delete ' + this.slabel;
         this.customer.sections._tabs.tabs['children'].label = this.childrenlabel;
         this.customer.sections.children.label = this.childrenlabel;
@@ -1021,6 +1047,7 @@ function ciniki_customers_main() {
         if( (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
             this.customer.data.details['customer_tags'] = {'label':'Tags', 'value':(rsp.customer.customer_tags!=null?rsp.customer.customer_tags.replace(/::/g,', '):'')};
         }
+
         this.customer.data.account = {};
         // Sales Rep
         if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 

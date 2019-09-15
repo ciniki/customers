@@ -24,6 +24,13 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
         $rsp['settings'] = $rc['settings'];
     }
 
+    $label = 'Contacts';
+    if( isset($ciniki['tenant']['modules']['ciniki.sapos'])
+        || isset($ciniki['tenant']['modules']['ciniki.poma'])
+        || isset($ciniki['tenant']['modules']['ciniki.products'])
+        ) {
+        $label = 'Customers';
+    }
 
     //
     // Get the list of price points
@@ -76,7 +83,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
         ) {
         $menu_item = array(
             'priority'=>5600,
-            'label'=>'Customers', 
+            'label'=>$label, 
             'edit'=>array('app'=>'ciniki.customers.accounts'),
             'add'=>array('app'=>'ciniki.customers.accounts', 'args'=>array('edit_id'=>0)),
             'search'=>array(
@@ -84,7 +91,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'args'=>array(),
                 'container'=>'customers',
                 'cols'=>3,
-                'headerValues'=>array('Business/Family', 'Customers', 'Type'),
+                'headerValues'=>array('Business/Family', $label, 'Type'),
                 'cellValues'=>array(
                     '0' => 'd.parent_name;',
                     '1' => 'd.display_name;',
@@ -114,9 +121,10 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
         ) {
+
         $menu_item = array(
             'priority'=>5600,
-            'label'=>'Customers', 
+            'label'=>$label, 
             'edit'=>array('app'=>'ciniki.customers.main'),
             'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0)),
             'search'=>array(
@@ -124,7 +132,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'args'=>array(),
                 'container'=>'customers',
                 'cols'=>2,
-                'headerValues'=>array('Customers', 'Status'),
+                'headerValues'=>array($label, 'Status'),
                 'cellValues'=>array(
                     '0'=>'d.display_name + (d.parent_name != null && d.parent_name != "" ? " <span class=\'subdue\'>(" + d.parent_name + ")</span>" : "");',
                     '1'=>'d.status_text;',
@@ -153,14 +161,14 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
         ) {
         $menu_item = array(
             'priority'=>5600,
-            'label'=>'Customers', 
+            'label'=>$label, 
             'edit'=>array('app'=>'ciniki.customers.main'),
             'search'=>array(
                 'method'=>'ciniki.customers.searchQuick',
                 'args'=>array(),
                 'container'=>'customers',
                 'cols'=>2,
-                'headerValues'=>array('Customers', 'Status'),
+                'headerValues'=>array($label, 'Status'),
                 'cellValues'=>array(
                     '0' => 'd.display_name + (d.parent_name != null && d.parent_name != "" ? " <span class=\'subdue\'>(" + d.parent_name + "</span>" : "");',
                     '1' => 'd.status_text;',
@@ -219,7 +227,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
         ) {
-        $rsp['settings_menu_items'][] = array('priority'=>5600, 'label'=>'Customers/Members', 'edit'=>array('app'=>'ciniki.customers.settings'));
+        $rsp['settings_menu_items'][] = array('priority'=>5600, 'label'=>$label . '/Members', 'edit'=>array('app'=>'ciniki.customers.settings'));
     }
 
     return $rsp;

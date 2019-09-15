@@ -30,6 +30,7 @@ function ciniki_customers_customerAdd(&$ciniki) {
 //        'membership_type'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Type'),
 //        'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Status'), 
 //        'distributor_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Status'), 
+        'callsign'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Callsign'), 
         'prefix'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Name Prefix'), 
         'first'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'First Name'), 
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Middle Name'), 
@@ -88,6 +89,13 @@ function ciniki_customers_customerAdd(&$ciniki) {
         return $rc;
     }   
     $perms = $rc['perms'];
+
+    //
+    // Filter arguments
+    //
+    if( isset($args['callsign']) ) {
+        $args['callsign'] = strtoupper($args['callsign']);
+    }
 
     //
     // Separate out phone and email args so they don't get written to ciniki_customers table

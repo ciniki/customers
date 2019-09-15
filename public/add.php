@@ -23,6 +23,7 @@
 //
 //                      **note** One of either name or first must be specified.
 //
+// callsign:            (optional) The amateur radio callsign of the customer.
 // prefix:              (optional) The prefix or title for the persons name: Ms. Mrs. Mr. Dr. etc.
 // first:               (optional) The first name of the customer.
 // middle:              (optional) The middle name or initial of the customer.
@@ -92,6 +93,7 @@ function ciniki_customers_add(&$ciniki) {
         'dealer_status'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Dealer Status'), 
         'distributor_status'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Distributor Status'), 
         'name'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Name'),
+        'callsign'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Callsign'), 
         'prefix'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Prefix'), 
         'first'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Name'), 
         'middle'=>array('required'=>'no', 'default'=>'', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Middle Name'), 
@@ -161,7 +163,6 @@ function ciniki_customers_add(&$ciniki) {
         return $rc;
     }   
     $args = $rc['args'];
-    $args['short_description'] = '';
 
     //  
     // Make sure this module is activated, and
@@ -173,6 +174,14 @@ function ciniki_customers_add(&$ciniki) {
         return $rc;
     }   
     $modules = $rc['modules'];
+
+    //
+    // Filter arguments
+    //
+    $args['short_description'] = '';
+    if( isset($args['callsign']) ) {
+        $args['callsign'] = strtoupper($args['callsign']);
+    }
 
     //
     // Get the current settings
@@ -256,10 +265,29 @@ function ciniki_customers_add(&$ciniki) {
             $args['first'] = $args['name'];
         }
     }
+
+    //
+    // Setup the display name, sort name and permalink
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
+    $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $args, 0, $args);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+    }
+    if( isset($rc['display_name']) && $rc['display_name'] != $customer['display_name'] ) {
+        $args['display_name'] = $rc['display_name'];
+    }
+    if( isset($rc['sort_name']) && $rc['sort_name'] != $customer['sort_name'] ) {
+        $args['sort_name'] = $rc['sort_name'];
+    }
+    if( isset($rc['permalink']) && $rc['permalink'] != $customer['permalink'] ) {
+        $args['permalink'] = $rc['permalink'];
+    }
+
     //
     // Determine the display name
     //
-    $space = '';
+/*    $space = '';
     $person_name = '';
     $args['sort_name'] = '';
     if( isset($args['prefix']) && $args['prefix'] != '' ) {
@@ -331,7 +359,8 @@ function ciniki_customers_add(&$ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
     $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['display_name']);
-    
+*/
+
     //  
     // Turn off autocommit
     //  

@@ -35,6 +35,16 @@ function ciniki_customers_customerUpdateName(&$ciniki, $tnid, $customer, $custom
     $space = '';
     $person_name = '';
     $sort_person_name = '';
+    if( isset($settings['display-name-callsign-format']) && $settings['display-name-callsign-format'] == 'beforedash' ) {
+        if( isset($args['callsign']) && $args['callsign'] != '' ) {
+            $person_name .= $args['callsign'] . ' -';
+            $sort_person_name .= $args['callsign'];
+        } elseif( !isset($args['callsign']) && $customer['callsign'] != '' ) {
+            $person_name .= $customer['callsign'] . ' -';
+            $sort_person_name .= $customer['callsign'];
+        }
+    }
+    if( $space == '' && $person_name != '' ) { $space = ' '; }
     if( isset($args['prefix']) && $args['prefix'] != '' ) {
         $person_name .= $args['prefix'];
     } elseif( !isset($args['prefix']) && $customer['prefix'] != '' ) {
@@ -71,6 +81,16 @@ function ciniki_customers_customerUpdateName(&$ciniki, $tnid, $customer, $custom
         $sort_person_name .= ($sort_person_name!=''?', ':'') . $args['first'];
     } elseif( !isset($args['first']) && $customer['first'] != '' ) {
         $sort_person_name .= ($sort_person_name!=''?', ':'') . $customer['first'];
+    }
+
+    if( isset($settings['display-name-callsign-format']) && $settings['display-name-callsign-format'] == 'afterdash' ) {
+        if( isset($args['callsign']) && $args['callsign'] != '' ) {
+            $person_name .= ($person_name != '' ? ' - ' : '') . $args['callsign'];
+            $sort_person_name .= ($sort_person_name != '' ? ', ' : '') . $args['callsign'];
+        } elseif( !isset($args['callsign']) && $customer['callsign'] != '' ) {
+            $person_name .= ($person_name != '' ? ' - ' : '') . $customer['callsign'];
+            $sort_person_name .= ($sort_person_name != '' ? ', ' : '') . $customer['callsign'];
+        }
     }
 
     //
@@ -126,7 +146,13 @@ function ciniki_customers_customerUpdateName(&$ciniki, $tnid, $customer, $custom
         $rsp['sort_name'] = $sort_person_name;
     }
    
-    if( isset($rsp['display_name']) && $rsp['display_name'] != '' ) {
+    if( isset($args['callsign']) && $args['callsign'] != '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $rsp['permalink'] = ciniki_core_makePermalink($ciniki, $args['callsign']);
+    } elseif( !isset($args['callsign']) && isset($customer['callsign']) && $customer['callsign'] != '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $rsp['permalink'] = ciniki_core_makePermalink($ciniki, $customer['callsign']);
+    } elseif( isset($rsp['display_name']) && $rsp['display_name'] != '' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
         $rsp['permalink'] = ciniki_core_makePermalink($ciniki, $rsp['display_name']);
     }

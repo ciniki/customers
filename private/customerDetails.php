@@ -53,7 +53,7 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
     //
     // Get the customer details and emails
     //
-    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, permalink, prefix, first, middle, last, suffix, "
+    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, permalink, callsign, prefix, first, middle, last, suffix, "
         . "display_name, sort_name, display_name_format, company, department, title, salesrep_id, "
         . "status, dealer_status, distributor_status, "
         . "phone_home, phone_work, phone_cell, phone_fax, "
@@ -67,7 +67,7 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
             'fields'=>array('id', 'eid', 'parent_id', 'type', 'permalink',
-                'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'display_name_format', 
+                'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'display_name_format', 
                 'status', 'dealer_status', 'distributor_status',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
                 'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',

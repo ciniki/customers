@@ -31,6 +31,7 @@ function ciniki_customers_customerUpdate(&$ciniki) {
 //        'membership_type'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Type'),
 //        'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Status'), 
 //        'distributor_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Status'), 
+        'callsign'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Callsign'), 
         'prefix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Prefix'), 
         'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'), 
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Middle Name'), 
@@ -89,6 +90,13 @@ function ciniki_customers_customerUpdate(&$ciniki) {
         return $rc;
     }   
     $perms = $rc['perms'];
+
+    //
+    // Filter arguments
+    //
+    if( isset($args['callsign']) ) {
+        $args['callsign'] = strtoupper($args['callsign']);
+    }
 
     //
     // Get the current settings
@@ -410,7 +418,25 @@ function ciniki_customers_customerUpdate(&$ciniki) {
         }
     }
 
-    if( isset($args['prefix']) || isset($args['first']) 
+    //
+    // Check for changes to display name, sort name or permalink
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
+    $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $customer, $args['customer_id'], $args);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+    }
+    if( isset($rc['display_name']) && $rc['display_name'] != $customer['display_name'] ) {
+        $args['display_name'] = $rc['display_name'];
+    }
+    if( isset($rc['sort_name']) && $rc['sort_name'] != $customer['sort_name'] ) {
+        $args['sort_name'] = $rc['sort_name'];
+    }
+    if( isset($rc['permalink']) && $rc['permalink'] != $customer['permalink'] ) {
+        $args['permalink'] = $rc['permalink'];
+    }
+
+/*    if( isset($args['prefix']) || isset($args['first']) 
         || isset($args['middle']) || isset($args['last']) || isset($args['suffix']) 
         || isset($args['company']) || isset($args['type']) || isset($args['display_name_format']) ) {
 
@@ -506,7 +532,7 @@ function ciniki_customers_customerUpdate(&$ciniki) {
     if( isset($args['display_name']) && $args['display_name'] != '' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
         $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['display_name']);
-    }
+    } */
 
     //
     // Check if type changes, parent_id should also change

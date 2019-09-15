@@ -64,7 +64,7 @@ function ciniki_customers_merge($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCopyModuleHistory');
     $strsql = "SELECT id, display_name, "
-        . "prefix, first, middle, last, suffix, company, department, title, "
+        . "callsign, prefix, first, middle, last, suffix, company, department, title, "
         . "birthdate, "
         . "notes "
         . "FROM ciniki_customers "
@@ -74,7 +74,7 @@ function ciniki_customers_merge($ciniki) {
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'display_name', 'prefix', 'first', 'middle', 'last', 'suffix', 
+            'fields'=>array('id', 'display_name', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 
                 'company', 'department', 'title', 'birthdate', 
                 'notes')),
         ));
@@ -107,6 +107,7 @@ function ciniki_customers_merge($ciniki) {
     // Merge customer details
     //
     $fields = array(
+        'callsign',
         'prefix',
         'first',
         'middle',

@@ -111,6 +111,7 @@ function ciniki_customers_customerSearch($ciniki) {
                 . "OR c1.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR c1.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR c1.eid LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR c1.callsign LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR c2.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR c2.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

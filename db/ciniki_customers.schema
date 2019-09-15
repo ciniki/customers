@@ -184,6 +184,7 @@ create table ciniki_customers (
     membership_type tinyint unsigned not null,
     dealer_status tinyint unsigned not null,
     distributor_status tinyint unsigned not null,
+    callsign varchar(25) not null,
     prefix varchar(10) not null,
     first varchar(100) not null,
     middle varchar(100) not null,

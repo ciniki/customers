@@ -97,7 +97,7 @@ function ciniki_customers_getFull($ciniki) {
     $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, status, "
         . "member_status, member_lastpaid, membership_length, membership_type, "
         . "dealer_status, distributor_status, "
-        . "prefix, first, middle, last, suffix, "
+        . "callsign, prefix, first, middle, last, suffix, "
         . "display_name, display_name_format, company, department, title, "
         . "phone_home, phone_work, phone_cell, phone_fax, primary_email, alternate_email, "
 //      . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
@@ -117,7 +117,7 @@ function ciniki_customers_getFull($ciniki) {
                 'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 'primary_email', 'alternate_email',
                 'dealer_status', 'distributor_status',
-                'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 
+                'eid', 'type', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 
                 'display_name', 'display_name_format', 'company', 'department', 'title', 
                 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
                 'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 

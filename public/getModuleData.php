@@ -100,7 +100,7 @@ function ciniki_customers_getModuleData($ciniki) {
     //
     // Get the customer details and emails
     //
-    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, prefix, first, middle, last, suffix, "
+    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, callsign, prefix, first, middle, last, suffix, "
         . "display_name, company, department, title, "
         . "phone_home, phone_work, phone_cell, phone_fax, "
         . "status, status AS status_text, "
@@ -130,7 +130,7 @@ function ciniki_customers_getModuleData($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'eid', 'parent_id', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
+            'fields'=>array('id', 'eid', 'parent_id', 'type', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
                 'status', 'status_text',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
                 'dealer_status', 'dealer_status_text',

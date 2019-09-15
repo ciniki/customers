@@ -1,0 +1,5 @@
+#
+# Add the additional fields for Amateur Radio
+#
+ALTER TABLE ciniki_customers ADD COLUMN callsign varchar(25) not null AFTER distributor_status;
+ALTER TABLE ciniki_customers COMMENT='v1.25';

@@ -16,6 +16,10 @@ function ciniki_customers_settings() {
         'company [person]':'Company [Person]',
         'person [company]':'Person [Company]',
     };
+    this.callsignFormats = {
+        'beforedash':'CALLSIGN - person',
+        'afterdash':'person - CALLSIGN',
+    };
     this.pricepointFlags = {
         '1':{'name':'Flexible'},
         };
@@ -43,6 +47,9 @@ function ciniki_customers_settings() {
 //          }},
             'name_options':{'label':'Name Format', 'fields':{
                 'display-name-business-format':{'label':'Busines', 'type':'select', 'options':this.businessFormats},
+                'display-name-callsign-format':{'label':'Busines', 'type':'select', 'options':this.callsignFormats,
+                    'visible': function() { return M.modFlagSet('ciniki.customers', 0x0400); },
+                    },
             }},
             'pricepoints':{'label':'Price Points', 'visible':'no', 'type':'simplegrid',
                 'num_cols':1,
@@ -52,6 +59,7 @@ function ciniki_customers_settings() {
             'defaults':{'label':'Defaults', 'visible':'yes', 'fields':{
                 'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Busines'}},
                 'defaults-edit-person-hide-company':{'label':'Hide Company', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'ui-show-places':{'label':'Show Places', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
             'ui_labels':{'label':'Labels', 'visible':'no', 'fields':{
                 'ui-labels-parent':{'label':'Parent Name', 'type':'text', 'hint':'Parent'},
