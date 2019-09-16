@@ -70,9 +70,9 @@ function ciniki_customers_main() {
                 'headerValues':null,
                 'noData':'No customers',
                 },
-            'customers':{'label':'Customers', 'num_cols':1, 'type':'simplegrid', 
+            'customers':{'label':'Customers', 'num_cols':2, 'type':'simplegrid', 
                 'visible':function() {return (M.ciniki_customers_main.menu.list != 'recent' ? 'yes' : 'no'); },
-                'headerValues':null,
+                'headerValues':['Customer', 'Status'],
                 'noData':'No customers',
                 },
             };
@@ -123,10 +123,16 @@ function ciniki_customers_main() {
                 }
             }
             if( s == 'recent' ) {
-                return d.customer.display_name;
+                switch(j) {
+                    case 0: return d.customer.display_name;
+                    case 1: return d.customer.status_text;
+                }
             }
             if( s == 'customers' ) {
-                return d.display_name;
+                switch(j) {
+                    case 0: return d.display_name;
+                    case 1: return d.status_text;
+                }
             }
         };
         this.menu.rowFn = function(s, i, d) { 
@@ -160,50 +166,66 @@ function ciniki_customers_main() {
             if( this.list == 'category' ) {
                 args.category = M.eU(this.category);
             }
-            M.api.getJSONCb('ciniki.customers.overview', args, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                } 
-                var p = M.ciniki_customers_main.menu;
-                p.data = {};
-                if( rsp.places != null ) {
-                    p.sections.places.visible = 'yes';
-                    p.data.places = rsp.places;
-                    p.place_level = rsp.place_level;
-                    switch(rsp.place_level) {
-                        case 'country': p.sections.places.label = 'Countries'; 
-                            p.country = null;
-                            p.province = null;
-                            p.city = null;
-                            break;
-                        case 'province': p.sections.places.label = 'Provinces/States'; 
-                            p.province = null;
-                            p.city = null;
-                            break;
-                        case 'city': p.sections.places.label = 'Cities'; 
-                            p.city = null;
-                            break;
+            if( this.list == 'customers' ) {
+                console.log('testing'); 
+                M.api.getJSONCb('ciniki.customers.customerList', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    } 
+                    var p = M.ciniki_customers_main.menu;
+                    p.data = rsp;
+                    console.log(rsp);
+                    p.refresh();
+                    p.show(cb);
+                });
+            } else {
+                console.log('asdfasdftesting'); 
+                M.api.getJSONCb('ciniki.customers.overview', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    } 
+                    var p = M.ciniki_customers_main.menu;
+                    p.data = {};
+                    if( rsp.places != null ) {
+                        p.sections.places.visible = 'yes';
+                        p.data.places = rsp.places;
+                        p.place_level = rsp.place_level;
+                        switch(rsp.place_level) {
+                            case 'country': p.sections.places.label = 'Countries'; 
+                                p.country = null;
+                                p.province = null;
+                                p.city = null;
+                                break;
+                            case 'province': p.sections.places.label = 'Provinces/States'; 
+                                p.province = null;
+                                p.city = null;
+                                break;
+                            case 'city': p.sections.places.label = 'Cities'; 
+                                p.city = null;
+                                break;
+                        }
+                    } else {
+                        p.sections.places.visible = 'no';
                     }
-                } else {
-                    p.sections.places.visible = 'no';
-                }
-                if( rsp.customer_categories != null ) {
-                    p.sections.customer_categories.visible = 'yes';
-                    p.data.customer_categories = rsp.customer_categories;
-                } else {
-                    p.sections.customer_categories.visible = 'no';
-                }
-                if( rsp.customer_tags != null ) {
-                    p.sections.customer_tags.visible = 'yes';
-                    p.data.customer_tags = rsp.customer_tags;
-                } else {
-                    p.sections.customer_tags.visible = 'no';
-                }
-                p.data = rsp; 
-                p.refresh();
-                p.show(cb);
-            });
+                    if( rsp.customer_categories != null ) {
+                        p.sections.customer_categories.visible = 'yes';
+                        p.data.customer_categories = rsp.customer_categories;
+                    } else {
+                        p.sections.customer_categories.visible = 'no';
+                    }
+                    if( rsp.customer_tags != null ) {
+                        p.sections.customer_tags.visible = 'yes';
+                        p.data.customer_tags = rsp.customer_tags;
+                    } else {
+                        p.sections.customer_tags.visible = 'no';
+                    }
+                    p.data = rsp; 
+                    p.refresh();
+                    p.show(cb);
+                });
+            }
         }
         this.menu.addClose('Back');
 
@@ -782,9 +804,11 @@ function ciniki_customers_main() {
         // Setup ui labels
         this.slabel = 'Contact';
         this.plabel = 'Contacts';
+        this.menu.list = 'customers';
         if( M.modOn('ciniki.sapos') || M.modOn('ciniki.poma') || M.modOn('ciniki.products') ) {
             this.slabel = 'Customer';
             this.plabel = 'Customers';
+            this.menu.list = 'recent';
         }
         this.childlabel = 'Child';
         this.childrenlabel = 'Children';
@@ -810,6 +834,12 @@ function ciniki_customers_main() {
                 this.plabel = settings['ui-labels-customers'];
             } */
         }
+        this.menu.sections.search.noData = 'No ' + this.plabel.toLowerCase() + ' found';
+        this.menu.sections.search.headerValues[0] = this.slabel;
+        this.menu.sections.recent.noData = 'No ' + this.plabel.toLowerCase();
+        this.menu.sections.customers.label = this.plabel;
+        this.menu.sections.customers.noData = 'No ' + this.plabel.toLowerCase();
+        this.menu.sections.customers.headerValues[0] = this.slabel;
         this.menu.title = this.plabel;
         this.menu.size = 'medium';
         if( (M.curTenant.modules['ciniki.customers'].flags&0x400000) > 0 

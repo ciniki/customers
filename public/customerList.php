@@ -81,7 +81,7 @@ function ciniki_customers_customerList($ciniki) {
     if( isset($args['latest']) && $args['latest'] == 'yes' ) {
         $strsql .= "ORDER BY customers.last_updated DESC, customers.last, customers.first, customers.company  ";
     } else {
-        $strsql .= "ORDER BY customers.last, customers.first DESC ";
+        $strsql .= "ORDER BY status, customers.last, customers.first DESC ";
     }
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
         $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified
