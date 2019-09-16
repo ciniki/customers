@@ -36,7 +36,7 @@ function ciniki_customers_main() {
         this.menu.country = null;
         this.menu.province = null;
         this.menu.city = null;
-        this.menu.list = 'recent';
+        this.menu.list = 'customers';
         this.menu.country = '';
         this.menu.province = '';
         this.menu.tag = '';
@@ -167,7 +167,6 @@ function ciniki_customers_main() {
                 args.category = M.eU(this.category);
             }
             if( this.list == 'customers' ) {
-                console.log('testing'); 
                 M.api.getJSONCb('ciniki.customers.customerList', args, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -175,12 +174,12 @@ function ciniki_customers_main() {
                     } 
                     var p = M.ciniki_customers_main.menu;
                     p.data = rsp;
-                    console.log(rsp);
+                    p.size = 'medium';
+                    p.sections.places.visible = 'no';
                     p.refresh();
                     p.show(cb);
                 });
             } else {
-                console.log('asdfasdftesting'); 
                 M.api.getJSONCb('ciniki.customers.overview', args, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -190,6 +189,7 @@ function ciniki_customers_main() {
                     p.data = {};
                     if( rsp.places != null ) {
                         p.sections.places.visible = 'yes';
+                        p.size = 'medium narrowaside';
                         p.data.places = rsp.places;
                         p.place_level = rsp.place_level;
                         switch(rsp.place_level) {
