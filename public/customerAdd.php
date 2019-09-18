@@ -194,11 +194,35 @@ function ciniki_customers_customerAdd(&$ciniki) {
     }   
 
     //
+    // Setup the display name, sort name and permalink
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
+    $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $args, 0, $args);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+    }
+    $args['display_name'] = $rc['display_name'];
+    $args['sort_name'] = $rc['sort_name'];
+    $args['permalink'] = $rc['permalink'];
+
+    //
     // Add the customer
     //
     if( isset($args['first']) || isset($args['last']) || isset($args['company']) ) {
 
         //
+        // Setup the display name, sort name and permalink
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
+        $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $args, 0, $args);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+        }
+        $args['display_name'] = $rc['display_name'];
+        $args['sort_name'] = $rc['sort_name'];
+        $args['permalink'] = $rc['permalink'];
+
+/*        //
         // Build the persons name
         //
         $space = '';
@@ -264,13 +288,13 @@ function ciniki_customers_customerAdd(&$ciniki) {
         } else {
             $args['display_name'] = $person_name;
             $args['sort_name'] = $sort_person_name;
-        }
+        } */
     } else {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.299', 'msg'=>'You must specific a name', 'err'=>$rc['err']));
     }
    
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-    $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['display_name']);
+//    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+//    $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['display_name']);
 
     //
     // Check to make sure name is unique
