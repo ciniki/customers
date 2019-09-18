@@ -274,15 +274,9 @@ function ciniki_customers_add(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
     }
-    if( isset($rc['display_name']) && $rc['display_name'] != $customer['display_name'] ) {
-        $args['display_name'] = $rc['display_name'];
-    }
-    if( isset($rc['sort_name']) && $rc['sort_name'] != $customer['sort_name'] ) {
-        $args['sort_name'] = $rc['sort_name'];
-    }
-    if( isset($rc['permalink']) && $rc['permalink'] != $customer['permalink'] ) {
-        $args['permalink'] = $rc['permalink'];
-    }
+    $args['display_name'] = $rc['display_name'];
+    $args['sort_name'] = $rc['sort_name'];
+    $args['permalink'] = $rc['permalink'];
 
     //
     // Determine the display name
