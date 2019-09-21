@@ -155,6 +155,8 @@ function ciniki_customers_customerUpdateName(&$ciniki, $tnid, $customer, $custom
     } elseif( isset($rsp['display_name']) && $rsp['display_name'] != '' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
         $rsp['permalink'] = ciniki_core_makePermalink($ciniki, $rsp['display_name']);
+    } else {
+        $rsp['permalink'] = '';
     }
 
     return $rsp;
