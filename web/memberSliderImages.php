@@ -32,6 +32,7 @@ function ciniki_customers_web_memberSliderImages($ciniki, $settings, $tnid, $lis
             . "ciniki_customer_images.image_id, "
             . "ciniki_customer_images.name AS title, "
             . "ciniki_customers.permalink AS member_permalink, "
+            . "ciniki_customers.display_name, "
             . "ciniki_customer_images.permalink AS image_permalink, "
             . "IF(ciniki_images.last_updated > ciniki_customer_images.last_updated, UNIX_TIMESTAMP(ciniki_images.last_updated), UNIX_TIMESTAMP(ciniki_customer_images.last_updated)) AS last_updated "
             . "FROM ciniki_customer_images "
@@ -61,6 +62,7 @@ function ciniki_customers_web_memberSliderImages($ciniki, $settings, $tnid, $lis
             . "ciniki_customer_images.image_id, "
             . "ciniki_customer_images.name AS title, "
             . "ciniki_customers.permalink AS member_permalink, "
+            . "ciniki_customers.display_name, "
             . "ciniki_customer_images.permalink AS image_permalink, "
             . "IF(ciniki_images.last_updated > ciniki_customer_images.last_updated, UNIX_TIMESTAMP(ciniki_images.last_updated), UNIX_TIMESTAMP(ciniki_customer_images.last_updated)) AS last_updated "
             . "FROM ciniki_customer_images "
@@ -88,7 +90,7 @@ function ciniki_customers_web_memberSliderImages($ciniki, $settings, $tnid, $lis
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'images', 'fname'=>'id',
-            'fields'=>array('id', 'image_id', 'title', 'member_permalink', 'image_permalink', 'last_updated')),
+            'fields'=>array('id', 'image_id', 'title', 'member_permalink', 'display_name', 'image_permalink', 'last_updated')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
