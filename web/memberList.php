@@ -33,8 +33,12 @@ function ciniki_customers_web_memberList($ciniki, $settings, $tnid, $args) {
             . "ciniki_customers.permalink, "
             . "ciniki_customers.short_description, "
             . "ciniki_customers.primary_image_id, "
-            . "IF(full_bio<>'', 'yes', 'no') AS is_details "
+            . "IF(full_bio<>'' OR COUNT(ciniki_customer_images.id) > 0, 'yes', 'no') AS is_details "
             . "FROM ciniki_customer_tags, ciniki_customers "
+            . "LEFT JOIN ciniki_customer_images ON ("
+                . "ciniki_customers.id = ciniki_customer_images.customer_id "
+                . "AND ciniki_customer_images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE ciniki_customer_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_customer_tags.tag_type = '40' "
             . "AND ciniki_customer_tags.permalink = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
@@ -43,6 +47,7 @@ function ciniki_customers_web_memberList($ciniki, $settings, $tnid, $args) {
             . "AND ciniki_customers.member_status = 10 "
             . "AND (ciniki_customers.webflags&0x01) = 1 "
 //          . "ORDER BY ciniki_customers.display_name ";
+            . "GROUP BY ciniki_customers.id "
             . "ORDER BY ciniki_customers.sort_name ";
 //          . "ORDER BY ciniki_customers.company, ciniki_customers.last, ciniki_customers.first ";
     } else {
@@ -53,12 +58,17 @@ function ciniki_customers_web_memberList($ciniki, $settings, $tnid, $args) {
             . "ciniki_customers.permalink, "
             . "ciniki_customers.short_description, "
             . "ciniki_customers.primary_image_id, "
-            . "IF(full_bio<>'', 'yes', 'no') AS is_details "
+            . "IF(full_bio<>'' OR COUNT(ciniki_customer_images.id) > 0, 'yes', 'no') AS is_details "
             . "FROM ciniki_customers "
+            . "LEFT JOIN ciniki_customer_images ON ("
+                . "ciniki_customers.id = ciniki_customer_images.customer_id "
+                . "AND ciniki_customer_images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             // Check the member is visible on the website
             . "AND ciniki_customers.member_status = 10 "
             . "AND (ciniki_customers.webflags&0x01) = 1 "
+            . "GROUP BY ciniki_customers.id "
             . "ORDER BY ciniki_customers.sort_name ";
 //          . "ORDER BY ciniki_customers.display_name, ciniki_customers.last, ciniki_customers.first ";
     }
