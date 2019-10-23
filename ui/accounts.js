@@ -912,7 +912,7 @@ function ciniki_customers_accounts() {
             'headerValues':['Parent/Business', 'Name', 'Status'], 
             },
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
-            'newcustomer':{'label':'New Customer', 'fn':'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,10,0,M.ciniki_customers_accounts.changecustomer.nextFn);'},
+            'newcustomer':{'label':'New Customer', 'fn':'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,10,M.ciniki_customers_accounts.changecustomer.customer_id,M.ciniki_customers_accounts.changecustomer.nextFn);'},
             }},
         'account_name':{'label':'', 'type':'simplegrid', 'num_cols':1,
             'visible':'no', 
@@ -1002,6 +1002,7 @@ function ciniki_customers_accounts() {
                         p.sections.parents.addTopFn = 'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,21,' + rsp.account.id + ',M.ciniki_customers_accounts.changecustomer.nextFn);';
                         p.sections.children.addTxt = 'Add Child';
                         p.sections.children.addTopFn = 'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,22,' + rsp.account.id + ',M.ciniki_customers_accounts.changecustomer.nextFn);';
+                        p.sections._buttons.buttons.newcustomer.fn = 'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,22,M.ciniki_customers_accounts.changecustomer.customer_id,M.ciniki_customers_accounts.changecustomer.nextFn);';
                     } else if( rsp.account.type == 30 ) {
                         p.sections.account_name.visible = 'yes';
                         p.sections.parents.label = 'Admins';
@@ -1010,11 +1011,13 @@ function ciniki_customers_accounts() {
                         p.sections.parents.addTopFn = 'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,31,' + rsp.account.id + ',M.ciniki_customers_accounts.changecustomer.nextFn);';
                         p.sections.children.addTxt = 'Add Employee';
                         p.sections.children.addTopFn = 'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,32,' + rsp.account.id + ',M.ciniki_customers_accounts.changecustomer.nextFn);';
+                        p.sections._buttons.buttons.newcustomer.fn = 'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,32,M.ciniki_customers_accounts.changecustomer.customer_id,M.ciniki_customers_accounts.changecustomer.nextFn);';
                     }
                 } else {
                     p.size = 'medium';
                     p.sections.parents.visible = 'no';
                     p.sections.children.visible = 'no';
+                    p.sections._buttons.buttons.newcustomer.fn = 'M.ciniki_customers_accounts.edit.open(\'M.ciniki_customers_accounts.changecustomer.open();\',0,10,0,M.ciniki_customers_accounts.changecustomer.nextFn);';
                 }
                 p.refresh();
                 p.show(cb);
