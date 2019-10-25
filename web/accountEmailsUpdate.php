@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $tnid, &$customer) {
+function ciniki_customers_web_accountEmailsUpdate($ciniki, $settings, $tnid, &$customer, $required) {
 
     if( isset($customer['emails'][0]['email']) ) {
         $email = $customer['emails'][0]['email'];
