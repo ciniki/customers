@@ -1581,8 +1581,9 @@ function ciniki_customers_edit() {
                         p.forms.person.addresses.addTxt = 'Add Address';
                         p.forms.business.addresses.addTxt = 'Add Address';
                     } else {
-                        p.forms.person.addresses.addTxt = '';
-                        p.forms.business.addresses.addTxt = '';
+                        // FIXME: Change to allow for 2 addresses (Shipping/Billing)
+                        p.forms.person.addresses.addTxt = 'Add Address';
+                        p.forms.business.addresses.addTxt = 'Add Address';
                     }
                     M.ciniki_customers_edit.showEditSubscriptions(cb);
                 });
@@ -1733,8 +1734,9 @@ function ciniki_customers_edit() {
                     p.forms.person.addresses.addTxt = 'Add Address';
                     p.forms.business.addresses.addTxt = 'Add Address';
                 } else {
-                    p.forms.person.addresses.addTxt = '';
-                    p.forms.business.addresses.addTxt = '';
+                    // FIXME: Change to allow for 2 addresses (Shipping/Billing)
+                    p.forms.person.addresses.addTxt = 'Add Address';
+                    p.forms.business.addresses.addTxt = 'Add Address';
                 }
                 p.refreshSection('addresses');
                 p.show();
