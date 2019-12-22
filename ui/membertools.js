@@ -20,7 +20,9 @@ function ciniki_customers_membertools() {
             'memberlist':{'label':'Member List (Excel)', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_membertools.menu.open();\',\'mc\',{\'membersonly\':\'yes\'});'},
             'membercontactinfo':{'label':'Member Contact Info (PDF)', 'fn':'M.ciniki_customers_membertools.showPDFContactInfo(\'M.ciniki_customers_membertools.menu.open();\');'},
             }},
-        'memberlists':{'label':'Season Lists', 'list':{
+        'memberlists':{'label':'Season Lists', 
+            'visible':function() { return M.modFlagSet('ciniki.customers', 0x02000000); },
+            'list':{
             }},
         };
     this.menu.open = function(cb) {

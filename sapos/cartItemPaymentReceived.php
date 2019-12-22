@@ -36,80 +36,82 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $tnid, $custome
     $dt = new DateTime('now', new DateTimeZone($intl_timezone));
 
     if( $args['object'] == 'ciniki.customers.membership' ) {
-        //
-        // Get the latest season marked current
-        //
-        $strsql = "SELECT id, name "
-            . "FROM ciniki_customer_seasons "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (flags&0x01) = 0x01 "
-            . "ORDER BY end_date DESC "
-            . "LIMIT 1 ";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'season');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.159', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
-        }
-        if( !isset($rc['season']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.160', 'msg'=>'Unable to setup the membership'));
-        }
-        $season = $rc['season']; 
-
-        //
-        // Check the customer is not already attached to the season
-        //
-        $strsql = "SELECT id, season_id, customer_id, status, date_paid, notes "
-            . "FROM ciniki_customer_season_members "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND season_id = '" . ciniki_core_dbQuote($ciniki, $season['id']) . "' "
-            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customerseason');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.161', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
-        }
-        if( isset($rc['customerseason']) ) {
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000000) ) {
             //
-            // Update the current information
+            // Get the latest season marked current
             //
-            $customerseason = $rc['customerseason'];
-            
-            $update_args = array(
-                'date_paid'=>$dt->format('Y-m-d'),
-                );
-            if( $customerseason['status'] != 10 ) {
-                $update_args['status'] = 10;
-            }
-            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.season_member', $customerseason['id'], $update_args, 0x07);
+            $strsql = "SELECT id, name "
+                . "FROM ciniki_customer_seasons "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND (flags&0x01) = 0x01 "
+                . "ORDER BY end_date DESC "
+                . "LIMIT 1 ";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'season');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.162', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.159', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
             }
-        }
+            if( !isset($rc['season']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.160', 'msg'=>'Unable to setup the membership'));
+            }
+            $season = $rc['season']; 
 
-        elseif( count($rc['rows']) > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.163', 'msg'=>'Unable to setup the membership.'));
-        }
-
-        else {
             //
-            // Setup the customer with a membership in the current season
+            // Check the customer is not already attached to the season
             //
-            $update_args = array(
-                'season_id'=>$season['id'],
-                'customer_id'=>$customer['id'],
-                'status'=>10,
-                'date_paid'=>$dt->format('Y-m-d'),
-                'notes'=>'',
-                );
-            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.season_member', $update_args, 0x07);
+            $strsql = "SELECT id, season_id, customer_id, status, date_paid, notes "
+                . "FROM ciniki_customer_season_members "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND season_id = '" . ciniki_core_dbQuote($ciniki, $season['id']) . "' "
+                . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customerseason');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.164', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.161', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+            }
+            if( isset($rc['customerseason']) ) {
+                //
+                // Update the current information
+                //
+                $customerseason = $rc['customerseason'];
+                
+                $update_args = array(
+                    'date_paid'=>$dt->format('Y-m-d'),
+                    );
+                if( $customerseason['status'] != 10 ) {
+                    $update_args['status'] = 10;
+                }
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.season_member', $customerseason['id'], $update_args, 0x07);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.162', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+                }
+            }
+
+            elseif( count($rc['rows']) > 0 ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.163', 'msg'=>'Unable to setup the membership.'));
+            }
+
+            else {
+                //
+                // Setup the customer with a membership in the current season
+                //
+                $update_args = array(
+                    'season_id'=>$season['id'],
+                    'customer_id'=>$customer['id'],
+                    'status'=>10,
+                    'date_paid'=>$dt->format('Y-m-d'),
+                    'notes'=>'',
+                    );
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.season_member', $update_args, 0x07);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.164', 'msg'=>'Unable to setup the membership', 'err'=>$rc['err']));
+                }
             }
         }
 
         //
         // Check to make sure the customer is member_status = 10
         //
-        $strsql = "SELECT id, member_status, membership_length, membership_type "
+        $strsql = "SELECT id, member_status, membership_length, membership_type, member_lastpaid "
             . "FROM ciniki_customers "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
@@ -143,6 +145,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $tnid, $custome
         if( $args['object_id'] == 'lifetime' && $customer['membership_length'] != 60 ) {
             $update_args['membership_length'] = 60;
         }
+        $update_args['member_lastpaid'] = $dt->format('Y-m-d');
         if( count($update_args) > 0 ) {
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer', $customer['id'], $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {

@@ -10,7 +10,7 @@ function ciniki_customers_edit() {
     this.toggleOptions = {'Off':'Off', 'On':'On'};
     this.subscriptionOptions = {'60':'Unsubscribed', '10':'Subscribed'};
     this.memberStatus = {'10':'Active', '60':'Suspended'};
-    this.membershipLength = {'10':'Monthly', '20':'Yearly', '60':'Lifetime'};
+    this.membershipLength = {'20':'Yearly', '60':'Lifetime'};
     this.membershipType = {'10':'Regular', '110':'Complimentary', '150':'Reciprocal'};
     this.memberWebFlags = {'1':{'name':'Visible'}};
     this.dealerStatus = {'5':'Prospect', '10':'Active', '40':'Previous', '60':'Closed'};

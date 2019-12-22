@@ -56,7 +56,7 @@ function ciniki_customers_maps($ciniki) {
             '60'=>'Lifetime',
             ),
         'membership_type'=>array(
-            '0'=>'',
+            '0'=>'Unknown',
             '10'=>'Regular',
             '20'=>'Student',
             '30'=>'Individual',

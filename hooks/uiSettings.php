@@ -54,7 +54,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
     //
     // Get the membership seasons
     //
-    if( isset($args['modules']['ciniki.customers']['flags']) && ($args['modules']['ciniki.customers']['flags']&0x02000000) > 0 ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000000) ) {
         $strsql = "SELECT id, name, if((flags&0x02)=2,'yes','no') AS open "
             . "FROM ciniki_customer_seasons "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -188,7 +188,44 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
         $rsp['menu_items'][] = $menu_item;
     } 
 
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02)
+    //
+    // Memberships with categories and no seasons
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x04)
+        && !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000000)
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>5590,
+            'label'=>'Members', 
+            'edit'=>array('app'=>'ciniki.customers.memberships'),
+            'add'=>array('app'=>'ciniki.customers.edit', 'args'=>array('customer_id'=>0, 'member'=>"'\"yes\"'")),
+            'search'=>array(
+                'method'=>'ciniki.customers.searchQuick',
+                'args'=>array('member_status'=>10),
+                'container'=>'customers',
+                'cols'=>1,
+                'cellValues'=>array(
+                    '0'=>'d.display_name;',
+                    ),
+                'noData'=>'No customers found',
+                'edit'=>array('method'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.id;')),
+                'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str', 'type'=>'"members"')),
+                ),
+            );
+        if( isset($rsp['settings']['ui-labels-members']) && $rsp['settings']['ui-labels-members'] != '' ) {
+            $menu_item['label'] = $rsp['settings']['ui-labels-members'];
+            $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-members'] . ' found';
+        }
+        $rsp['menu_items'][] = $menu_item;
+
+    } 
+    // Memberships
+    elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02)
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])
             || isset($args['permissions']['resellers'])
@@ -218,7 +255,6 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
             $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-members'] . ' found';
         }
         $rsp['menu_items'][] = $menu_item;
-
     } 
 
     if( isset($ciniki['tenant']['modules']['ciniki.customers']) 

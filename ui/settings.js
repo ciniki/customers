@@ -123,6 +123,11 @@ function ciniki_customers_settings() {
                 'fields':{
                     'dropbox-customerprofiles':{'label':'Directory', 'type':'text'},
                 }},
+            'revertSeasons':{'label':'Revert From Seasons', 
+                'visible':function() { return (M.userPerms&0x01) == 0x01 && (M.modFlagOn('ciniki.customers', 0x02000000) ? 'yes' : 'hidden'); },
+                'buttons':{
+                    'revert':{'label':'Update Last Paid Dates', 'fn':'M.ciniki_customers_settings.revertFromSeasons();'},
+                }},
 //          '_types':{'label':'Customer Types', 'type':'gridform', 'rows':8, 'cols':3, 
 //              'header':['Name', 'Form', 'Type'],
 //              'fields':[
@@ -341,6 +346,18 @@ function ciniki_customers_settings() {
             p.refresh();
             p.show(cb);
         });
+    }
+
+    this.revertFromSeasons = function(cb) {
+        if( confirm('Are you sure you want to update last paid date?') ) {
+            M.api.getJSONCb('ciniki.customers.revertFromSeasons', {'tnid':M.curTenantID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            alert('Done');
+            });
+        }
     }
 
     this.saveSettings = function() {
