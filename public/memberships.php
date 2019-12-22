@@ -121,7 +121,8 @@ function ciniki_customers_memberships($ciniki) {
         $strsql .= "FROM ciniki_customers ";
         $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
-            . "ORDER BY sort_name, last, first, company"
+            . "ORDER BY member_lastpaid DESC, sort_name, last, first, company "
+            . "LIMIT 50 "
             . "";
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
