@@ -104,6 +104,8 @@ function ciniki_customers_getModuleData($ciniki) {
         . "display_name, company, department, title, "
         . "phone_home, phone_work, phone_cell, phone_fax, "
         . "status, status AS status_text, "
+        . "member_status, member_status AS member_status_text, "
+        . "member_lastpaid, membership_length, membership_type, "
         . "dealer_status, dealer_status AS dealer_status_text, "
         . "distributor_status, distributor_status AS distributor_status_text, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
@@ -133,15 +135,21 @@ function ciniki_customers_getModuleData($ciniki) {
             'fields'=>array('id', 'eid', 'parent_id', 'type', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
                 'status', 'status_text',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
+                'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
                 'dealer_status', 'dealer_status_text',
                 'distributor_status', 'distributor_status_text',
                 'company', 'department', 'title', 
                 'notes', 'birthdate', 'connection', 'language', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
                 'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 'webflags'),
             'maps'=>array('status_text'=>$maps['customer']['status'],
+                'member_status_text'=>$maps['customer']['member_status'],
                 'dealer_status_text'=>$maps['customer']['dealer_status'],
                 'distributor_status_text'=>$maps['customer']['distributor_status']),
-            'utctotz'=>array('start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format))),
+            'utctotz'=>array(
+                'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                ),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

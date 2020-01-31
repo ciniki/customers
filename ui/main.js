@@ -337,6 +337,18 @@ function ciniki_customers_main() {
                 'cellClasses':['label', ''],
                 'dataMaps':['name', 'value'],
                 },
+            'membership':{'label':'Membership', 'aside':'yes', 
+                'visible':function() { return M.modFlagSet('ciniki.customers', 0x02); },
+                'list':{
+                    'member_status_text':{'label':'Status'},
+                    'member_lastpaid':{'label':'Last Paid', 'visible':function() {
+                        return !M.modFlagSet('ciniki.customers', 0x02000000);
+                        }},
+                    'type':{'label':'Type'},
+                    'start_date':{'label':'Start', 'visible':function() {
+                        return M.modFlagSet('ciniki.customers', 0x04000000);
+                        }},
+                }},
             'account':{'label':'', 'aside':'yes', 'visible':'yes', 'type':'simplegrid', 'num_cols':2,
                 'headerValues':null,
                 'cellClasses':['label', ''],
@@ -495,8 +507,55 @@ function ciniki_customers_main() {
             return this.sections[s].noData;
         };
         this.customer.sectionData = function(s) {
+            if( s == 'membership' ) { return this.sections[s].list; }
             if( s == 'parent' ) { return (this.data.parent!=null&&this.data.parent.details!=null)?this.data.parent.details:{}; }
             return this.data[s];
+        };
+        this.customer.listLabel = function(s, i, d) {
+            if( s == 'membership' ) { 
+                return d.label; 
+            }
+            return null;
+        };
+        this.customer.listValue = function(s, i, d) {
+            if( s == 'membership' && i == 'type' ) {
+                var txt = '';
+                if( this.data.membership_type != null && this.data.membership_type != '' ) {
+                    switch(this.data.membership_type) {
+                        case '10': txt += 'Regular'; break;
+                        case '20': txt += 'Student'; break;
+                        case '30': txt += 'Individual'; break;
+                        case '40': txt += 'Family'; break;
+                        case '110': txt += 'Complimentary'; break;
+                        case '150': txt += 'Reciprocal'; break;
+                    }
+                }
+                if( this.data.membership_length != null && this.data.membership_length != '' ) {
+                    switch(this.data.membership_length) {
+                        case '10': txt += (txt!=''?', ':'') + 'Monthly'; break;
+                        case '20': txt += (txt!=''?', ':'') + 'Yearly'; break;
+                        case '60': txt += (txt!=''?', ':'') + 'Lifetime'; break;
+                    }
+                }
+                return txt;
+            }
+            if( i == 'name' ) {
+                return this.data.first + ' ' + this.data.last;
+            }
+            if( s == '_subscriptions' && i == 'subscriptions' ) {
+                if( this.data.subscriptions == null ) { return 'None'; }
+                var subs = '';
+                var k = 0;
+                for(k in this.data.subscriptions) {
+                    subs += (subs!=''?', ':'') + this.data.subscriptions[k].subscription.name;
+                }
+                if( subs == '' ) { return 'None'; }
+                return subs;
+            }
+            if( i == 'member_status_text' && this.data.member_status == 0 ) {
+                return 'Not a member';
+            }
+            return this.data[i];
         };
         this.customer.liveSearchCb = function(s, i, value) {
             if( s == 'order_search' && value != '' ) {
@@ -544,7 +603,7 @@ function ciniki_customers_main() {
                     case 1: return (d.detail.label == 'Email'?M.linkEmail(d.detail.value):d.detail.value);
                 }
             }
-            else if( s == 'details' || s == 'account' ) {
+            else if( s == 'details' || s == 'member_details' || s == 'account' ) {
                 if( j == 0 ) { return d.label; }
                 if( j == 1 ) { return d.value; }
             }
@@ -966,6 +1025,7 @@ function ciniki_customers_main() {
     this.showCustomerFinish = function(cb, rsp, section) {
         var mods = M.curTenant.modules;
         this.customer.data = rsp.customer;
+        console.log(rsp);
         this.customer.data.details = {};
         if( (M.curTenant.modules['ciniki.customers'].flags&0x010000) > 0 ) {
             this.customer.data.details.eid = {'label':'ID', 'value':rsp.customer.eid};
@@ -1079,6 +1139,16 @@ function ciniki_customers_main() {
         }
 
         this.customer.data.account = {};
+        //
+        // Build member_details
+        //
+        this.customer.data.member_details = {};
+        if( M.modFlagOn('ciniki.customers', 0x02) && rsp.customer.member_status_text != null && rsp.customer.member_status > 0 ) {
+            this.customer.data.member_details.member_status_text = {'label':'Status', 'value':rsp.customer.member_status_text};
+        } else {
+            this.customer.data.member_details.member_status_text = {'label':'Status', 'value':'Not a member'};
+        }
+
         // Sales Rep
         if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 
             && rsp.customer.salesrep_id_text != null && rsp.customer.salesrep_id_text != ''
