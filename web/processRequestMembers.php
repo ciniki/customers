@@ -83,156 +83,24 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         }
         $members = $rc['members'];
 
-        $page_content .= "<article class='page'>\n"
-            . "<header class='entry-title'><h1 class='entry-title'>$article_title</h1></header>\n"
-            . "<div class='entry-content'>\n"
-            . "";
+        if( isset($rc['tag_name']) && $rc['tag_name'] != '' ) {
+            $page['title'] .= ' - ' . $rc['tag_name'];
+            $page['breadcrumbs'][] = array('name'=>$rc['tag_name'], 'url'=>$args['base_url']);
+        }
 
         if( count($members) > 0 ) {
-            $base_url = $ciniki['request']['base_url'] . "/members";
+//            $base_url = $ciniki['request']['base_url'] . "/members";
+            $base_url = $args['base_url'];
             if( isset($settings['page-members-list-format']) && $settings['page-members-list-format'] == 'thumbnail-list' ) {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processBlockThumbnailList');
-                $rc = ciniki_web_processBlockThumbnailList($ciniki, $settings, $tnid, array(
-                    'anchors'=>'permalink',
-                    'base_url'=>$base_url,
-                    'list'=>$members,
-                    ));
+                $page['blocks'][] = array('type'=>'thumbnaillist', 'base_url'=>$base_url, 'anchors'=>'permalink', 'list'=>$members);
             } else {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processCIList');
-                $rc = ciniki_web_processCIList($ciniki, $settings, $base_url, $members, array('notitle'=>'yes', 'anchors'=>'permalink'));
+                $page['blocks'][] = array('type'=>'cilist', 'section'=>'member-list', 'base_url'=>$base_url, 'notitle'=>'yes', 'categories'=>$members);
             }
-//              array('0'=>array('name'=>'', 'list'=>$members)), array());
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $page_content .= $rc['content'];
         } else {
-            $page_content .= "<p>We're sorry, but there doesn't appear to be any members in this category.</p>";
+            $page['blocks'][] = array('type'=>'content', 'content'=>"We're sorry, but there doesn't appear to be any members in this category.");
         }
-
-        $page_content .= "</div>"
-            . "</article>"
-            . "";
     }
 
-    //
-    // Check if we are to display an image, from the gallery, or latest images
-    //
-/*    elseif( isset($uri_split[0]) && $uri_split[0] != '' 
-        && isset($uri_split[1]) && $uri_split[1] == 'gallery' 
-        && isset($uri_split[2]) && $uri_split[2] != '' 
-        ) {
-        $member_permalink = $uri_split[0];
-        $image_permalink = $uri_split[2];
-        $gallery_url = $ciniki['request']['base_url'] . "/members/$member_permalink/gallery";
-
-        //
-        // Load the member to get all the details, and the list of images.
-        // It's one query, and we can find the requested image, and figure out next
-        // and prev from the list of images returned
-        //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'memberDetails');
-        $rc = ciniki_customers_web_memberDetails($ciniki, $settings, 
-            $tnid, $member_permalink);
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        $member = $rc['member'];
-
-        if( !isset($member['images']) || count($member['images']) < 1 ) {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.web.72', 'msg'=>"I'm sorry, but the image you requested does not exist."));
-        }
-
-        $first = NULL;
-        $last = NULL;
-        $img = NULL;
-        $next = NULL;
-        $prev = NULL;
-        foreach($member['images'] as $iid => $image) {
-            if( $first == NULL ) {
-                $first = $image;
-            }
-            if( $image['permalink'] == $image_permalink ) {
-                $img = $image;
-            } elseif( $next == NULL && $img != NULL ) {
-                $next = $image;
-            } elseif( $img == NULL ) {
-                $prev = $image;
-            }
-            $last = $image;
-        }
-
-        if( count($member['images']) == 1 ) {
-            $prev = NULL;
-            $next = NULL;
-        } elseif( $prev == NULL ) {
-            // The requested image was the first in the list, set previous to last
-            $prev = $last;
-        } elseif( $next == NULL ) {
-            // The requested image was the last in the list, set previous to last
-            $next = $first;
-        }
-    
-        $article_title = "<a href='" . $ciniki['request']['base_url'] . "/members/$member_permalink'>" . $member['name'] . "</a>";
-        if( $img['title'] != '' ) {
-            $page_title = $member['name'] . ' - ' . $img['title'];
-            $article_title .= ' - ' . $img['title'];
-        } else {
-            $page_title = $member['name'];
-        }
-    
-        //
-        // Load the image
-        //
-        if( isset($img['image_id']) && $img['image_id'] > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'getScaledImageURL');
-            $rc = ciniki_web_getScaledImageURL($ciniki, $img['image_id'], 'original', 0, 600);
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $img_url = $rc['url'];
-        } else {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.web.73', 'msg'=>"We're sorry, but the image you requested does not exist."));
-        }
-
-        //
-        // Set the page to wide if possible
-        //
-        $ciniki['request']['page-container-class'] = 'page-container-wide';
-
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'generateGalleryJavascript');
-        $rc = ciniki_web_generateGalleryJavascript($ciniki, $next, $prev);
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        $ciniki['request']['inline_javascript'] = $rc['javascript'];
-
-        $ciniki['request']['onresize'] = "gallery_resize_arrows();";
-        $ciniki['request']['onload'] = "scrollto_header();";
-        $page_content .= "<article class='page'>\n"
-            . "<header class='entry-title'><h1 id='entry-title' class='entry-title'>$article_title</h1></header>\n"
-            . "<div class='entry-content'>\n"
-            . "";
-        $page_content .= "<div id='gallery-image' class='gallery-image'>";
-        $page_content .= "<div id='gallery-image-wrap' class='gallery-image-wrap'>";
-        if( $prev != null ) {
-            $page_content .= "<a id='gallery-image-prev' class='gallery-image-prev' href='$gallery_url/" . $prev['permalink'] . "'><div id='gallery-image-prev-img'></div></a>";
-        }
-        if( $next != null ) {
-            $page_content .= "<a id='gallery-image-next' class='gallery-image-next' href='$gallery_url/" . $next['permalink'] . "'><div id='gallery-image-next-img'></div></a>";
-        }
-        $page_content .= "<img id='gallery-image-img' title='" . preg_replace("/\'/", "\\'", strip_tags($img['title'])) . "' alt='" . preg_replace("/\'/", "\\'", strip_tags($img['title'])) . "' src='" . $img_url . "' onload='javascript: gallery_resize_arrows();' />";
-        $page_content .= "</div><br/>"
-            . "<div id='gallery-image-details' class='gallery-image-details'>"
-            . "<span class='image-title'>" . $img['title'] . '</span>'
-            . "<span class='image-details'></span>";
-        if( $img['description'] != '' ) {
-            $page_content .= "<span class='image-description'>" . preg_replace('/\n/', '<br/>', $img['description']) . "</span>";
-        }
-        $page_content .= "</div></div>";
-        $page_content .= "</div></article>";
-    }
-*/
     //
     // Check if we are to display an member
     //
@@ -348,8 +216,7 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         if( isset($settings['page-members-categories-display']) 
             && ($settings['page-members-categories-display'] == 'wordlist'
                 || $settings['page-members-categories-display'] == 'wordcloud' )
-            && isset($ciniki['tenant']['modules']['ciniki.customers']['flags']) 
-            && ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x04) > 0 
+            && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x04)
             ) {
             
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'tagCloud');
@@ -363,13 +230,13 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
             //
             if( $settings['page-members-categories-display'] == 'wordlist' ) {
                 if( isset($rc['tags']) && count($rc['tags']) > 0 ) {
-                    $page['blocks'][] = array('type'=>'taglist', 'section'=>'member-categories', 'base_url'=>$base_url, 'tags'=>$rc['tags']);
+                    $page['blocks'][] = array('type'=>'buttonlist', 'section'=>'member-categories', 'base_url'=>$base_url . '/category', 'tags'=>$rc['tags']);
                 } else {
                     $page['blocks'][] = array('type'=>'content', 'content'=>"I'm sorry, there are no categories");
                 }
             } elseif( $settings['page-members-categories-display'] == 'wordcloud' ) {
                 if( isset($rc['tags']) && count($rc['tags']) > 0 ) {
-                    $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'member-categories', 'base_url'=>$base_url, 'tags'=>$rc['tags']);
+                    $page['blocks'][] = array('type'=>'tagcloud', 'section'=>'member-categories', 'base_url'=>$base_url . '/category', 'tags'=>$rc['tags']);
                 } else {
                     $page['blocks'][] = array('type'=>'content', 'content'=>"I'm sorry, there are no members found");
                 }
@@ -394,10 +261,6 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
                     $page['blocks'][] = array('type'=>'thumbnaillist', 'base_url'=>$base_url, 'anchors'=>'permalink', 'list'=>$members);
                 } else {
                     $page['blocks'][] = array('type'=>'cilist', 'section'=>'member-list', 'base_url'=>$base_url, 'notitle'=>'yes', 'categories'=>$members);
-                }
-//                  array('0'=>array('name'=>'', 'list'=>$members)), array());
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
                 }
             } else {
                 if( !isset($settings['page-members-membership-details']) 
@@ -463,7 +326,6 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
             }
         }
     }
-
 
     return array('stat'=>'ok', 'page'=>$page);
 } 
