@@ -230,6 +230,7 @@ function ciniki_customers_members() {
             'membership':{'label':'Status', 'aside':'yes', 'list':{
                 'member_status_text':{'label':'Status'},
                 'member_lastpaid':{'label':'Last Paid', 'visible':'no'},
+                'member_expires':{'label':'Expires', 'visible':'no'},
                 'type':{'label':'Type'},
                 'member_categories':{'label':'Categories', 'visible':'no'},
                 'start_date':{'label':'Start', 'visible':'no'},
@@ -475,6 +476,7 @@ function ciniki_customers_members() {
         // Decide what's visible
         if( (M.curTenant.modules['ciniki.customers'].flags&0x08) > 0 ) {
             this.member.sections.membership.list.member_lastpaid.visible = 'yes';
+            this.member.sections.membership.list.member_expires.visible = 'yes';
             this.member.sections.membership.list.type.visible = 'yes';
             this.menu.sections.search.livesearchcols = 2;
             this.menu.sections.members.num_cols = 2;
@@ -482,6 +484,7 @@ function ciniki_customers_members() {
             this.list.sections.members.headerValues = ['Member', 'Membership'];
         } else {
             this.member.sections.membership.list.member_lastpaid.visible = 'no';
+            this.member.sections.membership.list.member_expires.visible = 'no';
             this.member.sections.membership.list.type.visible = 'no';
             this.menu.sections.search.livesearchcols = 1;
             this.menu.sections.members.num_cols = 1;
@@ -509,6 +512,7 @@ function ciniki_customers_members() {
             this.menu.size = 'medium narrowaside';
             this.member.sections.seasons.visible = 'yes';
             this.member.sections.membership.list.member_lastpaid.visible = 'no';
+            this.member.sections.membership.list.member_expires.visible = 'no';
             this.menu.sections.seasons.list = {};
             for(i in M.curTenant.modules['ciniki.customers'].settings.seasons) {
                 var season = M.curTenant.modules['ciniki.customers'].settings.seasons[i].season;
@@ -524,6 +528,7 @@ function ciniki_customers_members() {
             this.menu.sections.seasons.visible = 'no';
             this.member.sections.seasons.visible = 'no';
             this.member.sections.membership.list.member_lastpaid.visible = 'yes';
+            this.member.sections.membership.list.member_expires.visible = 'yes';
         }
 
         //

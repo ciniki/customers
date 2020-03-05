@@ -105,7 +105,7 @@ function ciniki_customers_getModuleData($ciniki) {
         . "phone_home, phone_work, phone_cell, phone_fax, "
         . "status, status AS status_text, "
         . "member_status, member_status AS member_status_text, "
-        . "member_lastpaid, membership_length, membership_type, "
+        . "member_lastpaid, member_expires, membership_length, membership_type, "
         . "dealer_status, dealer_status AS dealer_status_text, "
         . "distributor_status, distributor_status AS distributor_status_text, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
@@ -135,7 +135,7 @@ function ciniki_customers_getModuleData($ciniki) {
             'fields'=>array('id', 'eid', 'parent_id', 'type', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
                 'status', 'status_text',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
-                'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
+                'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                 'dealer_status', 'dealer_status_text',
                 'distributor_status', 'distributor_status_text',
                 'company', 'department', 'title', 
@@ -146,7 +146,8 @@ function ciniki_customers_getModuleData($ciniki) {
                 'dealer_status_text'=>$maps['customer']['dealer_status'],
                 'distributor_status_text'=>$maps['customer']['distributor_status']),
             'utctotz'=>array(
-                'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                 ),
             ),

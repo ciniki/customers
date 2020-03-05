@@ -2,4 +2,6 @@
 # Add the additional fields for member expirations
 #
 ALTER TABLE ciniki_customers ADD COLUMN member_expires date not null AFTER member_lastpaid;
+ALTER TABLE ciniki_customers MODIFY COLUMN member_lastpaid date not null;
+UPDATE ciniki_customers SET member_expires = DATE_ADD(member_lastpaid, INTERVAL 1 YEAR);
 ALTER TABLE ciniki_customers COMMENT='v1.26';

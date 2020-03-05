@@ -72,7 +72,9 @@ function ciniki_customers_memberList($ciniki) {
         . "ciniki_customers.display_name, "
         . "ciniki_customers.member_status AS member_status_text, "
         . "ciniki_customers.member_lastpaid, "
+        . "ciniki_customers.member_expires, "
         . "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
+        . "DATEDIFF(NOW(), ciniki_customers.member_expires) AS member_expires_age, "
         . "ciniki_customers.membership_length AS membership_length_text, "
         . "ciniki_customers.membership_type, "
         . "ciniki_customers.membership_type AS membership_type_text, "
@@ -146,14 +148,20 @@ function ciniki_customers_memberList($ciniki) {
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customer', array(
         array('container'=>'members', 'fname'=>'id', 'name'=>'member',
             'fields'=>array('id', 'first', 'last', 'display_name', 'company', 
-                'member_status_text', 'member_lastpaid', 'member_lastpaid_age', 'membership_length_text', 
+                'member_status_text', 
+                'member_lastpaid', 'member_lastpaid_age', 
+                'member_expires', 'member_expires_age', 
+                'membership_length_text', 
                 'membership_type', 'membership_type_text'),
             'maps'=>array(
                 'member_status_text'=>$maps['customer']['member_status'],
                 'membership_length_text'=>$maps['customer']['membership_length'],
                 'membership_type_text'=>$maps['customer']['membership_type'],
                 ),
-            'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
+            'utctotz'=>array(
+                'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                ), 
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

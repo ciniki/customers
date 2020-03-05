@@ -36,6 +36,7 @@ function ciniki_customers_download() {
         '_members':{'label':'', 'aside':'yes', 'fields':{
             'member_status':{'label':'Member Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'member_lastpaid':{'label':'Last Paid Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'member_expires':{'label':'Expires Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'membership_type':{'label':'Membership Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'member_categories':{'label':'Categories', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
@@ -126,10 +127,12 @@ function ciniki_customers_download() {
         this.exportlist.sections._members.fields.member_categories.active=((flags&0x04)>0?'yes':'no');
         if( (M.curTenant.modules['ciniki.customers'].flags&0x08) > 0 ) {
             this.exportlist.sections._members.fields.member_lastpaid.active = 'yes';
+            this.exportlist.sections._members.fields.member_expires.active = 'yes';
             this.exportlist.sections._members.fields.membership_length.active = 'yes';
             this.exportlist.sections._members.fields.membership_type.active = 'yes';
         } else {
             this.exportlist.sections._members.fields.member_lastpaid.active = 'no';
+            this.exportlist.sections._members.fields.member_expires.active = 'no';
             this.exportlist.sections._members.fields.membership_length.active = 'no';
             this.exportlist.sections._members.fields.membership_type.active = 'no';
         }

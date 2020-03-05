@@ -57,7 +57,8 @@ function ciniki_customers_memberships($ciniki) {
         return $rc;
     }
     $intl_timezone = $rc['settings']['intl-default-timezone'];
-    $year_ago = new DateTime('now', new DateTimezone($intl_timezone));
+    $now = new DateTime('now', new DateTimezone($intl_timezone));
+    $year_ago = clone $now;
     $year_ago->sub(new DateInterval('P1Y'));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
@@ -72,7 +73,9 @@ function ciniki_customers_memberships($ciniki) {
         . "ciniki_customers.display_name, "
         . "ciniki_customers.member_status AS member_status_text, "
         . "ciniki_customers.member_lastpaid, "
+        . "ciniki_customers.member_expires, "
         . "DATEDIFF(NOW(), ciniki_customers.member_lastpaid) AS member_lastpaid_age, "
+        . "DATEDIFF(NOW(), ciniki_customers.member_expires) AS member_expires_age, "
         . "ciniki_customers.membership_length AS membership_length_text, "
         . "ciniki_customers.membership_type, "
         . "ciniki_customers.membership_type AS membership_type_text, "
@@ -106,7 +109,7 @@ function ciniki_customers_memberships($ciniki) {
         $strsql .= "FROM ciniki_customers ";
         $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
-            . "AND member_lastpaid < '" . ciniki_core_dbQuote($ciniki, $year_ago->format('Y-m-d')) . "' "
+            . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
             . "ORDER BY sort_name, last, first, company"
             . "";
     } elseif( isset($args['type']) && $args['type'] != '' ) {
@@ -129,14 +132,20 @@ function ciniki_customers_memberships($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customer', array(
         array('container'=>'members', 'fname'=>'id', 
             'fields'=>array('id', 'first', 'last', 'display_name', 'company', 
-                'member_status_text', 'member_lastpaid', 'member_lastpaid_age', 'membership_length_text', 
+                'member_status_text', 
+                'member_lastpaid', 'member_lastpaid_age', 
+                'member_expires', 'member_expires_age', 
+                'membership_length_text', 
                 'membership_type', 'membership_type_text'),
             'maps'=>array(
                 'member_status_text'=>$maps['customer']['member_status'],
                 'membership_length_text'=>$maps['customer']['membership_length'],
                 'membership_type_text'=>$maps['customer']['membership_type'],
                 ),
-            'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
+            'utctotz'=>array(
+                'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                ), 
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -173,7 +182,7 @@ function ciniki_customers_memberships($ciniki) {
         . "FROM ciniki_customers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND member_status = 10 "
-        . "AND member_lastpaid < '" . ciniki_core_dbQuote($ciniki, $year_ago->format('Y-m-d')) . "' "
+        . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
         . "GROUP BY membership_type "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');

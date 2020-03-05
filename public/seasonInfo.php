@@ -291,7 +291,7 @@ function ciniki_customers_seasonInfo($ciniki) {
                 'membership_type_text'=>$maps['customer']['membership_type'],
                 'member_season_status_text'=>$maps['season_member']['status'],
                 ),
-            'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
+            'utctotz'=>array('member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format)), 
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

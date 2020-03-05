@@ -52,6 +52,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "member_status, "
         . "member_status AS member_status_text, "
         . "member_lastpaid, "
+        . "member_expires, "
         . "membership_length, "
         . "membership_type, "
         . "dealer_status, "
@@ -92,7 +93,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
             'fields'=>array('id', 'parent_id', 'type', 'type_text', 'eid', 'display_name', 'sort_name', 'permalink', 'primary_image_id', 
                 'status', 'status_text',
-                'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
+                'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                 'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
                 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
                 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
@@ -107,7 +108,8 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 ),
             'utctotz'=>array(
                 'birthdate'=>array('timezone'=>'UTC', 'format'=>$date_format),
-                'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                 ), 
             ),

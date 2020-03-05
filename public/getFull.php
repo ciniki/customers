@@ -95,7 +95,7 @@ function ciniki_customers_getFull($ciniki) {
     // Get the customer details and emails
     //
     $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, status, "
-        . "member_status, member_lastpaid, membership_length, membership_type, "
+        . "member_status, member_lastpaid, member_expires, membership_length, membership_type, "
         . "dealer_status, distributor_status, "
         . "callsign, prefix, first, middle, last, suffix, "
         . "display_name, display_name_format, company, department, title, "
@@ -114,7 +114,7 @@ function ciniki_customers_getFull($ciniki) {
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
             'fields'=>array('id', 'webflags', 'parent_id', 'status',
-                'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 
+                'member_status', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type', 
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 'primary_email', 'alternate_email',
                 'dealer_status', 'distributor_status',
                 'eid', 'type', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 
@@ -122,7 +122,9 @@ function ciniki_customers_getFull($ciniki) {
                 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
                 'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
                 'notes', 'primary_image_id', 'short_bio', 'full_bio', 'birthdate', 'connection', 'language'),
-            'utctotz'=>array('member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+            'utctotz'=>array(
+                'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format)), 
                 ),
 //      array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',

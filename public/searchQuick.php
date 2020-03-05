@@ -85,6 +85,7 @@ function ciniki_customers_searchQuick($ciniki) {
         . "c1.company, "
         . "c1.eid, "
         . "IFNULL(DATE_FORMAT(c1.member_lastpaid, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS member_lastpaid, "
+        . "IFNULL(DATE_FORMAT(c1.member_expires, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS member_expires, "
         . "c1.member_status, "
         . "c1.membership_type, "
         . "c1.membership_type AS membership_type_text, "
@@ -171,7 +172,7 @@ function ciniki_customers_searchQuick($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id',
             'fields'=>array('id', 'eid', 'display_name', 'parent_name', 'status', 'status_text',
-                'type', 'type_text', 'company', 'member_lastpaid', 'member_status', 
+                'type', 'type_text', 'company', 'member_lastpaid', 'member_expires', 'member_status', 
                 'membership_type', 'membership_type_text', 'membership_length', 'membership_length_text'),
             'maps'=>array('status_text'=>$maps['customer']['status'],
                 'type_text'=>$maps['customer']['type'],

@@ -58,6 +58,8 @@
 # member_lastpaid:      The UTC date and time of the last membership payment.  This is used to know
 #                       who is behind or not.
 #
+# member_expires:       The local date the membership expires on.
+#
 # membership_length:    The length of membership, which is used to know who is paid up and who is not.
 #
 #                            0 - unknown
@@ -180,6 +182,7 @@ create table ciniki_customers (
     type tinyint unsigned not null,
     member_status tinyint unsigned not null,
     member_lastpaid datetime not null,
+    member_expires date not null,
     membership_length tinyint unsigned not null,
     membership_type tinyint unsigned not null,
     dealer_status tinyint unsigned not null,
@@ -230,4 +233,4 @@ create table ciniki_customers (
     index (company),
     index (eid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.25';
+) ENGINE='InnoDB', COMMENT='v1.26';

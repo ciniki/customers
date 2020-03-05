@@ -16,15 +16,16 @@ function ciniki_customers_memberships() {
     this.menu.sections = {
         'membertypes':{'label':'Memberships', 'type':'simplegrid', 'num_cols':1, 'aside':'yes'},
         'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1, 'aside':'yes'},
-        'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1, 
-            'cellClasses':['multiline','multiline'],
+        'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':4, 
+            'headerValues':['Name', 'Membership', 'Paid', 'Expires'],
+            'cellClasses':['', '', '', ''],
             'hint':'name, company or email', 'noData':'No members found',
             },
-        'members':{'label':'', 'type':'simplegrid', 'num_cols':3,
-            'headerValues':['Name', 'Membership', 'Paid'],
+        'members':{'label':'', 'type':'simplegrid', 'num_cols':4,
+            'headerValues':['Name', 'Membership', 'Paid', 'Expires'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'date'],
-            'cellClasses':['', '', ''],
+            'sortTypes':['text', 'text', 'date', 'date'],
+            'cellClasses':['', '', '', ''],
             'noData':'No members',
             'addTxt':'Add',
             'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_memberships.menu.open();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\'});',
@@ -52,6 +53,7 @@ function ciniki_customers_memberships() {
 //                    return '<span class="maintext">' + d.membership_type_text + '</span>' 
 //                        + (d.member_lastpaid!=''?'<span class="subtext">Paid: ' + d.member_lastpaid + '</span>':'');
                 case 2: return d.member_lastpaid;
+                case 3: return d.member_expires;
             }
         }
         return '';
@@ -85,6 +87,7 @@ function ciniki_customers_memberships() {
                     //} 
                     //return '<span class="maintext">' + d.membership_type_text + '</span><span class="subtext">Paid: ' + d.member_lastpaid + '</span>';
                 case 2: return d.member_lastpaid;
+                case 3: return d.member_expires;
             }
         }
     };
@@ -160,6 +163,7 @@ function ciniki_customers_memberships() {
         'membership':{'label':'Status', 'aside':'yes', 'list':{
             'member_status_text':{'label':'Status'},
             'member_lastpaid':{'label':'Last Paid', 'visible':'no'},
+            'member_expires':{'label':'Expires', 'visible':'no'},
             'type':{'label':'Type'},
             'member_categories':{'label':'Categories', 'visible':'no'},
             'start_date':{'label':'Start', 'visible':'no'},
@@ -406,9 +410,11 @@ function ciniki_customers_memberships() {
         // Decide what's visible
         if( (M.curTenant.modules['ciniki.customers'].flags&0x08) > 0 ) {
             this.member.sections.membership.list.member_lastpaid.visible = 'yes';
+            this.member.sections.membership.list.member_expires.visible = 'yes';
             this.member.sections.membership.list.type.visible = 'yes';
         } else {
             this.member.sections.membership.list.member_lastpaid.visible = 'no';
+            this.member.sections.membership.list.member_expires.visible = 'no';
             this.member.sections.membership.list.type.visible = 'no';
         }
 

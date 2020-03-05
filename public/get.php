@@ -94,7 +94,7 @@ function ciniki_customers_get($ciniki) {
         $strsql = "SELECT ciniki_customers.id, ciniki_customers.primary_image_id, "
             . "type, eid, display_name, "
             . "member_status, member_status AS member_status_text, "
-            . "member_lastpaid, membership_length, membership_type, "
+            . "member_lastpaid, member_expires, membership_length, membership_type, "
             . "dealer_status, dealer_status AS dealer_status_text, "
             . "distributor_status, distributor_status AS distributor_status_text, "
             . "callsign, prefix, first, middle, last, suffix, company, department, title, "
@@ -115,7 +115,7 @@ function ciniki_customers_get($ciniki) {
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
                 'fields'=>array('id', 'eid', 'type', 'display_name', 'primary_image_id', 
-                    'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
+                    'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                     'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
                     'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
                     'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
@@ -132,7 +132,8 @@ function ciniki_customers_get($ciniki) {
 //                  'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
                     ),
                 'utctotz'=>array(
-                    'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                    'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                     ), 
                 ),
@@ -147,7 +148,7 @@ function ciniki_customers_get($ciniki) {
     } else {
         $strsql = "SELECT id, type, eid, display_name, primary_image_id, "
             . "member_status, member_status AS member_status_text, "
-            . "member_lastpaid, membership_length, membership_type, "
+            . "member_lastpaid, member_expires, membership_length, membership_type, "
             . "dealer_status, dealer_status AS dealer_status_text, "
             . "distributor_status, distributor_status AS distributor_status_text, "
             . "callsign, prefix, first, middle, last, suffix, company, department, title, "
@@ -168,7 +169,7 @@ function ciniki_customers_get($ciniki) {
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
                 'fields'=>array('id', 'type', 'eid', 'display_name', 'primary_image_id', 
-                    'member_status', 'member_status_text', 'member_lastpaid', 'membership_length', 'membership_type',
+                    'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                     'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
                     'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
                     'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
@@ -183,7 +184,8 @@ function ciniki_customers_get($ciniki) {
 //                  'distributor_status_text'=>array('0'=>'Non-Distributor', '10'=>'Active', '60'=>'Suspended'),
                     ),
                 'utctotz'=>array(
-                    'member_lastpaid'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                    'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
                     ), 
                 ),

@@ -90,6 +90,7 @@ function ciniki_customers_customerGet($ciniki) {
             'primary_image_id' => 0,
             'member_status' => 0,
             'member_lastpaid' => '',
+            'member_expires' => '',
             'membership_length' => 0,
             'membership_type' => 0,
             'dealer_status' => 0,

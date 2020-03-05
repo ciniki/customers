@@ -88,7 +88,8 @@ function ciniki_customers_edit() {
             }},
         'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
             'member_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
-            'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
+            'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'date', 'size':'medium'},
+            'member_expires':{'label':'Expires', 'active':'no', 'type':'date', 'size':'medium'},
             'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
             'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
             'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
@@ -295,7 +296,8 @@ function ciniki_customers_edit() {
             }},
         'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
             'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
-            'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'text', 'size':'medium'},
+            'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'date', 'size':'medium'},
+            'member_expires':{'label':'Expires', 'active':'no', 'type':'date', 'size':'medium'},
             'membership_length':{'label':'Length', 'type':'toggle', 'none':'yes', 'toggles':this.membershipLength},
             'membership_type':{'label':'Type', 'type':'toggle', 'none':'yes', 'toggles':this.membershipType},
             'webflags':{'label':'Website', 'type':'flags', 'join':'yes', 'flags':this.memberWebFlags},
@@ -1314,22 +1316,26 @@ function ciniki_customers_edit() {
             this.edit.forms.person.membership.active = 'yes';
             this.edit.forms.person.membership.label = 'Membership';
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'yes';
+            this.edit.forms.person.membership.fields.member_expires.active = 'yes';
             this.edit.forms.person.membership.fields.membership_length.active = 'yes';
             this.edit.forms.person.membership.fields.membership_type.active = 'yes';
             this.edit.forms.business.membership.active = 'yes';
             this.edit.forms.business.membership.label = 'Membership';
             this.edit.forms.business.membership.fields.member_lastpaid.active = 'yes';
+            this.edit.forms.business.membership.fields.member_expires.active = 'yes';
             this.edit.forms.business.membership.fields.membership_length.active = 'yes';
             this.edit.forms.business.membership.fields.membership_type.active = 'yes';
         } else {
             this.edit.forms.person.membership.active = 'no';
             this.edit.forms.person.membership.label = 'Status';
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'no';
+            this.edit.forms.person.membership.fields.member_expires.active = 'no';
             this.edit.forms.person.membership.fields.membership_length.active = 'no';
             this.edit.forms.person.membership.fields.membership_type.active = 'no';
             this.edit.forms.business.membership.active = 'no';
             this.edit.forms.business.membership.label = 'Status';
             this.edit.forms.business.membership.fields.member_lastpaid.active = 'no';
+            this.edit.forms.business.membership.fields.member_expires.active = 'no';
             this.edit.forms.business.membership.fields.membership_length.active = 'no';
             this.edit.forms.business.membership.fields.membership_type.active = 'no';
         }
@@ -1344,7 +1350,9 @@ function ciniki_customers_edit() {
             this.edit.forms.person._seasons.fields = {};
             this.edit.forms.business._seasons.fields = {};
             this.edit.forms.person.membership.fields.member_lastpaid.active = 'no';
+            this.edit.forms.person.membership.fields.member_expires.active = 'no';
             this.edit.forms.business.membership.fields.member_lastpaid.active = 'no';
+            this.edit.forms.business.membership.fields.member_expires.active = 'no';
             for(i in M.curTenant.modules['ciniki.customers'].settings.seasons) {
                 var season = M.curTenant.modules['ciniki.customers'].settings.seasons[i].season;
                 if( season.open == 'yes' ) {

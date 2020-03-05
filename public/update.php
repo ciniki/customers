@@ -25,6 +25,7 @@ function ciniki_customers_update(&$ciniki) {
         'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer Type'), 
         'member_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Status'), 
         'member_lastpaid'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Member Last Paid'),
+        'member_expires'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Member Expires'),
         'membership_length'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Length'),
         'membership_type'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Membership Type'),
         'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Status'), 

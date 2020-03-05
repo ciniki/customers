@@ -444,6 +444,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.status, "
             . "ciniki_customers.member_status, "
             . "ciniki_customers.member_lastpaid, "
+            . "ciniki_customers.member_expires, "
             . "ciniki_customers.membership_length, "
             . "ciniki_customers.membership_type, "
             . "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
@@ -481,6 +482,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.status, "
             . "ciniki_customers.member_status, "
             . "ciniki_customers.member_lastpaid, "
+            . "ciniki_customers.member_expires, "
             . "ciniki_customers.membership_length, "
             . "ciniki_customers.membership_type, "
             . "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
@@ -521,6 +523,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.status, "
             . "ciniki_customers.member_status, "
             . "ciniki_customers.member_lastpaid, "
+            . "ciniki_customers.member_expires, "
             . "ciniki_customers.membership_length, "
             . "ciniki_customers.membership_type, "
             . "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
@@ -556,7 +559,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
             'fields'=>array('id', 'eid', 'status', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix',
                 'company', 'display_name', 'type', 'visible', 
-                'member_status', 'member_lastpaid', 'membership_length', 'membership_type', 'member_categories',
+                'member_status', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type', 'member_categories',
                 'dealer_status', 'distributor_status',
                 'connection', 'language', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
                 'reward_level', 'sales_total', 'sales_total_prev', 'start_date',
@@ -607,6 +610,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             case 'visible': $value = 'Visible'; break;
             case 'member_status': $value = 'Member'; break;
             case 'member_lastpaid': $value = 'Last Paid'; break;
+            case 'member_expires': $value = 'Expires'; break;
             case 'membership_length': $value = 'Length'; break;
             case 'membership_type': $value = 'Type'; break;
             case 'member_categories': $value = 'Categories'; break;
