@@ -9,7 +9,7 @@ function ciniki_customers_edit() {
     this.cb = null;
     this.toggleOptions = {'Off':'Off', 'On':'On'};
     this.subscriptionOptions = {'60':'Unsubscribed', '10':'Subscribed'};
-    this.memberStatus = {'10':'Active', '60':'Suspended'};
+    this.memberStatus = {'10':'Active', '60':'Inactive'};
     this.membershipLength = {'20':'Yearly', '60':'Lifetime'};
     this.membershipType = {'10':'Regular', '110':'Complimentary', '150':'Reciprocal'};
     this.memberWebFlags = {'1':{'name':'Visible'}};
