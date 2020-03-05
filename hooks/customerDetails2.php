@@ -65,7 +65,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         . "primary_email, alternate_email, "
         . (isset($args['full_bio']) && $args['full_bio'] == 'yes' ? "full_bio, " : '')
         . "status, dealer_status, distributor_status, "
-        . "member_status, member_status AS member_status_text, member_lastpaid, "
+        . "member_status, member_status AS member_status_text, member_lastpaid, member_expires, "
         . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
         . "pricepoint_id, notes "
@@ -81,7 +81,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
         'primary_email', 'alternate_email',
         'status', 'dealer_status', 'distributor_status',
-        'member_status', 'member_status_text', 'member_lastpaid',
+        'member_status', 'member_status_text', 'member_lastpaid', 'member_expires',
         'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
         'notes', 'birthdate');
     if( isset($args['full_bio']) && $args['full_bio'] == 'yes' ) {
@@ -90,7 +90,10 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id',
             'fields'=>$fields,
-            'utctotz'=>array('member_lastpaid'=>array('format'=>'M Y', 'timezone'=>'UTC')),
+            'utctotz'=>array(
+                'member_lastpaid'=>array('format'=>'M Y', 'timezone'=>'UTC'),
+                'member_expires'=>array('format'=>'M Y', 'timezone'=>'UTC'),
+                ),
             'maps'=>array('member_status_text'=>$maps['customer']['member_status'],)
             ),
         array('container'=>'emails', 'fname'=>'email_id',
@@ -250,6 +253,14 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         }
         if( $subscriptions != '' ) {
             $details[] = array('label'=>'Subscriptions', 'value'=>$subscriptions, 'type'=>'subscription');
+        }
+    }
+
+    if( isset($args['membership']) && $args['membership'] == 'yes' ) {
+        $details[] = array('label'=>'Member', 'value'=>$customer['member_status_text'], 'type'=>'membership');
+        if( isset($customer['member_status']) && $customer['member_status'] > 0 ) {
+            $details[] = array('label'=>'Last Paid', 'value'=>$customer['member_lastpaid'], 'type'=>'membership');
+            $details[] = array('label'=>'Expires', 'value'=>$customer['member_expires'], 'type'=>'membership');
         }
     }
 
