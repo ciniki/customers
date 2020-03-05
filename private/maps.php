@@ -33,7 +33,7 @@ function ciniki_customers_maps($ciniki) {
         'member_status'=>array(
             '0'=>'',
             '10'=>'Active',
-            '60'=>'Suspended Member',
+            '60'=>'Inactive',
             ),
         'dealer_status'=>array(
             '0'=>'',

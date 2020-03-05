@@ -91,8 +91,8 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         array('container'=>'customers', 'fname'=>'id',
             'fields'=>$fields,
             'utctotz'=>array(
-                'member_lastpaid'=>array('format'=>'M Y', 'timezone'=>'UTC'),
-                'member_expires'=>array('format'=>'M Y', 'timezone'=>'UTC'),
+                'member_lastpaid'=>array('format'=>'M d, Y', 'timezone'=>'UTC'),
+                'member_expires'=>array('format'=>'M d, Y', 'timezone'=>'UTC'),
                 ),
             'maps'=>array('member_status_text'=>$maps['customer']['member_status'],)
             ),
