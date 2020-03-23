@@ -24,7 +24,7 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
     if( isset($ciniki['tenant']['modules']['ciniki.info'])
         && isset($uri_split[0]) && $uri_split[0] == 'download'
         && isset($uri_split[1]) && $uri_split[1] != '' 
-        && isset($uri_split[2]) && $uri_split[2] != '' 
+//        && isset($uri_split[2]) && $uri_split[2] != '' 
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'info', 'web', 'fileDownload');
         $rc = ciniki_info_web_fileDownload($ciniki, $tnid, $uri_split[1], '', $uri_split[2]);
@@ -205,6 +205,17 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
             // Add gallery
             if( isset($member['images']) && count($member['images']) > 0 ) {
                 $page['blocks'][] = array('type'=>'gallery', 'title'=>'Additional Images', 'section'=>'additional-images', 'base_url'=>$base_url . '/gallery', 'images'=>$member['images']);
+            }
+            //
+            // Show Exhibition items
+            //
+            //
+            // Add exhibition items from AGS module
+            //
+            if( isset($member['exhibits']) && count($member['exhibits']) > 0 ) {
+                foreach($member['exhibits'] as $exhibit) {
+                    $page['blocks'][] = array('type'=>'tradingcards', 'base_url'=>$exhibit['base_url'], 'section'=>'member-exhibits', 'title'=>$exhibit['name'], 'cards'=>$exhibit['items']);
+                }
             }
         }
     }

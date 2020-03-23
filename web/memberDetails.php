@@ -150,6 +150,18 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $tnid, $permalin
     } else {
         $member['links'] = array();
     }
+
+    //
+    // Get the exhibitions and items that are available online
+    //
+    if( isset($ciniki['tenant']['modules']['ciniki.ags']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'customerExhibits');
+        $rc = ciniki_ags_web_customerExhibits($ciniki, $tnid, array('customer_id'=>$member['id']));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.398', 'msg'=>'Unable to load exhibits', 'err'=>$rc['err']));
+        }
+        $member['exhibits'] = isset($rc['exhibits']) ? $rc['exhibits'] : array();
+    }
         
     return array('stat'=>'ok', 'member'=>$member);
 }
