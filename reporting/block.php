@@ -46,6 +46,14 @@ function ciniki_customers_reporting_block(&$ciniki, $tnid, $args) {
     } elseif( $args['block_ref'] == 'ciniki.customers.newmembers' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockNewMembers');
         return ciniki_customers_reporting_blockNewMembers($ciniki, $tnid, $args['options']);
+    } elseif( $args['block_ref'] == 'ciniki.customers.expiringmembers' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockExpMembers');
+        $args['options']['direction'] = 'future';
+        return ciniki_customers_reporting_blockExpMembers($ciniki, $tnid, $args['options']);
+    } elseif( $args['block_ref'] == 'ciniki.customers.expiredmembers' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockExpMembers');
+        $args['options']['direction'] = 'past';
+        return ciniki_customers_reporting_blockExpMembers($ciniki, $tnid, $args['options']);
     }
 
     return array('stat'=>'ok');
