@@ -931,6 +931,18 @@ function ciniki_customers_edit() {
             settings = M.curTenant.modules['ciniki.customers'].settings;
         }
 
+        if( M.modFlagOn('ciniki.customers', 0x02) ) {
+            this.edit.forms.person.name.fields.status.label = 'Customer Status';
+            this.edit.forms.business.business.fields.status.label = 'Customer Status';
+            this.edit.forms.person.membership.fields.member_status.label = 'Member Status';
+            this.edit.forms.business.membership.fields.member_status.label = 'Member Status';
+        } else {
+            this.edit.forms.person.name.fields.status.label = 'Status';
+            this.edit.forms.business.business.fields.status.label = 'Status';
+            this.edit.forms.person.membership.fields.member_status.label = 'Member Status';
+            this.edit.forms.business.membership.fields.member_status.label = 'Member Status';
+        }
+
         if( (M.curTenant.modules['ciniki.customers'].flags&0x0112) > 0 ) {
             this.addressFlags = {
                 '1':{'name':'Shipping'}, 
