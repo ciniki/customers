@@ -318,23 +318,15 @@ function ciniki_customers_automerge() {
     //
     this.deleteFile = function() {
         M.confirm("Are you sure you want to delete this file?",null,function() {
-        if( r == true ) {
             var rsp = M.api.getJSON('ciniki.customers.automergeDelete', 
                 {'tnid':M.curTenantID, 'automerge_id':M.ciniki_customers_automerge.file.automerge_id});
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
             }
-            
             M.ciniki_customers_automerge.showFiles();
         });
     }
-
-
-
-
-
-
     
 
     //
@@ -551,8 +543,7 @@ function ciniki_customers_automerge() {
     // Remove the file from the database
     //
     this.resetFile = function() {
-        var r = confirm("Are you sure you want to reset this file?");
-        if( r == true ) {
+        M.confirm("Are you sure you want to reset this file?",null,function() {
             var rsp = M.api.getJSON('ciniki.toolbox.excelReset', 
                 {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id});
             if( rsp['stat'] != 'ok' ) {
@@ -560,7 +551,6 @@ function ciniki_customers_automerge() {
                 return false;
             }
             M.ciniki_toolbox_excel.showFile(null);
-        }
+        });
     }
-
 }

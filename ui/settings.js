@@ -349,7 +349,7 @@ function ciniki_customers_settings() {
     }
 
     this.revertFromSeasons = function(cb) {
-        if( confirm('Are you sure you want to update last paid date?') ) {
+        M.confirm('Are you sure you want to update last paid date?',null,function() {
             M.api.getJSONCb('ciniki.customers.revertFromSeasons', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -357,7 +357,7 @@ function ciniki_customers_settings() {
             }
             M.alert('Done');
             });
-        }
+        });
     }
 
     this.saveSettings = function() {

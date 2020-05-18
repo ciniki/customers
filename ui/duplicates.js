@@ -192,7 +192,7 @@ function ciniki_customers_duplicates() {
     }
     this.duplicate.deleteCustomer = function(cid) {
         if( cid != null && cid > 0 ) {
-            if( confirm("Are you sure you want to remove this customer?") ) {
+            M.confirm("Are you sure you want to remove this customer?",null,function() {
                 var rsp = M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 'customer_id':cid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -200,7 +200,7 @@ function ciniki_customers_duplicates() {
                     }
                     M.ciniki_customers_duplicates.duplicate.close();
                 });
-            }
+            });
         }
     }
     this.duplicate.addClose('Cancel');
@@ -642,7 +642,7 @@ function ciniki_customers_duplicates() {
 
     this.deleteCustomer = function(cid) {
         if( cid != null && cid > 0 ) {
-            if( confirm("Are you sure you want to remove this customer?") ) {
+            M.confirm("Are you sure you want to remove this customer?",null,function() {
                 var rsp = M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 'customer_id':cid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -650,7 +650,7 @@ function ciniki_customers_duplicates() {
                     }
                     M.ciniki_customers_duplicates.match1.close();
                 });
-            }
+            });
         }
     }
 

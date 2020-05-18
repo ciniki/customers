@@ -136,16 +136,16 @@ function ciniki_customers_salesreps() {
     this.changeRep = function() {
         var nri = this.menu.formFieldValue(this.menu.sections._move.fields.new_salesrep_id, 'new_salesrep_id');
         if( nri != this.menu.salesrep_id ) {
-            if( confirm('Are you sure you want to change the sales rep?') ) {
+            M.confirm('Are you sure you want to change the sales rep?',null,function() {
                 M.api.getJSONCb('ciniki.customers.salesrepChange', {'tnid':M.curTenantID, 
-                    'old_salesrep_id':this.menu.salesrep_id, 'new_salesrep_id':nri}, function(rsp) {
+                    'old_salesrep_id':M.ciniki_customers_salesreps.menu.salesrep_id, 'new_salesrep_id':nri}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
                             return false;
                         } 
                         M.ciniki_customers_salesreps.showReps();
                     });
-            }
+            });
         }
     };
 }

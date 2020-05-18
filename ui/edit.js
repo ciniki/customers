@@ -1908,9 +1908,9 @@ function ciniki_customers_edit() {
 
     this.deleteCustomer = function() {
         if( this.edit.customer_id > 0 ) {
-            if( confirm("Are you sure you want to remove this customer?  This will remove all subscriptions, phone numbers, email addresses, addresses and websites.") ) {
+            M.confirm("Are you sure you want to remove this customer?  This will remove all subscriptions, phone numbers, email addresses, addresses and websites.",null,function() {
                 M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 
-                    'customer_id':this.edit.customer_id}, function(rsp) {
+                    'customer_id':M.ciniki_customers_edit.edit.customer_id}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
                             return false;
@@ -1923,7 +1923,7 @@ function ciniki_customers_edit() {
                             M.ciniki_customers_main.customer.close();
                         }
                     });
-            }
+            });
         }
     }
 

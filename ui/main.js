@@ -1455,7 +1455,7 @@ function ciniki_customers_main() {
 
     this.deleteCustomer = function(cid) {
         if( cid != null && cid > 0 ) {
-            if( confirm("Are you sure you want to remove this " + this.slabel + "?") ) {
+            M.confirm("Are you sure you want to remove this " + this.slabel + "?",null,function() {
                 M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 'customer_id':cid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -1463,7 +1463,7 @@ function ciniki_customers_main() {
                     }
                     M.ciniki_customers_main.customer.close();
                 });
-            }
+            });
         }
     }
 }

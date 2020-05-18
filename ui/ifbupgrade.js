@@ -45,7 +45,7 @@ function ciniki_customers_ifbupgrade() {
         return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_ifbupgrade.menu.open();\',\'mc\',{\'customer_id\':' + d.id + '});';
     };
     this.menu.performUpgrade = function() {
-        if( confirm("Are you sure you're ready to upgrade?") ) {
+        M.confirm("Are you sure you're ready to upgrade?",null,function() {
             M.api.getJSONCb('ciniki.customers.ifbUpgrade', {'tnid':M.curTenantID, 'upgrade':'yes'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -53,7 +53,7 @@ function ciniki_customers_ifbupgrade() {
                 } 
                 M.alert("Your account is upgraded to IFB, please relogin");
             });
-        }
+        });
     }
     this.menu.open = function(cb) {
         //
