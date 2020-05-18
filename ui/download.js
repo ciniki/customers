@@ -101,7 +101,7 @@ function ciniki_customers_download() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_download', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
 

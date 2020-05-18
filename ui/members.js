@@ -448,7 +448,7 @@ function ciniki_customers_members() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_members', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
 

@@ -87,7 +87,7 @@ function ciniki_customers_dealertools() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_dealertools', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
 

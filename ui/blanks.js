@@ -64,7 +64,7 @@ function ciniki_customers_blanks() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_blanks', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

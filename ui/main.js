@@ -785,6 +785,7 @@ function ciniki_customers_main() {
             return '';
         };
         this.customer.rowFn = function(s, i, d) {
+            if( d == null ) { return ''; }
             if( s == 'parent' ) { 
                 if( this.data.parent != null && this.data.parent.id > 0 ) {
                     return 'M.ciniki_customers_main.showCustomer(\'M.ciniki_customers_main.showCustomer(null,"' + M.ciniki_customers_main.customer.customer_id + '");\',\'' + this.data.parent.id + '\');';
@@ -856,7 +857,7 @@ function ciniki_customers_main() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_main', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

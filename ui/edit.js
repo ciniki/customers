@@ -1033,7 +1033,7 @@ function ciniki_customers_edit() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_edit', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
         // Turn off account section by default
@@ -2047,7 +2047,7 @@ function ciniki_customers_edit() {
         // Check if email address exists already
         var e = this.email.formFieldValue(this.email.sections._email.fields.address, 'address');
         if( e == '' ) {
-            alert("Invalid email address");
+            M.alert("Invalid email address");
             return false;
         }
         // Check if email address changed
@@ -2059,7 +2059,7 @@ function ciniki_customers_edit() {
 //                      return false;
 //                  } 
 //                  if( rsp.email != null ) {
-//                      alert("Email address already exists");
+//                      M.alert("Email address already exists");
 //                      return false;
 //                  }
 //                  M.ciniki_customers_edit.saveEmailFinish();
@@ -2104,7 +2104,7 @@ function ciniki_customers_edit() {
         var np = prompt("Please enter a new password for the customer: ");
         if( np != null ) {
             if( np.length < 8 ) {
-                alert("The password must be a minimum of 8 characters long");
+                M.alert("The password must be a minimum of 8 characters long");
                 return false;
             }
             else {
@@ -2116,7 +2116,7 @@ function ciniki_customers_edit() {
                             M.api.err(rsp);
                             return false;
                         }
-                        alert("Password has been set");
+                        M.alert("Password has been set");
                     });
             }
         }
@@ -2299,7 +2299,7 @@ function ciniki_customers_edit() {
                 M.ciniki_customers_edit.address.setFieldValue('latitude', results[0].geometry.location.lat());
                 M.ciniki_customers_edit.address.setFieldValue('longitude', results[0].geometry.location.lng());
             } else {
-                alert('Geocode was not successful for the following reason: ' + status);
+                M.alert('Geocode was not successful for the following reason: ' + status);
             }
         }); 
         M.stopLoad();

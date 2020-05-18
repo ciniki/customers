@@ -203,7 +203,7 @@ function ciniki_customers_automerge() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_automerge', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 
@@ -363,7 +363,7 @@ function ciniki_customers_automerge() {
             return false;
         }
         if( rsp['rows'] == null || rsp['rows'][0] == null || rsp['rows'][0]['row']['columns'] != null ) {
-            alert("No rows found");
+            M.alert("No rows found");
             return false;
         }
         var cells = rsp['rows'][0]['row']['cells'];
@@ -388,8 +388,8 @@ function ciniki_customers_automerge() {
         var rsp = M.api.getJSONCb('ciniki.toolbox.excelFindMatches', 
             {'tnid':M.curTenantID, 'automerge_id':M.ciniki_toolbox_excel.file.automerge_id, 'columns':columns, 'match_blank':'no'},
             function(rsp) { 
-                // alert('test');
-                alert(' Found ' + rsp['matches'] + ' matches ' + rsp['duplicates'] + ' duplicate matches'); 
+                // M.alert('test');
+                M.alert(' Found ' + rsp['matches'] + ' matches ' + rsp['duplicates'] + ' duplicate matches'); 
                 // M.ciniki_toolbox_excel.file.show();
                 M.ciniki_toolbox_excel.showFile(null);
                 }
@@ -455,7 +455,7 @@ function ciniki_customers_automerge() {
         }
         if( rsp['stat'] != 'ok' && rsp['err']['code'] == '96' ) {
             if( this.review.autoAdvance == 'yes' ) {
-                alert('No more matches found');
+                M.alert('No more matches found');
                 this.showFile(null);
             } else {
                 

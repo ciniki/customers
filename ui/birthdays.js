@@ -78,7 +78,7 @@ function ciniki_customers_birthdays() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_birthdays', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

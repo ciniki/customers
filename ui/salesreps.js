@@ -89,7 +89,7 @@ function ciniki_customers_salesreps() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_salesreps', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

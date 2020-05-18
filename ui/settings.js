@@ -273,7 +273,7 @@ function ciniki_customers_settings() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_settings', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 
@@ -355,7 +355,7 @@ function ciniki_customers_settings() {
                 M.api.err(rsp);
                 return false;
             }
-            alert('Done');
+            M.alert('Done');
             });
         }
     }

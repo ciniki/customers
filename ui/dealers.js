@@ -320,7 +320,7 @@ function ciniki_customers_dealers() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_dealers', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
     

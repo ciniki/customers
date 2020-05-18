@@ -61,7 +61,7 @@ function ciniki_customers_images() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_images', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
 

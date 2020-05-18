@@ -52,7 +52,7 @@ function ciniki_customers_reportstatus() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_reportstatus', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

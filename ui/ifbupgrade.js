@@ -51,7 +51,7 @@ function ciniki_customers_ifbupgrade() {
                     M.api.err(rsp);
                     return false;
                 } 
-                alert("Your account is upgraded to IFB, please relogin");
+                M.alert("Your account is upgraded to IFB, please relogin");
             });
         }
     }
@@ -90,7 +90,7 @@ function ciniki_customers_ifbupgrade() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_ifbupgrade', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 

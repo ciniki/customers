@@ -721,7 +721,7 @@ function ciniki_customers_accounts() {
         var np = prompt("Please enter a new password for the customer: ");
         if( np != null ) {
             if( np.length < 8 ) {
-                alert("The password must be a minimum of 8 characters long");
+                M.alert("The password must be a minimum of 8 characters long");
                 return false;
             }
             else {
@@ -732,7 +732,7 @@ function ciniki_customers_accounts() {
                             M.api.err(rsp);
                             return false;
                         }
-                        alert("Password has been set");
+                        M.alert("Password has been set");
                     });
             }
         }
@@ -1082,7 +1082,7 @@ function ciniki_customers_accounts() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_customers_accounts', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 
