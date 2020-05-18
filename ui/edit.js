@@ -2003,7 +2003,7 @@ function ciniki_customers_edit() {
     };
 
     this.deleteAddress = function(customerID, addressID) {
-        if( confirm("Are you sure you want to remove this address?") ) {
+        M.confirm("Are you sure you want to remove this address?",null,function() {
             var rsp = M.api.getJSONCb('ciniki.customers.addressDelete', 
                 {'tnid':M.curTenantID, 
                     'customer_id':M.ciniki_customers_edit.address.customer_id, 
@@ -2014,7 +2014,7 @@ function ciniki_customers_edit() {
                         }
                         M.ciniki_customers_edit.address.close();
                     });
-        }
+        });
     };
 
     this.showEmailEdit = function(cb, cid, eid) {
@@ -2123,17 +2123,17 @@ function ciniki_customers_edit() {
     };
 
     this.deleteEmail = function(customerID, emailID) {
-        if( confirm("Are you sure you want to remove this email?") ) {
+        M.confirm("Are you sure you want to remove this email?",null,function() {
             var rsp = M.api.getJSONCb('ciniki.customers.emailDelete', 
-                {'tnid':M.curTenantID, 'customer_id':this.email.customer_id, 
-                'email_id':this.email.email_id}, function(rsp) {
+                {'tnid':M.curTenantID, 'customer_id':M.ciniki_customers_edit.email.customer_id, 
+                'email_id':M.ciniki_customers_edit.email.email_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_edit.email.close();
                 });
-        }
+        });
     };
 
     this.showPhoneEdit = function(cb, cid, pid) {
@@ -2192,17 +2192,17 @@ function ciniki_customers_edit() {
     };
 
     this.deletePhone = function(customerID, pid) {
-        if( confirm("Are you sure you want to remove this phone number?") ) {
+        M.confirm("Are you sure you want to remove this phone number?",null,function() {
             var rsp = M.api.getJSONCb('ciniki.customers.phoneDelete', 
-                {'tnid':M.curTenantID, 'customer_id':this.phone.customer_id, 
-                'phone_id':this.phone.phone_id}, function(rsp) {
+                {'tnid':M.curTenantID, 'customer_id':M.ciniki_customers_edit.phone.customer_id, 
+                'phone_id':M.ciniki_customers_edit.phone.phone_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_edit.phone.close();
                 });
-        }
+        });
     };
 
     this.showLinkEdit = function(cb, cid, eid) {
@@ -2261,17 +2261,17 @@ function ciniki_customers_edit() {
     };
 
     this.deleteLink = function(customerID, linkID) {
-        if( confirm("Are you sure you want to remove this link?") ) {
+        M.confirm("Are you sure you want to remove this link?",null,function() {
             var rsp = M.api.getJSONCb('ciniki.customers.linkDelete', 
-                {'tnid':M.curTenantID, 'customer_id':this.link.customer_id, 
-                'link_id':this.link.link_id}, function(rsp) {
+                {'tnid':M.curTenantID, 'customer_id':M.ciniki_customers_edit.link.customer_id, 
+                'link_id':M.ciniki_customers_edit.link.link_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_edit.link.close();
                 });
-        }
+        });
     };
 
     this.lookupLatLong = function() {

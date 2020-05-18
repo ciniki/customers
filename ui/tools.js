@@ -229,15 +229,15 @@ function ciniki_customers_tools() {
     }
     this.duplicate.deleteCustomer = function(cid) {
         if( cid != null && cid > 0 ) {
-            if( confirm("Are you sure you want to remove this customer?") ) {
-                var rsp = M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 'customer_id':cid}, function(rsp) {
+            M.confirm("Are you sure you want to remove this customer?",null,function() {
+                M.api.getJSONCb('ciniki.customers.delete', {'tnid':M.curTenantID, 'customer_id':cid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_tools.duplicate.close();
                 });
-            }
+            });
         }
     }
     this.duplicate.addClose('Cancel');

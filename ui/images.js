@@ -132,15 +132,15 @@ function ciniki_customers_images() {
     };
 
     this.deleteImage = function() {
-        if( confirm('Are you sure you want to delete this image?') ) {
+        M.confirm('Are you sure you want to delete this image?',null,function() {
             var rsp = M.api.getJSONCb('ciniki.customers.imageDelete', {'tnid':M.curTenantID, 
-                'customer_image_id':this.edit.customer_image_id}, function(rsp) {
+                'customer_image_id':M.ciniki_customers_images.edit.customer_image_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_images.edit.close();
                 });
-        }
+        });
     };
 }

@@ -174,15 +174,15 @@ function ciniki_customers_relationships() {
     };
 
     this.deleteRelationship = function() {
-        if( confirm("Are you sure you want to remove this relationship?") ) {
+        M.confirm("Are you sure you want to remove this relationship?",null,function() {
             var rsp = M.api.getJSONCb('ciniki.customers.relationshipDelete', 
-                {'tnid':M.curTenantID, 'relationship_id':this.edit.relationship_id}, function(rsp) {
+                {'tnid':M.curTenantID, 'relationship_id':M.ciniki_customers_relationships.edit.relationship_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_relationships.edit.close();
                 });
-        }   
+        });
     };
 }

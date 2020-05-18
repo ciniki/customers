@@ -317,7 +317,7 @@ function ciniki_customers_automerge() {
     // Remove the file from the database
     //
     this.deleteFile = function() {
-        var r = confirm("Are you sure you want to delete this file?");
+        M.confirm("Are you sure you want to delete this file?",null,function() {
         if( r == true ) {
             var rsp = M.api.getJSON('ciniki.customers.automergeDelete', 
                 {'tnid':M.curTenantID, 'automerge_id':M.ciniki_customers_automerge.file.automerge_id});
@@ -327,7 +327,7 @@ function ciniki_customers_automerge() {
             }
             
             M.ciniki_customers_automerge.showFiles();
-        }
+        });
     }
 
 

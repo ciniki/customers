@@ -428,17 +428,17 @@ function ciniki_customers_settings() {
     };
 
     this.deletePricePoint = function() {
-        if( confirm("Are you sure you want to remove this price point?") ) {
+        M.confirm("Are you sure you want to remove this price point?",null,function() {
             M.api.getJSONCb('ciniki.customers.pricepointDelete', 
                 {'tnid':M.curTenantID, 
-                'pricepoint_id':this.pricepoint.pricepoint_id}, function(rsp) {
+                'pricepoint_id':M.ciniki_customers_settings.pricepoint.pricepoint_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_settings.pricepoint.close(); 
                 });
-        }
+        });
     };
 
     this.editSeason = function(cb, pid) {
@@ -494,16 +494,16 @@ function ciniki_customers_settings() {
     };
 
     this.deleteSeason = function() {
-        if( confirm("Are you sure you want to remove this season?") ) {
+        M.confirm("Are you sure you want to remove this season?",null,function() {
             M.api.getJSONCb('ciniki.customers.seasonDelete', 
                 {'tnid':M.curTenantID, 
-                'season_id':this.season.season_id}, function(rsp) {
+                'season_id':M.ciniki_customers_settings.season.season_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_customers_settings.season.close(); 
                 });
-        }
+        });
     };
 }
