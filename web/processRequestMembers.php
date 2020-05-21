@@ -66,6 +66,18 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
     $display = '';
 
     //
+    // Check for image format
+    //
+    $thumbnail_format = 'square-cropped';
+    $thumbnail_padding_color = '#ffffff';
+    if( isset($settings['page-members-thumbnail-format']) && $settings['page-members-thumbnail-format'] == 'square-padded' ) {
+        $thumbnail_format = $settings['page-members-thumbnail-format'];
+        if( isset($settings['page-members-thumbnail-padding-color']) && $settings['page-members-thumbnail-padding-color'] != '' ) {
+            $thumbnail_padding_color = $settings['page-members-thumbnail-padding-color'];
+        } 
+    }
+
+    //
     // Check if we are to display a category
     //
     if( isset($uri_split[0]) && $uri_split[0] == 'category' 
@@ -102,9 +114,22 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         elseif( count($members) > 0 ) {
             $base_url = $args['base_url'] . '/category/' . $category_permalink;
             if( isset($settings['page-members-list-format']) && $settings['page-members-list-format'] == 'thumbnail-list' ) {
-                $page['blocks'][] = array('type'=>'thumbnaillist', 'base_url'=>$base_url, 'anchors'=>'permalink', 'list'=>$members);
+                $page['blocks'][] = array('type'=>'thumbnaillist', 
+                    'base_url'=>$base_url, 
+                    'anchors'=>'permalink', 
+                    'list'=>$members,
+                    'thumbnail_format'=>$thumbnail_format, 
+                    'thumbnail_padding_color'=>$thumbnail_padding_color,
+                    );
             } else {
-                $page['blocks'][] = array('type'=>'cilist', 'section'=>'member-list', 'base_url'=>$base_url, 'notitle'=>'yes', 'categories'=>$members);
+                $page['blocks'][] = array('type'=>'cilist', 
+                    'section'=>'member-list', 
+                    'base_url'=>$base_url, 
+                    'notitle'=>'yes', 
+                    'categories'=>$members,
+                    'thumbnail_format'=>$thumbnail_format, 
+                    'thumbnail_padding_color'=>$thumbnail_padding_color,
+                    );
             }
         } 
         else {
@@ -174,9 +199,17 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
 
             if( count($members) > 0 ) {
                 if( isset($settings['page-members-list-format']) && $settings['page-members-list-format'] == 'thumbnail-list' ) {
-                    $page['blocks'][] = array('type'=>'thumbnaillist', 'base_url'=>$base_url, 'anchors'=>'permalink', 'list'=>$members);
+                    $page['blocks'][] = array('type'=>'thumbnaillist', 'base_url'=>$base_url, 'anchors'=>'permalink', 
+                        'list'=>$members,
+                        'thumbnail_format'=>$thumbnail_format, 
+                        'thumbnail_padding_color'=>$thumbnail_padding_color,
+                        );
                 } else {
-                    $page['blocks'][] = array('type'=>'cilist', 'section'=>'member-list', 'base_url'=>$base_url, 'notitle'=>'yes', 'categories'=>$members);
+                    $page['blocks'][] = array('type'=>'cilist', 'section'=>'member-list', 'base_url'=>$base_url, 'notitle'=>'yes', 
+                        'categories'=>$members,
+                        'thumbnail_format'=>$thumbnail_format, 
+                        'thumbnail_padding_color'=>$thumbnail_padding_color,
+                        );
                 }
             } else {
                 if( !isset($settings['page-members-membership-details']) 

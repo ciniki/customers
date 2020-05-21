@@ -75,6 +75,20 @@ function ciniki_customers_hooks_webOptions(&$ciniki, $tnid, $args) {
                     array('value'=>'thumbnail-list', 'label'=>'Thumbnails with Names'),
                     ),
                 ),
+            array('label'=>'Thumbnail Format',
+                'setting'=>'page-members-thumbnail-format', 
+                'type'=>'toggle',
+                'value'=>(isset($settings['page-members-thumbnail-format'])?$settings['page-members-thumbnail-format']:'square-cropped'),
+                'toggles'=>array(
+                    array('value'=>'square-cropped', 'label'=>'Cropped'),
+                    array('value'=>'square-padded', 'label'=>'Padded'),
+                    ),
+                ),
+            array('label'=>'Thumbnail Padding Color',
+                'setting'=>'page-members-thumbnail-padding-color', 
+                'type'=>'colour',
+                'value'=>(isset($settings['page-members-thumbnail-padding-color'])?$settings['page-members-thumbnail-padding-color']:'#ffffff'),
+                ),
             ));
     }
 
