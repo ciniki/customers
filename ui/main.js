@@ -779,6 +779,7 @@ function ciniki_customers_main() {
         this.childrenlabel = 'Children';
         this.parentlabel = 'Parent';
         this.parentslabel = 'Parents';
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( settings != null ) {
             if( settings['ui-labels-parent'] != null && settings['ui-labels-parent'] != '') {
                 this.parentLabel = settings['ui-labels-parent'];
@@ -792,7 +793,7 @@ function ciniki_customers_main() {
             if( settings['ui-labels-children'] != null && settings['ui-labels-children'] != '') {
                 this.childrenlabel = settings['ui-labels-children'];
             }
-        }
+        } */
         this.menu.sections.search.noData = 'No ' + this.plabel.toLowerCase() + ' found';
         this.menu.sections.search.headerValues[0] = this.slabel;
         this.menu.sections.recent.noData = 'No ' + this.plabel.toLowerCase();

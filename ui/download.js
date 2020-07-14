@@ -101,6 +101,7 @@ function ciniki_customers_download() {
 
         var slabel = 'Customer';
         var plabel = 'Customers';
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( M.curTenant.customers != null ) {
             if( M.curTenant.customers.settings['ui-labels-customer'] != null 
                 && M.curTenant.customers.settings['ui-labels-customer'] != ''
@@ -112,7 +113,7 @@ function ciniki_customers_download() {
                 ) {
                 plabel = M.curTenant.customers.settings['ui-labels-customers'];
             }
-        }
+        } */
         this.exportlist.title = 'Export ' + plabel;
 
         var flags = M.curTenant.modules['ciniki.customers'].flags;

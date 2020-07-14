@@ -139,6 +139,7 @@ function ciniki_customers_membertools() {
 
         var slabel = 'Member';
         var plabel = 'Members';
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( M.curTenant.customers != null ) {
             if( M.curTenant.customers.settings['ui-labels-member'] != null 
                 && M.curTenant.customers.settings['ui-labels-member'] != ''
@@ -151,6 +152,7 @@ function ciniki_customers_membertools() {
                 plabel = M.curTenant.customers.settings['ui-labels-members'];
             }
         }
+        */
         this.menu.title = slabel + ' Tools';
         this.menu.sections.tools.list.memberlist.label = 'Export ' + plabel + ' (Excel)';
 

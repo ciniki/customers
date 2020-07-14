@@ -82,7 +82,7 @@ function ciniki_customers_places() {
         this.plabel = 'Customers';
         this.childlabel = 'Child';
         this.childrenlabel = 'Children';
-        if( M.curTenant.customers != null ) {
+/*        if( M.curTenant.customers != null ) {
             if( M.curTenant.customers.settings['ui-labels-child'] != null 
                 && M.curTenant.customers.settings['ui-labels-child'] != ''
                 ) {
@@ -103,7 +103,7 @@ function ciniki_customers_places() {
                 ) {
                 this.plabel = M.curTenant.customers.settings['ui-labels-customers'];
             }
-        }
+        } */
         this.main.title = this.plabel;
         this.main.sections.customers.label = this.plabel;
         

@@ -327,6 +327,7 @@ function ciniki_customers_dealers() {
         // Setup ui labels
         var slabel = 'Dealer';
         var plabel = 'Dealers';
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( M.curTenant.customers != null ) {
             if( M.curTenant.customers.settings['ui-labels-dealer'] != null 
                 && M.curTenant.customers.settings['ui-labels-dealer'] != ''
@@ -338,7 +339,7 @@ function ciniki_customers_dealers() {
                 ) {
                 plabel = M.curTenant.customers.settings['ui-labels-dealers'];
             }
-        }
+        } */
         this.menu.title = plabel;
         this.list.title = plabel;
         this.dealer.title = slabel;

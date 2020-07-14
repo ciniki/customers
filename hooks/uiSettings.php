@@ -83,10 +83,11 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'submit'=>array('method'=>'ciniki.customers.accounts', 'args'=>array('search'=>'search_str')),
                 ),
             );
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( isset($rsp['settings']['ui-labels-customers']) && $rsp['settings']['ui-labels-customers'] != '' ) {
             $menu_item['label'] = $rsp['settings']['ui-labels-customers'];
             $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-customers'] . ' found';
-        }
+        } */
         $rsp['menu_items'][] = $menu_item;
         //
         // Setup the ui app override for accounts UI
@@ -126,10 +127,11 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
                 ),
             );
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( isset($rsp['settings']['ui-labels-customers']) && $rsp['settings']['ui-labels-customers'] != '' ) {
             $menu_item['label'] = $rsp['settings']['ui-labels-customers'];
             $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-customers'] . ' found';
-        }
+        } */
         $rsp['menu_items'][] = $menu_item;
     } 
 
@@ -161,10 +163,11 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str')),
                 ),
             );
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( isset($rsp['settings']['ui-labels-customers']) && $rsp['settings']['ui-labels-customers'] != '' ) {
             $menu_item['label'] = $rsp['settings']['ui-labels-customers'];
             $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-customers'] . ' found';
-        }
+        } */
         $rsp['menu_items'][] = $menu_item;
     } 
 
@@ -197,10 +200,11 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str', 'type'=>'"members"')),
                 ),
             );
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( isset($rsp['settings']['ui-labels-members']) && $rsp['settings']['ui-labels-members'] != '' ) {
             $menu_item['label'] = $rsp['settings']['ui-labels-members'];
             $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-members'] . ' found';
-        }
+        } */
         $rsp['menu_items'][] = $menu_item;
 
     } 
@@ -230,10 +234,11 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
                 'submit'=>array('method'=>'ciniki.customers.main', 'args'=>array('search'=>'search_str', 'type'=>'"members"')),
                 ),
             );
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( isset($rsp['settings']['ui-labels-members']) && $rsp['settings']['ui-labels-members'] != '' ) {
             $menu_item['label'] = $rsp['settings']['ui-labels-members'];
             $menu_item['search']['noData'] = 'No ' . $rsp['settings']['ui-labels-members'] . ' found';
-        }
+        } */
         $rsp['menu_items'][] = $menu_item;
     } 
 

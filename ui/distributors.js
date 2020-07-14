@@ -327,6 +327,7 @@ function ciniki_customers_distributors() {
         // Setup ui labels
         var slabel = 'Distributor';
         var plabel = 'Distributors';
+/*      ** Deprecated ui-labels- 2020-07-14 **
         if( M.curTenant.customers != null ) {
             if( M.curTenant.customers.settings['ui-labels-distributor'] != null 
                 && M.curTenant.customers.settings['ui-labels-distributor'] != ''
@@ -338,7 +339,7 @@ function ciniki_customers_distributors() {
                 ) {
                 plabel = M.curTenant.customers.settings['ui-labels-distributors'];
             }
-        }
+        } */
         this.menu.title = plabel;
         this.list.title = plabel;
         this.distributor.title = slabel;

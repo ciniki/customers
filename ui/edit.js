@@ -1207,12 +1207,13 @@ function ciniki_customers_edit() {
             this.edit.memberinfo = 'yes';
             this.edit.dealerinfo = 'no';
 //          this.edit.title = 'Member';
+/*          ** Deprecated ui-labels- 2020-07-14 **
             if( M.curTenant.customers != null 
                 && M.curTenant.customers.settings['ui-labels-member'] != null 
                 && M.curTenant.customers.settings['ui-labels-member'] != '' 
                 ) {
                 this.edit.title = M.curTenant.customers.settings['ui-labels-member'];
-            }
+            } */
             this.edit.distributorinfo = 'no';
 //          this.edit.forms.person.dealer.active = 'no';
 //          this.edit.forms.business.dealer.active = 'no';

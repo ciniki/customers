@@ -47,6 +47,8 @@ function ciniki_customers_settings() {
                 'defaults-edit-person-hide-company':{'label':'Hide Company', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'ui-show-places':{'label':'Show Places', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
+/*            
+            
             'ui_labels':{'label':'Labels', 'visible':'no', 'fields':{
                 'ui-labels-parent':{'label':'Parent Name', 'type':'text', 'hint':'Parent'},
                 'ui-labels-parents':{'label':'Parent Plural', 'type':'text', 'hint':'Parents'},
@@ -60,7 +62,7 @@ function ciniki_customers_settings() {
                 'ui-labels-dealers':{'label':'Dealer Plural', 'type':'text', 'hint':'Dealers'},
                 'ui-labels-distributor':{'label':'Distributor Name', 'type':'text', 'hint':'Distributor'},
                 'ui-labels-distributors':{'label':'Distributor Plural', 'type':'text', 'hint':'Distributors'},
-            }},
+            }}, */
             'seasons':{'label':'Membership Seasons', 'visible':'no', 'type':'simplegrid',
                 'num_cols':1,
                 'addTxt':'Add Seasons',
@@ -156,7 +158,7 @@ function ciniki_customers_settings() {
             return this.data[i];
         };
         this.main.cellValue = function(s, i, j, d) {
-            else if( s == 'seasons' ) {
+            if( s == 'seasons' ) {
                 return d.season.name + ((d.season.flags&0x02)>0?' <span class="subdue">[Active]</span>':'');
             }
         };
@@ -228,7 +230,10 @@ function ciniki_customers_settings() {
             M.ciniki_customers_settings.main.sections.seasons.visible = 'no';
         }
         
+/*      ** Deprecated ui-labels- 2020-07-14 **
+
         M.ciniki_customers_settings.main.sections.ui_labels.visible = 'no';
+
         if( (M.curTenant.modules['ciniki.customers'].flags&0x01) > 0 ) {
             M.ciniki_customers_settings.main.sections.ui_labels.visible = 'yes';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-customer'].active = 'yes';
@@ -261,7 +266,7 @@ function ciniki_customers_settings() {
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributor'].active = 'no';
             M.ciniki_customers_settings.main.sections.ui_labels.fields['ui-labels-distributors'].active = 'no';
         }
-
+*/
         this.showMain(cb);
     }
 

@@ -90,6 +90,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
         'membership-type-lifetime-online',
         'membership-type-lifetime-name',
         'membership-type-lifetime-price',
+/*      ** Deprecated ui-labels- 2020-07-14 **
         'ui-labels-parent',
         'ui-labels-parents',
         'ui-labels-child',
@@ -101,7 +102,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
         'ui-labels-dealer',
         'ui-labels-dealers',
         'ui-labels-distributor',
-        'ui-labels-distributors',
+        'ui-labels-distributors', */
         'ui-colours-customer-status-10',
         'ui-colours-customer-status-40',
         'ui-colours-customer-status-50',
