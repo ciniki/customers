@@ -130,20 +130,20 @@
 #
 # language:             The customers preferred language.
 # 
-# pricepoint_id:        The price point the customer/member/dealer/distributor is at.  This refers
+# pricepoint_id:        (DEPRECATED) The price point the customer/member/dealer/distributor is at.  This refers
 #                       to the ciniki_product_price_points table and must be enabled in ciniki.products to work.
 #                       By default the customers price point is ID 0, refering to nothing set.
 #
-# salesrep_id:          The ID of the sales employee for this account.  This links to ciniki_users table.
+# salesrep_id:          (DEPRECATED) The ID of the sales employee for this account.  This links to ciniki_users table.
 #
 # tax_number:           The tax number of the customer account for reporting.
 # tax_location_id:      The ID of tax location in ciniki_tax_locations for this account.  This is used
 #                       for tax calculations for the online ordering.  If a tax_location_id is set in
 #                       for the customer, it overrides the tax calculates in sapos based on postal/zip.
 #
-# reward_level:         The current reward level they are set at.  This is used by external systems.
-# sales_total:          The current amount of sales for the year, used by external systems.
-# sales_total_prev:     The last years sales amount, used by external systems.
+# reward_level:         (DEPRECATED) The current reward level they are set at.  This is used by external systems.
+# sales_total:          (DEPRECATED) The current amount of sales for the year, used by external systems.
+# sales_total_prev:     (DEPRECATED) The last years sales amount, used by external systems.
 #
 # discount_percent:     The discount percent to apply to every item ordered by this customer.
 #

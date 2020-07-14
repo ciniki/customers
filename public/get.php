@@ -100,9 +100,8 @@ function ciniki_customers_get($ciniki) {
             . "callsign, prefix, first, middle, last, suffix, company, department, title, "
             . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
             . "connection, language, short_bio, full_bio, webflags, notes, "
-            . "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
-            . "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.sales_total_prev, ciniki_customers.discount_percent, ciniki_customers.start_date, "
+            . "ciniki_customers.discount_percent, ciniki_customers.start_date, "
             . "CONCAT_WS(',', primary_email, alternate_email) AS emails "
 //          . "ciniki_customer_emails.email AS emails "
             . "FROM ciniki_customers "
@@ -118,8 +117,8 @@ function ciniki_customers_get($ciniki) {
                     'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                     'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
                     'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
-                    'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-                    'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
+                    'tax_number', 'tax_location_id',
+                    'discount_percent', 'start_date', 
                     'birthdate', 'connection', 'language', 'short_bio', 'full_bio', 'webflags', 'notes',
                     'emails'),
                 'lists'=>array('emails'),
@@ -154,9 +153,8 @@ function ciniki_customers_get($ciniki) {
             . "callsign, prefix, first, middle, last, suffix, company, department, title, "
             . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
             . "short_bio, full_bio, webflags, "
-            . "ciniki_customers.pricepoint_id, ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, ciniki_customers.tax_location_id, "
-            . "ciniki_customers.reward_level, ciniki_customers.sales_total, ciniki_customers.sales_total_prev, ciniki_customers.discount_percent, ciniki_customers.start_date, "
+            . "ciniki_customers.discount_percent, ciniki_customers.start_date, "
             . "notes "
             . "FROM ciniki_customers "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -172,8 +170,8 @@ function ciniki_customers_get($ciniki) {
                     'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                     'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
                     'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
-                    'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-                    'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
+                    'tax_number', 'tax_location_id',
+                    'discount_percent', 'start_date', 
                     'birthdate', 'short_bio', 'full_bio', 'webflags', 'notes'),
                 'maps'=>array(
                     'member_status_text'=>$maps['customer']['member_status'],
@@ -200,30 +198,6 @@ function ciniki_customers_get($ciniki) {
     }
 
     $customer['discount_percent'] = ($customer['discount_percent'] == 0 ? '' : (float)$customer['discount_percent']);
-
-    //
-    // Get the sales rep
-    //
-    if( ($modules['ciniki.customers']['flags']&0x2000) > 0 ) {
-        $customer['salesrep_id_text'] = '';
-        if( isset($customer['salesrep_id']) && $customer['salesrep_id'] > 0 ) {
-            $strsql = "SELECT display_name "
-                . "FROM ciniki_tenant_users, ciniki_users "
-                . "WHERE ciniki_tenant_users.user_id = '" . ciniki_core_dbQuote($ciniki, $customer['salesrep_id']) . "' "
-                . "AND ciniki_tenant_users.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND ciniki_tenant_users.package = 'ciniki' "
-                . "AND ciniki_tenant_users.permission_group = 'salesreps' "
-                . "AND ciniki_tenant_users.user_id = ciniki_users.id "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.tenants', 'user');
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            if( isset($rc['user']) ) {
-                $customer['salesrep_id_text'] = $rc['user']['display_name'];
-            }
-        }
-    }
 
     //
     // Get the tax location

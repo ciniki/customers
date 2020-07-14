@@ -25,26 +25,6 @@ function ciniki_customers_uiSettings($ciniki, $modules, $tnid) {
         $settings = $rc['settings'];
     }
 
-
-    //
-    // Get the list of price points
-    //
-    if( isset($modules['ciniki.customers']['flags']) && ($modules['ciniki.customers']['flags']&0x1000) > 0 ) {
-        $strsql = "SELECT id, name "
-            . "FROM ciniki_customer_pricepoints "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY sequence "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-            array('container'=>'pricepoints', 'fname'=>'id', 'name'=>'pricepoint',
-                'fields'=>array('id', 'name')),
-            ));
-        if( $rc['stat'] == 'ok' && isset($rc['pricepoints']) ) {
-            $settings['pricepoints'] = $rc['pricepoints'];
-        }
-    }
-
     //
     // Get the membership seasons
     //

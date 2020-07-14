@@ -48,8 +48,6 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
     //
     $row = 1;
     $col = 0;
-    $salesrep = 'no';
-    $pricepoint = 'no';
     $tax_code = 'no';
     foreach($args['columns'] as $column) {
         $value = '';
@@ -68,14 +66,9 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
             case 'visible': $value = 'Visible'; break;
             case 'dealer_status': $value = 'Status'; break;
             case 'dealer_categories': $value = 'Categories'; break;
-            case 'salesrep': $value = 'Sales Rep'; $salesrep = 'yes'; break;
-            case 'pricepoint_name': $value = 'Pricepoint'; $pricepoint = 'yes'; break;
-            case 'pricepoint_code': $value = 'Pricepoint Code'; $pricepoint = 'yes'; break;
             case 'tax_number': $value = 'Tax Number'; break;
             case 'tax_location_name': $value = 'Tax'; $tax_code = 'yes'; break;
             case 'tax_location_code': $value = 'Tax Code'; $tax_code = 'yes'; break;
-            case 'reward_level': $value = 'Reward Level'; break;
-            case 'sales_total': $value = 'Sales Total'; break;
             case 'start_date': $value = 'Start Date'; break;
             case 'phones': $value = 'Phones'; break;
             case 'emails': $value = 'Emails'; break;
@@ -106,20 +99,7 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
         . "ciniki_customers.display_name, "
         . "ciniki_customers.type, "
         . "ciniki_customers.status, "
-        . "ciniki_customers.dealer_status, "
-        . "ciniki_customers.salesrep_id, ";
-    if( $salesrep == 'yes' ) {
-        $strsql .= "ciniki_users.display_name AS salesrep, ";
-    } else {
-        $strsql .= "'' AS salesrep, ";
-    }
-    if( $pricepoint == 'yes' ) {
-        $strsql .= "ciniki_customer_pricepoints.name AS pricepoint_name, ";
-        $strsql .= "ciniki_customer_pricepoints.code AS pricepoint_code, ";
-    } else {
-        $strsql .= "'' AS pricepoint_name, ";
-        $strsql .= "'' AS pricepoint_code, ";
-    }
+        . "ciniki_customers.dealer_status, ";
     if( $tax_code == 'yes' ) {
         $strsql .= "ciniki_tax_locations.name AS tax_location_name, ";
         $strsql .= "ciniki_tax_locations.code AS tax_location_code, ";
@@ -128,8 +108,6 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
         $strsql .= "'' AS tax_location_code, ";
     }
     $strsql .= "ciniki_customers.tax_number, "
-        . "ciniki_customers.reward_level, "
-        . "ciniki_customers.sales_total, "
         . "ciniki_customers.start_date, "
         . "IF(ciniki_customers.primary_image_id>0,'yes','no') AS primary_image, "
         . "ciniki_customers.primary_image_caption, "
@@ -148,17 +126,6 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
         . "ciniki_customer_links.url AS links "
         . "FROM ciniki_customers "
         . "";
-    if( $salesrep == 'yes' ) {
-        $strsql .= "LEFT JOIN ciniki_users ON ("
-            . "ciniki_customers.salesrep_id = ciniki_users.id "
-            . ") ";
-    }
-    if( $pricepoint == 'yes' ) {
-        $strsql .= "LEFT JOIN ciniki_customer_pricepoints ON ("
-            . "ciniki_customers.pricepoint_id = ciniki_customer_pricepoints.id "
-            . "AND ciniki_customer_pricepoints.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") ";
-    }
     if( $tax_code == 'yes' ) {
         $strsql .= "LEFT JOIN ciniki_tax_locations ON ("
             . "ciniki_customers.tax_location_id = ciniki_tax_locations.id "
@@ -191,9 +158,8 @@ function ciniki_customers_dealerDownloadExcel(&$ciniki) {
             'fields'=>array('id', 'eid', 'prefix', 'first', 'middle', 'last', 'suffix',
                 'company', 'display_name', 'type', 'status', 'visible', 
                 'dealer_status', 'dealer_categories',
-                'salesrep', 'pricepoint_name', 'pricepoint_code', 
                 'tax_number', 'tax_location_name', 'tax_location_code',
-                'reward_level', 'sales_total', 'start_date',
+                'start_date',
                 'phones', 'emails', 'addresses', 'links',
                 'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
             'maps'=>array(

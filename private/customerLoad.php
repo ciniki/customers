@@ -72,13 +72,8 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "short_bio, "
         . "full_bio, "
         . "webflags, "
-        . "pricepoint_id, "
-        . "salesrep_id, "
         . "tax_number, "
         . "tax_location_id, "
-        . "reward_level, "
-        . "sales_total, "
-        . "sales_total_prev, "
         . "discount_percent, "
         . "start_date, "
         . "connection, "
@@ -96,8 +91,8 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                 'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
                 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
-                'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-                'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 
+                'tax_number', 'tax_location_id',
+                'discount_percent', 'start_date', 
                 'birthdate', 'short_bio', 'full_bio', 'webflags', 'connection', 'language', 'notes'),
             'maps'=>array(
                 'type_text'=>$maps['customer']['type'],

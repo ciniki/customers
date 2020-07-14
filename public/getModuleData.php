@@ -110,16 +110,12 @@ function ciniki_customers_getModuleData($ciniki) {
         . "distributor_status, distributor_status AS distributor_status_text, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
         . "connection, language, "
-        . "pricepoint_id, salesrep_id, tax_number, tax_location_id, "
-        . "reward_level, sales_total, sales_total_prev, discount_percent, start_date, webflags, "
+        . "tax_number, tax_location_id, "
+        . "discount_percent, start_date, webflags, "
         . "notes "
         . "FROM ciniki_customers "
         . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
-    // Check if user is only a salesrep and not a owner/employee
-    if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x07) == 0x04 ) {
-        $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-    }
     if( isset($args['customer_id']) && $args['customer_id'] != '' ) {
         $strsql .= "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
     } elseif( isset($args['eid']) && $args['eid'] != '' ) {
@@ -139,8 +135,8 @@ function ciniki_customers_getModuleData($ciniki) {
                 'dealer_status', 'dealer_status_text',
                 'distributor_status', 'distributor_status_text',
                 'company', 'department', 'title', 
-                'notes', 'birthdate', 'connection', 'language', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id',
-                'reward_level', 'sales_total', 'sales_total_prev', 'discount_percent', 'start_date', 'webflags'),
+                'notes', 'birthdate', 'connection', 'language', 'tax_number', 'tax_location_id',
+                'discount_percent', 'start_date', 'webflags'),
             'maps'=>array('status_text'=>$maps['customer']['status'],
                 'member_status_text'=>$maps['customer']['member_status'],
                 'dealer_status_text'=>$maps['customer']['dealer_status'],
@@ -165,30 +161,6 @@ function ciniki_customers_getModuleData($ciniki) {
     $customer['discount_percent_text'] = (float)$customer['discount_percent'] . '%';
     $customer['addresses'] = array();
     $customer['subscriptions'] = array();
-
-    //
-    // Get the sales rep
-    //
-    if( ($modules['ciniki.customers']['flags']&0x2000) > 0 ) {
-        $customer['salesrep_id_text'] = '';
-        if( isset($customer['salesrep_id']) && $customer['salesrep_id'] > 0 ) {
-            $strsql = "SELECT display_name "
-                . "FROM ciniki_tenant_users, ciniki_users "
-                . "WHERE ciniki_tenant_users.user_id = '" . ciniki_core_dbQuote($ciniki, $customer['salesrep_id']) . "' "
-                . "AND ciniki_tenant_users.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND ciniki_tenant_users.package = 'ciniki' "
-                . "AND ciniki_tenant_users.permission_group = 'salesreps' "
-                . "AND ciniki_tenant_users.user_id = ciniki_users.id "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.tenants', 'user');
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            if( isset($rc['user']) ) {
-                $customer['salesrep_id_text'] = $rc['user']['display_name'];
-            }
-        }
-    }
 
     //
     // Get the tax location
@@ -363,7 +335,7 @@ function ciniki_customers_getModuleData($ciniki) {
     //
     // Get the relationships for the customer
     //
-    if( isset($settings['use-relationships']) && $settings['use-relationships'] == 'yes' ) {
+/*    if( isset($settings['use-relationships']) && $settings['use-relationships'] == 'yes' ) {
         $strsql = "SELECT ciniki_customer_relationships.id, relationship_type AS type, "
             . "relationship_type AS type_name, "
             . "ciniki_customer_relationships.customer_id, ciniki_customer_relationships.related_id, "
@@ -408,7 +380,7 @@ function ciniki_customers_getModuleData($ciniki) {
                 }
             }
         }
-    }
+    } */
 
     //
     // If child account, get parent information
@@ -432,18 +404,6 @@ function ciniki_customers_getModuleData($ciniki) {
                 $customer['parent'] = array('id'=>$rc['customer']['id'], 'eid'=>$rc['customer']['eid'], 'display_name'=>$rc['customer']['display_name']);
                 $customer['parent']['details'] = $rc['details'];
             }
-/*          $strsql = "SELECT id, eid, display_name "
-                . "FROM ciniki_customers "
-                . "WHERE ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer['parent_id']) . "' "
-                . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'parent');
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            if( isset($rc['parent']) ) {
-                $customer['parent'] = $rc['parent'];
-            }*/
         } 
         //
         // Get children
@@ -498,7 +458,7 @@ function ciniki_customers_getModuleData($ciniki) {
         }
     }
 
-
+/*
     // 
     // Get customer subscriptions if module is enabled
     //
@@ -522,112 +482,6 @@ function ciniki_customers_getModuleData($ciniki) {
         }
         if( isset($rc['subscriptions']) ) {
             $customer['subscriptions'] = $rc['subscriptions'];
-        }
-    }
-
-    //
-    // Get the wineproduction appointments
-    //
-    if( isset($modules['ciniki.wineproduction']) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'wineproduction', 'hooks', 'appointments');
-        $rc = ciniki_wineproduction_hooks_appointments($ciniki, $args['tnid'], array(
-            'customer_id'=>$customer['id'],
-            'status'=>'unbottled',
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( isset($rc['appointments']) ) {
-            $customer['appointments'] = $rc['appointments'];
-        } 
-
-        //
-        // Get the unbottled wineproduction orders
-        //
-        $strsql = "SELECT ciniki_wineproductions.id, "
-            . "ciniki_wineproductions.invoice_number, "
-            . "ciniki_products.name AS wine_name, "
-            . "ciniki_wineproductions.status, "
-            . "ciniki_wineproductions.status AS status_text, "
-            . "DATE_FORMAT(ciniki_wineproductions.order_date, '%b %e, %Y') AS order_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.start_date, '%b %e, %Y') AS start_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.racking_date, '%b %e, %Y') AS racking_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.filtering_date, '%b %e, %Y') AS filtering_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.bottling_date, '%b %e, %Y') AS bottling_date, "
-            . "DATE_FORMAT(IF(rack_date > 0, DATE_ADD(rack_date, INTERVAL (kit_length) DAY), "
-                . "DATE_ADD(ciniki_wineproductions.start_date, INTERVAL kit_length WEEK)), '%b %e, %Y') AS approx_filtering_date "
-            . "FROM ciniki_wineproductions "
-            . "LEFT JOIN ciniki_products ON (ciniki_wineproductions.product_id = ciniki_products.id "
-                . "AND ciniki_products.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE ciniki_wineproductions.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
-            . "AND ciniki_wineproductions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_wineproductions.status < 60 "
-            . "ORDER BY ciniki_wineproductions.order_date DESC "
-            . "";
-        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.wineproductions', array(
-            array('container'=>'orders', 'fname'=>'id', 'name'=>'order',
-                'fields'=>array('id', 'invoice_number', 'wine_name', 'status', 'status_text',
-                    'order_date', 'start_date', 'racking_date', 'filtering_date', 'bottling_date',
-                    'approx_filtering_date'),
-                'maps'=>array('status_text'=>array(
-                    '10'=>'Entered',
-                    '20'=>'Started',
-                    '30'=>'Racked',
-                    '40'=>'Filtered',
-                    '60'=>'Bottled',
-                    ))),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( isset($rc['orders']) ) {
-            $customer['currentwineproduction'] = $rc['orders'];
-        }
-
-        //
-        // Get the bottled wineproduction orders
-        //
-        $strsql = "SELECT ciniki_wineproductions.id, "
-            . "ciniki_wineproductions.invoice_number, "
-            . "ciniki_products.name AS wine_name, "
-            . "ciniki_wineproductions.status, "
-            . "ciniki_wineproductions.status AS status_text, "
-            . "DATE_FORMAT(ciniki_wineproductions.order_date, '%b %e, %Y') AS order_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.start_date, '%b %e, %Y') AS start_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.racking_date, '%b %e, %Y') AS racking_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.filtering_date, '%b %e, %Y') AS filtering_date, "
-            . "DATE_FORMAT(ciniki_wineproductions.bottle_date, '%b %e, %Y') AS bottle_date, "
-            . "DATE_FORMAT(IF(rack_date > 0, DATE_ADD(rack_date, INTERVAL (kit_length) DAY), "
-                . "DATE_ADD(ciniki_wineproductions.start_date, INTERVAL kit_length WEEK)), '%b %e, %Y') AS approx_filtering_date "
-            . "FROM ciniki_wineproductions "
-            . "LEFT JOIN ciniki_products ON (ciniki_wineproductions.product_id = ciniki_products.id "
-                . "AND ciniki_products.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE ciniki_wineproductions.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
-            . "AND ciniki_wineproductions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_wineproductions.status = 60 "
-            . "ORDER BY ciniki_wineproductions.order_date DESC "
-            . "LIMIT 11 "
-            . "";
-        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.wineproductions', array(
-            array('container'=>'orders', 'fname'=>'id', 'name'=>'order',
-                'fields'=>array('id', 'invoice_number', 'wine_name', 'status', 'status_text',
-                    'order_date', 'start_date', 'racking_date', 'filtering_date', 'bottle_date',
-                    'approx_filtering_date'),
-                'maps'=>array('status_text'=>array(
-                    '10'=>'Entered',
-                    '20'=>'Started',
-                    '30'=>'Racked',
-                    '40'=>'Filtered',
-                    '60'=>'Bottled',
-                    ))),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( isset($rc['orders']) ) {
-            $customer['pastwineproduction'] = $rc['orders'];
         }
     }
 
@@ -671,29 +525,45 @@ function ciniki_customers_getModuleData($ciniki) {
             $customer['orders'] = array();
         }
     }
+*/
+    $rsp = array('stat'=>'ok', 'customer'=>$customer);
 
     //
-    // Check for First Add Certifications
+    // Call the hooks to other modules for any data to attach to customer
     //
-    if( isset($modules['ciniki.fatt']) && ($modules['ciniki.fatt']['flags']&0x10) > 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'fatt', 'hooks', 'customerCerts');
-        $rc = ciniki_fatt_hooks_customerCerts($ciniki, $args['tnid'], array(
-            'customer_id'=>$customer['id']));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
+    $rsp['data_tabs'] = array();
+    $uiDataArgs = array('customer_id' => $args['customer_id']);
+    foreach($ciniki['tenant']['modules'] as $module => $m) {
+        // Skip archived modules
+        if( $m['module_status'] >= 90 ) {
+            continue;
         }
-        if( isset($rc['curcerts']) ) {
-            $customer['curcerts'] = $rc['curcerts'];
-        } else {
-            $customer['curcerts'] = array();
-        }
-        if( isset($rc['pastcerts']) ) {
-            $customer['pastcerts'] = $rc['pastcerts'];
-        } else {
-            $customer['pastcerts'] = array();
+        list($pkg, $mod) = explode('.', $module);
+        $rc = ciniki_core_loadMethod($ciniki, $pkg, $mod, 'hooks', 'uiCustomersData');
+        if( $rc['stat'] == 'ok' ) {
+            $fn = $rc['function_call'];
+            $rc = $fn($ciniki, $args['tnid'], $uiDataArgs);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.399', 'msg'=>'Unable to get customer information.', 'err'=>$rc['err']));
+            }
+            if( isset($rc['tabs']) ) {
+                foreach($rc['tabs'] as $tab) {
+                    if( !isset($tab['priority']) ) {
+                        $tab['priority'] = 0;
+                    }
+                    $rsp['data_tabs'][$tab['id']] = $tab;
+                }
+            }
         }
     }
 
-    return array('stat'=>'ok', 'customer'=>$customer);
+    uasort($rsp['data_tabs'], function($a, $b) {
+        if( $a['priority'] == $b['priority'] ) {
+            return 0;
+        }
+        return ($a['priority'] < $b['priority'] ? 1 : -1);
+        }); 
+
+    return $rsp;
 }
 ?>

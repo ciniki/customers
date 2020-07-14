@@ -3,6 +3,8 @@
 # -----------
 # This table stores how the customers of a tenant are related to each other
 #
+# NOTE: The code was never finished to utilize this table.
+#
 #
 # Fields
 # ------

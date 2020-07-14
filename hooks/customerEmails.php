@@ -50,11 +50,11 @@ function ciniki_customers_hooks_customerEmails($ciniki, $tnid, $args) {
     // Get the customer details and emails
     //
     $strsql = "SELECT ciniki_customers.id, ciniki_customers.parent_id, eid, type, prefix, first, middle, last, suffix, "
-        . "display_name, company, department, title, salesrep_id, "
+        . "display_name, company, department, title, "
         . "status, dealer_status, distributor_status, "
         . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
-        . "pricepoint_id, notes "
+        . "notes "
         . "FROM ciniki_customers "
         . "LEFT JOIN ciniki_customer_emails ON ("
             . "ciniki_customers.id = ciniki_customer_emails.customer_id "
@@ -68,7 +68,7 @@ function ciniki_customers_hooks_customerEmails($ciniki, $tnid, $args) {
             'fields'=>array('id', 'parent_id', 'eid', 'type', 
                 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
                 'status', 'dealer_status', 'distributor_status',
-                'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
+                'company', 'department', 'title', 
                 'notes', 'birthdate')),
         array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
             'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),

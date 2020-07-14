@@ -1,0 +1,74 @@
+#
+# Description
+# -----------
+# This table stores the reminders about customers significant dates. 
+# eg: birthdays, anniversaries, reminders.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# customer_id:              The ID of the customer the reminder is attached to.
+# reminder_date:            The date for the reminder.
+# flags:                    The options for the reminder.
+#
+#                               0x01 - Email message to customer automatically.
+#                               0x02 - Email sent (reset when reminder_date updated)
+#                               0x04 - 
+#                               0x08 - 
+#
+# repeat_type:              If this reminder repeats, how often.
+#
+#                                0 - No repeat
+#                               10 - daily, repeat every day
+#                               20 - weekly, same day every week
+#                               30 - monthly, same day of month
+#                               31 - monthly, same day of week (first sunday)
+#                               50 - yearly, same month day every year
+# 
+# repeat_interval:          The interval to repeat, (default 1). The interval is
+#                           based on the repeat_type selected for this reminder.
+#                            - Daily, the interval will be the number of days between repeats.
+#                            - Weekly, the interval will be the number of weeks between repeats.
+#                            - Monthly, the interval will be the number of months between repeats.
+#                            - Yearly, the interval will be the number of years between repeats.
+#
+# repeat_end:               The date to stop the repeat on.
+#
+# description:              The description of the reminder.
+# category:                 The category for the reminder.
+# notes:                    The private notes for the reminder.
+#
+# email_time:               The time in the local timezone to email the message on the reminder_date.
+# email_subject:            The subject for the customer email.
+# email_html:               The message to send to the customer.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_customer_reminders (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    customer_id int not null,
+    reminder_date date not null,
+    flags tinyint unsigned not null,
+    repeat_type tinyint unsigned not null,
+    repeat_interval tinyint unsigned not null,
+    repeat_end date not null,
+    description varchar(250) not null,
+    category varchar(150) not null,
+    notes text not null,
+    email_time time not null,
+    email_subject varchar(250) not null,
+    email_html varchar(250) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

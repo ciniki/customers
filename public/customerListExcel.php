@@ -219,46 +219,6 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     }
 
     //
-    // Load sales reps
-    //
-    $salesreps = array();
-    $strsql = "SELECT user_id AS id, eid "
-        . "FROM ciniki_tenant_users "
-        . "WHERE ciniki_tenant_users.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_tenant_users.package = 'ciniki' "
-        . "AND ciniki_tenant_users.permission_group = 'salesreps' "
-        . "";
-    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.taxes', array(
-        array('container'=>'reps', 'fname'=>'id', 
-            'fields'=>array('id', 'eid')),
-        )); 
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    if( isset($rc['reps']) ) {
-        $salesreps = $rc['reps'];
-    }
-
-    //
-    // Load pricepoints
-    //
-    $pricepoints = array();
-    $strsql = "SELECT id, name, code "
-        . "FROM ciniki_customer_pricepoints "
-        . "WHERE ciniki_customer_pricepoints.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.taxes', array(
-        array('container'=>'pricepoints', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'code')),
-        )); 
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    if( isset($rc['pricepoints']) ) {
-        $pricepoints = $rc['pricepoints'];
-    }
-
-    //
     // Load the categories
     //
     $member_categories = array();
@@ -456,13 +416,8 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.distributor_status, "
             . "ciniki_customers.connection, "
             . "ciniki_customers.language, "
-            . "ciniki_customers.pricepoint_id, "
-            . "ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, "
             . "ciniki_customers.tax_location_id, "
-            . "ciniki_customers.reward_level, "
-            . "ciniki_customers.sales_total, "
-            . "ciniki_customers.sales_total_prev, "
             . "ciniki_customers.start_date, "
             . "'' AS member_categories, "
             . "'' AS phones, "
@@ -494,13 +449,8 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.distributor_status, "
             . "ciniki_customers.connection, "
             . "ciniki_customers.language, "
-            . "ciniki_customers.pricepoint_id, "
-            . "ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, "
             . "ciniki_customers.tax_location_id, "
-            . "ciniki_customers.reward_level, "
-            . "ciniki_customers.sales_total, "
-            . "ciniki_customers.sales_total_prev, "
             . "ciniki_customers.start_date, "
             . "'' AS member_categories, "
             . "'' AS phones, "
@@ -535,13 +485,8 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.distributor_status, "
             . "ciniki_customers.connection, "
             . "ciniki_customers.language, "
-            . "ciniki_customers.pricepoint_id, "
-            . "ciniki_customers.salesrep_id, "
             . "ciniki_customers.tax_number, "
             . "ciniki_customers.tax_location_id, "
-            . "ciniki_customers.reward_level, "
-            . "ciniki_customers.sales_total, "
-            . "ciniki_customers.sales_total_prev, "
             . "ciniki_customers.start_date, "
             . "'' AS member_categories, "
             . "'' AS phones, "
@@ -561,8 +506,8 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 'company', 'display_name', 'type', 'visible', 
                 'member_status', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type', 'member_categories',
                 'dealer_status', 'distributor_status',
-                'connection', 'language', 'pricepoint_id', 'salesrep_id', 'tax_number', 'tax_location_id', 
-                'reward_level', 'sales_total', 'sales_total_prev', 'start_date',
+                'connection', 'language', 'tax_number', 'tax_location_id', 
+                'start_date',
                 'phones', 'emails', 'addresses', 'links',
                 'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
             'maps'=>array(
@@ -615,14 +560,9 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             case 'membership_type': $value = 'Type'; break;
             case 'member_categories': $value = 'Categories'; break;
             case 'dealer_status': $value = 'Dealer Status'; break;
-            case 'salesrep': $value = 'Sales Rep'; $salesrep = 'yes'; break;
-            case 'pricepoint_name': $value = 'Pricepoint'; $pricepoint = 'yes'; break;
-            case 'pricepoint_code': $value = 'Pricepoint Code'; $pricepoint = 'yes'; break;
             case 'tax_number': $value = 'Tax Number'; break;
             case 'tax_location_name': $value = 'Tax'; $tax_code = 'yes'; break;
             case 'tax_location_code': $value = 'Tax Code'; $tax_code = 'yes'; break;
-            case 'reward_level': $value = 'Reward Level'; break;
-            case 'sales_total': $value = 'Sales Total'; break;
             case 'start_date': $value = 'Start Date'; break;
             case 'distributor_status': $value = 'Distributor Status'; break;
             case 'phones': $value = 'Phones'; break;
@@ -779,15 +719,6 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             } 
             elseif( $column == 'links' && isset($links[$customer['id']]['links']) ) {
                 $value = $links[$customer['id']]['links'];
-            } 
-            elseif( $column == 'salesrep' && isset($salesreps[$customer['salesrep_id']]) ) {
-                $value = $salesreps[$customer['salesrep_id']]['eid'];
-            } 
-            elseif( $column == 'pricepoint_name' && isset($pricepoints[$customer['pricepoint_id']]) ) {
-                $value = $pricepoints[$customer['pricepoint_id']]['name'];
-            } 
-            elseif( $column == 'pricepoint_code' && isset($pricepoints[$customer['pricepoint_id']]) ) {
-                $value = $pricepoints[$customer['pricepoint_id']]['code'];
             } 
             elseif( $column == 'tax_location_code' && isset($tax_locations[$customer['tax_location_id']]) ) {
                 $value = $tax_locations[$customer['tax_location_id']]['code'];

@@ -81,20 +81,6 @@ function ciniki_customers_checkAccess(&$ciniki, $tnid, $method, $req_id=0) {
     }
 
     //
-    // If the user is part of the salesreps, ensure they have access to request method
-    //
-    $salesreps_methods = array(
-        'ciniki.customers.overview',
-        'ciniki.customers.placeDetails',
-        'ciniki.customers.getModuleData',
-        'ciniki.customers.searchQuick',
-        'ciniki.customers.searchFull',
-        );
-    if( in_array($method, $salesreps_methods) && ($perms&0x04) == 0x04 ) {
-        return array('stat'=>'ok', 'modules'=>$modules, 'perms'=>$perms);
-    }
-
-    //
     // By default, deny access
     //
     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.36', 'msg'=>'Access denied'));

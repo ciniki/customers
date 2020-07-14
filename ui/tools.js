@@ -24,7 +24,6 @@ function ciniki_customers_tools() {
         'menu':{'label':'Cleanup', 'list':{
 //            'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_tools.menu.show();\');'},
             'duplicates':{'label':'Find Duplicates', 'fn':'M.ciniki_customers_tools.duplicates.open();'},
-//            'salesreps':{'label':'Sales Reps', 'visible':'no', 'fn':'M.startApp(\'ciniki.customers.salesreps\', null, \'M.ciniki_customers_tools.menu.show();\');'},
         }},
 //        'download':{'label':'Export (Advanced)', 'list':{
 //            'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_tools.menu.show();\',\'mc\',{});'},

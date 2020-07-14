@@ -119,12 +119,6 @@ function ciniki_customers_overview($ciniki) {
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND status < 50 "
             . "";
-        if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x07) == 0x04 ) {
-            $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-        }
-    //  if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x04) > 0 ) {
-    //      $strsql .= "AND salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-    //  }
         $strsql .= "ORDER BY last_updated DESC, last, first DESC ";
         if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
             $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified

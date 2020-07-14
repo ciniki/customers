@@ -40,14 +40,12 @@ function ciniki_customers_hooks_customersEmails($ciniki, $tnid, $args) {
         . "customers.company, "
         . "customers.department, "
         . "customers.title, "
-        . "customers.salesrep_id, "
         . "customers.status, "
         . "customers.dealer_status, "
         . "customers.distributor_status, "
         . "emails.id AS email_id, "
         . "emails.email, "
         . "IFNULL(DATE_FORMAT(customers.birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
-        . "customers.pricepoint_id, "
         . "customers.notes "
         . "FROM ciniki_customers AS customers "
         . "LEFT JOIN ciniki_customer_emails AS emails ON ("
@@ -64,7 +62,7 @@ function ciniki_customers_hooks_customersEmails($ciniki, $tnid, $args) {
             'fields'=>array('id', 'parent_id', 'eid', 'type', 
                 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
                 'status', 'dealer_status', 'distributor_status',
-                'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
+                'company', 'department', 'title',
                 'notes', 'birthdate')),
         array('container'=>'emails', 'fname'=>'email_id', 
             'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'customer_name'=>'display_name', 'email')),

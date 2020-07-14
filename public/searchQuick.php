@@ -120,10 +120,6 @@ function ciniki_customers_searchQuick($ciniki) {
             . ") "
         . "WHERE c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND c1.status < 60 ";
-    // Check if only a sales rep
-    if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x07) == 0x04 ) {
-        $strsql .= "AND c1.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-    }
     if( isset($args['parent_id']) && $args['parent_id'] != '' ) {
         $strsql .= "AND c1.parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' ";
     }

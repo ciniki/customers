@@ -88,7 +88,6 @@ function ciniki_customers_customerSearch($ciniki) {
                 . ") "
             . "WHERE c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND c1.status < 60 ";
-        // Check if only a sales rep
         if( isset($args['parent_id']) && $args['parent_id'] != '' ) {
             $strsql .= "AND c1.parent_id = '" . ciniki_core_dbQuote($ciniki, $args['parent_id']) . "' ";
         }

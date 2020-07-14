@@ -70,9 +70,6 @@ function ciniki_customers_placeDetails($ciniki) {
                 . ") "
             . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.status < 50 ";
-        if( ($ciniki['tenant']['user']['perms']&0x04) > 0 ) {
-            $strsql .= "AND ciniki_customers.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-        }
         if( !isset($args['country']) || $args['country'] != 'No Address' ) {
             $strsql .= "AND NOT ISNULL(city) ";
         } else {

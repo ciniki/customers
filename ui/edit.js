@@ -68,13 +68,8 @@ function ciniki_customers_edit() {
             'language':{'label':'Language', 'active':'no', 'type':'text'},
         }},
         'account':{'label':'', 'aside':'yes', 'fields':{
-            'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
-            'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
             'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
             'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
-            'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
-            'sales_total':{'label':'Current Sales Total', 'active':'no', 'type':'text', 'size':'small'},
-            'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
             'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
             }},
         '_connection':{'label':'How did you hear about us?', 'aside':'yes', 'active':'no', 'fields':{
@@ -262,13 +257,8 @@ function ciniki_customers_edit() {
             'display_name_format':{'label':'Display', 'type':'select', 'options':this.displayNameFormatOptions},
             }},
         'account':{'label':'', 'aside':'yes', 'fields':{
-            'salesrep_id':{'label':'Sales Rep', 'active':'no', 'type':'select', 'options':{}},
-            'pricepoint_id':{'label':'Price Point', 'active':'no', 'type':'select', 'options':{}},
             'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
             'tax_location_id':{'label':'Tax Location', 'active':'no', 'type':'select', 'options':{}},
-            'reward_level':{'label':'Reward Teir', 'active':'no', 'type':'text', 'size':'small'},
-            'sales_total':{'label':'Sales Total', 'active':'no', 'type':'text', 'size':'small'},
-            'sales_total_prev':{'label':'Previous Sales', 'active':'no', 'type':'text', 'size':'small'},
             'start_date':{'label':'Start Date', 'active':'yes', 'type':'date'},
             }},
         'name':{'label':'Contact Person', 'aside':'yes', 'fields':{
@@ -1126,28 +1116,6 @@ function ciniki_customers_edit() {
             this.edit.forms.person.account.fields.tax_number.active = 'no';
             this.edit.forms.business.account.fields.tax_number.active = 'no';
         }
-        // Rewards Level
-        if( (M.curTenant.modules['ciniki.customers'].flags&0x80000) > 0 ) {
-            this.edit.forms.person.account.fields.reward_level.active = 'yes';
-            this.edit.forms.business.account.fields.reward_level.active = 'yes';
-            account = 'yes';
-        } else {
-            this.edit.forms.person.account.fields.reward_level.active = 'no';
-            this.edit.forms.business.account.fields.reward_level.active = 'no';
-        }
-        // Sales Total
-        if( (M.curTenant.modules['ciniki.customers'].flags&0x100000) > 0 ) {
-            this.edit.forms.person.account.fields.sales_total.active = 'yes';
-            this.edit.forms.business.account.fields.sales_total.active = 'yes';
-            this.edit.forms.person.account.fields.sales_total_prev.active = 'yes';
-            this.edit.forms.business.account.fields.sales_total_prev.active = 'yes';
-            account = 'yes';
-        } else {
-            this.edit.forms.person.account.fields.sales_total.active = 'no';
-            this.edit.forms.business.account.fields.sales_total.active = 'no';
-            this.edit.forms.person.account.fields.sales_total_prev.active = 'no';
-            this.edit.forms.business.account.fields.sales_total_prev.active = 'no';
-        }
         // Display the address phone number
         if( (M.curTenant.modules['ciniki.customers'].flags&0x01000000) > 0 ) {
             this.address.sections.address.fields.phone.active = 'yes';
@@ -1159,34 +1127,6 @@ function ciniki_customers_edit() {
             this.edit.forms.business.address.fields.phone.active = 'no';
         }
         if( M.curTenant.customers != null && M.curTenant.customers.settings != null ) {
-            // Pricepoints
-            if( (M.curTenant.modules['ciniki.customers'].flags&0x1000) > 0 
-                && M.curTenant.customers.settings.pricepoints != null 
-                ) {
-                this.edit.forms.person.account.fields.pricepoint_id.active = 'yes';
-                this.edit.forms.business.account.fields.pricepoint_id.active = 'yes';
-                account = 'yes';
-                var pricepoints = {};
-                var s_pp = M.curTenant.customers.settings.pricepoints;
-                pricepoints[0] = 'None';
-                for(i in s_pp) {
-                    pricepoints[s_pp[i].pricepoint.id] = s_pp[i].pricepoint.name;
-                }
-                this.edit.forms.person.account.fields.pricepoint_id.options = pricepoints;
-                this.edit.forms.business.account.fields.pricepoint_id.options = pricepoints;
-            } else {
-                this.edit.forms.person.account.fields.pricepoint_id.active = 'no';
-                this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
-            }
-            // Sales Reps 
-            if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 ) {
-                this.edit.forms.person.account.fields.salesrep_id.active = 'yes';
-                this.edit.forms.business.account.fields.salesrep_id.active = 'yes';
-                account = 'yes';
-            } else {
-                this.edit.forms.person.account.fields.salesrep_id.active = 'no';
-                this.edit.forms.business.account.fields.salesrep_id.active = 'no';
-            }
             // Tax Locations
             if( (M.curTenant.modules['ciniki.customers'].flags&0x40000) > 0 
                 && M.curTenant.taxes != null 
@@ -1210,12 +1150,8 @@ function ciniki_customers_edit() {
             }
         } else {
             this.edit.sections = this.edit.forms.person;
-            this.edit.forms.person.account.fields.pricepoint_id.active = 'no';
-            this.edit.forms.business.account.fields.pricepoint_id.active = 'no';
             this.edit.forms.person.account.fields.tax_location_id.active = 'no';
             this.edit.forms.business.account.fields.tax_location_id.active = 'no';
-            this.edit.forms.person.account.fields.salesrep_id.active = 'no';
-            this.edit.forms.business.account.fields.salesrep_id.active = 'no';
         }
         this.edit.forms.person.account.active = account;
         this.edit.forms.business.account.active = account;
@@ -1524,7 +1460,7 @@ function ciniki_customers_edit() {
             this.edit.forms.business.links.active = 'yes';
             M.api.getJSONCb('ciniki.customers.getFull', {'tnid':M.curTenantID, 'customer_id':this.edit.customer_id, 
                 'tags':'yes', 'customer_categories':'yes', 'customer_tags':'yes', 'member_categories':'yes', 
-                'dealer_categories':'yes', 'distributor_categories':'yes', 'sales_reps':'yes', 'images':'yes'}, function(rsp) {
+                'dealer_categories':'yes', 'distributor_categories':'yes', 'images':'yes'}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -1568,25 +1504,6 @@ function ciniki_customers_edit() {
                             p.forms.person._distributor_categories.fields.distributor_categories.tags = tags;
                             p.forms.business._distributor_categories.fields.distributor_categories.tags = tags;
                         }
-                    }
-                    // Sales Reps
-                    if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 ) {
-                        if( rsp.salesreps != null ) {
-                            p.forms.person.account.fields.salesrep_id.active = 'yes';
-                            p.forms.business.account.fields.salesrep_id.active = 'yes';
-                            var reps = {'0':'None'};
-                            for(i in rsp.salesreps) {
-                                reps[rsp.salesreps[i].user.id] = rsp.salesreps[i].user.name;
-                            }
-                            p.forms.person.account.fields.salesrep_id.options = reps;
-                            p.forms.business.account.fields.salesrep_id.options = reps;
-                        } else {
-                            p.forms.person.account.fields.salesrep_id.options = {'0':'None'};
-                            p.forms.business.account.fields.salesrep_id.options = {'0':'None'};
-                        }
-                    } else {
-                        p.forms.person.account.fields.salesrep_id.active = 'no';
-                        p.forms.business.account.fields.salesrep_id.active = 'no';
                     }
                     // Display the email add
                     if( (M.curTenant.modules['ciniki.customers'].flags&0x20000000) == 0 || rsp.customer.emails == null || rsp.customer.emails.length == 0 ) {

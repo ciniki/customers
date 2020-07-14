@@ -42,7 +42,6 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
         . "ciniki_customers.first, ciniki_customers.last, ciniki_customers.display_name, "
         . "ciniki_customer_emails.email, ciniki_customers.status, ciniki_customers.member_status, ciniki_customers.membership_type, "
         . "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
-        . "ciniki_customers.pricepoint_id, "
         . "ciniki_customer_emails.id AS email_id, "
         . "ciniki_customer_emails.failed_logins, "
         . "ciniki_customer_emails.flags, "
@@ -183,7 +182,6 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
                 . "ciniki_customers.first, ciniki_customers.last, ciniki_customers.display_name, "
                 . "ciniki_customers.status, ciniki_customers.member_status, "
                 . "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
-                . "ciniki_customers.pricepoint_id "
                 . "FROM ciniki_customers "
                 . "WHERE ciniki_customers.parent_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
                 . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -216,62 +214,6 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
                 }
             }
         }
-    }
-
-    //
-    // Get the sequence for the customers pricepoint if set
-    //
-    if( ($ciniki['tenant']['modules']['ciniki.customers']['flags']&0x1000) ) {
-        $strsql = "SELECT id, sequence, flags "
-            . "FROM ciniki_customer_pricepoints "
-//          . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $customer['pricepoint_id']) . "' "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
-            array('container'=>'pricepoints', 'fname'=>'id', 
-                'fields'=>array('id', 'sequence', 'flags')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', $customer['id'], $email, $rc['err']['code'], 'Unable to load prices');
-            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: $email pricepoints not found");
-            return $rc;
-        }
-        if( !isset($rc['pricepoints']) ) {
-            $pricepoints = array();
-        } else {
-            $pricepoints = $rc['pricepoints'];
-        }
-        if( $customer['pricepoint_id'] > 0 ) {
-            if( isset($pricepoints[$customer['pricepoint_id']]) ) {
-                $customer['pricepoint'] = $pricepoints[$customer['pricepoint_id']];
-            } else {
-                error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: $email pricepoints not found");
-                if( isset($customer['pricepoint']) ) {
-                    unset($customer['pricepoint']);
-                }
-            }
-        }
-        if( isset($customers) && count($customers) > 0 ) {
-            foreach($customers as $cid => $cust) {
-                if( isset($cust['pricepoint_id']) 
-                    && $cust['pricepoint_id'] > 0 
-                    && isset($pricepoints[$cust['pricepoint_id']])
-                    ) {
-                    $customers[$cid]['pricepoint'] = $pricepoints[$cust['pricepoint_id']];
-                }
-            }
-        }
-//      if( !isset($rc['pricepoint']) ) {
-//          error_log("WEB: $email pricepoint not found");
-//          $customer['pricepoint_id'] = 0;
-//          if( isset($customer['pricepoint']) ) { unset($customer['pricepoint']); }
-//      } else {
-//          $customer['pricepoint'] = array('id'=>$customer['pricepoint_id'],
-//              'sequence'=>$rc['pricepoint']['sequence'],
-//              'flags'=>$rc['pricepoint']['flags'],
-//              );
-//      }
     }
 
     //

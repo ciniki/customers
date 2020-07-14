@@ -41,13 +41,8 @@ function ciniki_customers_dealertools() {
                 'visible':{'label':'Web Visible', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
                 }},
             'options2':{'label':'', 'aside':'yes', 'fields':{
-                'salesrep':{'label':'Sales Rep', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'pricepoint_name':{'label':'Pricepoint', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'pricepoint_code':{'label':'Pricepoint Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 'tax_number':{'label':'Tax Number', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 'tax_location_code':{'label':'Tax Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'reward_level':{'label':'Reward Level', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-                'sales_total':{'label':'Sales Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 'start_date':{'label':'Start Date', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 }},
             'options3':{'label':'', 'fields':{
@@ -110,13 +105,8 @@ function ciniki_customers_dealertools() {
         this.menu.sections.tools.list.dealerlist.label = 'Export ' + plabel + ' (Excel)';
 
         var flags = M.curTenant.modules['ciniki.customers'].flags;
-        this.dealerlist.sections.options2.fields.salesrep.active=((flags&0x2000)>0?'yes':'no');
-        this.dealerlist.sections.options2.fields.pricepoint_name.active=((flags&0x1000)>0?'yes':'no');
-        this.dealerlist.sections.options2.fields.pricepoint_code.active=((flags&0x1000)>0?'yes':'no');
         this.dealerlist.sections.options2.fields.tax_number.active=((flags&0x20000)>0?'yes':'no');
         this.dealerlist.sections.options2.fields.tax_location_code.active=((flags&0x40000)>0?'yes':'no');
-        this.dealerlist.sections.options2.fields.reward_level.active=((flags&0x80000)>0?'yes':'no');
-        this.dealerlist.sections.options2.fields.sales_total.active=((flags&0x100000)>0?'yes':'no');
         this.dealerlist.sections.options2.fields.start_date.active='yes';
 
         this.showMenu(cb);

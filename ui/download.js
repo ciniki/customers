@@ -52,14 +52,8 @@ function ciniki_customers_download() {
             'distributor_status':{'label':'Distributor Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
         }},
         'options3':{'label':'', 'aside':'yes', 'active':'yes', 'fields':{
-            'salesrep':{'label':'Sales Rep', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            'pricepoint_name':{'label':'Pricepoint', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            'pricepoint_code':{'label':'Pricepoint Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'tax_number':{'label':'Tax Number', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'tax_location_code':{'label':'Tax Code', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            'reward_level':{'label':'Reward Level', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            'sales_total':{'label':'Sales Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
-            'sales_total_prev':{'label':'Previous Total', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'start_date':{'label':'Start Date', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
         }},
         'options4':{'label':'Joined Contact Info', 'active':'yes', 'fields':{
@@ -148,14 +142,8 @@ function ciniki_customers_download() {
         this.exportlist.sections._dealers.active=((flags&0x10)>0?'yes':'no');
         this.exportlist.sections._distributors.active=((flags&0x0100)>0?'yes':'no');
 
-        this.exportlist.sections.options3.fields.salesrep.active=((flags&0x2000)>0?'yes':'no');
-        this.exportlist.sections.options3.fields.pricepoint_name.active=((flags&0x1000)>0?'yes':'no');
-        this.exportlist.sections.options3.fields.pricepoint_code.active=((flags&0x1000)>0?'yes':'no');
         this.exportlist.sections.options3.fields.tax_number.active=((flags&0x20000)>0?'yes':'no');
         this.exportlist.sections.options3.fields.tax_location_code.active=((flags&0x40000)>0?'yes':'no');
-        this.exportlist.sections.options3.fields.reward_level.active=((flags&0x80000)>0?'yes':'no');
-        this.exportlist.sections.options3.fields.sales_total.active=((flags&0x100000)>0?'yes':'no');
-        this.exportlist.sections.options3.fields.sales_total_prev.active=((flags&0x100000)>0?'yes':'no');
         this.exportlist.sections.options3.fields.start_date.active='yes';
 
         M.ciniki_customers_download.showExportList(cb);

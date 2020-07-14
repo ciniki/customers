@@ -35,7 +35,14 @@ function ciniki_customers_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     $dt = new DateTime('now', new DateTimeZone($intl_timezone));
 
-    if( $args['object'] == 'ciniki.customers.membership' ) {
+    if( $args['object'] == 'ciniki.customers.product' 
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) 
+        ) {
+
+
+    }
+
+    elseif( $args['object'] == 'ciniki.customers.membership' ) {
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000000) ) {
             //
             // Get the latest season marked current

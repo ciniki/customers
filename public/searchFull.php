@@ -85,9 +85,6 @@ function ciniki_customers_searchFull($ciniki) {
             . ") "
         . "WHERE c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
-    if( isset($ciniki['tenant']['user']['perms']) && ($ciniki['tenant']['user']['perms']&0x07) == 0x04 ) {
-        $strsql .= "AND c1.salesrep_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' ";
-    }
     if( isset($args['type']) ) {
         if( $args['type'] == 'members' ) {
             $strsql .= "AND c1.member_status > 0 ";

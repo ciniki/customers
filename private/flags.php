@@ -33,17 +33,17 @@ function ciniki_customers_flags($ciniki, $modules) {
             // The IFB flag will change many aspects of the module, and how customer information is stored.
             //
         // 0x1000
-        array('flag'=>array('bit'=>'13', 'name'=>'Price Points')),
-        array('flag'=>array('bit'=>'14', 'name'=>'Sales Reps')),
+//        array('flag'=>array('bit'=>'13', 'name'=>'')), // Former: Price Points
+//        array('flag'=>array('bit'=>'14', 'name'=>'')), // Former: Sales Reps
         array('flag'=>array('bit'=>'15', 'name'=>'Connection')),
         array('flag'=>array('bit'=>'16', 'name'=>'Birthdate')),
         // 0x010000
         array('flag'=>array('bit'=>'17', 'name'=>'External ID')),
         array('flag'=>array('bit'=>'18', 'name'=>'Tax Number')),
         array('flag'=>array('bit'=>'19', 'name'=>'Tax Locations')),
-        array('flag'=>array('bit'=>'20', 'name'=>'Reward Levels')),
+//        array('flag'=>array('bit'=>'20', 'name'=>'')), // Former: Reward Levels
         // 0x100000
-        array('flag'=>array('bit'=>'21', 'name'=>'Sales Total')),
+//        array('flag'=>array('bit'=>'21', 'name'=>'')), // Former: Sales Total
         array('flag'=>array('bit'=>'22', 'name'=>'Children')),
         array('flag'=>array('bit'=>'23', 'name'=>'Customer Categories')),
         array('flag'=>array('bit'=>'24', 'name'=>'Customer Tags')),

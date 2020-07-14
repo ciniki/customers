@@ -46,13 +46,13 @@ function ciniki_customers_objects($ciniki) {
             'birthdate'=>array('name'=>'Birthdate', 'default'=>''),
             'connection'=>array('name'=>'Connection', 'default'=>''),
             'language'=>array('name'=>'Preferred Language', 'default'=>''),
-            'pricepoint_id'=>array('ref'=>'ciniki.customers.pricepoint', 'default'=>'0'),
-            'salesrep_id'=>array('ref'=>'ciniki.users.user', 'default'=>'0'),
+            'pricepoint_id'=>array('ref'=>'ciniki.customers.pricepoint', 'default'=>'0'), //deprecated
+            'salesrep_id'=>array('ref'=>'ciniki.users.user', 'default'=>'0'), //deprecated
             'tax_number'=>array('default'=>''),
             'tax_location_id'=>array('ref'=>'ciniki.taxes.location', 'default'=>'0'),
-            'reward_level'=>array('default'=>''),
-            'sales_total'=>array('default'=>''),
-            'sales_total_prev'=>array('default'=>''),
+            'reward_level'=>array('default'=>''), //deprecated
+            'sales_total'=>array('default'=>''), //deprecated
+            'sales_total_prev'=>array('default'=>''), //deprecated
             'discount_percent'=>array('default'=>'0'),
             'start_date'=>array('default'=>''),
             'webflags'=>array('default'=>'0'),
@@ -182,17 +182,27 @@ function ciniki_customers_objects($ciniki) {
             ),
         'history_table'=>'ciniki_customer_history',
         );
-    $objects['pricepoint'] = array(
-        'name'=>'Price Point',
-        'sync'=>'yes',
-        'table'=>'ciniki_customer_pricepoints',
-        'fields'=>array(
-            'name'=>array(),
-            'code'=>array(),
-            'sequence'=>array(),
-            'flags'=>array(),
+    $objects['reminder'] = array(
+        'name' => 'Reminders',
+        'sync' => 'yes',
+        'o_name' => 'reminder',
+        'o_container' => 'reminders',
+        'table' => 'ciniki_customers_reminders',
+        'fields' => array(
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'reminder_date' => array('name'=>'Date'),
+            'flags' => array('name'=>'Options', 'default'=>'0'),
+            'repeat_type' => array('name'=>'Repeat Type', 'default'=>'0'),
+            'repeat_interval' => array('name'=>'Repeat Interval', 'default'=>'1'),
+            'repeat_end' => array('name'=>'Repeat End Date', 'default'=>''),
+            'description' => array('name'=>'Description'),
+            'category' => array('name'=>'Category', 'default'=>''),
+            'notes' => array('name'=>'Notes', 'default'=>''),
+            'email_time' => array('name'=>'Email Time', 'default'=>''),
+            'email_subject' => array('name'=>'Email Subject', 'default'=>''),
+            'email_html' => array('name'=>'Email Content', 'default'=>''),
             ),
-        'history_table'=>'ciniki_customer_history',
+        'history_table' => 'ciniki_customers_history',
         );
     $objects['setting'] = array(
         'type'=>'settings',

@@ -61,7 +61,7 @@ function ciniki_customers_hooks_customerDetails($ciniki, $tnid, $args) {
     // Get the customer details and emails
     //
     $strsql = "SELECT ciniki_customers.id, eid, type, prefix, first, middle, last, suffix, "
-        . "display_name, company, department, title, salesrep_id, "
+        . "display_name, company, department, title, "
         . "phone_home, phone_cell, phone_work, phone_fax, "
         . "primary_email, alternate_email, "
         . (isset($args['full_bio']) && $args['full_bio'] == 'yes' ? "full_bio, " : '')
@@ -69,7 +69,7 @@ function ciniki_customers_hooks_customerDetails($ciniki, $tnid, $args) {
         . "member_status, member_status AS member_status_text, member_lastpaid, "
         . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
-        . "pricepoint_id, notes "
+        . "notes "
         . "FROM ciniki_customers "
         . "LEFT JOIN ciniki_customer_emails ON ("
             . "ciniki_customers.id = ciniki_customer_emails.customer_id "
@@ -83,7 +83,7 @@ function ciniki_customers_hooks_customerDetails($ciniki, $tnid, $args) {
         'primary_email', 'alternate_email',
         'status', 'dealer_status', 'distributor_status',
         'member_status', 'member_status_text', 'member_lastpaid',
-        'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
+        'company', 'department', 'title',
         'notes', 'birthdate');
     if( isset($args['full_bio']) && $args['full_bio'] == 'yes' ) {
         $fields[] = 'full_bio';

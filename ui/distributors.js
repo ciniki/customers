@@ -436,29 +436,6 @@ function ciniki_customers_distributors() {
                 }
 
                 p.data.account = {};
-                // Sales Rep
-                if( (M.curTenant.modules['ciniki.customers'].flags&0x2000) > 0 
-                    && rsp.customer.salesrep_id_text != null && rsp.customer.salesrep_id_text != ''
-                    ) {
-                    p.sections.account.visible = 'yes';
-                    p.data.account.salesrep_id = {'label':'Sales Rep', 'value':rsp.customer.salesrep_id_text};
-                }
-                // Pricepoint
-                if( (M.curTenant.modules['ciniki.customers'].flags&0x1000) > 0 
-                    && M.curTenant.customers.settings.pricepoints != null
-                    ) {
-                    p.sections.account.visible = 'yes';
-                    for(i in M.curTenant.customers.settings.pricepoints) {
-                        if( M.curTenant.customers.settings.pricepoints[i].pricepoint.id == rsp.customer.pricepoint_id ) {
-                            p.data.account.pricepoint_id = {'label':'Price Point', 
-                                'value':M.curTenant.customers.settings.pricepoints[i].pricepoint.name};
-                            break;
-                        }
-                    }
-                    if( p.data.account.pricepoint_id == null ) {
-                        p.data.account.pricepoint_id = {'label':'Price Point', 'value':'None'};
-                    }
-                }
                 // Tax Number
                 if( (M.curTenant.modules['ciniki.customers'].flags&0x20000) > 0 
                     && rsp.customer.tax_number != null && rsp.customer.tax_number != ''
@@ -472,28 +449,6 @@ function ciniki_customers_distributors() {
                     p.sections.account.visible = 'yes';
                     p.data.account.tax_location_id = {'label':'Taxes', 'value':(rsp.customer.tax_location_id_text!=null?rsp.customer.tax_location_id_text:'Use Shipping Address') + rates};
                 }
-                // Reward Level
-                if( (M.curTenant.modules['ciniki.customers'].flags&0x80000) > 0 
-                    && rsp.customer.reward_level != null && rsp.customer.reward_level != ''
-                    ) {
-                    p.sections.account.visible = 'yes';
-                    p.data.account.reward_level = {'label':'Reward Teir', 'value':rsp.customer.reward_level};
-                }
-                // Sales Total
-                if( (M.curTenant.modules['ciniki.customers'].flags&0x100000) > 0 
-                    && rsp.customer.sales_total != null && rsp.customer.sales_total != ''
-                    ) {
-                    p.sections.account.visible = 'yes';
-                    p.data.account.sales_total = {'label':'Sales Total', 'value':rsp.customer.sales_total};
-                }
-                // Start Date
-                if( (M.curTenant.modules['ciniki.customers'].flags&0x100000) > 0 
-                    && rsp.customer.sales_total != null && rsp.customer.sales_total != ''
-                    ) {
-                    p.sections.account.visible = 'yes';
-                    p.data.account.sales_total = {'label':'Sales Total', 'value':rsp.customer.sales_total};
-                }
-
                 p.sections.notes.visible=(rsp.customer.notes!=null&&rsp.customer.notes!='')?'yes':'no';
                 p.sections.full_bio.visible=(rsp.customer.full_bio!=null&&rsp.customer.full_bio!='')?'yes':'no';
                 p.sections.short_bio.visible=(rsp.customer.short_bio!=null&&rsp.customer.short_bio!='')?'yes':'no';

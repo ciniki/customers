@@ -54,12 +54,12 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
     // Get the customer details and emails
     //
     $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, permalink, callsign, prefix, first, middle, last, suffix, "
-        . "display_name, sort_name, display_name_format, company, department, title, salesrep_id, "
+        . "display_name, sort_name, display_name_format, company, department, title, "
         . "status, dealer_status, distributor_status, "
         . "phone_home, phone_work, phone_cell, phone_fax, "
         . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
-        . "pricepoint_id, notes "
+        . "notes "
         . "FROM ciniki_customers "
         . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
         . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -70,7 +70,7 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
                 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'display_name_format', 
                 'status', 'dealer_status', 'distributor_status',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
-                'company', 'department', 'title', 'salesrep_id', 'pricepoint_id',
+                'company', 'department', 'title',
                 'notes', 'birthdate')),
         array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
             'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
