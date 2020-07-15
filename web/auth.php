@@ -181,7 +181,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
             $strsql = "SELECT ciniki_customers.id, parent_id, "
                 . "ciniki_customers.first, ciniki_customers.last, ciniki_customers.display_name, "
                 . "ciniki_customers.status, ciniki_customers.member_status, "
-                . "ciniki_customers.dealer_status, ciniki_customers.distributor_status, "
+                . "ciniki_customers.dealer_status, ciniki_customers.distributor_status "
                 . "FROM ciniki_customers "
                 . "WHERE ciniki_customers.parent_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
                 . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
