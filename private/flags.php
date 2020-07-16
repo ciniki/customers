@@ -41,7 +41,7 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'17', 'name'=>'External ID')),
         array('flag'=>array('bit'=>'18', 'name'=>'Tax Number')),
         array('flag'=>array('bit'=>'19', 'name'=>'Tax Locations')),
-//        array('flag'=>array('bit'=>'20', 'name'=>'')), // Former: Reward Levels
+        array('flag'=>array('bit'=>'20', 'name'=>'Reminders')), // Former: Reward Levels
         // 0x100000
 //        array('flag'=>array('bit'=>'21', 'name'=>'')), // Former: Sales Total
         array('flag'=>array('bit'=>'22', 'name'=>'Children')),
