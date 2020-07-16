@@ -26,7 +26,7 @@
 #                               20 - weekly, same day every week
 #                               30 - monthly, same day of month
 #                               31 - monthly, same day of week (first sunday)
-#                               50 - yearly, same month day every year
+#                               40 - yearly, same month day every year
 # 
 # repeat_interval:          The interval to repeat, (default 1). The interval is
 #                           based on the repeat_type selected for this reminder.
@@ -42,6 +42,8 @@
 # notes:                    The private notes for the reminder.
 #
 # email_time:               The time in the local timezone to email the message on the reminder_date.
+# email_next_dt:            The UTC date and time for the next reminder email.
+#                           This is combination of reminder_date + email_time, converted to UTC.
 # email_subject:            The subject for the customer email.
 # email_html:               The message to send to the customer.
 #
@@ -63,6 +65,7 @@ create table ciniki_customer_reminders (
     category varchar(150) not null,
     notes text not null,
     email_time time not null,
+    email_next_dt datetime not null,
     email_subject varchar(250) not null,
     email_html varchar(250) not null,
 

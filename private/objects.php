@@ -187,7 +187,7 @@ function ciniki_customers_objects($ciniki) {
         'sync' => 'yes',
         'o_name' => 'reminder',
         'o_container' => 'reminders',
-        'table' => 'ciniki_customers_reminders',
+        'table' => 'ciniki_customer_reminders',
         'fields' => array(
             'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
             'reminder_date' => array('name'=>'Date'),
@@ -199,10 +199,11 @@ function ciniki_customers_objects($ciniki) {
             'category' => array('name'=>'Category', 'default'=>''),
             'notes' => array('name'=>'Notes', 'default'=>''),
             'email_time' => array('name'=>'Email Time', 'default'=>''),
+            'email_next_dt' => array('name'=>'Next Email Date', 'default'=>''),
             'email_subject' => array('name'=>'Email Subject', 'default'=>''),
             'email_html' => array('name'=>'Email Content', 'default'=>''),
             ),
-        'history_table' => 'ciniki_customers_history',
+        'history_table' => 'ciniki_customer_history',
         );
     $objects['setting'] = array(
         'type'=>'settings',

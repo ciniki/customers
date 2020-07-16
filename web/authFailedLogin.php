@@ -106,7 +106,7 @@ function ciniki_customers_web_authFailedLogin(&$ciniki, $settings, $tnid, $email
                     }
 
                     //
-                    // Queue the welcome email
+                    // Queue the email
                     //
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
                     $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
