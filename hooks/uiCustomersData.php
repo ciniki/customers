@@ -94,8 +94,8 @@ function ciniki_customers_hooks_uiCustomersData($ciniki, $tnid, $args) {
                     'cellClasses' => array('multiline', '', ''),
                     'noData' => 'No reminders setup',
                     'addTxt' => 'Add Reminder',
-                    'addApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('customer_id'=>$args['customer_id'])),
-                    'editApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('reminder_id'=>'d.id;')),
+                    'addApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('customer_id'=>$args['customer_id'], 'source'=>'\'customer\'')),
+                    'editApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('reminder_id'=>'d.id;', 'source'=>'\'customer\'')),
                     'cellValues' => array(
                         '0' => "M.multiline(d.reminder_date_display, d.category)",
                         '1' => "d.description",

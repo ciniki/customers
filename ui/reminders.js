@@ -2,6 +2,7 @@ function ciniki_customers_reminders() {
     //
     // The panel to list the reminder
     //
+    /*
     this.menu = new M.panel('reminder', 'ciniki_customers_reminders', 'menu', 'mc', 'medium', 'sectioned', 'ciniki.customers.reminders.menu');
     this.menu.data = {};
     this.menu.nplist = [];
@@ -14,7 +15,7 @@ function ciniki_customers_reminders() {
         'reminders':{'label':'Reminders', 'type':'simplegrid', 'num_cols':3,
             'noData':'No reminder',
             'addTxt':'Add Reminders',
-            'addFn':'M.ciniki_customers_reminders.reminder.open(\'M.ciniki_customers_reminders.menu.open();\',0,null);'
+            'addFn':'M.ciniki_customers_reminders.reminder.open(\'M.ciniki_customers_reminders.menu.open();\',0);'
             },
     }
     this.menu.liveSearchCb = function(s, i, v) {
@@ -56,16 +57,24 @@ function ciniki_customers_reminders() {
         });
     }
     this.menu.addClose('Back');
+    */
 
     //
     // The panel to edit Reminders
     //
     this.reminder = new M.panel('Reminders', 'ciniki_customers_reminders', 'reminder', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.customers.main.reminder');
     this.reminder.data = null;
+    this.reminder.source = null;
     this.reminder.reminder_id = 0;
     this.reminder.customer_id = 0;
     this.reminder.nplist = [];
     this.reminder.sections = {
+        'customer_details':{'label':'Customer', 'aside':'yes', 'type':'simplegrid', 'num_cols':2, 
+            'visible':'no',
+            'cellClasses':['label', ''],
+            'changeTxt':'View Customer',
+            'changeFn':'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_reminders.reminder.open();\',\'mc\',{\'customer_id\':M.ciniki_customers_reminders.reminder.data.customer_id});',
+            },
         'general':{'label':'Reminder', 'aside':'yes', 'fields':{
             'reminder_date':{'label':'Date', 'required':'yes', 'type':'date'},
             'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
@@ -104,6 +113,15 @@ function ciniki_customers_reminders() {
     this.reminder.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.customers.reminderHistory', 'args':{'tnid':M.curTenantID, 'reminder_id':this.reminder_id, 'field':i}};
     }
+    this.reminder.cellValue = function(s, i, j, d) {
+        switch(j) { 
+            case 0: return d.label;
+            case 1: return (d.label == 'Email' ? M.linkEmail(d.value):d.value);
+        }
+    }
+    this.reminder.rowFn = function(s, i, d) {
+        return '';
+    }
     this.reminder.updateInterval = function(s, i) {
         var rt = this.formValue('repeat_type');
         if( rt == 0 ) {
@@ -123,10 +141,13 @@ function ciniki_customers_reminders() {
         this.showHideFormField('_repeat', 'repeat_interval');
         this.showHideFormField('_repeat', 'repeat_end');
     };
-    this.reminder.open = function(cb, rid, cid, list) {
+    this.reminder.open = function(cb, rid, cid, source, list) {
         if( rid != null ) { this.reminder_id = rid; }
         if( cid != null ) { this.customer_id = cid; }
         if( list != null ) { this.nplist = list; }
+        if( source != null ) { 
+            this.sections.customer_details.visible = (source != 'customer' ? 'yes' : 'no');
+        }
         M.api.getJSONCb('ciniki.customers.reminderGet', {'tnid':M.curTenantID, 'reminder_id':this.reminder_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -181,13 +202,13 @@ function ciniki_customers_reminders() {
     }
     this.reminder.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.reminder_id) < (this.nplist.length - 1) ) {
-            return 'M.ciniki_customers_reminders.reminder.save(\'M.ciniki_customers_reminders.reminder.open(null,' + this.nplist[this.nplist.indexOf('' + this.reminder_id) + 1] + ');\');';
+            return 'M.ciniki_customers_reminders.reminder.save(\'M.ciniki_customers_reminders.reminder.open(null,null,null,null,' + this.nplist[this.nplist.indexOf('' + this.reminder_id) + 1] + ');\');';
         }
         return null;
     }
     this.reminder.prevButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.reminder_id) > 0 ) {
-            return 'M.ciniki_customers_reminders.reminder.save(\'M.ciniki_customers_reminders.reminder.open(null,' + this.nplist[this.nplist.indexOf('' + this.reminder_id) - 1] + ');\');';
+            return 'M.ciniki_customers_reminders.reminder.save(\'M.ciniki_customers_reminders.reminder.open(null,null,null,null,' + this.nplist[this.nplist.indexOf('' + this.reminder_id) - 1] + ');\');';
         }
         return null;
     }
@@ -214,9 +235,9 @@ function ciniki_customers_reminders() {
         } 
 
         if( args.reminder_id != null && args.reminder_id > 0 ) {
-            this.reminder.open(cb, args.reminder_id);
+            this.reminder.open(cb, args.reminder_id, null, (args.source == null ? '' : args.source));
         } else if( args.appointment_id != null && args.appointment_id > 0 ) {
-            this.reminder.open(cb, args.appointment_id);
+            this.reminder.open(cb, args.appointment_id, null, (args.source == null ? '' : args.source));
         } else if( args.customer_id != null && args.customer_id > 0 ) {
             this.reminder.open(cb, 0, args.customer_id);
         } else {
