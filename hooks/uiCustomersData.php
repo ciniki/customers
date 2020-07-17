@@ -73,7 +73,6 @@ function ciniki_customers_hooks_uiCustomersData($ciniki, $tnid, $args) {
                 'fields'=>array('id', 'customer_id', 'reminder_date', 'reminder_date_display', 'flags', 
                     'repeat_type', 'repeat_interval', 'repeat_end', 'description', 'category', 
                     'email_time', 'email_dt_display', 'email_subject', 'email_html'),
-                'utctotz'
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

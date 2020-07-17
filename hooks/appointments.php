@@ -82,7 +82,7 @@ function ciniki_customers_hooks_appointments($ciniki, $tnid, $args) {
             . "OR ("
                 . "reminders.reminder_date < '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
                 . "AND reminders.repeat_type > 0 "
-                . "AND reminders.repeat_end <= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+                . "AND reminders.repeat_end >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
                 . ") "
             . ") "
         . "";
@@ -112,7 +112,9 @@ function ciniki_customers_hooks_appointments($ciniki, $tnid, $args) {
         $reminder['time'] = '00:00:00';
         $reminder['allday'] = 'yes';
         $reminder['subject'] = $reminder['display_name'] . ' - ' . $reminder['description'];
-        $appointments[] = $reminder;
+        if( $dt >= $start_dt && $dt <= $end_dt ) {
+            $appointments[] = $reminder;
+        }
         // Setup end of repeat
         $repeat_end_dt = null;
         if( $reminder['repeat_end'] != '0000-00-00' ) {
@@ -120,14 +122,14 @@ function ciniki_customers_hooks_appointments($ciniki, $tnid, $args) {
         }
 
         if( $reminder['repeat_type'] > 0 ) {
-            while($dt < $end_dt) {
+            while($dt <= $end_dt) {
                 $rc = ciniki_customers_reminderRepeatNextDate($ciniki, $tnid, $reminder, $dt);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.410', 'msg'=>'Unable to calculate next reminder date', 'err'=>$rc['err']));
                 }
                 $dt = $rc['next_dt'];
 
-                if( $dt < $end_dt && ($repeat_end_dt == null || $dt <= $repeat_end_dt) ) {
+                if( $dt >= $start_dt && $dt <= $end_dt && ($repeat_end_dt == null || $dt <= $repeat_end_dt) ) {
                     $reminder['start_ts'] = $dt->format('U');
                     $reminder['date'] = $dt->format('Y-m-d');
                     $appointments[] = $reminder;
