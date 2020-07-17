@@ -66,7 +66,7 @@ function ciniki_customers_memberships() {
     }
     this.menu.rowClass = function(s, i, d) {
         if( s == 'categories' ) {
-            console.log(s + '::' + unescape(this.category) + '::' + d.name);
+            //console.log(s + '::' + unescape(this.category) + '::' + d.name);
         }
         if( s == 'membertypes' && this.filterby == 'type' && this.membertype == d.membership_type ) {
             return 'highlight';
@@ -122,7 +122,6 @@ function ciniki_customers_memberships() {
                 M.api.err(rsp);
                 return false;
             }
-            console.log(rsp);
             var p = M.ciniki_customers_memberships.menu;
             p.data = rsp;
             p.refresh();

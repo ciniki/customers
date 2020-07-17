@@ -505,7 +505,6 @@ function ciniki_customers_main() {
         var mods = M.curTenant.modules;
         this.data = rsp.customer;
         this.data.data_tabs = rsp.data_tabs;
-        console.log(rsp);
         this.data.details = {};
 
         this.sections = {
