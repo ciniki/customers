@@ -34,12 +34,12 @@ function ciniki_customers_hooks_appointmentSearch($ciniki, $tnid, $args) {
         $args['date'] = $dt->format('Y-m-d');
     }
 
-    if( !isset($args['start_date']) || $args['start_date'] == '' ) {
+/*    if( !isset($args['start_date']) || $args['start_date'] == '' ) {
         if( isset($args['date']) ) {
             $args['start_date'] = $args['date'];
         } else {
             $dt = new DateTime('now', new DateTimezone($intl_timezone));
-            $args['start_date'] = $dt->format('Y-m-d') . ' 00:00:00';
+            $args['start_date'] = $dt->format('Y-m-d');
         }
     }
 
@@ -49,7 +49,7 @@ function ciniki_customers_hooks_appointmentSearch($ciniki, $tnid, $args) {
 
     $start_dt = new DateTime($args['start_date'], new DateTimezone($intl_timezone));
     $end_dt = new DateTime($args['end_date'], new DateTimezone($intl_timezone));
-
+*/
     //
     // Get the list of reminders between the 2 dates
     //
@@ -86,9 +86,8 @@ function ciniki_customers_hooks_appointmentSearch($ciniki, $tnid, $args) {
     if( isset($args['date']) ) {
         $strsql .= "ORDER BY ABS(DATEDIFF(DATE(reminders.reminder_date), DATE('" . ciniki_core_dbQuote($ciniki, $args['date']) . "'))) ";
     } else {
-        $strsql .= "ORDER BY ABS(DATEDIFF(DATE(reminders.reminder_date), DATE('" . ciniki_core_dbQuote($ciniki, $args['date']) . "'))) ";
+        $strsql .= "ORDER BY ABS(DATEDIFF(DATE(reminders.reminder_date), DATE(NOW()))) ";
     }
-    error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'reminders', 'fname'=>'id', 
