@@ -14,6 +14,17 @@
 // 
 function ciniki_customers_reminderRepeatNextDate(&$ciniki, $tnid, $reminder, $dt) {
 
+    //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+
+
     if( $reminder['repeat_type'] == 10 ) {
         $dt->add(new DateInterval('P' . $reminder['repeat_interval'] . 'D'));
     } elseif( $reminder['repeat_type'] == 20 ) {
