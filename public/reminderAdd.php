@@ -51,7 +51,7 @@ function ciniki_customers_reminderAdd(&$ciniki) {
     // Load the tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
-    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
