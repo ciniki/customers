@@ -109,7 +109,7 @@ function ciniki_customers_reminders() {
                 'fn':'M.ciniki_customers_reminders.reminder.remove();'},
             }},
         };
-    this.reminder.fieldValue = function(s, i, d) { return this.data[i]; }
+//    this.reminder.fieldValue = function(s, i, d) { return this.data[i]; }
     this.reminder.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.customers.reminderHistory', 'args':{'tnid':M.curTenantID, 'reminder_id':this.reminder_id, 'field':i}};
     }
@@ -118,6 +118,23 @@ function ciniki_customers_reminders() {
             case 0: return d.label;
             case 1: return (d.label == 'Email' ? M.linkEmail(d.value):d.value);
         }
+    }
+    this.reminder.liveSearchCb = function(s, i, v) {
+        if( i == 'category' ) {
+            M.api.getJSONBgCb('ciniki.customers.reminderCategorySearch', {'tnid':M.curTenantID, 'start_needle':v, 'limit':'25'}, function(rsp) {
+                M.ciniki_customers_reminders.reminder.liveSearchShow(s,i,M.gE(M.ciniki_customers_reminders.reminder.panelUID + '_' + i), rsp.categories);
+                });
+        }
+    }
+    this.reminder.liveSearchResultValue = function(s, f, i, j, d) {
+        return d.category;
+    }
+    this.reminder.liveSearchResultRowFn = function(s, f, i, j, d) {
+        return 'M.ciniki_customers_reminders.reminder.updateField(\'' + s + '\',\'' + f + '\',\'' + escape(d.category) + '\');';
+    }
+    this.reminder.updateField = function(s, fid, v) {
+        M.gE(this.panelUID + '_' + fid).value = unescape(v);
+        this.removeLiveSearch(s, fid);
     }
     this.reminder.rowFn = function(s, i, d) {
         return '';
