@@ -50,10 +50,12 @@ function ciniki_customers_reporting_blockReminders(&$ciniki, $tnid, $args) {
     }
 
     $start_dt = new DateTime('now', new DateTimezone($intl_timezone));
-    $start_dt = $start_dt->setTime(0, 0, 0);
+    $start_dt->setTime(0, 0, 0);
     $end_dt = clone $start_dt;
-    $end_dt->add(new DateInterval('P' . $days . 'D'));
-    $end_dt->setTime(23,59,59);
+    if( $days > 1 ) {
+        $end_dt->add(new DateInterval('P' . ($days-1) . 'D'));
+    }
+    $end_dt->setTime(23, 59, 59);
 
     //
     // Store the report block chunks
