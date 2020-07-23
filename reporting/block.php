@@ -54,6 +54,9 @@ function ciniki_customers_reporting_block(&$ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockExpMembers');
         $args['options']['direction'] = 'past';
         return ciniki_customers_reporting_blockExpMembers($ciniki, $tnid, $args['options']);
+    } elseif( $args['block_ref'] == 'ciniki.customers.reminders' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockReminders');
+        return ciniki_customers_reporting_blockReminders($ciniki, $tnid, $args['options']);
     }
 
     return array('stat'=>'ok');

@@ -72,6 +72,16 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
                 ),
             );
     }
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x080000) ) {
+        $blocks['ciniki.customers.reminders'] = array(
+            'name'=>'Upcoming Reminders',
+            'module' => 'Customers',
+            'options'=>array(
+                'days'=>array('label'=>'Next (x) Days', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                ),
+            );
+        
+    }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }
