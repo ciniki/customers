@@ -82,13 +82,10 @@ function ciniki_customers_reporting_blockNewCustomers(&$ciniki, $tnid, $args) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+    $customers = isset($rc['customers']) ? $rc['customers'] : array();
     $customer_ids = array();
-    if( isset($rc['customers']) ) {
-        $customers = $rc['customers'];
-       
-        foreach($customers as $customer) {
-            $customer_ids[] = $customer['id'];
-        }
+    foreach($customers as $customer) {
+        $customer_ids[] = $customer['id'];
     }
 
     //
@@ -112,7 +109,7 @@ function ciniki_customers_reporting_blockNewCustomers(&$ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $emails = $rc['customers'];
+        $emails = isset($rc['customers']) ? $rc['customers'] : array();
 
         //
         // Get the addresses
@@ -130,7 +127,7 @@ function ciniki_customers_reporting_blockNewCustomers(&$ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $addresses = $rc['customers'];
+        $addresses = isset($rc['customers']) ? $rc['customers'] : array();
 
         //
         // Create the report blocks
