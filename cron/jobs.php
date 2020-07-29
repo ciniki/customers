@@ -25,6 +25,7 @@ function ciniki_customers_cron_jobs(&$ciniki) {
         . "FROM ciniki_customer_reminders "
         . "WHERE (flags&0x03) = 0x01 "  // Email to be sent, but currently unsent
         . "AND email_next_dt <= UTC_TIMESTAMP() "
+        . "AND (end_date = '0000-00-00' OR end_date > UTC_TIMESTAMP()) "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'item');
     if( $rc['stat'] != 'ok' ) {

@@ -43,15 +43,15 @@ function ciniki_customers_reminderHistory($ciniki) {
 
     if( $args['field'] == 'reminder_date' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
-        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_reminders', $args['reminder_id'], $args['field'], 'date');
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_reminders', $args['reminder_id'], $args['field'], 'date');
     }
 
     if( $args['field'] == 'repeat_end' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
-        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_reminders', $args['reminder_id'], $args['field'], 'date');
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_reminders', $args['reminder_id'], $args['field'], 'date');
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_reminders', $args['reminder_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_reminders', $args['reminder_id'], $args['field']);
 }
 ?>
