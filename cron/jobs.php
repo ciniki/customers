@@ -25,7 +25,7 @@ function ciniki_customers_cron_jobs(&$ciniki) {
         . "FROM ciniki_customer_reminders "
         . "WHERE (flags&0x03) = 0x01 "  // Email to be sent, but currently unsent
         . "AND email_next_dt <= UTC_TIMESTAMP() "
-        . "AND (end_date = '0000-00-00' OR end_date > UTC_TIMESTAMP()) "
+//        . "AND (repeat_end = '0000-00-00' OR repeat_end >= DATE(UTC_TIMESTAMP())) " // Make sure it hasn't ended yet
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -36,6 +36,7 @@ function ciniki_customers_cron_jobs(&$ciniki) {
     }
     $reminders = $rc['rows'];
     foreach($reminders as $reminder) {
+        error_log('send: ' . $reminder['id']);
         $rc = ciniki_customers_reminderEmailSend($ciniki, $reminder['tnid'], $reminder['id']);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.405', 'msg'=>'Unable to send customer reminder', 'err'=>$rc['err']));

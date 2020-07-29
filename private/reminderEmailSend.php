@@ -103,7 +103,19 @@ function ciniki_customers_reminderEmailSend(&$ciniki, $tnid, $reminder_id) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.409', 'msg'=>'Unable to calculate next reminder date', 'err'=>$rc['err']));
         }
-        if( $rc['next_dt']->format('Y-m-d') != $reminder['reminder_date'] ) {
+        if( $reminder['repeat_end'] != '0000-00-00' ) {
+            $end_dt = new DateTime($reminder['repeat_end'] . ' 23:59:59', new DateTimezone($intl_timezone));
+        }
+        //
+        // Mark the reminder as sent, don't advance the date
+        //
+        if( isset($end_dt) && $end_dt < $rc['next_dt'] ) {
+            $update_args['flags'] = ($reminder['flags'] | 0x02); // Mark as sent
+        }
+        //
+        // Only advance the date if no end date or end date is in future and next date is different
+        //
+        elseif( $rc['next_dt']->format('Y-m-d') != $reminder['reminder_date'] ) {
             $update_args['reminder_date'] = $rc['next_dt']->format('Y-m-d');
         }
 
