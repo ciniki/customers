@@ -36,7 +36,6 @@ function ciniki_customers_cron_jobs(&$ciniki) {
     }
     $reminders = $rc['rows'];
     foreach($reminders as $reminder) {
-        error_log('send: ' . $reminder['id']);
         $rc = ciniki_customers_reminderEmailSend($ciniki, $reminder['tnid'], $reminder['id']);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.405', 'msg'=>'Unable to send customer reminder', 'err'=>$rc['err']));
