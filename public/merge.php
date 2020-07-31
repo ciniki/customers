@@ -523,55 +523,6 @@ function ciniki_customers_merge($ciniki) {
     }
 
     //
-    // Merge wine orders
-    //
-    if( isset($modules['ciniki.wineproduction']) ) {
-        $updated = 0;
-        //
-        // Get the list of orders attached to the secondary customer
-        //
-        $strsql = "SELECT id "
-            . "FROM ciniki_wineproductions "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.wineproductions', 'wineproduction');
-        if( $rc['stat'] != 'ok' ) {
-            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.118', 'msg'=>'Unable to find wine production orders', 'err'=>$rc['err']));
-        }
-        $wineproductions = $rc['rows'];
-        foreach($wineproductions as $i => $row) {
-            $strsql = "UPDATE ciniki_wineproductions "
-                . "SET customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
-                . ", last_updated = UTC_TIMESTAMP() "
-                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND id = '" . $row['id'] . "' "
-                . "";
-            $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.wineproductions');
-            if( $rc['stat'] != 'ok' ) {
-                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.119', 'msg'=>'Unable to update wine production orders', 'err'=>$rc['err']));
-            }
-            if( $rc['num_affected_rows'] == 1 ) {
-                // Record update as merge action
-                $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.wineproductions', 'ciniki_wineproduction_history', $args['tnid'],
-                    4, 'ciniki_wineproductions', $row['id'], 'customer_id', $args['primary_customer_id']);
-            }
-            $updated = 1;
-        }
-
-        if( $updated == 1 ) {
-            //
-            // Update the last_change date in the tenant modules
-            // Ignore the result, as we don't want to stop user updates if this fails.
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
-            ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'wineproduction');
-        }
-    }
-
-    //
     // Check for module hooks that need to be updated
     //
     foreach($ciniki['tenant']['modules'] as $module => $m) {
