@@ -63,6 +63,8 @@ function ciniki_customers_merge($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCopyModuleHistory');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+
     $strsql = "SELECT id, display_name, "
         . "callsign, prefix, first, middle, last, suffix, company, department, title, "
         . "birthdate, "
@@ -494,6 +496,32 @@ function ciniki_customers_merge($ciniki) {
         }
     }
     
+    //
+    // Get existing reminders
+    //
+    $strsql = "SELECT id "
+        . "FROM ciniki_customer_reminders "
+        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+        array('container'=>'reminders', 'fname'=>'id', 'fields'=>array('id')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.355', 'msg'=>'Unable to existing customer phones', 'err'=>$rc['err']));
+    }
+    $reminders = isset($rc['reminders']) ? $rc['reminders'] : array();
+    foreach($reminders as $reminder) {
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.reminder', $reminder['id'], array(
+            'customer_id' => $args['primary_customer_id'],
+            ), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.412', 'msg'=>'', 'err'=>$rc['err']));
+        }
+    }
+
     //
     // Merge wine orders
     //
