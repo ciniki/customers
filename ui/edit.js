@@ -1701,8 +1701,8 @@ function ciniki_customers_edit() {
         this.edit.forms.person._tabs.tabs.subscriptions.visible = 'no';
         this.edit.forms.business._tabs.tabs.subscriptions.visible = 'no';
         if( M.curTenant['modules']['ciniki.subscriptions'] != null ) {
-            var rsp = M.api.getJSONCb('ciniki.subscriptions.subscriptionList', {'tnid':M.curTenantID, 
-                'customer_id':this.edit.customer_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.subscriptions.subscriptionList', {'tnid':M.curTenantID, 
+                'customer_id':this.edit.customer_id, 'status':'10'}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;

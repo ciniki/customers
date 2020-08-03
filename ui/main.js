@@ -425,6 +425,11 @@ function ciniki_customers_main() {
             return 'M.ciniki_customers_main.customer.openCellApp(\'' + s + '\',\'' + i + '\',\'' + j + '\');';
         }
     }
+    this.customer.rowClass = function(s, i, d) {
+        if( this.sections[s].rowClass != null ) {
+            return eval(this.sections[s].rowClass);
+        }
+    }
     this.customer.addDataFn = function(s, i) {
         var args = {};
         if( this.sections[s].addApp.args != null ) {
@@ -442,6 +447,15 @@ function ciniki_customers_main() {
             }
         }
         M.startApp(this.sections[s].moreApp.app,null,'M.ciniki_customers_main.customer.open();','mc',args);
+    }
+    this.customer.changeDataFn = function(s, i) {
+        var args = {};
+        if( this.sections[s].changeApp.args != null ) {
+            for(var j in this.sections[s].changeApp.args) {
+                args[j] = eval(this.sections[s].changeApp.args[j]);
+            }
+        }
+        M.startApp(this.sections[s].changeApp.app,null,'M.ciniki_customers_main.customer.open();','mc',args);
     }
     this.customer.openCellApp = function(s, i, j) {
         if( this.sections[s].cellApps[j] == null ) {
@@ -580,11 +594,16 @@ function ciniki_customers_main() {
                     if( rsp.data_tabs[i].sections[j].moreTxt != null && rsp.data_tabs[i].sections[j].moreApp != null ) {
                         rsp.data_tabs[i].sections[j].moreFn = 'M.ciniki_customers_main.customer.moreDataFn(\'' + j + '\');';
                     }
+                    if( rsp.data_tabs[i].sections[j].changeTxt != null && rsp.data_tabs[i].sections[j].changeApp != null ) {
+                        rsp.data_tabs[i].sections[j].changeFn = 'M.ciniki_customers_main.customer.changeDataFn(\'' + j + '\');';
+                    }
                     if( rsp.data_tabs[i].sections[j].editApp != null ) {
                         rsp.data_tabs[i].sections[j].sct = j;
                         rsp.data_tabs[i].sections[j].rowFn = function(row, d) {
                             return 'M.ciniki_customers_main.customer.openDataApp(\'' + this.sct + '\',\'' + row + '\');';
                         };
+                    } else if( rsp.data_tabs[i].sections[j].changeTxt != null && rsp.data_tabs[i].sections[j].changeApp != null ) {
+                        rsp.data_tabs[i].sections[j].rowFn = function(row, d) { return ''; };
                     }
                     this.data[j] = rsp.data_tabs[i].sections[j].data;
                     this.sections[j] = rsp.data_tabs[i].sections[j];
