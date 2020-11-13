@@ -221,7 +221,7 @@ function ciniki_customers_objects($ciniki) {
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'months' => array('name'=>'Months', 'default'=>'12'),
             'sequence' => array('name'=>'Order', 'default'=>'1'),
-            'primary_image_id' => array('name'=>'Primary Image', 'ref'=>'ciniki.images.image'),
+            'primary_image_id' => array('name'=>'Primary Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),
             'unit_amount' => array('name'=>'Unit Amount', 'default'=>''),
