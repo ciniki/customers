@@ -426,12 +426,14 @@ function ciniki_customers_memberships() {
             this.member.sections.membership.list.type.visible = 'yes';
             this.menu.sections.members.num_cols = 3;
             this.menu.sections.members.headerValues = ['Name', 'Paid', 'Expires'];
+            this.menu.sections.members.sortTypes = ['text', 'date', 'date'];
         } else {
             this.member.sections.membership.list.member_lastpaid.visible = 'no';
             this.member.sections.membership.list.member_expires.visible = 'no';
             this.member.sections.membership.list.type.visible = 'no';
             this.menu.sections.members.num_cols = 4;
             this.menu.sections.members.headerValues = ['Name', 'Membership', 'Paid', 'Expires'];
+            this.menu.sections.members.sortTypes = ['text', 'text', 'date', 'date'];
         }
 
         if( (M.curTenant.modules['ciniki.customers'].flags&0x04000000) > 0 ) {
