@@ -66,19 +66,19 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
         . "c.status, "
         . "c.status AS status_text, "
         . "c.display_name, "
+        . "DATE_FORMAT(c.member_lastpaid, '%b %e, %Y') AS member_lastpaid, "
         . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
         . "FROM ciniki_customers AS c "
         . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND c.member_status = 10 "
         . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
         . "AND c.start_date < c.member_lastpaid "
-        . "ORDER BY c.start_date "
+        . "ORDER BY c.member_lastpaid "
         . "";
-        error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 
-            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date'),
+            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'member_lastpaid'),
             'maps'=>array('status_text'=>$maps['customer']['status'])),
             ));
     if( $rc['stat'] != 'ok' ) {
@@ -141,7 +141,7 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
             'type'=>'table',
             'columns'=>array(
                 array('label'=>'Name', 'pdfwidth'=>'20%', 'field'=>'display_name'),
-                array('label'=>'Start Date', 'pdfwidth'=>'20%', 'field'=>'start_date'),
+                array('label'=>'Renewed Date', 'pdfwidth'=>'20%', 'field'=>'member_lastpaid'),
                 array('label'=>'Email', 'pdfwidth'=>'30%', 'field'=>'email'),
                 array('label'=>'Address', 'pdfwidth'=>'30%', 'field'=>'address'),
                 ),
