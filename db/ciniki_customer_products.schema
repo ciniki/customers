@@ -1,0 +1,82 @@
+#
+# Description
+# -----------
+# This table stores the membership products and addons that can be added to an online
+# shopping cart or in the POS system.
+#
+# Products can be visible online without being sold online. This allows for some memberships
+# to be shown on the website but must come into store to purchase.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# name:                     The name of the product.
+# short_name:               The name to be used in Ciniki.
+# code:                     The code for the product (optional).
+# permalink:                The permalink of the product.
+#
+# type:                     The product type.
+#
+#                               10 - Subscription Membership (renews monthly, quarterly or yearly)
+#                               15 - Lifetime Membership (good forever, no renewals)
+#                               40 - Subscription Membership Addon (eg: directory listing, web profile)
+#                               60 - One Time Addon, must be member already (eg: Website Setup Fee) **future**
+#
+# status:                   The current status of the product.
+#
+#                               10 - Active
+#                               90 - Archived (only used for renewals)
+#
+# flags:                    The options for this product **future**
+#
+#                               0x01 - Visible Online (visible doesn't mean available to purchase)
+#                               0x02 - Sold Online
+#                               0x04 -
+#                               0x08 -
+#                               0x10 - 
+#                               0x20 - 
+#                               0x40 - 
+#                               0x80 - 
+#
+# months:                   The number of months the membership is good for. This allows for
+#                           monthly, yearly, semi-annually, 2 years, 3 years, etc.
+#
+# sequence:                 The order to display the products in.
+#
+# primary_image_id:         The ID of the image for the product.
+# synopsis:                 The synopsis of the product.
+# description:              The description of the product.
+#
+# unit_amount:              The amount for non-subscription, one time addon or lifetime membership.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_customer_products (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    name varchar(250) not null,
+    short_name varchar(250) not null,
+    code varchar(50) not null,
+    permalink varchar(250) not null,
+    type tinyint unsigned not null,
+    status tinyint unsigned not null,
+    flags smallint unsigned not null,
+    months int not null,
+    sequence tinyint unsigned not null,
+    primary_image_id int not null,
+    synopsis varchar(1000) not null,
+    description text not null,
+    unit_amount decimal(19,6) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

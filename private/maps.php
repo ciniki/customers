@@ -63,6 +63,7 @@ function ciniki_customers_maps($ciniki) {
             '40'=>'Family',
             '110'=>'Complimentary',
             '150'=>'Reciprocal',
+            '200'=>'Purchased',
             ),
         );
     $maps['season_member'] = array(
@@ -94,6 +95,18 @@ function ciniki_customers_maps($ciniki) {
             '10' => 'Success',
             '30' => 'Warning',
             '50' => 'Error',
+            ),
+        );
+    $maps['product'] = array(
+        'type'=>array(
+            '10' => 'Subscription',
+            '20' => 'Lifetime',
+            '40' => 'Subscription Add-on',
+            '60' => 'One Time Add-on',
+            ),
+        'status'=>array(
+            '10' => 'Active',
+            '90' => 'Archived',
             ),
         );
     

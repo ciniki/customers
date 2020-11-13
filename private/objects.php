@@ -205,6 +205,48 @@ function ciniki_customers_objects($ciniki) {
             ),
         'history_table' => 'ciniki_customer_history',
         );
+    $objects['product'] = array(
+        'name' => 'Membership Products',
+        'sync' => 'yes',
+        'o_name' => 'product',
+        'o_container' => 'products',
+        'table' => 'ciniki_customer_products',
+        'fields' => array(
+            'name' => array('name'=>'Product Name'),
+            'short_name' => array('name'=>'Short Name'),
+            'code' => array('name'=>'Code', 'default'=>''),
+            'permalink' => array('name'=>'URL', 'default'=>''),
+            'type' => array('name'=>'Product Type', 'default'=>''),
+            'status' => array('name'=>'Status', 'default'=>'10'),
+            'flags' => array('name'=>'Options', 'default'=>'0'),
+            'months' => array('name'=>'Months', 'default'=>'12'),
+            'sequence' => array('name'=>'Order', 'default'=>'1'),
+            'primary_image_id' => array('name'=>'Primary Image', 'ref'=>'ciniki.images.image'),
+            'synopsis' => array('name'=>'Synopsis', 'default'=>''),
+            'description' => array('name'=>'Description', 'default'=>''),
+            'unit_amount' => array('name'=>'Unit Amount', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_customer_history',
+        );
+    $objects['product_purchase'] = array(
+        'name' => 'Membership Product Purchases',
+        'sync' => 'yes',
+        'o_name' => 'purchase',
+        'o_container' => 'purchases',
+        'table' => 'ciniki_customer_product_purchases',
+        'fields' => array(
+            'product_id' => array('name'=>'Product', 'ref'=>'ciniki.customers.product'),
+            'customer_id' => array('name'=>'Product', 'ref'=>'ciniki.customers.customer'),
+            'flags' => array('name'=>'Options', 'default'=>'0'),
+            'purchase_date' => array('name'=>'Date Purchased', 'default'=>''),
+            'invoice_id' => array('name'=>'Invoice ID', 'ref'=>'ciniki.sapos.invoice'),
+            'start_date' => array('name'=>'Start Date', 'default'=>''),
+            'end_date' => array('name'=>'End Date', 'default'=>''),
+            'stripe_customer_id' => array('name'=>'Stripe Customer', 'default'=>''),
+            'stripe_subscription_id' => array('name'=>'Stripe Subscription', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_customer_history',
+        );
     $objects['setting'] = array(
         'type'=>'settings',
         'name'=>'Customer Settings',

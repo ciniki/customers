@@ -37,13 +37,13 @@ function ciniki_customers_settings() {
 //              'use-relationships':{'label':'Customer Relationships', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
 //          }},
             'name_options':{'label':'Name Format', 'fields':{
-                'display-name-business-format':{'label':'Busines', 'type':'select', 'options':this.businessFormats},
-                'display-name-callsign-format':{'label':'Busines', 'type':'select', 'options':this.callsignFormats,
+                'display-name-business-format':{'label':'Business', 'type':'select', 'options':this.businessFormats},
+                'display-name-callsign-format':{'label':'Business', 'type':'select', 'options':this.callsignFormats,
                     'visible': function() { return M.modFlagSet('ciniki.customers', 0x0400); },
                     },
             }},
             'defaults':{'label':'Defaults', 'visible':'yes', 'fields':{
-                'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Busines'}},
+                'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Business'}},
                 'defaults-edit-person-hide-company':{'label':'Hide Company', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'ui-show-places':{'label':'Show Places', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
@@ -69,7 +69,7 @@ function ciniki_customers_settings() {
                 'addFn':'M.ciniki_customers_settings.editSeason(\'M.ciniki_customers_settings.showMain();\',0);',
             },
             'membership_types':{'label':'Membership Types', 
-                'active':function() {return (M.curTenant.modules['ciniki.customers'].flags&0x02)>0?'yes':'no'; },
+                'active':function() {return (M.curTenant.modules['ciniki.customers'].flags&0x0a)==0x02?'yes':'no'; },
                 'fields':{
                     'membership-type-10-active':{'label':'Regular', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                     'membership-type-20-active':{'label':'Student', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -81,7 +81,7 @@ function ciniki_customers_settings() {
                  },
             },
             'membership_prices':{'label':'Online Membership Sales', 
-                'active':function() {return (M.curTenant.modules['ciniki.customers'].flags&0x02)>0&&M.curTenant.modules['ciniki.sapos']!=null&&(M.curTenant.modules['ciniki.sapos'].flags&0x08)>0?'yes':'no'; },
+                'active':function() {return (M.curTenant.modules['ciniki.customers'].flags&0x0a)==0x02&&M.curTenant.modules['ciniki.sapos']!=null&&(M.curTenant.modules['ciniki.sapos'].flags&0x08)>0?'yes':'no'; },
                 'fields':{
                     'membership-type-10-online':{'label':'Regular', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                     'membership-type-10-name':{'label':'Regular Name', 'type':'text'},

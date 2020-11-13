@@ -174,7 +174,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
     //
     // Memberships with categories and no seasons
     //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x04)
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0c)
         && !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000000)
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])
@@ -249,6 +249,9 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
             )
         ) {
         $rsp['settings_menu_items'][] = array('priority'=>5600, 'label'=>$label . '/Members', 'edit'=>array('app'=>'ciniki.customers.settings'));
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+            $rsp['settings_menu_items'][] = array('priority'=>5600, 'label'=>'Membership Products', 'edit'=>array('app'=>'ciniki.customers.products'));
+        }
     }
 
     return $rsp;

@@ -7,17 +7,17 @@
 // Arguments
 // ---------
 // ciniki:
-// tnid:         
-// args:        
+// tnid:         The ID of the tenant to get the birthdays for.
+// args:                The options for the query.
 //
 // Additional Arguments
 // --------------------
-// days:       
+// days:                The number of days past to look for new members.
 // 
 // Returns
 // -------
 //
-function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
+function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) {
     //
     // Get the tenant settings
     //
@@ -49,8 +49,9 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
         $days = 7;
     }
 
-    $now = new DateTime('now', new DateTimezone($intl_timezone));
-    $end_dt = clone $now;
+    $start_dt = new DateTime('now', new DateTimezone($intl_timezone));
+    $end_dt = clone $start_dt;
+    $end_dt->sub(new DateInterval('P' . $days . 'D'));
 
     //
     // Store the report block chunks
@@ -58,34 +59,26 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
     $chunks = array();
 
     //
-    // Get the expired or expiring members
+    // Get the new customers
     //
-    $strsql = "SELECT customers.id, "
-        . "customers.parent_id, "
-        . "customers.status, "
-        . "customers.status AS status_text, "
-        . "customers.display_name, "
-        . "DATE_FORMAT(customers.member_lastpaid, '%b %e, %Y') AS member_lastpaid, "
-        . "DATE_FORMAT(customers.member_expires, '%b %e, %Y') AS member_expires "
-        . "FROM ciniki_customers AS customers "
-        . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND customers.member_status > 0 "
+    $strsql = "SELECT c.id, "
+        . "c.parent_id, "
+        . "c.status, "
+        . "c.status AS status_text, "
+        . "c.display_name, "
+        . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
+        . "FROM ciniki_customers AS c "
+        . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND c.member_status = 10 "
+        . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+        . "AND c.start_date < c.member_lastpaid "
+        . "ORDER BY c.start_date "
         . "";
-    if( isset($args['direction']) && $args['direction'] == 'future' ) {
-        $end_dt->add(new DateInterval('P' . $days . 'D'));
-        $strsql .= "AND customers.member_expires >= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
-        $strsql .= "AND customers.member_expires <= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' ";
-    } else {
-        $end_dt->sub(new DateInterval('P' . $days . 'D'));
-        $strsql .= "AND customers.member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
-        $strsql .= "AND customers.member_expires >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' ";
-    }
-    $strsql .= "ORDER BY customers.member_expires "
-        . "";
+        error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 
-            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'member_lastpaid', 'member_expires'),
+            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date'),
             'maps'=>array('status_text'=>$maps['customer']['status'])),
             ));
     if( $rc['stat'] != 'ok' ) {
@@ -121,12 +114,12 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $emails = isset($rc['customers']) ? $rc['customers'] : array();
+        $emails = $rc['customers'];
 
         //
         // Get the addresses
         //
-/*        $strsql = "SELECT id, customer_id, address1, address2, city, province, postal, country "
+        $strsql = "SELECT id, customer_id, address1, address2, city, province, postal, country "
             . "FROM ciniki_customer_addresses "
             . "WHERE customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -139,7 +132,7 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $addresses = $rc['customers']; */
+        $addresses = $rc['customers'];
 
         //
         // Create the report blocks
@@ -147,11 +140,10 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
         $chunk = array(
             'type'=>'table',
             'columns'=>array(
-                array('label'=>'Name', 'pdfwidth'=>'30%', 'field'=>'display_name'),
-                array('label'=>'Last Paid', 'pdfwidth'=>'20%', 'field'=>'last_paid'),
-                array('label'=>'Expiry Date', 'pdfwidth'=>'20%', 'field'=>'member_expires'),
+                array('label'=>'Name', 'pdfwidth'=>'20%', 'field'=>'display_name'),
+                array('label'=>'Start Date', 'pdfwidth'=>'20%', 'field'=>'start_date'),
                 array('label'=>'Email', 'pdfwidth'=>'30%', 'field'=>'email'),
-//                array('label'=>'Address', 'pdfwidth'=>'30%', 'field'=>'address'),
+                array('label'=>'Address', 'pdfwidth'=>'30%', 'field'=>'address'),
                 ),
             'data'=>array(),
             'textlist'=>'',
@@ -161,8 +153,7 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
             // Add emails to customer
             //
             $chunk['textlist'] .= $customer['display_name'] . "\n";
-            $chunk['textlist'] .= $customer['member_lastpaid'] . "\n";
-            $chunk['textlist'] .= $customer['member_expires'] . "\n";
+            $chunk['textlist'] .= $customer['start_date'] . "\n";
             if( isset($emails[$customer['id']]['emails']) ) {
                 foreach($emails[$customer['id']]['emails'] as $email) {
                     $chunk['textlist'] .= $email['email'] . "\n";
@@ -176,7 +167,7 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
             //
             // Add addresses to customer
             //
-/*            if( isset($addresses[$customer['id']]['addresses']) ) {
+            if( isset($addresses[$customer['id']]['addresses']) ) {
                 foreach($addresses[$customer['id']]['addresses'] as $address) {
                     $addr = '';
                     if( isset($address['address1']) && $address['address1'] != '' ) {
@@ -210,7 +201,7 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
                         }
                     }
                 }
-            } */
+            }
             $chunk['textlist'] .= "\n";
             $chunk['data'][] = $customer;
         }
@@ -220,11 +211,7 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
     // No customers 
     //
     else {
-        if( isset($args['direction']) && $args['direction'] == 'future' ) {
-            $chunks[] = array('type'=>'message', 'content'=>'No expiring members in the next ' . ($days == 1 ? 'day' : $days . ' days') . '.');
-        } else {
-            $chunks[] = array('type'=>'message', 'content'=>'No expired members in the last ' . ($days == 1 ? 'day' : $days . ' days') . '.');
-        }
+        $chunks[] = array('type'=>'message', 'content'=>'No new members in the last ' . ($days == 1 ? 'day' : $days . ' days') . '.');
     }
     
     return array('stat'=>'ok', 'chunks'=>$chunks);

@@ -184,7 +184,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
             foreach($customers AS $cid => $customer) {
                 $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $customer, $customer['id'], $customer);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.414', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
                 }
                 $customer_args = array();
                 if( isset($rc['display_name']) && $rc['display_name'] != $customer['display_name'] ) {

@@ -35,11 +35,18 @@ function ciniki_customers_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     $dt = new DateTime('now', new DateTimeZone($intl_timezone));
 
+    //
+    // Handle memberships/subscriptions and add-ons
+    //
     if( $args['object'] == 'ciniki.customers.product' 
         && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) 
         ) {
-
-
+        $args['product_id'] = $args['object_id'];
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productSetupCustomer');
+        $rc = ciniki_customers_productSetupCustomer($ciniki, $tnid, $args);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.118', 'msg'=>'Unable to complete purchase', 'err'=>$rc['err']));
+        }
     }
 
     elseif( $args['object'] == 'ciniki.customers.membership' ) {

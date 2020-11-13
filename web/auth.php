@@ -110,7 +110,7 @@ function ciniki_customers_web_auth(&$ciniki, $settings, $tnid, $email, $password
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'authFailedLogin');
             $rc = ciniki_customers_web_authFailedLogin($ciniki, $settings, $tnid, $email);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.351', 'msg'=>'Unable to load email', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.408', 'msg'=>'Unable to load email', 'err'=>$rc['err']));
             }
             if( isset($rc['locked']) ) {
                 $account_locked = $rc['locked'];

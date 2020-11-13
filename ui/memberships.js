@@ -15,7 +15,9 @@ function ciniki_customers_memberships() {
     this.menu.data = {};
     this.menu.sections = {
         'membertypes':{'label':'Memberships', 'type':'simplegrid', 'num_cols':1, 'aside':'yes'},
-        'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1, 'aside':'yes'},
+        'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
+            'visible':function() { return M.modFlagSet('ciniki.customers', 0x04); },
+            },
         'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':4, 
             'headerValues':['Name', 'Membership', 'Paid', 'Expires'],
             'cellClasses':['', '', '', ''],
@@ -59,7 +61,8 @@ function ciniki_customers_memberships() {
         return '';
     }
     this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
-        return 'M.ciniki_customers_memberships.showMember(\'M.ciniki_customers_memberships.menu.open();\',\'' + d.id + '\');'; 
+        return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_memberships.menu.open();\',\'mc\',{\'customer_id\':' + d.id + '});';
+        //return 'M.ciniki_customers_memberships.showMember(\'M.ciniki_customers_memberships.menu.open();\',\'' + d.id + '\');'; 
     };
     this.menu.liveSearchSubmitFn = function(s, search_str) {
         M.startApp('ciniki.customers.main',null,'M.ciniki_customers_memberships.menu.open();','mc',{'type':'members', 'search':search_str});
@@ -79,11 +82,18 @@ function ciniki_customers_memberships() {
         if( s == 'membertypes' || s == 'categories' ) {
             return d.name + '<span class="count">' + d.num_members + '</span>';
         }
+        if( s == 'members' && M.modFlagOn('ciniki.customers', 0x08) ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return d.member_lastpaid;
+                case 2: return d.member_expires;
+            }
+        }
         if( s == 'members' ) {
             switch(j) {
                 case 0: return d.display_name;
                 case 1: //if( d.membership_type == '20' ) {
-                        return d.membership_type_text;
+                    return d.membership_type_text;
                     //} 
                     //return '<span class="maintext">' + d.membership_type_text + '</span><span class="subtext">Paid: ' + d.member_lastpaid + '</span>';
                 case 2: return d.member_lastpaid;
@@ -93,7 +103,8 @@ function ciniki_customers_memberships() {
     };
     this.menu.rowFn = function(s, i, d) { 
         if( s == 'members' ) {
-            return 'M.ciniki_customers_memberships.showMember(\'M.ciniki_customers_memberships.menu.open();\',\'' + d.id + '\');'; 
+            return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_memberships.menu.open();\',\'mc\',{\'customer_id\':' + d.id + '});';
+            //return 'M.ciniki_customers_memberships.showMember(\'M.ciniki_customers_memberships.menu.open();\',\'' + d.id + '\');'; 
         } else if( s == 'membertypes' ) {
             return 'M.ciniki_customers_memberships.menu.showType(' + d.membership_type + ');';
         } else if( s == 'categories' ) {
@@ -234,6 +245,7 @@ function ciniki_customers_memberships() {
                     case '40': txt += 'Family'; break;
                     case '110': txt += 'Complimentary'; break;
                     case '150': txt += 'Reciprocal'; break;
+                    case '200': txt += 'Products'; break;
                 }
             }
             if( this.data.membership_length != null && this.data.membership_length != '' ) {
@@ -412,10 +424,14 @@ function ciniki_customers_memberships() {
             this.member.sections.membership.list.member_lastpaid.visible = 'yes';
             this.member.sections.membership.list.member_expires.visible = 'yes';
             this.member.sections.membership.list.type.visible = 'yes';
+            this.menu.sections.members.num_cols = 3;
+            this.menu.sections.members.headerValues = ['Name', 'Paid', 'Expires'];
         } else {
             this.member.sections.membership.list.member_lastpaid.visible = 'no';
             this.member.sections.membership.list.member_expires.visible = 'no';
             this.member.sections.membership.list.type.visible = 'no';
+            this.menu.sections.members.num_cols = 4;
+            this.menu.sections.members.headerValues = ['Name', 'Membership', 'Paid', 'Expires'];
         }
 
         if( (M.curTenant.modules['ciniki.customers'].flags&0x04000000) > 0 ) {

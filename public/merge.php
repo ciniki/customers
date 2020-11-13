@@ -327,7 +327,7 @@ function ciniki_customers_merge($ciniki) {
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.112', 'msg'=>'Unable to customer addresses', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.407', 'msg'=>'Unable to customer addresses', 'err'=>$rc['err']));
     }
     $addresses = $rc['rows'];
     foreach($addresses as $i => $row) {

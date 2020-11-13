@@ -200,6 +200,36 @@ function ciniki_customers_get($ciniki) {
     $customer['discount_percent'] = ($customer['discount_percent'] == 0 ? '' : (float)$customer['discount_percent']);
 
     //
+    // Get the membership products purchased
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productsPurchased');
+        $rc = ciniki_customers_productsPurchased($ciniki, $args['tnid'], array('customer_id' => $customer['id']));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.427', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
+        }
+        $customer['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
+
+        if( $customer['member_status'] == 0 ) {
+            array_unshift($customer['membership_details'], array(
+                'label' => 'Status',
+                'value' => 'Not a member',
+                ));
+        } elseif( $customer['member_status'] == 10 ) {
+            array_unshift($customer['membership_details'], array(
+                'label' => 'Status',
+                'value' => 'Active',
+                ));
+
+        } elseif( $customer['member_status'] == 10 ) {
+            array_unshift($customer['membership_details'], array(
+                'label' => 'Status',
+                'value' => 'Inactive',
+                ));
+        }
+    }
+
+    //
     // Get the tax location
     //
     if( isset($customer['tax_location_id']) && $customer['tax_location_id'] > 0 

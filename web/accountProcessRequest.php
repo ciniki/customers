@@ -31,6 +31,16 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $
         return ciniki_customers_web_accountProcessRequestContactInfo($ciniki, $settings, $tnid, $args);
     }
     //
+    // Check if membership enabled
+    //
+    elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)
+        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'membership' 
+        ) {
+        array_shift($ciniki['request']['uri_split']);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'accountProcessRequestMembership');
+        return ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings, $tnid, $args);
+    }
+    //
     // Check for Children update
     //
     elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800)
@@ -132,7 +142,8 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $
     // Check for other accounts
     //
     elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x8000)
-        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'accounts' ) {
+        && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'accounts' 
+        ) {
         $page['breadcrumbs'][] = array('name'=>'Accounts', 'url'=>$ciniki['request']['domain_base_url'] . '/account/accounts');
         $page['title'] = 'Choose Account';
 
@@ -167,6 +178,11 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $
         $content .= "</div>";
         $page['blocks'][] = array('type'=>'content', 'title'=>'Switch Account', 'html'=>$content);
     }
+
+    //
+    // Check if 
+    //
+
 
     return array('stat'=>'ok', 'page'=>$page);
 }

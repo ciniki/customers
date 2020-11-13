@@ -520,7 +520,7 @@ function ciniki_customers_web_accountProcessRequestContactDetails($ciniki, $sett
                 $fn = $rc['function_call'];
                 $rc = $fn($ciniki, $tnid, array('customer_id'=>$customer['id']));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.394', 'msg'=>'Unable to update customer address.', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.416', 'msg'=>'Unable to update customer address.', 'err'=>$rc['err']));
                 }
             }
         }

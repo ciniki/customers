@@ -92,6 +92,16 @@ function ciniki_customers_web_accountSubMenuItems($ciniki, $settings, $tnid) {
                 'url'=>$ciniki['request']['base_url'] . '/account/changepassword');
         }
 
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)
+            && (!isset($settings['page-account-membership-update']) || $settings['page-account-membership-update'] == 'yes')
+            ) {
+            $submenu[] = array('name'=>'Membership', 'priority'=>220, 
+                'package'=>'ciniki', 'module'=>'customers', 
+                'selected'=>($ciniki['request']['page'] == 'membership' 
+                    && isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'membership')?'yes':'no',
+                'url'=>$ciniki['request']['base_url'] . '/account/membership');
+        }
+
         $submenu[] = array('name'=>'Logout', 'priority'=>100, 
             'package'=>'ciniki', 'module'=>'customers', 
             'selected'=>'no',

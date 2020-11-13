@@ -75,6 +75,7 @@
 #                       40 - Family
 #                      110 - Complimentary
 #                      150 - Reciprocal
+#                      200 - Product (look in purchases for membership)
 #
 # dealer_status:    The dealer status for the customer/dealer.  This is only used if 
 #                    the dealers are enabled.

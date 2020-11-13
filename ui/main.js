@@ -325,7 +325,13 @@ function ciniki_customers_main() {
         return this.sections[s].noData;
     };
     this.customer.sectionData = function(s) {
-        if( s == 'membership' ) { return this.sections[s].list; }
+        if( s == 'membership' ) { 
+            if( M.modFlagOn('ciniki.customers', 0x08) ) {
+                return this.data.membership_details;
+            } else {
+                return this.sections[s].list; 
+            }
+        }
         if( s == 'parent' ) { return (this.data.parent!=null&&this.data.parent.details!=null)?this.data.parent.details:{}; }
         return this.data[s];
     };
@@ -346,6 +352,7 @@ function ciniki_customers_main() {
                     case '40': txt += 'Family'; break;
                     case '110': txt += 'Complimentary'; break;
                     case '150': txt += 'Reciprocal'; break;
+                    case '200': txt += 'Purchased'; break;
                 }
             }
             if( this.data.membership_length != null && this.data.membership_length != '' ) {
@@ -392,6 +399,12 @@ function ciniki_customers_main() {
         }
     }; */
     this.customer.cellColour = function(s, i, j, d) {
+        if( s == 'membership' && j == 1 && d.expires != null ) {
+            switch(d.expires) {
+                case 'past': return '#ffdddd';
+                case 'future': return '#ddffdd';
+            }
+        }
         if( this.sections[s].cellColours != null && this.sections[s].cellColours[j] != '' ) {
             return eval(this.sections[s].cellColours[j]);
         }
@@ -414,6 +427,16 @@ function ciniki_customers_main() {
         }
         else if( s == 'children' ) {
             return (d.customer.eid!=null&&d.customer.eid!=''?d.customer.eid+' - ':'') + d.customer.display_name;
+        }
+        else if( s == 'membership' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1: 
+                    if( d.expiry_display != null && d.expiry_display != '' ) {
+                        return d.value + '<span class="subdue"> (' + d.expiry_display + ')</span>';
+                    }
+                    return d.value;
+            }
         }
         else if( this.sections[s].cellValues != null ) {
             return eval(this.sections[s].cellValues[j]);
@@ -538,16 +561,8 @@ function ciniki_customers_main() {
                 },
             'membership':{'label':'Membership', 'aside':'yes', 
                 'visible':function() { return M.modFlagSet('ciniki.customers', 0x02); },
-                'list':{
-                    'member_status_text':{'label':'Status'},
-                    'member_lastpaid':{'label':'Last Paid', 'visible':function() {
-                        return !M.modFlagSet('ciniki.customers', 0x02000000);
-                        }},
-                    'type':{'label':'Type'},
-                    'start_date':{'label':'Start', 'visible':function() {
-                        return M.modFlagSet('ciniki.customers', 0x04000000);
-                        }},
-                }},
+                'cellClasses':['label', ''],
+                },
             'account':{'label':'', 'aside':'yes', 'visible':'yes', 'type':'simplegrid', 'num_cols':2,
                 'headerValues':null,
                 'cellClasses':['label', ''],
@@ -567,6 +582,21 @@ function ciniki_customers_main() {
 
             'data_tabs':{'label':'', 'type':'paneltabs', 'selected':this.selected_data_tab, 'tabs':{}},
             };
+        if( M.modFlagOn('ciniki.customers', 0x08) ) {
+            this.sections.membership.type = 'simplegrid';
+            this.sections.membership.num_cols = 2;
+        } else {
+            this.sections.membership.list = {
+                'member_status_text':{'label':'Status'},
+                'member_lastpaid':{'label':'Last Paid', 'visible':function() {
+                    return !M.modFlagSet('ciniki.customers', 0x02000000);
+                    }},
+                'type':{'label':'Type'},
+                'start_date':{'label':'Start', 'visible':function() {
+                    return M.modFlagSet('ciniki.customers', 0x04000000);
+                    }},
+                };
+        }
         var num_tabs = 0;
         if( rsp.data_tabs != null ) {
             var found = 'no';

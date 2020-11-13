@@ -53,6 +53,7 @@ function ciniki_customers_members() {
             return '';
         }
         this.menu.liveSearchResultRowFn = function(s, f, i, j, d) { 
+            //return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_members.showMenu();\',\'mc\',{\'customer_id\':' + d.id + '});';
             return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showMenu();\',\'' + d.id + '\');'; 
         };
         this.menu.liveSearchSubmitFn = function(s, search_str) {
@@ -80,6 +81,7 @@ function ciniki_customers_members() {
         };
         this.menu.rowFn = function(s, i, d) { 
             if( s == 'members' ) {
+//                return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_members.showMenu();\',\'mc\',{\'customer_id\':' + d.member.id + '});';
                 return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showMenu();\',\'' + d.member.id + '\');'; 
             } else if( s == 'categories' ) {
                 return 'M.ciniki_customers_members.showList(\'M.ciniki_customers_members.showMenu();\',\'' + escape(d.category.name) + '\',\'' + d.category.permalink + '\');'; 
@@ -123,6 +125,7 @@ function ciniki_customers_members() {
             }
         };
         this.list.rowFn = function(s, i, d) { 
+            //return 'M.startApp(\'ciniki.customers.main\',null,\'M.ciniki_customers_members.showMenu();\',\'mc\',{\'customer_id\':' + d.id + '});';
             return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showList();\',\'' + d.member.id + '\');'; 
         };
         this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showList();\',\'mc\',{\'customer_id\':0,\'member\':\'yes\',\'category\':M.ciniki_customers_members.list.category});');
@@ -195,8 +198,8 @@ function ciniki_customers_members() {
             }
         };
         this.season.rowFn = function(s, i, d) { 
-//          return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showSeason();\',\'' + d.member.id + '\');'; 
-            return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'customer_id\':\'' + d.member.id + '\',\'member\':\'yes\'});';
+          return 'M.ciniki_customers_members.showMember(\'M.ciniki_customers_members.showSeason();\',\'' + d.member.id + '\');'; 
+//            return 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_members.showSeason();\',\'mc\',{\'customer_id\':\'' + d.member.id + '\',\'member\':\'yes\'});';
         };
         this.season.addClose('Back');
 

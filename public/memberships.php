@@ -105,7 +105,6 @@ function ciniki_customers_memberships($ciniki) {
             . "ORDER BY sort_name, last, first, company"
             . "";
     } elseif( isset($args['type']) && $args['type'] == '-1' ) { // Expired
-        error_log('expired');
         $strsql .= "FROM ciniki_customers ";
         $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
@@ -113,13 +112,26 @@ function ciniki_customers_memberships($ciniki) {
             . "ORDER BY sort_name, last, first, company"
             . "";
     } elseif( isset($args['type']) && $args['type'] != '' ) {
-        $strsql .= "FROM ciniki_customers ";
-        $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_customers.member_status = 10 "
-            . "AND ciniki_customers.membership_type = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' "
-            . "ORDER BY sort_name, last, first, company"
-            . "";
-        
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+            $strsql .= "FROM ciniki_customers "
+                . "INNER JOIN ciniki_customer_product_purchases AS purchases ON ("
+                    . "ciniki_customers.id = purchases.customer_id "
+                    . "AND (purchases.end_date = '0000-00-00' OR purchases.end_date > NOW() ) "
+                    . "AND purchases.product_id = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' "
+                    . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND ciniki_customers.member_status = 10 "
+                . "ORDER BY ciniki_customers.sort_name, last, first, company"
+                . "";
+        } else {
+            $strsql .= "FROM ciniki_customers ";
+            $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND ciniki_customers.member_status = 10 "
+                . "AND ciniki_customers.membership_type = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' "
+                . "ORDER BY sort_name, last, first, company"
+                . "";
+        } 
     } else {
         $strsql .= "FROM ciniki_customers ";
         $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -157,23 +169,55 @@ function ciniki_customers_memberships($ciniki) {
     //
     // Get the list of membership Types
     //
-    $strsql = "SELECT membership_type, COUNT(id) AS num_members "
-        . "FROM ciniki_customers "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND member_status = 10 "
-        . "GROUP BY membership_type "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'types', 'fname'=>'membership_type', 
-            'fields'=>array('membership_type', 'name'=>'membership_type', 'num_members'),
-            'maps'=>array('name'=>$maps['customer']['membership_type']),
-            ),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.394', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $strsql = "SELECT products.id, "
+            . "products.short_name, "
+            . "COUNT(DISTINCT purchases.customer_id) AS num_members "
+            . "FROM ciniki_customer_products AS products "
+            . "LEFT JOIN ciniki_customer_product_purchases AS purchases ON ("
+                . "products.id = purchases.product_id "
+                . "AND (purchases.end_date > NOW() OR purchases.end_date = '0000-00-00') "
+                . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "purchases.customer_id = customers.id "
+                . "AND customers.member_status = 10 "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE (products.type = 10 OR products.type = 20) "
+            . "AND products.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY products.id "
+            . "ORDER BY products.type, products.sequence "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'types', 'fname'=>'id', 
+                'fields'=>array('membership_type'=>'id', 'name'=>'short_name', 'num_members'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.415', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+        }
+        $rsp['membertypes'] = isset($rc['types']) ? $rc['types'] : array();
+    } else {
+        $strsql = "SELECT membership_type, COUNT(id) AS num_members "
+            . "FROM ciniki_customers "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND member_status = 10 "
+            . "GROUP BY membership_type "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'types', 'fname'=>'membership_type', 
+                'fields'=>array('membership_type', 'name'=>'membership_type', 'num_members'),
+                'maps'=>array('name'=>$maps['customer']['membership_type']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.415', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+        }
+        $rsp['membertypes'] = isset($rc['types']) ? $rc['types'] : array();
     }
-    $rsp['membertypes'] = isset($rc['types']) ? $rc['types'] : array();
 
     //
     // Get the expired memberships
@@ -191,7 +235,7 @@ function ciniki_customers_memberships($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.394', 'msg'=>'Unable to load expired members', 'err'=>$rc['err']));
     }
     if( isset($rc['expired']) ) {
-        $rsp['membertypes'][] = array('membership_type'=>'-1', 'name'=>'Expired', 'num_members'=>$rc['expired']);
+        $rsp['membertypes'][] = array('membership_type'=>'-1', 'name'=>'Active Expired', 'num_members'=>$rc['expired']);
     }
 
     //

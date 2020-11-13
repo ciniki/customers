@@ -162,6 +162,37 @@ function ciniki_customers_getModuleData($ciniki) {
     $customer['addresses'] = array();
     $customer['subscriptions'] = array();
 
+
+    //
+    // Get the membership products purchased
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productsPurchased');
+        $rc = ciniki_customers_productsPurchased($ciniki, $args['tnid'], array('customer_id' => $customer['id']));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.427', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
+        }
+        $customer['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
+
+        if( $customer['member_status'] == 0 ) {
+            array_unshift($customer['membership_details'], array(
+                'label' => 'Status',
+                'value' => 'Not a member',
+                ));
+        } elseif( $customer['member_status'] == 10 ) {
+            array_unshift($customer['membership_details'], array(
+                'label' => 'Status',
+                'value' => 'Active',
+                ));
+
+        } elseif( $customer['member_status'] == 60 ) {
+            array_unshift($customer['membership_details'], array(
+                'label' => 'Status',
+                'value' => 'Inactive',
+                ));
+        }
+    }
+
     //
     // Get the tax location
     //
@@ -458,74 +489,6 @@ function ciniki_customers_getModuleData($ciniki) {
         }
     }
 
-/*
-    // 
-    // Get customer subscriptions if module is enabled
-    //
-    if( isset($modules['ciniki.subscriptions']) ) {
-        $strsql = "SELECT ciniki_subscriptions.id, ciniki_subscriptions.name, "
-            . "ciniki_subscription_customers.id AS customer_subscription_id, "
-            . "ciniki_subscriptions.description, ciniki_subscription_customers.status "
-            . "FROM ciniki_subscriptions "
-            . "LEFT JOIN ciniki_subscription_customers ON (ciniki_subscriptions.id = ciniki_subscription_customers.subscription_id "
-                . "AND ciniki_subscription_customers.customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "') "
-            . "WHERE ciniki_subscriptions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_subscription_customers.status = 10 "
-            . "ORDER BY ciniki_subscriptions.name "
-            . "";
-        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
-            array('container'=>'subscriptions', 'fname'=>'id', 'name'=>'subscription',
-                'fields'=>array('id', 'name', 'description', 'customer_subscription_id', 'status')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( isset($rc['subscriptions']) ) {
-            $customer['subscriptions'] = $rc['subscriptions'];
-        }
-    }
-
-    //
-    // Check for invoices for the customer
-    //
-    if( isset($modules['ciniki.sapos']) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'customerInvoices');
-        $rc = ciniki_sapos_hooks_customerInvoices($ciniki, $args['tnid'], array(
-            'customer_id'=>$customer['id'], 
-            'limit'=>11));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( isset($rc['types']) ) {
-            foreach($rc['types'] as $tid => $type) {
-                if( $type['type']['type'] == '10' ) {
-                    $customer['invoices'] = $type['type']['invoices'];
-                } elseif( $type['type']['type'] == '20' ) {
-                    $customer['carts'] = $type['type']['invoices'];
-                } elseif( $type['type']['type'] == '30' ) {
-                    $customer['pos'] = $type['type']['invoices'];
-                } elseif( $type['type']['type'] == '40' ) {
-                    $customer['orders'] = $type['type']['invoices'];
-                }
-            }
-        }
-        //
-        // Make sure at least a blank array exist for each type of invoice
-        //
-        if( ($modules['ciniki.sapos']['flags']&0x01) && !isset($customer['invoices']) ) {
-            $customer['invoices'] = array();
-        }
-        if( ($modules['ciniki.sapos']['flags']&0x08) && !isset($customer['carts']) ) {
-            $customer['carts'] = array();
-        }
-        if( ($modules['ciniki.sapos']['flags']&0x10) && !isset($customer['pos']) ) {
-            $customer['pos'] = array();
-        }
-        if( ($modules['ciniki.sapos']['flags']&0x20) && !isset($customer['orders']) ) {
-            $customer['orders'] = array();
-        }
-    }
-*/
     $rsp = array('stat'=>'ok', 'customer'=>$customer);
 
     //

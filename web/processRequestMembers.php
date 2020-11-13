@@ -48,7 +48,7 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         //
         // If there was an error locating the files, display generic error
         //
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.web.71', 'msg'=>'We\'re sorry, but the file you requested does not exist.'));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.web.406', 'msg'=>'We\'re sorry, but the file you requested does not exist.'));
     }
 
     //

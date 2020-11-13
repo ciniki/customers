@@ -20,6 +20,9 @@ function ciniki_customers_sapos_objectList($ciniki, $tnid) {
         'ciniki.customers.membership' => array(
             'name' => 'Membership',
             ),
+        'ciniki.customers.product' => array(
+            'name' => 'Membership',
+            ),
         );
 
     return array('stat'=>'ok', 'objects'=>$objects);

@@ -199,7 +199,7 @@ function ciniki_customers_customerAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
     $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $args, 0, $args);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.412', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
     }
     $args['display_name'] = $rc['display_name'];
     $args['sort_name'] = $rc['sort_name'];
@@ -216,7 +216,7 @@ function ciniki_customers_customerAdd(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
         $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $args, 0, $args);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.377', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.411', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
         }
         $args['display_name'] = $rc['display_name'];
         $args['sort_name'] = $rc['sort_name'];

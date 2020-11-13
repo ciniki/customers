@@ -53,6 +53,14 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
                 'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
                 ),
             );
+        $blocks['ciniki.customers.renewedmembers'] = array(
+            'name'=>'Renewed Members',
+            'module' => 'Customers',
+            'category' => 'Members',
+            'options'=>array(
+                'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                ),
+            );
     }
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000002) ) {
         $blocks['ciniki.customers.expiringmembers'] = array(
