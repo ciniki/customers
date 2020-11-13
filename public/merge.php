@@ -523,6 +523,32 @@ function ciniki_customers_merge($ciniki) {
     }
 
     //
+    // Merge customer product purchases 
+    //
+    $strsql = "SELECT id "
+        . "FROM ciniki_customer_product_purchases "
+        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+        array('container'=>'purchases', 'fname'=>'id', 'fields'=>array('id')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.355', 'msg'=>'Unable to existing customer phones', 'err'=>$rc['err']));
+    }
+    $purchases = isset($rc['purchases']) ? $rc['purchases'] : array();
+    foreach($purchases as $purchase) {
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.product_purchase', $purchase['id'], array(
+            'customer_id' => $args['primary_customer_id'],
+            ), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.412', 'msg'=>'', 'err'=>$rc['err']));
+        }
+    }
+
+    //
     // Check for module hooks that need to be updated
     //
     foreach($ciniki['tenant']['modules'] as $module => $m) {

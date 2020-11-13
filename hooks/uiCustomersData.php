@@ -107,6 +107,59 @@ function ciniki_customers_hooks_uiCustomersData($ciniki, $tnid, $args) {
             );
     }
 
+    //
+    // Check for membership information
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) && isset($args['customer_id']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productsPurchased');
+        $rc = ciniki_customers_productsPurchased($ciniki, $tnid, array('customer_id'=>$args['customer_id']));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.435', 'msg'=>'Unable to get membership info.', 'err'=>$rc['err']));
+        }
+        $rsp['tabs'][] = array(
+            'id' => 'ciniki.customers.products',
+            'label' => 'Membership',
+            'sections' => array(
+                'ciniki.customers.productscurrent' => array(
+                    'label' => 'Membership',
+                    'type' => 'simplegrid', 
+                    'priority' => 3000,
+                    'num_cols' => 2,
+                    'headerValues' => array('Product', 'Expiry'),
+                    'cellClasses' => array('', '', ''),
+                    'noData' => 'No products purchased',
+//                    'addTxt' => 'Add Membership Product',
+//                    'addApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('customer_id'=>$args['customer_id'], 'source'=>'\'customer\'')),
+                    'editApp' => array('app'=>'ciniki.customers.products', 'args'=>array('purchase_id'=>'d.id;', 'source'=>'\'customer\'')),
+                    'cellValues' => array(
+                        '0' => "d.name",
+                        '1' => "d.expiry_display",
+                        ),
+                    'data' => (isset($rc['membership_details']) ? $rc['membership_details'] : array()),
+                    
+                    ),
+                'ciniki.customers.productshistory' => array(
+                    'label' => 'History',
+                    'type' => 'simplegrid', 
+                    'priority' => 2000,
+                    'num_cols' => 2,
+                    'headerValues' => array('Product', 'Expired'),
+                    'cellClasses' => array('', '', ''),
+                    'noData' => 'No products purchased',
+//                    'addTxt' => 'Add Membership Product',
+//                    'addApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('customer_id'=>$args['customer_id'], 'source'=>'\'customer\'')),
+//                    'editApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('reminder_id'=>'d.id;', 'source'=>'\'customer\'')),
+                    'cellValues' => array(
+                        '0' => "d.name",
+                        '1' => "d.expired",
+                        ),
+                    'data' => (isset($rc['history']) ? $rc['history'] : array()),
+                    
+                    ),
+                ),
+            );
+    }
+
     return $rsp;
 }
 ?>

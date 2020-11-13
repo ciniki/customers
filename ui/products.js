@@ -171,6 +171,106 @@ function ciniki_customers_products() {
     this.product.addLeftButton('prev', 'Prev');
 
     //
+    // The panel to edit Membership Product Purchases
+    //
+    this.purchase = new M.panel('Membership Product Purchases', 'ciniki_customers_products', 'purchase', 'mc', 'medium', 'sectioned', 'ciniki.customers.main.purchase');
+    this.purchase.data = null;
+    this.purchase.purchase_id = 0;
+    this.purchase.nplist = [];
+    this.purchase.sections = {
+        'general':{'label':'', 'fields':{
+            'product_id':{'label':'Product', 'required':'yes', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
+//            'flags':{'label':'Options', 'type':'text'},
+            'purchase_date':{'label':'Date Purchased', 'type':'date'},
+//            'invoice_id':{'label':'Invoice ID', 'required':'yes', 'type':'text'},
+            'start_date':{'label':'Start Date', 'type':'date'},
+            'end_date':{'label':'End Date', 'type':'date'},
+//            'stripe_customer_id':{'label':'Stripe Customer', 'type':'text'},
+//            'stripe_subscription_id':{'label':'Stripe Subscription', 'type':'text'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_customers_products.purchase.save();'},
+            'delete':{'label':'Delete', 
+                'visible':function() {return M.ciniki_customers_products.purchase.purchase_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_customers_products.purchase.remove();'},
+            }},
+        };
+    this.purchase.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.purchase.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.customers.purchaseHistory', 'args':{'tnid':M.curTenantID, 'purchase_id':this.purchase_id, 'field':i}};
+    }
+    this.purchase.open = function(cb, pid, list) {
+        if( pid != null ) { this.purchase_id = pid; }
+        if( list != null ) { this.nplist = list; }
+        M.api.getJSONCb('ciniki.customers.purchaseGet', {'tnid':M.curTenantID, 'purchase_id':this.purchase_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_customers_products.purchase;
+            p.data = rsp.purchase;
+            p.sections.general.fields.product_id.options = rsp.products;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.purchase.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_customers_products.purchase.close();'; }
+        if( !this.checkForm() ) { return false; }
+        if( this.purchase_id > 0 ) {
+            var c = this.serializeForm('no');
+            if( c != '' ) {
+                M.api.postJSONCb('ciniki.customers.purchaseUpdate', {'tnid':M.curTenantID, 'purchase_id':this.purchase_id}, c, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    eval(cb);
+                });
+            } else {
+                eval(cb);
+            }
+        } else {
+            var c = this.serializeForm('yes');
+            M.api.postJSONCb('ciniki.customers.purchaseAdd', {'tnid':M.curTenantID}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_customers_products.purchase.purchase_id = rsp.id;
+                eval(cb);
+            });
+        }
+    }
+    this.purchase.remove = function() {
+        if( confirm('Are you sure you want to remove product_purchase?') ) {
+            M.api.getJSONCb('ciniki.customers.purchaseDelete', {'tnid':M.curTenantID, 'purchase_id':this.purchase_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_customers_products.purchase.close();
+            });
+        }
+    }
+    this.purchase.nextButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.purchase_id) < (this.nplist.length - 1) ) {
+            return 'M.ciniki_customers_products.purchase.save(\'M.ciniki_customers_products.purchase.open(null,' + this.nplist[this.nplist.indexOf('' + this.purchase_id) + 1] + ');\');';
+        }
+        return null;
+    }
+    this.purchase.prevButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.purchase_id) > 0 ) {
+            return 'M.ciniki_customers_products.purchase.save(\'M.ciniki_customers_products.purchase.open(null,' + this.nplist[this.nplist.indexOf('' + this.purchase_id) - 1] + ');\');';
+        }
+        return null;
+    }
+    this.purchase.addButton('save', 'Save', 'M.ciniki_customers_products.purchase.save();');
+    this.purchase.addClose('Cancel');
+    this.purchase.addButton('next', 'Next');
+    this.purchase.addLeftButton('prev', 'Prev');
+
+    //
     // Arguments:
     // aG - The arguments to be parsed into args
     //
@@ -194,6 +294,10 @@ function ciniki_customers_products() {
             return false;
         } 
 
-        this.menu.open(cb);
+        if( args.purchase_id != null && args.purchase_id > 0 ) {
+            this.purchase.open(cb, args.purchase_id);
+        } else {
+            this.menu.open(cb);
+        }
     }
 }

@@ -71,6 +71,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
             if( !isset($membership_details['type']) ) {
                 $now_dt = new DateTime('NOW', new DateTimezone($intl_timezone));
                 $membership_details['type'] = array(
+                    'id' => $purchase['id'],
                     'product_id' => $purchase['product_id'],
                     'label' => 'Type', 
                     'type' => $purchase['type'],
@@ -97,7 +98,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
             }
         }
         if( $purchase['type'] == 20 ) {
-            $membership_details['type'] = array('label'=>'Type', 'value'=>$purchase['name'], 'type'=>20);
+            $membership_details['type'] = array('id' => $purchase['id'], 'label'=>'Type', 'value'=>$purchase['name'], 'type'=>20);
             $membership_details['expires'] = array('label'=>'Expires', 'value'=>'Never');
         }
     }
