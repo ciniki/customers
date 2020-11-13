@@ -140,7 +140,7 @@ function ciniki_customers_web_processEmbedMembershipPrices(&$ciniki, $settings, 
         }
     }
 
-    $blocks[] = array('type'=>'prices', 'prices'=>$prices);
+    $blocks[] = array('type'=>'prices', 'prices'=>$prices, 'descriptions'=>'yes');
     
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

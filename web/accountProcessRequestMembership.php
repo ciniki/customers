@@ -161,7 +161,7 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
     else {
         $page['blocks'][] = array('type'=>'content', 'wide'=>'yes', 'content'=>'You do not currently have a membership. '
             . 'To become a member, choose one of the options below.');
-        $page['blocks'][] = array('type'=>'prices', 'class'=>'wide', 'prices'=>$products);
+        $page['blocks'][] = array('type'=>'prices', 'class'=>'wide', 'prices'=>$products, 'descriptions'=>'yes');
     }
 
     //
