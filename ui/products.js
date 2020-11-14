@@ -175,6 +175,7 @@ function ciniki_customers_products() {
     //
     this.purchase = new M.panel('Membership Product Purchases', 'ciniki_customers_products', 'purchase', 'mc', 'medium', 'sectioned', 'ciniki.customers.main.purchase');
     this.purchase.data = null;
+    this.purchase.customer_id = 0;
     this.purchase.purchase_id = 0;
     this.purchase.nplist = [];
     this.purchase.sections = {
@@ -199,8 +200,9 @@ function ciniki_customers_products() {
     this.purchase.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.customers.purchaseHistory', 'args':{'tnid':M.curTenantID, 'purchase_id':this.purchase_id, 'field':i}};
     }
-    this.purchase.open = function(cb, pid, list) {
+    this.purchase.open = function(cb, pid, customer_id, list) {
         if( pid != null ) { this.purchase_id = pid; }
+        if( customer_id != null ) { this.customer_id = customer_id; }
         if( list != null ) { this.nplist = list; }
         M.api.getJSONCb('ciniki.customers.purchaseGet', {'tnid':M.curTenantID, 'purchase_id':this.purchase_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
@@ -232,7 +234,7 @@ function ciniki_customers_products() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.customers.purchaseAdd', {'tnid':M.curTenantID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.customers.purchaseAdd', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -294,7 +296,9 @@ function ciniki_customers_products() {
             return false;
         } 
 
-        if( args.purchase_id != null && args.purchase_id > 0 ) {
+        if( args.customer_id != null && args.customer_id > 0 ) {
+            this.purchase.open(cb, 0, args.customer_id);
+        } else if( args.purchase_id != null && args.purchase_id > 0 ) {
             this.purchase.open(cb, args.purchase_id);
         } else {
             this.menu.open(cb);

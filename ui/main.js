@@ -295,7 +295,8 @@ function ciniki_customers_main() {
     };
     this.search.rowFn = function(s, i, d) { 
         if( M.ciniki_customers_main.search.search_type == 'members' ) {
-            return 'M.startApp(\'ciniki.customers.members\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.id + '\'});';
+            return 'M.ciniki_customers_main.customer.open(\'M.ciniki_customers_main.searchCustomers(null, M.ciniki_customers_main.search.search_str);\',\'' + d.id + '\');'; 
+            // return 'M.startApp(\'ciniki.customers.members\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.id + '\'});';
         } else if( M.ciniki_customers_main.search.search_type == 'dealers' ) {
             return 'M.startApp(\'ciniki.customers.dealers\',null,\'M.ciniki_customers_main.searchCustomers();\',\'mc\',{\'customer_id\':\'' + d.id + '\'});';
         } else if( M.ciniki_customers_main.search.search_type == 'distributors' ) {

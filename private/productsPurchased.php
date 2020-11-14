@@ -47,7 +47,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
             . ") "
         . "WHERE purchases.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY type, sequence, end_date DESC "
+        . "ORDER BY end_date DESC, type, sequence, end_date DESC "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'purchase');
     if( $rc['stat'] != 'ok' ) {
