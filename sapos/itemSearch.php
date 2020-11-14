@@ -16,6 +16,8 @@ function ciniki_customers_sapos_itemSearch($ciniki, $tnid, $args) {
         return array('stat'=>'ok', 'items'=>array());
     }
 
+    $items = array();
+
     //
     // Search for customer products if enabled
     //
@@ -42,7 +44,6 @@ function ciniki_customers_sapos_itemSearch($ciniki, $tnid, $args) {
                 . "OR 'membership' LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
             . "";
-            error_log('test');
         if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
             $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";
         } else {
@@ -56,7 +57,6 @@ function ciniki_customers_sapos_itemSearch($ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $items = array();
         if( isset($rc['items']) ) {
             foreach($rc['items'] as $item) {
                 $item['status'] = 0;
@@ -115,7 +115,6 @@ function ciniki_customers_sapos_itemSearch($ciniki, $tnid, $args) {
         $season_prefix = $rc['season']['name'] . ' - '; 
 
         $types = array('10'=>'Regular', '20'=>'Student', '30'=>'Individual', '40'=>'Family', 'lifetime'=>'Lifetime');
-        $items = array();
 
         foreach($types as $mtype => $type) {
             //
