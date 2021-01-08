@@ -11,8 +11,6 @@
 //
 function ciniki_customers_web_processEmbedMembershipPrices(&$ciniki, $settings, $tnid, $args) {
 
-    $prices = array();
-
     //
     // Load the membership products
     //

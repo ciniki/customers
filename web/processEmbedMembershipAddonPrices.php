@@ -11,52 +11,113 @@
 //
 function ciniki_customers_web_processEmbedMembershipAddonPrices(&$ciniki, $settings, $tnid, $args) {
 
-    $prices = array();
-
     //
     // Load the membership products
     //
+    $strsql = "SELECT products.id, "
+        . "products.name, "
+        . "products.short_name, "
+        . "products.type, "
+        . "products.flags, "
+        . "products.sequence, "
+        . "products.unit_amount, "
+        . "products.synopsis "
+        . "FROM ciniki_customer_products AS products "
+        . "WHERE products.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND type = 40 "
+        . "ORDER BY type, sequence "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+        array('container'=>'products', 'fname'=>'id', 
+            'fields'=>array('id', 'name', 'short_name', 'type', 'flags', 'sequence', 'unit_amount', 'synopsis')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.434', 'msg'=>'Unable to load products', 'err'=>$rc['err']));
+    }
+    $products = isset($rc['products']) ? $rc['products'] : array();
 
+    //
+    // Check if customer logged in, then load their current membership
+    //
+    $blocks = array();
+    $cart = 'yes';
+    if( isset($ciniki['session']['customer']['id']) && $ciniki['session']['customer']['id'] > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productsPurchased');
+        $rc = ciniki_customers_productsPurchased($ciniki, $tnid, array('customer_id' => $ciniki['session']['customer']['id']));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.433', 'msg'=>'Unable to load purchases', 'err'=>$rc['err']));
+        }
+        if( isset($rc['membership_details']['type']['type']) && $rc['membership_details']['type']['type'] == 20 ) {
+            $blocks[] = array('type'=>'content', 'content'=>"You are currently a " . $rc['membership_details']['type']['short_name'] . " Member."); 
+            $cart = 'no';
+        }
+        if( isset($rc['membership_details']['type']['type']) && $rc['membership_details']['type']['type'] == 10 ) {
+            //
+            // Invisible online, unable to renew online (Complimentary, Student, etc)
+            //
+            if( ($rc['membership_details']['type']['flags']&0x01) == 0 ) {
+                $blocks[] = array('type'=>'content', 'html'=>"<p class='cart-pricelist-renew-contact'><b>Please contact us to renew your " . $rc['membership_details']['type']['name'] . ".</b></p>");
+                $cart = 'no';
+            } 
+            //
+            // Visible but not for sale online, unable to renew online (Complimentary, Student, etc)
+            //
+            elseif( ($rc['membership_details']['type']['flags']&0x03) == 0x01 ) {
+                $blocks[] = array('type'=>'content', 'html'=>"<p class='cart-pricelist-renew-contact'><b>Please contact us to renew your " . $rc['membership_details']['type']['name'] . ".</b></p>");
+                $cart = 'no';
+            } 
+            //
+            // Renew Online
+            //
+            elseif( ($rc['membership_details']['type']['flags']&0x03) == 0x03 
+                && isset($products[$rc['membership_details']['type']['product_id']]) 
+                ) {
+
+                $cart = 'yes';
+                if( $rc['membership_details']['type']['expires'] == 'future' ) {
+                    $blocks[] = array('type'=>'content', 'content'=>"<p class='cart-pricelist-renew-contact'><b>Your " . $rc['membership_details']['type']['name'] . ' has expires on ' . $rc['membership_details']['type']['expiry_display'] . '.</b></p>'); 
+                } else {
+                    $blocks[] = array('type'=>'content', 'content'=>"<p class='cart-pricelist-renew-contact'><b>Your " . $rc['membership_details']['type']['name'] . ' expired on ' . $rc['membership_details']['type']['expiry_display'] . ', renew today.</b></p>'); 
+                }
+                
+            }
+        }
+    }
 
     //
     // Create the list of prices
     //
-
-    //
-    // Load the customers settings
-    //
-/*    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $tnid, 'ciniki.customers', 'settings', 'membership');
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    $customer_settings = $rc['settings'];
-
-    $types = array('10'=>'Regular', '20'=>'Student', '30'=>'Individual', '40'=>'Family', 'lifetime'=>'Lifetime');
-
-    foreach($types as $tid => $type_name) {
-        if( isset($customer_settings["membership-type-$tid-active"]) && $customer_settings["membership-type-$tid-active"] == 'yes' ) {
-            $price = array();
-            if( isset($customer_settings["membership-type-$tid-name"]) && $customer_settings["membership-type-$tid-name"] != '' ) {
-                $price['name'] = $customer_settings["membership-type-$tid-name"];
-            } else {
-                $price['name'] = $type_name;
-            }
-            if( isset($customer_settings["membership-type-$tid-price"]) && $customer_settings["membership-type-$tid-price"] != '' ) {
-                $price['unit_amount'] = $customer_settings["membership-type-$tid-price"];
-                $price['units_available'] = 1;
-                $price['limited_units'] = 'yes';
-            }
-            if( isset($customer_settings["membership-type-$tid-online"]) && $customer_settings["membership-type-$tid-online"] == 'yes' ) {
-                $price['cart'] = 'yes';
-                $price['object'] = 'ciniki.customers.membership';
-                $price['object_id'] = $tid;
-                $price['price_id'] = 0;
-            }
-            $prices[] = $price;
+    $prices = array();
+    foreach($products as $product) {
+        if( ($product['flags']&0x03) == 0x03 ) {
+            $prices[] = array(
+                'name' => $product['name'],
+                'description' => $product['synopsis'],
+                'cart' => $cart,
+                'object' => 'ciniki.customers.product',
+                'object_id' => $product['id'],
+                'price_id' => 0,
+                'unit_amount' => $product['unit_amount'],
+                'units_available' => 1,
+                'limited_units' => 'yes',
+                );
+        } elseif( ($product['flags']&0x03) == 0x01 ) {
+            $prices[] = array(
+                'name' => $product['name'],
+                'description' => $product['synopsis'],
+                'object' => 'ciniki.customers.product',
+                'object_id' => $product['id'],
+                'price_id' => 0,
+                'unit_amount' => $product['unit_amount'],
+                'units_available' => 1,
+                'limited_units' => 'yes',
+                );
         }
-    } */
+    }
 
-    return array('stat'=>'ok', 'blocks'=>array(array('type'=>'prices', 'prices'=>$prices))); 
+    $blocks[] = array('type'=>'prices', 'prices'=>$prices, 'descriptions'=>'yes');
+    
+    return array('stat'=>'ok', 'blocks'=>$blocks);
 }
 ?>
