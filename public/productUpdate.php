@@ -29,7 +29,7 @@ function ciniki_customers_productUpdate(&$ciniki) {
         'primary_image_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Primary Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
-        'unit_amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Unit Amount'),
+        'unit_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Unit Amount'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
