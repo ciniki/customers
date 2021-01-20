@@ -189,6 +189,7 @@ function ciniki_customers_reporting_blockBirthdays(&$ciniki, $tnid, $args) {
                 array('label'=>'Address', 'pdfwidth'=>'30%', 'field'=>'address'),
                 ),
             'data'=>array(),
+            'editApp'=>array('app'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.id')),
             'textlist'=>'',
             );
         foreach($customers as $cid => $customer) {

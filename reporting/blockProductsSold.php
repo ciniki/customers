@@ -153,6 +153,7 @@ function ciniki_customers_reporting_blockProductsSold(&$ciniki, $tnid, $args) {
                 array('label'=>'Email', 'pdfwidth'=>'30%', 'field'=>'email_address'),
                 ),
             'data'=>array(),
+            'editApp'=>array('app'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.id')),
             'textlist'=>'',
             );
         foreach($customers as $cid => $customer) {

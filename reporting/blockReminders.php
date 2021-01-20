@@ -159,7 +159,6 @@ function ciniki_customers_reporting_blockReminders(&$ciniki, $tnid, $args) {
                 array('label'=>'Auto Email', 'pdfwidth'=>'15%', 'field'=>'auto_email'),
                 ),
             'data'=>array(),
-            'editApp'=>array('app'=>'ciniki.customers.reminders', 'args'=>array('reminder_id'=>'d.id')),
             'textlist'=>'',
             );
         foreach($reminders as $cid => $reminder) {
