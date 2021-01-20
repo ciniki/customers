@@ -117,6 +117,8 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
     //
     if( isset($rc['membership_details']) && count($rc['membership_details']) > 0 ) {
         $details = $rc['membership_details'];
+        $object_ids = array();
+        $final_price = 0;
         foreach($details AS $did => $detail) {
             if( isset($products[$detail['product_id']]) ) {
                 $details[$did]['renewbutton'] = '<div class="cart"><form action="' . $ciniki['request']['ssl_domain_base_url'] . '/cart" method="POST">'
@@ -127,6 +129,8 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
                     . '<input type="hidden" name="quantity" value="1">'
                     . '<input class="cart-submit" type="submit" value="Renew Now"/>'
                     . '</form></div>';
+                $object_ids[] = $detail['product_id'];
+                $final_price += $products[$detail['product_id']]['unit_amount'];
             } else {
                 $details[$did]['renewbutton'] = 'Contact Us to Renew';
             }
@@ -149,10 +153,25 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
             );
 
         //
-        // Show membership addon's available
+        // FIXME: Show membership addon's available
         //
         if( count($addons) > 0 ) {
 
+        }
+
+        //
+        // Check if there should be a renew all button
+        //
+        if( count($object_ids) > 1 ) {
+            $page['blocks'][] = array('type'=>'content', 'html'=>'<div class="wide alignright">'
+                . '<form class="wide" action="' . $ciniki['request']['ssl_domain_base_url'] . '/cart" method="POST">'
+                . '<input type="hidden" name="action" value="addobjectids">'
+                . '<input type="hidden" name="object" value="ciniki.customers.product">'
+                . '<input type="hidden" name="object_ids" value="' . implode(',', $object_ids) . '">'
+                . '<input type="hidden" name="final_price" value="' . $final_price . '">'
+                . '<input type="hidden" name="quantity" value="1">'
+                . '<input class="submit" type="submit" value="Renew All Now"/>&nbsp;'
+                . '</form></div>');
         }
     } 
     //
