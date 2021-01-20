@@ -44,6 +44,16 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
             ),
         );
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $blocks['ciniki.customers.products'] = array(
+            'name'=>'Member Products Sold',
+            'module' => 'Customers',
+            'category' => 'Members',
+            'options'=>array(
+                'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                ),
+            );
+    }
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02) ) {
         $blocks['ciniki.customers.newmembers'] = array(
             'name'=>'New Members',
