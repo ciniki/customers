@@ -161,7 +161,8 @@ function ciniki_customers_reporting_blockProductsSold(&$ciniki, $tnid, $args) {
             // Add emails to customer
             //
             $chunk['textlist'] .= $customer['display_name'] . "\n";
-            $chunk['textlist'] .= $customer['start_date'] . "\n";
+            $chunk['textlist'] .= $customer['product_name'] . "\n";
+            $chunk['textlist'] .= $customer['purchase_date'] . "\n";
             $customer['email_address'] = '';
             if( isset($emails[$customer['id']]['emails']) ) {
                 foreach($emails[$customer['id']]['emails'] as $email) {
