@@ -49,6 +49,9 @@ function ciniki_customers_reporting_block(&$ciniki, $tnid, $args) {
     } elseif( $args['block_ref'] == 'ciniki.customers.products' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockProductsSold');
         return ciniki_customers_reporting_blockProductsSold($ciniki, $tnid, $args['options']);
+    } elseif( $args['block_ref'] == 'ciniki.customers.activeproducts' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockActiveProducts');
+        return ciniki_customers_reporting_blockActiveProducts($ciniki, $tnid, $args['options']);
     } elseif( $args['block_ref'] == 'ciniki.customers.renewedmembers' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'reporting', 'blockRenewedMembers');
         return ciniki_customers_reporting_blockRenewedMembers($ciniki, $tnid, $args['options']);

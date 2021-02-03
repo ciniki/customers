@@ -53,6 +53,13 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
                 'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
                 ),
             );
+        $blocks['ciniki.customers.activeproducts'] = array(
+            'name'=>'Active Members by Product',
+            'module' => 'Customers',
+            'category' => 'Members',
+            'options'=>array(
+                ),
+            );
     }
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02) ) {
         $blocks['ciniki.customers.newmembers'] = array(
