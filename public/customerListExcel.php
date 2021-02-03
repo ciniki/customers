@@ -24,6 +24,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         'memberlist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Members Only'),
         'subscription_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subscription'),
         'select_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Categories'),
+        'select_products'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Products'),
         'select_member_status'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Member Status'),
         'select_lifetime'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Include Lifetime'),
         )); 
@@ -493,8 +494,19 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "'' AS addresses, "
             . "'' AS links, "
             . "'' AS emails "
-            . "FROM ciniki_customers "
-            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "FROM ciniki_customers ";
+        if( isset($args['select_products']) && count($args['select_products']) > 0 ) {
+            $strsql .= "INNER JOIN ciniki_customer_product_purchases AS purchases ON (" 
+                . "ciniki_customers.id = purchases.customer_id "
+                . "AND purchases.product_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['select_products']) . ") ";
+            if( isset($args['select_member_status'][0]) && $args['select_member_status'][0] == 10
+                && !isset($args['select_member_status'][1]) 
+                ) {
+                $strsql .= "AND purchases.end_date >= NOW() ";
+            }
+            $strsql .= ") ";
+        }
+        $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . $selector_sql
             . "ORDER BY ciniki_customers.sort_name "
             . "";

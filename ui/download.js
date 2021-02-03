@@ -37,8 +37,12 @@ function ciniki_customers_download() {
             'member_status':{'label':'Member Status', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
             'member_lastpaid':{'label':'Last Paid Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'member_expires':{'label':'Expires Date', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-            'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-            'membership_type':{'label':'Membership Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'membership_length':{'label':'Membership Length', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions,
+                'visible':function() { return (M.modFlagOn('ciniki.customers', 0x08) == 0 ? 'yes' : 'no'); },
+                },
+            'membership_type':{'label':'Membership Type', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions,
+                'visible':function() { return (M.modFlagOn('ciniki.customers', 0x08) == 0 ? 'yes' : 'no'); },
+                },
             'member_categories':{'label':'Categories', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'primary_image':{'label':'Image', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'primary_image_caption':{'label':'Image Caption', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
@@ -167,8 +171,17 @@ function ciniki_customers_download() {
                     p.sections.selector.fields.select_categories.options[M.eU(rsp.customer_categories[i].name)] = rsp.customer_categories[i].name;
                 }
             }
+            if( M.modFlagOn('ciniki.customers', 0x08) && rsp.products != null ) {
+                p.sections.selector.fields['select_products'] = {'label':'Membership', 'type':'idlist', 'none':'yes', 'list':{}};
+                for(var i in rsp.products) {
+                    p.sections.selector.fields.select_products.list[M.eU(rsp.products[i].name)] = rsp.products[i];
+                }
+                
+            }
             p.sections.selector.fields['select_member_status'] = {'label':'Member Status', 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Suspended'}};
-            p.sections.selector.fields['select_lifetime'] = {'label':'Lifetime Members', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}};
+            if( !M.modFlagOn('ciniki.customers', 0x08) ) {
+                p.sections.selector.fields['select_lifetime'] = {'label':'Lifetime Members', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}};
+            }
             if( M.modFlagOn('ciniki.customers', 0x02000000) 
                 && M.curTenant.modules['ciniki.customers'].settings != null
                 && M.curTenant.modules['ciniki.customers'].settings.seasons != null
@@ -349,8 +362,13 @@ function ciniki_customers_download() {
             if( M.modFlagOn('ciniki.customers', 0x400000) ) {
                 args['select_categories'] = this.exportlist.formValue('select_categories');
             }
+            if( M.modFlagOn('ciniki.customers', 0x08) ) {
+                args['select_products'] = this.exportlist.formValue('select_products');
+            }
             args['select_member_status'] = this.exportlist.formValue('select_member_status');
-            args['select_lifetime'] = this.exportlist.formValue('select_lifetime');
+            if( !M.modFlagOn('ciniki.customers', 0x08) ) {
+                args['select_lifetime'] = this.exportlist.formValue('select_lifetime');
+            }
             if( M.modFlagOn('ciniki.customers', 0x02000000) 
                 && M.curTenant.modules['ciniki.customers'].settings != null
                 && M.curTenant.modules['ciniki.customers'].settings.seasons != null

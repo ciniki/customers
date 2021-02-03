@@ -87,6 +87,21 @@ function ciniki_customers_customerListExcelOptions($ciniki) {
         }
     }
 
+    //
+    // Get the customer products
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $strsql = "SELECT DISTINCT id, name "
+            . "FROM ciniki_customer_products "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY type, name "
+            . "";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'products', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            ));
+        $rsp['products'] = isset($rc['products']) ? $rc['products'] : array();
+    }
+
     return $rsp;
 }
 ?>
