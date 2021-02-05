@@ -495,7 +495,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "'' AS links, "
             . "'' AS emails "
             . "FROM ciniki_customers ";
-        if( isset($args['select_products']) && count($args['select_products']) > 0 ) {
+        if( isset($args['select_products']) && count($args['select_products']) > 0 && $args['select_products'][0] != '' ) {
             $strsql .= "INNER JOIN ciniki_customer_product_purchases AS purchases ON (" 
                 . "ciniki_customers.id = purchases.customer_id "
                 . "AND purchases.product_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['select_products']) . ") ";
