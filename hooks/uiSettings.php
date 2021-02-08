@@ -28,6 +28,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
     if( isset($ciniki['tenant']['modules']['ciniki.sapos'])
         || isset($ciniki['tenant']['modules']['ciniki.poma'])
         || isset($ciniki['tenant']['modules']['ciniki.products'])
+        || isset($ciniki['tenant']['modules']['ciniki.wineproduction'])
         ) {
         $label = 'Customers';
     }
