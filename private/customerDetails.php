@@ -49,13 +49,26 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $date_format = ciniki_users_dateFormat($ciniki);
+    
+    //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+    $rc = ciniki_customers_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
 
     //
     // Get the customer details and emails
     //
     $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, permalink, callsign, prefix, first, middle, last, suffix, "
         . "display_name, sort_name, display_name_format, company, department, title, "
-        . "status, dealer_status, distributor_status, "
+        . "status, member_status, member_status AS member_status_display, "
+        . "member_lastpaid, member_lastpaid AS member_lastpaid_display, "
+        . "member_expires, member_expires AS member_expires_display, "
+        . "dealer_status, distributor_status, "
         . "phone_home, phone_work, phone_cell, phone_fax, "
         . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
@@ -68,10 +81,17 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
             'fields'=>array('id', 'eid', 'parent_id', 'type', 'permalink',
                 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'display_name_format', 
-                'status', 'dealer_status', 'distributor_status',
+                'status', 'member_status', 'member_status_display', 
+                'member_lastpaid', 'member_lastpaid_display', 'member_expires', 'member_expires_display',
+                'dealer_status', 'distributor_status',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
                 'company', 'department', 'title',
-                'notes', 'birthdate')),
+                'notes', 'birthdate'),
+            'maps'=>array('member_status_display'=>$maps['customer']['member_status']),
+            'utctotz'=>array(   
+                'member_lastpaid_display'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                'member_expires_display'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                )),
         array('container'=>'emails', 'fname'=>'email_id', 'name'=>'email',
             'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
         ));

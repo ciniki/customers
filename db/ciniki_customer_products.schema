@@ -21,7 +21,7 @@
 # type:                     The product type.
 #
 #                               10 - Subscription Membership (renews monthly, quarterly or yearly)
-#                               15 - Lifetime Membership (good forever, no renewals)
+#                               20 - Lifetime Membership (good forever, no renewals)
 #                               40 - Subscription Membership Addon (eg: directory listing, web profile)
 #                               60 - One Time Addon, must be member already (eg: Website Setup Fee) **future**
 #

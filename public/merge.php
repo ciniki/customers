@@ -67,6 +67,7 @@ function ciniki_customers_merge($ciniki) {
 
     $strsql = "SELECT id, display_name, "
         . "callsign, prefix, first, middle, last, suffix, company, department, title, "
+        . "member_status, member_lastpaid, member_expires, "
         . "birthdate, "
         . "notes "
         . "FROM ciniki_customers "
@@ -78,6 +79,7 @@ function ciniki_customers_merge($ciniki) {
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
             'fields'=>array('id', 'display_name', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 
                 'company', 'department', 'title', 'birthdate', 
+                'member_status', 'member_lastpaid', 'member_expires',
                 'notes')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -120,6 +122,9 @@ function ciniki_customers_merge($ciniki) {
         'title',
         'notes',
         'birthdate',
+        'member_status',
+        'member_lastpaid',
+        'member_expires',
     );
     $strsql_primary = "UPDATE ciniki_customers SET last_updated = UTC_TIMESTAMP() ";
     //
@@ -139,7 +144,7 @@ function ciniki_customers_merge($ciniki) {
             // If the primary record field is empty,
             // copy the information across
             //
-            if( !isset($primary[$field]) || $primary[$field] == '' || $primary[$field] == '0000-00-00' ) {
+            if( !isset($primary[$field]) || $primary[$field] == '' || $primary[$field] == '0000-00-00' || $primary[$field] == '0' ) {
                 // Set the information in the primary customer, and remove from secondary
                 $strsql_primary .= ", $field = '" . ciniki_core_dbQuote($ciniki, $secondary[$field]) . "' ";
                 $strsql_secondary .= ", $field = '' ";

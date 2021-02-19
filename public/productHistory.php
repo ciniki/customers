@@ -42,6 +42,6 @@ function ciniki_customers_productHistory($ciniki) {
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_products', $args['product_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_products', $args['product_id'], $args['field']);
 }
 ?>

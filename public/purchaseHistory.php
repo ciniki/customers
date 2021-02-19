@@ -43,20 +43,20 @@ function ciniki_customers_purchaseHistory($ciniki) {
 
     if( $args['field'] == 'purchase_date' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
-        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field'], 'date');
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field'], 'date');
     }
 
     if( $args['field'] == 'start_date' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
-        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field'], 'date');
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field'], 'date');
     }
 
     if( $args['field'] == 'end_date' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
-        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field'], 'date');
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field'], 'date');
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customers_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.customers', 'ciniki_customer_history', $args['tnid'], 'ciniki_customer_product_purchases', $args['purchase_id'], $args['field']);
 }
 ?>

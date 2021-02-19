@@ -156,6 +156,15 @@ function ciniki_customers_duplicateDetails($ciniki) {
             $rsp['details' . $cust][] = array('label'=>'Department', 'value'=>$rc['customer']['department']);
             $rsp['details' . $cust][] = array('label'=>'Title', 'value'=>$rc['customer']['title']);
             $rsp['details' . $cust][] = array('label'=>'Birthdate', 'value'=>$rc['customer']['birthdate']);
+
+            //
+            // Membership details
+            //
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02) ) {
+                $rsp['details' . $cust][] = array('label'=>'Member Status', 'value'=>$rc['customer']['member_status_display']);
+//                $rsp['details' . $cust][] = array('label'=>'Member Last Paid', 'value'=>$rc['customer']['member_lastpaid_display']);
+//                $rsp['details' . $cust][] = array('label'=>'Member Expires', 'value'=>$rc['customer']['member_expires_display']);
+            }
         
             //
             // Add contact details
