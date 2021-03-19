@@ -256,6 +256,7 @@ function ciniki_customers_main() {
         'tools':{'label':'Cleanup', 'list':{
             'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_main.tools.show();\');'},
             'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
+            'members':{'label':'Update Lastpaid/Expires', 'fn':'M.ciniki_customers_main.tools.updateLastpaidExpires();'},
         }},
         'download':{'label':'Export (Advanced)', 'list':{
             'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
@@ -268,6 +269,15 @@ function ciniki_customers_main() {
 //              'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //          }},
         };
+    this.tools.updateLastpaidExpires = function() {
+        M.api.getJSONCb('ciniki.customers.updateMembersLastPaid', {'tnid':M.curTenantID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.alert('Done');
+        });
+    }
     this.tools.exportCSVContacts = function() {
         var args = {'tnid':M.curTenantID, 'columns':'type::status::prefix::first::middle::last::suffix::company::split_phone_labels::split_emails::split_addresses'};
         M.api.openFile('ciniki.customers.customerListExcel', args);
