@@ -122,7 +122,7 @@ function ciniki_customers_purchaseAdd(&$ciniki) {
         //
         // If new membership, update customer record
         //
-        if( $args['purchase_date'] > $customer['purchase_date'] ) {
+        if( $args['purchase_date'] > $customer['member_lastpaid'] ) {
             if( $customer['status'] != 10 ) {
                 $customer_updates['status'] = 10;
             }
