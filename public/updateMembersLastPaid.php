@@ -92,7 +92,6 @@ function ciniki_customers_updateMembersLastPaid(&$ciniki) {
         $customer_updates = array(); 
         if( isset($customer['purchases']) ) {
             foreach($customer['purchases'] as $purchase) {
-//                error_log($customer['id'] . ' ' . $customer['member_lastpaid'] . ' : ' . $purchase['purchase_date']);
                 if( $purchase['purchase_date'] > $customer['member_lastpaid'] ) {
                     $customer_updates['member_lastpaid'] = $purchase['purchase_date'];
                     if( $customer['status'] != 10 ) {
@@ -119,8 +118,6 @@ function ciniki_customers_updateMembersLastPaid(&$ciniki) {
             }
         }
         if( count($customer_updates) > 0 ) {
-            error_log($customer['display_name']);
-            error_log(print_r($customer_updates,true));
             //
             // Update the customer records with new membership details
             //
