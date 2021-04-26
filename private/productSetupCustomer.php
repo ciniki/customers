@@ -15,11 +15,11 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
 
 
     if( !isset($args['customer_id']) || $args['customer_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.119', 'msg'=>'No Customer Specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.492', 'msg'=>'No Customer Specified'));
     }
 
     if( !isset($args['product_id']) || $args['product_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.119', 'msg'=>'No product specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.493', 'msg'=>'No product specified'));
     }
 
     //
@@ -48,10 +48,10 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'product');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.419', 'msg'=>'Unable to load product', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.494', 'msg'=>'Unable to load product', 'err'=>$rc['err']));
     }
     if( !isset($rc['product']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.420', 'msg'=>'Unable to find requested product'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.495', 'msg'=>'Unable to find requested product'));
     }
     $product = $rc['product'];
 
@@ -72,10 +72,10 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.422', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.496', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
     }
     if( !isset($rc['customer']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.423', 'msg'=>'Unable to find customer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.474', 'msg'=>'Unable to find customer'));
     }
     $customer = $rc['customer'];
 
@@ -113,7 +113,7 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'purchase');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.421', 'msg'=>'Unable to load purchase', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.477', 'msg'=>'Unable to load purchase', 'err'=>$rc['err']));
     }
     $purchases = isset($rc['rows']) ? $rc['rows'] : array();
 
@@ -164,7 +164,7 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
     $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.product_purchase', $new_purchase, 0x04);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.426', 'msg'=>'Unable to add the product'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.119', 'msg'=>'Unable to add the product'));
     }
     
     //
@@ -200,7 +200,7 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer', $args['customer_id'], $customer_updates, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.424', 'msg'=>'Unable to update the customer'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.421', 'msg'=>'Unable to update the customer'));
         }
     }
 

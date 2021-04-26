@@ -194,7 +194,7 @@ function ciniki_customers_merge($ciniki) {
         ));
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.355', 'msg'=>'Unable to existing customer phones', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.483', 'msg'=>'Unable to existing customer phones', 'err'=>$rc['err']));
     }
     $existing_phones = isset($rc['phones']) ? $rc['phones'] : array();
     $existing_labels = array();
@@ -514,7 +514,7 @@ function ciniki_customers_merge($ciniki) {
         ));
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.355', 'msg'=>'Unable to existing customer phones', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.498', 'msg'=>'Unable to existing customer phones', 'err'=>$rc['err']));
     }
     $reminders = isset($rc['reminders']) ? $rc['reminders'] : array();
     foreach($reminders as $reminder) {
@@ -523,7 +523,7 @@ function ciniki_customers_merge($ciniki) {
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.412', 'msg'=>'', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.485', 'msg'=>'', 'err'=>$rc['err']));
         }
     }
 
@@ -549,7 +549,7 @@ function ciniki_customers_merge($ciniki) {
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.412', 'msg'=>'', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.497', 'msg'=>'', 'err'=>$rc['err']));
         }
     }
 

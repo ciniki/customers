@@ -196,7 +196,7 @@ function ciniki_customers_memberships($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.415', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.511', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
         }
         $rsp['membertypes'] = isset($rc['types']) ? $rc['types'] : array();
     } else {

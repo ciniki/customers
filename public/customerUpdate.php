@@ -424,7 +424,7 @@ function ciniki_customers_customerUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
     $rc = ciniki_customers_customerUpdateName($ciniki, $args['tnid'], $customer, $args['customer_id'], $args);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.410', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.512', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
     }
     if( isset($rc['display_name']) && $rc['display_name'] != $customer['display_name'] ) {
         $args['display_name'] = $rc['display_name'];

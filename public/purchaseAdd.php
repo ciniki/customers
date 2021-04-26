@@ -154,7 +154,7 @@ function ciniki_customers_purchaseAdd(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $args['customer_id'], $customer_updates, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.424', 'msg'=>'Unable to update the customer'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.481', 'msg'=>'Unable to update the customer'));
         }
     }
 

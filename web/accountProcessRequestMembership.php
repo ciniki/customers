@@ -26,7 +26,7 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
     // Double check the account is logged in, should never reach this spot
     //
     if( !isset($ciniki['session']['customer']['id']) || $ciniki['session']['customer']['id'] == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.359', 'msg'=>'Not logged in'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.510', 'msg'=>'Not logged in'));
     }
 
     //
@@ -52,7 +52,7 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
             'fields'=>array('id', 'name', 'short_name', 'type', 'flags', 'sequence', 'unit_amount', 'description')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.434', 'msg'=>'Unable to load products', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.504', 'msg'=>'Unable to load products', 'err'=>$rc['err']));
     }
     $products = isset($rc['products']) ? $rc['products'] : array();
 
@@ -96,7 +96,7 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
             'fields'=>array('id', 'name', 'short_name', 'type', 'flags', 'sequence', 'unit_amount', 'synopsis')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.434', 'msg'=>'Unable to load products', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.505', 'msg'=>'Unable to load products', 'err'=>$rc['err']));
     }
     $addons = isset($rc['products']) ? $rc['products'] : array();
 */
@@ -261,7 +261,7 @@ function ciniki_customers_web_accountProcessRequestMembership($ciniki, $settings
                 exit;
             }
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.337', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.509', 'msg'=>'Unable to process request', 'err'=>$rc['err']));
             }
             foreach($rc['blocks'] as $block) {
                 $page['blocks'][] = $block;

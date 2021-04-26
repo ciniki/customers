@@ -114,10 +114,10 @@ function ciniki_customers_reminderGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.403', 'msg'=>'Reminders not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.459', 'msg'=>'Reminders not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['reminders'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.404', 'msg'=>'Unable to find Reminders'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.461', 'msg'=>'Unable to find Reminders'));
         }
         $reminder = $rc['reminders'][0];
     }
@@ -129,7 +129,7 @@ function ciniki_customers_reminderGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
         $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], $reminder);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.411', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.464', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
         }
         $reminder['customer_details'] = $rc['details'];
     }

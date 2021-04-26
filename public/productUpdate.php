@@ -63,7 +63,7 @@ function ciniki_customers_productUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.405', 'msg'=>'You already have an membership products with this name, please choose another.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.501', 'msg'=>'You already have an membership products with this name, please choose another.'));
         }
     }
 

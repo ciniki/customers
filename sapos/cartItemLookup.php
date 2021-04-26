@@ -55,10 +55,10 @@ function ciniki_customers_sapos_cartItemLookup($ciniki, $tnid, $customer, $args)
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.417', 'msg'=>'Membership product not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.507', 'msg'=>'Membership product not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['products'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.404', 'msg'=>'Unable to find membership product'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.508', 'msg'=>'Unable to find membership product'));
         }
         $product = array_shift($rc['products']);
        

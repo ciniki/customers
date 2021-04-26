@@ -12,7 +12,7 @@
 function ciniki_customers_wng_processEmbed(&$ciniki, $tnid, $request, $args) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.customers']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.209', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.491', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) 

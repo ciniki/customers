@@ -43,7 +43,7 @@ function ciniki_customers_wng_logAdd($ciniki, $tnid, $request, $status, $action,
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
     $rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.227', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.476', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
     }
 
     return array('stat'=>'ok');

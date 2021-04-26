@@ -80,7 +80,7 @@ function ciniki_customers_purchaseUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
     $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.customers', 'num');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.443', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.426', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
     }
     $latest_purchase = 'yes';
     if( isset($rc['num']) && $rc['num'] > 0 ) {

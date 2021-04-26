@@ -78,7 +78,7 @@ function ciniki_customers_reminderUpdate(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'reminder');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.128', 'msg'=>'Unable to load reminder', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.499', 'msg'=>'Unable to load reminder', 'err'=>$rc['err']));
     }
     if( !isset($rc['reminder']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.129', 'msg'=>'Unable to find reminder'));

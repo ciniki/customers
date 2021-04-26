@@ -65,10 +65,10 @@ function ciniki_customers_reminderEmailSend(&$ciniki, $tnid, $reminder_id) {
         array('container'=>'emails', 'fname'=>'email_id', 'fields'=>array('email_address')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.408', 'msg'=>'Unable to load reminders', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.454', 'msg'=>'Unable to load reminders', 'err'=>$rc['err']));
     }
     if( !isset($rc['reminder'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.407', 'msg'=>'Unable to find requested reminder'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.470', 'msg'=>'Unable to find requested reminder'));
     }
     $reminder = $rc['reminder'][0];
     
@@ -101,7 +101,7 @@ function ciniki_customers_reminderEmailSend(&$ciniki, $tnid, $reminder_id) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'reminderRepeatNextDate');
         $rc = ciniki_customers_reminderRepeatNextDate($ciniki, $tnid, $reminder, $dt);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.409', 'msg'=>'Unable to calculate next reminder date', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.472', 'msg'=>'Unable to calculate next reminder date', 'err'=>$rc['err']));
         }
         if( $reminder['repeat_end'] != '0000-00-00' ) {
             $end_dt = new DateTime($reminder['repeat_end'] . ' 23:59:59', new DateTimezone($intl_timezone));
@@ -138,7 +138,7 @@ function ciniki_customers_reminderEmailSend(&$ciniki, $tnid, $reminder_id) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.reminder', $reminder['id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.406', 'msg'=>'Unable to update the reminder'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.457', 'msg'=>'Unable to update the reminder'));
         }
     }
 

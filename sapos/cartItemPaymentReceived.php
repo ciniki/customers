@@ -45,7 +45,7 @@ function ciniki_customers_sapos_cartItemPaymentReceived($ciniki, $tnid, $custome
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productSetupCustomer');
         $rc = ciniki_customers_productSetupCustomer($ciniki, $tnid, $args);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.118', 'msg'=>'Unable to complete purchase', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.506', 'msg'=>'Unable to complete purchase', 'err'=>$rc['err']));
         }
     }
 

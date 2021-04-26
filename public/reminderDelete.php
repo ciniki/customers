@@ -50,7 +50,7 @@ function ciniki_customers_reminderDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['reminder']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.400', 'msg'=>'Reminders does not exist.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.451', 'msg'=>'Reminders does not exist.'));
     }
     $reminder = $rc['reminder'];
 
@@ -64,10 +64,10 @@ function ciniki_customers_reminderDelete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
     $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.customers.reminder', $args['reminder_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.401', 'msg'=>'Unable to check if the reminders is still being used.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.465', 'msg'=>'Unable to check if the reminders is still being used.', 'err'=>$rc['err']));
     }
     if( $rc['used'] != 'no' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.402', 'msg'=>'The reminders is still in use. ' . $rc['msg']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.467', 'msg'=>'The reminders is still in use. ' . $rc['msg']));
     }
 
     //

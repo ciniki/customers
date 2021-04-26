@@ -40,7 +40,7 @@ function ciniki_customers_wng_authFailedLogin(&$ciniki, $tnid, $request, $email)
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'email');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.351', 'msg'=>'Unable to load email', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.449', 'msg'=>'Unable to load email', 'err'=>$rc['err']));
     }
     //
     // Multiple emails can be in same business, process them all
@@ -77,7 +77,7 @@ function ciniki_customers_wng_authFailedLogin(&$ciniki, $tnid, $request, $email)
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.email', $email['id'], $update_args, 0x07);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.409', 'msg'=>'Unable to update the email'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.450', 'msg'=>'Unable to update the email'));
             }
 
             //

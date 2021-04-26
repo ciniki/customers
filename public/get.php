@@ -206,7 +206,7 @@ function ciniki_customers_get($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productsPurchased');
         $rc = ciniki_customers_productsPurchased($ciniki, $args['tnid'], array('customer_id' => $customer['id']));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.427', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.479', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
         }
         $customer['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
 
