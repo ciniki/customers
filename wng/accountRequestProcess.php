@@ -16,6 +16,10 @@ function ciniki_customers_wng_accountRequestProcess($ciniki, $tnid, &$request, $
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.513', 'msg'=>'No reference specified'));
     }
 
+    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.535', 'msg'=>'Must be logged in'));
+    }
+
     if( $item['ref'] == 'ciniki.customers.children' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'accountChildrenProcess');
         return ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, $request, $item);

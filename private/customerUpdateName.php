@@ -87,7 +87,7 @@ function ciniki_customers_customerUpdateName(&$ciniki, $tnid, $customer, $custom
         if( isset($args['callsign']) && $args['callsign'] != '' ) {
             $person_name .= ($person_name != '' ? ' - ' : '') . $args['callsign'];
             $sort_person_name .= ($sort_person_name != '' ? ', ' : '') . $args['callsign'];
-        } elseif( !isset($args['callsign']) && $customer['callsign'] != '' ) {
+        } elseif( !isset($args['callsign']) ) {
             $person_name .= ($person_name != '' ? ' - ' : '') . $customer['callsign'];
             $sort_person_name .= ($sort_person_name != '' ? ', ' : '') . $customer['callsign'];
         }
