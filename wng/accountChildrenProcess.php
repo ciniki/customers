@@ -30,7 +30,6 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
     $errors = 'no';
     $error_msg = '';
 
-    error_log(print_r($_POST,true));
     if( isset($_POST['submit']) && $_POST['submit'] == 'Cancel' && isset($_POST['next']) && $_POST['next'] != '' ) {
         header("Location: " . $_POST['next']);
         return array('stat'=>'exit');
@@ -160,7 +159,6 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
             && ($_POST['action'] == 'edit' || (isset($errors) && $errors == 'yes' && ($_POST['action'] == 'update' || $_POST['action'] == 'add'))) 
             )
         ) {
-        error_log('add child');
         if( isset($error_msg) && $error_msg != '' ) {
             $blocks[] = array(
                 'type' => 'msg', 
