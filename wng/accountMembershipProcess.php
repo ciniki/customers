@@ -14,10 +14,7 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
 
-    if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)
-        || !isset($request['session']['customer']['member_status']) 
-        || !$request['session']['customer']['member_status'] == 10 
-        ) {
+    if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.534', 'msg'=>'Account page not found'));
     }
 
