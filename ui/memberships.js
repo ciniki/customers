@@ -15,6 +15,7 @@ function ciniki_customers_memberships() {
     this.menu.data = {};
     this.menu.sections = {
         'membertypes':{'label':'Memberships', 'type':'simplegrid', 'num_cols':1, 'aside':'yes'},
+        'memberaddons':{'label':'Add-ons', 'type':'simplegrid', 'num_cols':1, 'aside':'yes'},
         'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'visible':function() { return M.modFlagSet('ciniki.customers', 0x04); },
             },

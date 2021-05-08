@@ -98,8 +98,15 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
             }
         }
         if( $purchase['type'] == 20 ) {
-            $membership_details['type'] = array('id' => $purchase['id'], 'label'=>'Type', 'value'=>$purchase['name'], 'type'=>20);
-            $membership_details['expires'] = array('label'=>'Expires', 'value'=>'Never');
+            $membership_details['type'] = array(
+                'id' => $purchase['id'], 
+                'label' => 'Type', 
+                'value' => $purchase['name'], 
+                'name' => $purchase['name'], 
+                'type' => 20,
+                'expired' => 'future',
+                'expiry_display' => 'Never',
+                );
         }
     }
     //
@@ -117,7 +124,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                 if( !isset($membership_details[$detail_idx]) ) {
                     $membership_details[$detail_idx] = array(
                         'id' => $purchase['id'],
-                        'product_id' => $purchase['product_id'],
+                        'product_id' => $purchase['product_id'], 
                         'label' => 'Add-on', 
                         'value' => $purchase['short_name'],
                         'name' => $purchase['name'],
@@ -195,6 +202,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
         return $a['end_dt'] > $b['end_dt'] ? -1 : 1;
         });
 
+        error_log(print_r($membership_details,true));
     return array('stat'=>'ok', 'membership_details'=>$membership_details, 'history'=>$history);
 }
 ?>
