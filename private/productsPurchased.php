@@ -202,7 +202,6 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
         return $a['end_dt'] > $b['end_dt'] ? -1 : 1;
         });
 
-        error_log(print_r($membership_details,true));
     return array('stat'=>'ok', 'membership_details'=>$membership_details, 'history'=>$history);
 }
 ?>

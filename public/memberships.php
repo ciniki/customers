@@ -220,6 +220,40 @@ function ciniki_customers_memberships($ciniki) {
     }
 
     //
+    // Get the list of add-ons
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $strsql = "SELECT products.id, "
+            . "products.short_name, "
+            . "COUNT(DISTINCT purchases.customer_id) AS num_members "
+            . "FROM ciniki_customer_products AS products "
+            . "LEFT JOIN ciniki_customer_product_purchases AS purchases ON ("
+                . "products.id = purchases.product_id "
+                . "AND (purchases.end_date > NOW() OR purchases.end_date = '0000-00-00') "
+                . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "purchases.customer_id = customers.id "
+                . "AND customers.member_status = 10 "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE products.type = 40 "
+            . "AND products.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY products.id "
+            . "ORDER BY products.type, products.sequence "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'types', 'fname'=>'id', 
+                'fields'=>array('membership_type'=>'id', 'name'=>'short_name', 'num_members'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.511', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+        }
+        $rsp['memberaddons'] = isset($rc['types']) ? $rc['types'] : array();
+    }
+    //
     // Get the expired memberships
     //
     $strsql = "SELECT COUNT(id) AS num_members "

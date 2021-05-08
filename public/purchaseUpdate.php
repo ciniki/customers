@@ -129,7 +129,7 @@ function ciniki_customers_purchaseUpdate(&$ciniki) {
     //
     // Check if customer record needs updating
     //
-    if( $latest_purchase == 'yes' && $purchase['purchase_date'] != '0000-00-00' && $purchase['purchase_date'] != '' ) {
+    if( $latest_purchase == 'yes' && $purchase['end_date'] != '0000-00-00' && $purchase['end_date'] != '' ) {
         $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.customer', $purchase['customer_id'], array(
             'member_lastpaid' => (isset($args['purchase_date']) ? $args['purchase_date'] : $purchase['purchase_date']),
             'member_expires' => (isset($args['end_date']) ? $args['end_date'] : $purchase['end_date']),
