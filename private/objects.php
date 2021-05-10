@@ -247,6 +247,24 @@ function ciniki_customers_objects($ciniki) {
             ),
         'history_table' => 'ciniki_customer_history',
         );
+    $objects['log'] = array(
+        'name' => 'Log Entry',
+        'sync' => 'yes',
+        'o_name' => 'log',
+        'o_container' => 'logs',
+        'table' => 'ciniki_customer_logs',
+        'fields' => array(
+            'log_date' => array('name'=>'Date'),
+            'status' => array('name'=>'Status'),
+            'ip_address' => array('name'=>'IP'),
+            'action' => array('name'=>'Action'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customers'),
+            'email' => array('name'=>'Email'),
+            'error_code' => array('name'=>'Code'),
+            'error_msg' => array('name'=>'Message'),
+            ),
+        'history_table' => 'ciniki_customers_history',
+        );
     $objects['setting'] = array(
         'type'=>'settings',
         'name'=>'Customer Settings',

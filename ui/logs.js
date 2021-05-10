@@ -8,12 +8,14 @@ function ciniki_customers_logs() {
     this.menu = new M.panel('Members', 'ciniki_customers_logs', 'menu', 'mc', 'full', 'sectioned', 'ciniki.customers.logs.menu');
     this.menu.data = {};
     this.menu.sections = {
-//        'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1, 
-//            'cellClasses':['multiline','multiline'],
-//            'hint':'name, company or email', 'noData':'No members found',
-//            },
-        'logs':{'label':'', 'type':'simplegrid', 'num_cols':7,
-            'headerValues':['Date', 'Status', 'IP', 'Action', 'Email', 'Code', 'Msg'],
+        'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':6, 
+            'cellClasses':['multiline','multiline'],
+            'headerValues':['Date', 'Status', 'IP', 'Action', 'Email', 'Message'],
+            'hint':'search email address', 
+            'noData':'No logs found',
+            },
+        'logs':{'label':'', 'type':'simplegrid', 'num_cols':6,
+            'headerValues':['Date', 'Status', 'IP', 'Action', 'Email', 'Message'],
             'cellClasses':['', ''],
             'noData':'No logs',
             },
@@ -22,16 +24,16 @@ function ciniki_customers_logs() {
         if( s == 'search' && value != '' ) {
             M.api.getJSONBgCb('ciniki.customers.logSearch', {'tnid':M.curTenantID, 'start_needle':value, 'limit':'10'}, 
                 function(rsp) { 
-                    M.ciniki_customers_logs.menu.liveSearchShow('search', null, M.gE(M.ciniki_customers_logs.menu.panelUID + '_' + s), rsp.customers); 
+                    M.ciniki_customers_logs.menu.liveSearchShow('search', null, M.gE(M.ciniki_customers_logs.menu.panelUID + '_' + s), rsp.logs); 
                 });
             return true;
         }
     };
     this.menu.liveSearchResultValue = function(s, f, i, j, d) {
-        if( s == 'search' ) { 
-            return this.cellValue(s, i, j, d);
-        }
-        return '';
+        return this.cellValue(s, i, j, d);
+    }
+    this.menu.liveSearchResultRowClass = function(s, f, i, d) {
+        return this.rowClass(s, i, d);
     }
 //    this.menu.liveSearchSubmitFn = function(s, search_str) {
 //        M.startApp('ciniki.customers.main',null,'M.ciniki_customers_logs.showMenu();','mc',{'type':'members', 'search':search_str});
@@ -43,10 +45,18 @@ function ciniki_customers_logs() {
             case 2: return d.ip_address;
             case 3: return d.action;
             case 4: return d.email;
-            case 5: return d.error_code;
-            case 6: return d.error_msg;
+            case 5: return d.error_msg + (d.error_code != '' ? ' <span class="subdue">(' + d.error_code + ')</span>' : '');
         }
     };
+    this.menu.rowClass = function(s, i, d) {
+        console.log(d);
+        switch(d.status) {
+            case '10': return 'statusgreen';
+            case '30': return 'statusorange';
+            case '50': return 'statusred';
+        }
+        return '';
+    }
     this.menu.open = function(cb) {
         M.api.getJSONCb('ciniki.customers.logList', {'tnid':M.curTenantID, 'limit':'100'}, function(rsp) {
             if( rsp.stat != 'ok' ) {

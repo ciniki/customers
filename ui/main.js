@@ -262,9 +262,11 @@ function ciniki_customers_main() {
             'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
             'exportcsvcontacts':{'label':'Contacts to Excel', 'fn':'M.ciniki_customers_main.tools.exportCSVContacts();'},
         }},
-//            'logs':{'label':'Other', 'list':{
-//                'logs':{'label':'Authentication Logs', 'fn':'M.startApp(\'ciniki.customers.logs\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
-//            }},
+        'logs':{'label':'Other', 
+            'visible':function() { return M.modOn('ciniki.web') ? 'yes' : 'no'; },
+            'list':{
+                'logs':{'label':'Web Authentication Logs', 'fn':'M.startApp(\'ciniki.customers.logs\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
+        }},
 //          'import':{'label':'Import', 'list':{
 //              'automerge':{'label':'Automerge', 'fn':'M.startApp(\'ciniki.customers.automerge\', null, \'M.ciniki_customers_main.menu.show();\');'},
 //          }},

@@ -2,24 +2,28 @@
 //
 // Description
 // -----------
-// This method will return the list of Log Entrys for a tenant.
+// This method searchs for a Log Entrys for a tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
 // tnid:        The ID of the tenant to get Log Entry for.
+// start_needle:       The search string to search for.
+// limit:              The maximum number of entries to return.
 //
 // Returns
 // -------
 //
-function ciniki_customers_logList($ciniki) {
+function ciniki_customers_logSearch($ciniki) {
     //
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'),
+        'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -30,7 +34,7 @@ function ciniki_customers_logList($ciniki) {
     // Check access to tnid as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'checkAccess');
-    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.logList');
+    $rc = ciniki_customers_checkAccess($ciniki, $args['tnid'], 'ciniki.customers.logSearch');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -60,9 +64,17 @@ function ciniki_customers_logList($ciniki) {
         . "ciniki_customer_logs.error_msg "
         . "FROM ciniki_customer_logs "
         . "WHERE ciniki_customer_logs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ("
+            . "email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR email LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+        . ") "
         . "ORDER BY log_date DESC "
-        . "LIMIT 200 "
         . "";
+    if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
+        $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";
+    } else {
+        $strsql .= "LIMIT 35 ";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'logs', 'fname'=>'id', 
@@ -74,17 +86,8 @@ function ciniki_customers_logList($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( isset($rc['logs']) ) {
-        $logs = $rc['logs'];
-        $log_ids = array();
-        foreach($logs as $iid => $log) {
-            $log_ids[] = $log['id'];
-        }
-    } else {
-        $logs = array();
-        $log_ids = array();
-    }
+    $logs = isset($rc['logs']) ? $rc['logs'] : array();
 
-    return array('stat'=>'ok', 'logs'=>$logs, 'nplist'=>$log_ids);
+    return array('stat'=>'ok', 'logs'=>$logs);
 }
 ?>
