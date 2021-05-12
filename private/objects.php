@@ -263,7 +263,7 @@ function ciniki_customers_objects($ciniki) {
             'error_code' => array('name'=>'Code'),
             'error_msg' => array('name'=>'Message'),
             ),
-        'history_table' => 'ciniki_customers_history',
+        'history_table' => 'ciniki_customer_history',
         );
     $objects['setting'] = array(
         'type'=>'settings',
