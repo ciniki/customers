@@ -61,7 +61,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
         ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.353', 'Unable to authenticate');
-        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (3401)");
+//        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (3401)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.320', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
     }
 
@@ -74,7 +74,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
 
 
         ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.354', 'Email address does not exist');
-        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (3403)");
+//        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (3403)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.321', 'msg'=>'Unable to authenticate.'));
     }
 
@@ -92,7 +92,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
     } else {
         if( !isset($customer['parent_id']) || $customer['parent_id'] == 0 ) {
             ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.182', 'Account does not exist');
-            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (3402)");
+//            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (3402)");
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.323', 'msg'=>'Unable to authenticate.'));
         }
         if( $customer['parent_status'] == 0 || $customer['parent_status'] >= 40 ) {
@@ -149,7 +149,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
     $ciniki['session']['user'] = array('id'=>'-2');
 
     ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 10, 'Login', $customer['id'], $email, '', 'Success');
-    error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email success");
+//    error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email success");
 
     return array('stat'=>'ok');
     
@@ -196,7 +196,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
     if( $rc['stat'] != 'ok' ) {
         ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.360', 'Unable to authenticate');
-        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2601)");
+//        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2601)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.360', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
     }
 
@@ -216,12 +216,12 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
             $customers = array($rc['rows'][0]['id']=>$rc['rows'][0]);
         } else {
             ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.361', 'Email address does not exist or password incorrect');
-            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2059)");
+//            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2059)");
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.361', 'msg'=>'Unable to authenticate.'));
         }
     } else {
         ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', 0, $email, 'ciniki.customers.362', 'Email address does not exist');
-        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (736)");
+//        error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (736)");
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.362', 'msg'=>'Unable to authenticate.'));
     }
 
@@ -280,7 +280,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
             if( $rc['stat'] != 'ok' ) {
                 ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', $customer['id'], $email, 'ciniki.customers.356', 'Unable to load child accounts');
-                error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2602)");
+//                error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email fail (2602)");
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.356', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
             }
             if( isset($rc['rows']) ) {
@@ -335,7 +335,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'customer');
         if( $rc['stat'] != 'ok' ) {
             ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 50, 'Login', $customer['id'], $email, 'ciniki.customers.365', 'Unable to check membership');
-            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: unable to check member season $email fail (3231)");
+//            error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: unable to check member season $email fail (3231)");
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.365', 'msg'=>'Unable to authenticate.', 'err'=>$rc['err']));
         }
         if( isset($rc['customer']['membership_expiration']) ) {
@@ -414,7 +414,7 @@ function ciniki_customers_web_authAccount(&$ciniki, $settings, $tnid, $email, $p
     $ciniki['session']['user'] = array('id'=>'-2');
 
     ciniki_customers_web_logAdd($ciniki, $settings, $tnid, 10, 'Login', $customer['id'], $email, '', 'Success');
-    error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email success");
+//    error_log("WEB [" . $ciniki['tenant']['details']['name'] . "]: auth $email success");
 
     return array('stat'=>'ok');
 }
