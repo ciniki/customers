@@ -130,7 +130,7 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $addresses = $rc['customers'];
+        $addresses = isset($rc['customers']) ? $rc['customers'] : array();
 
         //
         // Create the report blocks
