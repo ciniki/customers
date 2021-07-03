@@ -98,15 +98,21 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
             }
         }
         if( $purchase['type'] == 20 ) {
-            $membership_details['type'] = array(
-                'id' => $purchase['id'], 
-                'label' => 'Type', 
-                'value' => $purchase['name'], 
-                'name' => $purchase['name'], 
-                'type' => 20,
-                'expired' => 'future',
-                'expiry_display' => 'Never',
-                );
+            $ptype = 'lifetime';
+            if( isset($membership_details['type']['expires']) && $membership_details['type']['expires'] == 'past' ) {
+                $history[] = $membership_details['type'];
+                $ptype = 'type';
+            } else {
+                $membership_details['lifetime'] = array(
+                    'id' => $purchase['id'], 
+                    'label' => 'Type', 
+                    'value' => $purchase['name'], 
+                    'name' => $purchase['name'], 
+                    'type' => 20,
+                    'expired' => 'future',
+                    'expiry_display' => 'Never',
+                    );
+            }
         }
     }
     //
