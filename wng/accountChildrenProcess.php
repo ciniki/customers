@@ -52,7 +52,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
         if( isset($rc['child']) ) {
             $child = $rc['child'];
         } else {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.177', 'msg'=>'We had a problem, please try again or contact us for help.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.488', 'msg'=>'We had a problem, please try again or contact us for help.'));
         }
     }
 

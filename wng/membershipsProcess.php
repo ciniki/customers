@@ -38,7 +38,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
             'fields'=>array('id', 'name', 'short_name', 'type', 'flags', 'sequence', 'unit_amount', 'description')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.517', 'msg'=>'Unable to load products', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.491', 'msg'=>'Unable to load products', 'err'=>$rc['err']));
     }
     $products = isset($rc['products']) ? $rc['products'] : array();
 
@@ -69,7 +69,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
             'customer_id' => $request['session']['customer']['id'],
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.518', 'msg'=>'Unable to load purchased products.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.515', 'msg'=>'Unable to load purchased products.', 'err'=>$rc['err']));
         }
 
         //

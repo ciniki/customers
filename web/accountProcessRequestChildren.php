@@ -46,7 +46,7 @@ function ciniki_customers_web_accountProcessRequestChildren($ciniki, $settings, 
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'child');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.176', 'msg'=>'We ran into a problem, please try again or contact us for help.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.487', 'msg'=>'We ran into a problem, please try again or contact us for help.'));
         }
         if( isset($rc['child']) ) {
             $child = $rc['child'];

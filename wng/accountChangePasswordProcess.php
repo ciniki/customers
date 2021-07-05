@@ -15,7 +15,7 @@ function ciniki_customers_wng_accountChangePasswordProcess($ciniki, $tnid, $requ
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
 
     if( !isset($settings['account-password-change']) || $settings['account-password-change'] != 'yes' ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.514', 'msg'=>'Account page not found'));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.customers.490', 'msg'=>'Account page not found'));
     }
 
     $blocks = array();
