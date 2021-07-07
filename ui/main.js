@@ -468,12 +468,18 @@ function ciniki_customers_main() {
     }
     this.customer.addDataFn = function(s, i) {
         var args = {};
-        if( this.sections[s].addApp.args != null ) {
+        if( this.sections[s].addApp != null && this.sections[s].addApp.args != null ) {
             for(var j in this.sections[s].addApp.args) {
                 args[j] = eval(this.sections[s].addApp.args[j]);
             }
+            M.startApp(this.sections[s].addApp.app,null,'M.ciniki_customers_main.customer.open();','mc',args);
         }
-        M.startApp(this.sections[s].addApp.app,null,'M.ciniki_customers_main.customer.open();','mc',args);
+        else if( this.sections[s].addTopApp != null && this.sections[s].addTopApp.args != null ) {
+            for(var j in this.sections[s].addTopApp.args) {
+                args[j] = eval(this.sections[s].addTopApp.args[j]);
+            }
+            M.startApp(this.sections[s].addTopApp.app,null,'M.ciniki_customers_main.customer.open();','mc',args);
+        }
     }
     this.customer.moreDataFn = function(s, i) {
         var args = {};
@@ -633,6 +639,9 @@ function ciniki_customers_main() {
                     rsp.data_tabs[i].sections[j].visible = 'no';
                     if( rsp.data_tabs[i].sections[j].addTxt != null && rsp.data_tabs[i].sections[j].addApp != null ) {
                         rsp.data_tabs[i].sections[j].addFn = 'M.ciniki_customers_main.customer.addDataFn(\'' + j + '\');';
+                    }
+                    if( rsp.data_tabs[i].sections[j].addTxt != null && rsp.data_tabs[i].sections[j].addTopApp != null ) {
+                        rsp.data_tabs[i].sections[j].addTopFn = 'M.ciniki_customers_main.customer.addDataFn(\'' + j + '\');';
                     }
                     if( rsp.data_tabs[i].sections[j].moreTxt != null && rsp.data_tabs[i].sections[j].moreApp != null ) {
                         rsp.data_tabs[i].sections[j].moreFn = 'M.ciniki_customers_main.customer.moreDataFn(\'' + j + '\');';
