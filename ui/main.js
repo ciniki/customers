@@ -424,7 +424,8 @@ function ciniki_customers_main() {
         return '';
     };
     this.customer.fieldValue = function(s, i, d) {
-        if( i == 'notes' && this.data[i] == '' ) { return 'No notes'; }
+//        if( i == 'notes' && this.data[i] == '' ) { return 'No notes'; }
+        if( i == 'notes' ) { return M.formatHtml(this.data[i]); }
         return this.data[i];
     };
     this.customer.cellValue = function(s, i, j, d) {
