@@ -110,13 +110,16 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
     //
     // Get the customer addresses
     //
-    if( isset($args['addresses']) && $args['addresses'] == 'yes' ) {
+    if( isset($args['addresses']) && ($args['addresses'] == 'yes' || $args['addresses'] == 'billing') ) {
         $strsql = "SELECT id, customer_id, "
             . "address1, address2, city, province, postal, country, flags, phone "
             . "FROM ciniki_customer_addresses "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
             . "";
+        if( $args['addresses'] == 'billing' ) {
+            $strsql .= "AND (flags&0x02) = 0x02 ";
+        }
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'addresses', 'fname'=>'id',
                 'fields'=>array('id', 'customer_id', 'address1', 'address2', 'city', 'province', 'postal', 
