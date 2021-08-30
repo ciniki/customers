@@ -70,6 +70,7 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
         . "FROM ciniki_customers AS customers "
         . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND customers.member_status > 0 "
+        . "AND customers.membership_length != 60 " // Ignore lifetime members
         . "";
     if( isset($args['direction']) && $args['direction'] == 'future' ) {
         $end_dt->add(new DateInterval('P' . $days . 'D'));
