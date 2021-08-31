@@ -498,11 +498,18 @@ function ciniki_customers_customerListExcel(&$ciniki) {
         if( isset($args['select_products']) && count($args['select_products']) > 0 && $args['select_products'][0] != '' ) {
             $strsql .= "INNER JOIN ciniki_customer_product_purchases AS purchases ON (" 
                 . "ciniki_customers.id = purchases.customer_id "
-                . "AND purchases.product_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['select_products']) . ") ";
+                . "AND purchases.product_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['select_products']) . ") "
+                . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $strsql .= ") ";
+            $strsql .= "INNER JOIN ciniki_customer_products AS products ON ("
+                . "purchases.product_id = products.id "
+                . "AND products.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
             if( isset($args['select_member_status'][0]) && $args['select_member_status'][0] == 10
                 && !isset($args['select_member_status'][1]) 
                 ) {
-                $strsql .= "AND purchases.end_date >= NOW() ";
+                $strsql .= "AND (products.type = 20 OR purchases.end_date >= NOW()) ";
             }
             $strsql .= ") ";
         }
