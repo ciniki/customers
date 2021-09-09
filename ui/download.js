@@ -172,13 +172,13 @@ function ciniki_customers_download() {
                 }
             }
             if( M.modFlagOn('ciniki.customers', 0x08) && rsp.products != null ) {
-                p.sections.selector.fields['select_products'] = {'label':'Membership', 'type':'idlist', 'none':'yes', 'list':{}};
+                p.sections.selector.fields['select_products'] = {'label':'Membership', 'type':'idlist', 'none':'yes', 'separator':'yes', 'list':{}};
                 for(var i in rsp.products) {
                     p.sections.selector.fields.select_products.list[M.eU(rsp.products[i].name)] = rsp.products[i];
                 }
                 
             }
-            p.sections.selector.fields['select_member_status'] = {'label':'Member Status', 'type':'multiselect', 'none':'yes', 'options':{'10':'Active', '60':'Suspended'}};
+            p.sections.selector.fields['select_member_status'] = {'label':'Member Status', 'type':'multiselect', 'none':'yes', 'separator':'yes', 'options':{'10':'Active', '60':'Suspended'}};
             if( !M.modFlagOn('ciniki.customers', 0x08) ) {
                 p.sections.selector.fields['select_lifetime'] = {'label':'Lifetime Members', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}};
             }
