@@ -169,6 +169,9 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
             //
             // Process the tags
             //
+            if( $args['page_title'] == '' ) {
+                $page['breadcrumbs'][] = array('name'=>'Members', 'url'=>$args['base_url']);
+            }
             if( $settings['page-members-categories-display'] == 'wordlist' ) {
                 if( isset($rc['tags']) && count($rc['tags']) > 0 ) {
                     $page['blocks'][] = array('type'=>'buttonlist', 'section'=>'member-categories', 'base_url'=>$base_url . '/category', 'tags'=>$rc['tags']);
@@ -198,6 +201,9 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
             $members = $rc['members'];
 
             if( count($members) > 0 ) {
+                if( $args['page_title'] == '' ) {
+                    $page['breadcrumbs'][] = array('name'=>'Members', 'url'=>$args['base_url']);
+                }
                 if( isset($settings['page-members-list-format']) && $settings['page-members-list-format'] == 'thumbnail-list' ) {
                     $page['blocks'][] = array('type'=>'thumbnaillist', 'base_url'=>$base_url, 'anchors'=>'permalink', 
                         'list'=>$members,
@@ -233,6 +239,9 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'memberDetails');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processURL');
 
+        if( $args['page_title'] == '' ) {
+            $page['breadcrumbs'][] = array('name'=>'Members', 'url'=>$args['base_url']);
+        }
         $rc = ciniki_customers_web_memberDetails($ciniki, $settings, $tnid, $member_permalink);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -357,10 +366,20 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         }
         $info = $rc['content'];
 
-        if( isset($info['image_id']) && $info['image_id'] != '' && $info['image_id'] != 0 ) {
-            $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'id'=>'aside-image', 'primary'=>'yes', 'image_id'=>$info['image_id']);
-        }
-        $page['blocks'][] = array('type'=>'content', 'title'=>'Membership Information', 'content'=>$info['content']);
+//        if( isset($info['image_id']) && $info['image_id'] != '' && $info['image_id'] != 0 ) {
+//            $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'id'=>'aside-image', 'primary'=>'yes', 'image_id'=>$info['image_id']);
+//        }
+                    if( isset($info['image_caption']) && $info['image_caption'] != '' ) {
+                        $membership_info .= "<div class='image-caption'>" . $info['image_caption'] . "</div>";
+                    }
+        $page['blocks'][] = array(
+            'type' => 'content', 
+            'wide' => 'yes',
+            'title' => 'Membership Information', 
+            'aside_image_id' => (isset($info['image_id']) && $info['image_id'] > 0 ? $info['image_id'] : 0),
+            'aside_image_caption' => (isset($info['image_caption']) ? $info['image_caption'] : ''),
+            'content' => $info['content'],
+            );
 
         if( isset($info['files']) ) {
             $page['blocks'][] = array('type'=>'files', 'base_url'=>$base_url . '/download', 'files'=>$info['files']);
