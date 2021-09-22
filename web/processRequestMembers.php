@@ -217,8 +217,13 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
                         'thumbnail_padding_color'=>$thumbnail_padding_color,
                         );
                 } else {
-                    $page['blocks'][] = array('type'=>'cilist', 'section'=>'member-list', 'base_url'=>$base_url, 'notitle'=>'yes', 
+                    $page['blocks'][] = array(
+                        'type'=>'cilist', 
+                        'section'=>'member-list', 
+                        'base_url'=>$base_url, 
+                        'notitle'=>'yes', 
                         'categories'=>$members,
+                        'noimage'=>'yes',
                         'jslink'=>(!isset($settings['page-members-list-format'])||$settings['page-members-list-format']!='shortbio-links'?'yes':'no'),
                         'thumbnail_format'=>$thumbnail_format, 
                         'thumbnail_padding_color'=>$thumbnail_padding_color,
