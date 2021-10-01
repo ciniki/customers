@@ -27,7 +27,7 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
 //        && isset($uri_split[2]) && $uri_split[2] != '' 
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'info', 'web', 'fileDownload');
-        $rc = ciniki_info_web_fileDownload($ciniki, $tnid, $uri_split[1], '', $uri_split[2]);
+        $rc = ciniki_info_web_fileDownload($ciniki, $tnid, 'membership', '', $uri_split[1]);
         if( $rc['stat'] == 'ok' ) {
             header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
             header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
