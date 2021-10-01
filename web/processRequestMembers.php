@@ -262,7 +262,7 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         $page['title'] .= ' - ' . $member['name'];
         $page['breadcrumbs'][] = array('name'=>$member['name'], 'url'=>$base_url);
 
-        if( isset($image_permalink) && $image_permalink != '' ) {
+        if( isset($image_permalink) && $image_permalink != '' && isset($member['images']) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'galleryFindNextPrev');
             $rc = ciniki_web_galleryFindNextPrev($ciniki, $member['images'], $image_permalink);
             if( $rc['stat'] != 'ok' ) {
