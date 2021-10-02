@@ -34,6 +34,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'module' => 'Customers',
             'options'=>array(
                 'days'=>array('label'=>'Number of Days', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                'months'=>array('label'=>'Number of Months', 'type'=>'text', 'size'=>'small', 'default'=>'0'),
                 ),
             );
     }
@@ -42,6 +43,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
         'module' => 'Customers',
         'options'=>array(
             'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+            'months'=>array('label'=>'Number of Months Previous', 'type'=>'text', 'size'=>'small', 'default'=>'0'),
             ),
         );
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
@@ -51,6 +53,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'category' => 'Members',
             'options'=>array(
                 'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                'months'=>array('label'=>'Number of Months Previous', 'type'=>'text', 'size'=>'small', 'default'=>'0'),
                 ),
             );
         $blocks['ciniki.customers.activeproducts'] = array(
@@ -68,6 +71,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'category' => 'Members',
             'options'=>array(
                 'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                'months'=>array('label'=>'Number of Months Previous', 'type'=>'text', 'size'=>'small', 'default'=>'0'),
                 ),
             );
         $blocks['ciniki.customers.renewedmembers'] = array(
@@ -76,6 +80,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'category' => 'Members',
             'options'=>array(
                 'days'=>array('label'=>'Number of Days Previous', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                'months'=>array('label'=>'Number of Months Previous', 'type'=>'text', 'size'=>'small', 'default'=>'0'),
                 ),
             );
     }
@@ -86,6 +91,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'category' => 'Members',
             'options'=>array(
                 'days'=>array('label'=>'Next (x) Days', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                'months'=>array('label'=>'Next (x) Months', 'type'=>'text', 'size'=>'small', 'default'=>'0'),
                 ),
             );
         $blocks['ciniki.customers.expiredmembers'] = array(
@@ -94,6 +100,7 @@ function ciniki_customers_reporting_blocks(&$ciniki, $tnid, $args) {
             'category' => 'Members',
             'options'=>array(
                 'days'=>array('label'=>'Previous (x) Days', 'type'=>'text', 'size'=>'small', 'default'=>'7'),
+                'months'=>array('label'=>'Previous (x) Months', 'type'=>'text', 'size'=>'small', 'default'=>'0'),
                 ),
             );
     }

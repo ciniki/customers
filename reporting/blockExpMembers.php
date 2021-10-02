@@ -43,14 +43,40 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
     }
     $maps = $rc['maps'];
 
-    if( isset($args['days']) && $args['days'] != '' && $args['days'] > 0 && $args['days'] < 365 ) {
+    $date_text = '';
+    if( isset($args['months']) && $args['months'] != '' && $args['months'] > 0 && $args['months'] < 366 ) {
+        $months = $args['months'];
+        $date_text .= $months . ' month' . ($months > 1 ? 's' : '');
+    } else {
+        $months = 0;
+    }
+    if( isset($args['days']) && $args['days'] != '' && $args['days'] > 0 && $args['days'] < 366 ) {
         $days = $args['days'];
     } else {
-        $days = 7;
+        // Default to 0 when months specified, otherwise default to 7 days
+        $days = ($months > 0 ? 0 : 7);
+    }
+    if( $days > 0 ) {
+        $date_text .= $days . ' day' . ($days > 1 ? 's' : '');
     }
 
     $now = new DateTime('now', new DateTimezone($intl_timezone));
     $end_dt = clone $now;
+    if( isset($args['direction']) && $args['direction'] == 'future' ) {
+        if( $days != 0 ) {
+            $end_dt->add(new DateInterval('P' . $days . 'D'));
+        }
+        if( $months != 0 ) {
+            $end_dt->add(new DateInterval('P' . $months . 'M'));
+        }
+    } else {
+        if( $days != 0 ) {
+            $end_dt->sub(new DateInterval('P' . $days . 'D'));
+        }
+        if( $months != 0 ) {
+            $end_dt->sub(new DateInterval('P' . $months . 'M'));
+        }
+    }
 
     //
     // Store the report block chunks
@@ -73,11 +99,9 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
         . "AND customers.membership_length != 60 " // Ignore lifetime members
         . "";
     if( isset($args['direction']) && $args['direction'] == 'future' ) {
-        $end_dt->add(new DateInterval('P' . $days . 'D'));
         $strsql .= "AND customers.member_expires >= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
         $strsql .= "AND customers.member_expires <= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' ";
     } else {
-        $end_dt->sub(new DateInterval('P' . $days . 'D'));
         $strsql .= "AND customers.member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
         $strsql .= "AND customers.member_expires >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' ";
     }

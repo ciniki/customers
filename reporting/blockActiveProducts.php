@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// The report of membership products sold in the last X days
+// Report of active members
 //
 // Arguments
 // ---------
@@ -12,7 +12,6 @@
 //
 // Additional Arguments
 // --------------------
-// days:                The number of days past to look for new members.
 // 
 // Returns
 // -------
