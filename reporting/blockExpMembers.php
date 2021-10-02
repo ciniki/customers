@@ -247,9 +247,9 @@ function ciniki_customers_reporting_blockExpMembers(&$ciniki, $tnid, $args) {
     //
     else {
         if( isset($args['direction']) && $args['direction'] == 'future' ) {
-            $chunks[] = array('type'=>'message', 'content'=>'No expiring members in the next ' . ($days == 1 ? 'day' : $days . ' days') . '.');
+            $chunks[] = array('type'=>'message', 'content'=>'No expiring members in the next ' . $date_text . '.');
         } else {
-            $chunks[] = array('type'=>'message', 'content'=>'No expired members in the last ' . ($days == 1 ? 'day' : $days . ' days') . '.');
+            $chunks[] = array('type'=>'message', 'content'=>'No expired members in the last ' . $date_text . '.');
         }
     }
     

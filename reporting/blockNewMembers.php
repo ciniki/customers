@@ -46,7 +46,7 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
     $date_text = '';
     if( isset($args['months']) && $args['months'] != '' && $args['months'] > 0 && $args['months'] < 366 ) {
         $months = $args['months'];
-        $date_text .= $months . ' month' . ($months > 1 ? 's' : '');
+        $date_text .= ($months > 1 ? $months . ' months' : 'month');
     } else {
         $months = 0;
     }
@@ -226,7 +226,7 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
     // No customers 
     //
     else {
-        $chunks[] = array('type'=>'message', 'content'=>'No new members in the last ' . ($days == 1 ? 'day' : $days . ' days') . '.');
+        $chunks[] = array('type'=>'message', 'content'=>'No new members in the last ' . $date_text . '.');
     }
     
     return array('stat'=>'ok', 'chunks'=>$chunks);

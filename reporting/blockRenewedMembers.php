@@ -227,7 +227,7 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
     // No customers 
     //
     else {
-        $chunks[] = array('type'=>'message', 'content'=>'No new members in the last ' . ($days == 1 ? 'day' : $days . ' days') . '.');
+        $chunks[] = array('type'=>'message', 'content'=>'No renewed members in the last ' . $date_text . '.');
     }
     
     return array('stat'=>'ok', 'chunks'=>$chunks);

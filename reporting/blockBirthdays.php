@@ -271,7 +271,7 @@ function ciniki_customers_reporting_blockBirthdays(&$ciniki, $tnid, $args) {
     // No customers 
     //
     else {
-        $chunks[] = array('type'=>'message', 'content'=>'No upcoming birthdays in the next ' . ($days == 1 ? 'day' : $days . ' days') . '.');
+        $chunks[] = array('type'=>'message', 'content'=>'No upcoming birthdays in the next ' . $date_text . '.');
     }
     
     return array('stat'=>'ok', 'chunks'=>$chunks);
