@@ -13,7 +13,7 @@
 function ciniki_customers_templates_contactinfo($ciniki, $tnid, $members, $args, $size='full') {
 
     require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/tcpdf/tcpdf.php');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheOriginal');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheJPEG');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'tenantDetails');
 
     //
@@ -350,7 +350,7 @@ function ciniki_customers_templates_contactinfo($ciniki, $tnid, $members, $args,
             } else {
                 $img_box_height = 100;
             }
-            $rc = ciniki_images_loadCacheOriginal($ciniki, $tnid, $args['coverpage-image'], 2000, 2000);
+            $rc = ciniki_images_loadCacheJPEG($ciniki, $tnid, $args['coverpage-image'], 2000, 2000);
             if( $rc['stat'] == 'ok' ) {
                 $image = $rc['image'];
                 $pdf->SetLineWidth(0.25);
