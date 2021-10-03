@@ -8,7 +8,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_wng_authFailedLogin(&$ciniki, $tnid, $request, $email) {
+function ciniki_customers_wng_authFailedLogin(&$ciniki, $tnid, &$request, $email) {
 
     //
     // Load the tenant settings

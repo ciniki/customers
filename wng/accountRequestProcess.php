@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_wng_accountRequestProcess($ciniki, $tnid, &$request, $item) {
+function ciniki_customers_wng_accountRequestProcess(&$ciniki, $tnid, &$request, $item) {
 
     if( !isset($item['ref']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.513', 'msg'=>'No reference specified'));

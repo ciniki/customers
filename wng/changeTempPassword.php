@@ -17,7 +17,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_wng_changeTempPassword($ciniki, $tnid, $request, $email, $temppassword, $newpassword) {
+function ciniki_customers_wng_changeTempPassword(&$ciniki, $tnid, &$request, $email, $temppassword, $newpassword) {
     //
     // Find all the required and optional arguments
     //

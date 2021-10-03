@@ -17,7 +17,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_wng_changePassword($ciniki, $tnid, $request, $oldpassword, $newpassword) {
+function ciniki_customers_wng_changePassword(&$ciniki, $tnid, &$request, $oldpassword, $newpassword) {
     //
     // Find all the required and optional arguments
     //

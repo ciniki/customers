@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_customers_wng_accountChangePasswordProcess($ciniki, $tnid, $request, $item) {
+function ciniki_customers_wng_accountChangePasswordProcess(&$ciniki, $tnid, &$request, $item) {
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
 

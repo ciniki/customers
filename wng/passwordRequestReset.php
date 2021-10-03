@@ -13,7 +13,7 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_wng_passwordRequestReset(&$ciniki, $tnid, $request, $email, $url) {
+function ciniki_customers_wng_passwordRequestReset(&$ciniki, $tnid, &$request, $email, $url) {
     
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'logAdd');
 
