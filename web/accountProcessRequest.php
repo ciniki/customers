@@ -57,6 +57,7 @@ function ciniki_customers_web_accountProcessRequest($ciniki, $settings, $tnid, $
     elseif( isset($ciniki['request']['uri_split'][0]) && $ciniki['request']['uri_split'][0] == 'changepassword' ) {
 //        $page['breadcrumbs'][] = array('name'=>'Change Password', 'url'=>$ciniki['request']['domain_base_url'] . '/account/changepassword');
         $page['title'] = 'Change Password';
+        $page['article-class'] = 'page-account-chgpwd';
     
         $display_form = 'yes';
         if( isset($_POST['action']) && $_POST['action'] == 'update' 
