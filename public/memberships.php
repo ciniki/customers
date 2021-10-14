@@ -108,6 +108,7 @@ function ciniki_customers_memberships($ciniki) {
         $strsql .= "FROM ciniki_customers ";
         $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
+            . "AND ciniki_customers.membership_length < 60 "
             . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
             . "ORDER BY sort_name, last, first, company"
             . "";
@@ -260,6 +261,7 @@ function ciniki_customers_memberships($ciniki) {
         . "FROM ciniki_customers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND member_status = 10 "
+        . "AND membership_length < 60 "
         . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
         . "GROUP BY membership_type "
         . "";
