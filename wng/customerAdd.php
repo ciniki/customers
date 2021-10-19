@@ -224,7 +224,7 @@ function ciniki_customers_wng_customerAdd(&$ciniki, $tnid, $request, $args) {
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email',
             array('customer_id'=>$customer_id,
                 'email'=>$args['email_address'],
-                'password'=>($args['password']!='' ? sha1($args['password']) : ''),
+                'password'=>(isset($args['hashed_pwd']) ? $args['hashed_pwd'] : ($args['password']!='' ? sha1($args['password']) : '')),
                 'temp_password'=>'',
                 'temp_password_date'=>'',
                 'flags'=>(isset($args['flags'])?$args['flags']:1),

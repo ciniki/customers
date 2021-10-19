@@ -265,6 +265,21 @@ function ciniki_customers_objects($ciniki) {
             ),
         'history_table' => 'ciniki_customer_history',
         );
+    $objects['signup'] = array(
+        'name' => 'Signups',
+        'sync' => 'yes',
+        'o_name' => 'signup',
+        'o_container' => 'signups',
+        'table' => 'ciniki_customer_signups',
+        'fields' => array(
+            'signupkey' => array('name'=>'Key'),
+            'first' => array('name'=>'First Name', 'default'=>''),
+            'last' => array('name'=>'Last Name', 'default'=>''),
+            'email' => array('name'=>'Email', 'default'=>''),
+            'password' => array('name'=>'Password', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_customer_history',
+        );
     $objects['setting'] = array(
         'type'=>'settings',
         'name'=>'Customer Settings',

@@ -8,14 +8,14 @@
 // -------
 // <stat='ok' />
 //
-function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $password) {
+function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $hashed_password) {
 
     //
     // Check if account flag set, then redirect to authAccount
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'authAccount');
-        return ciniki_customers_wng_authAccount($ciniki, $tnid, $request, $email, $password);
+        return ciniki_customers_wng_authAccount($ciniki, $tnid, $request, $email, $hashed_password);
     }
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
@@ -60,7 +60,7 @@ function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $password
         . "AND customers.type IN (1, 2, 10, 21, 31) "
         . "AND emails.email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
         . "AND emails.customer_id = customers.id "
-        . "AND emails.password = SHA1('" . ciniki_core_dbQuote($ciniki, $password) . "') "
+        . "AND emails.password = '" . ciniki_core_dbQuote($ciniki, $hashed_password) . "' "
         . "";
     if( isset($settings['account-allowed-attempts']) && $settings['account-allowed-attempts'] > 0 
         && isset($settings['account-lock-hours']) && $settings['account-lock-hours'] > 0 
