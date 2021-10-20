@@ -1,0 +1,42 @@
+#
+# Description
+# -----------
+# This table stores the signup details for retrieval when the verification 
+# email link is clicked.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# signup_key:               The 32 character key randomly generated for the signup email.
+# 
+# first:                    The first name of the customer signing up.
+# last:                     The last name of the customer signing up.
+# email:                    The email address of the customer signing up.
+# password:                 The password chosen by the customer, stored as SHA.
+#
+# return_url:               The URL to redirect to when the signup is completed.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_customer_signups (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    signupkey varchar(250) not null,
+    first varchar(100) not null,
+    last varchar(100) not null,
+    email varchar(250) not null,
+    password varchar(41) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (signupkey), 
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
