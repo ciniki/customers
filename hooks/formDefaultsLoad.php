@@ -88,6 +88,22 @@ function ciniki_customers_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
                 }
             }
         }
+        if( isset($customer['links']) ) {
+            foreach($customer['links'] as $link) {
+                if( $link['name'] == 'Website' ) {
+                    $customer['website'] = $link['url'];
+                } 
+                elseif( $link['name'] == 'Facebook' ) {
+                    $customer['facebook'] = $link['url'];
+                }
+                elseif( $link['name'] == 'Instagram' ) {
+                    $customer['instagram'] = $link['url'];
+                }
+                elseif( $link['name'] == 'Twitter' ) {
+                    $customer['twitter'] = $link['url'];
+                }
+            }
+        }
     
         if( isset($form['sections']) ) {
             foreach($form['sections'] as $sid => $section) {

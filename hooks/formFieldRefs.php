@@ -45,6 +45,7 @@ function ciniki_customers_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
         'ciniki.customers.customer.website' => array('module'=>$module, 'type'=>'url', 'name'=>'Website'),
         'ciniki.customers.customer.facebook' => array('module'=>$module, 'type'=>'url', 'name'=>'Facebook'),
         'ciniki.customers.customer.instagram' => array('module'=>$module, 'type'=>'url', 'name'=>'Instagram'),
+        'ciniki.customers.customer.twitter' => array('module'=>$module, 'type'=>'url', 'name'=>'Twitter'),
         );
 
     return array('stat'=>'ok', 'refs'=>$refs);

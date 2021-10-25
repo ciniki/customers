@@ -292,12 +292,13 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'addresses', 'fname'=>'id', 'fields'=>array('id', 'name', 'url', 'description', 'webflags')),
+        array('container'=>'links', 'fname'=>'id', 'fields'=>array('id', 'name', 'url', 'description', 'webflags')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $customer['links'] = isset($rc['links']) ? $rc['links'] : array();
+
     //
     // IFB parsing
     //
