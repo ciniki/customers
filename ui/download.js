@@ -124,17 +124,17 @@ function ciniki_customers_download() {
 
         this.exportlist.sections._members.fields.member_status.active=((flags&0x02)>0?'yes':'no');
         this.exportlist.sections._members.fields.member_categories.active=((flags&0x04)>0?'yes':'no');
-        if( (M.curTenant.modules['ciniki.customers'].flags&0x08) > 0 ) {
+//        if( (M.curTenant.modules['ciniki.customers'].flags&0x08) > 0 ) {
             this.exportlist.sections._members.fields.member_lastpaid.active = 'yes';
             this.exportlist.sections._members.fields.member_expires.active = 'yes';
             this.exportlist.sections._members.fields.membership_length.active = 'yes';
             this.exportlist.sections._members.fields.membership_type.active = 'yes';
-        } else {
-            this.exportlist.sections._members.fields.member_lastpaid.active = 'no';
-            this.exportlist.sections._members.fields.member_expires.active = 'no';
-            this.exportlist.sections._members.fields.membership_length.active = 'no';
-            this.exportlist.sections._members.fields.membership_type.active = 'no';
-        }
+//        } else {
+//            this.exportlist.sections._members.fields.member_lastpaid.active = 'no';
+//            this.exportlist.sections._members.fields.member_expires.active = 'no';
+//            this.exportlist.sections._members.fields.membership_length.active = 'no';
+//            this.exportlist.sections._members.fields.membership_type.active = 'no';
+//        }
 
         this.exportlist.selected_season = (args.selected_season!=null?args.selected_season:'');
         this.exportlist.membersonly = (args.membersonly!=null?args.membersonly:'');
