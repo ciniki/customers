@@ -5,9 +5,7 @@
 //
 // Arguments
 // ---------
-//
-// Returns
-// -------
+// // Returns // -------
 //
 function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, $item) {
 
@@ -182,7 +180,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
             . "<label for='first'>First Name" . (in_array('first', $required)?' *':'') . "</label>"
             . "<input type='text' class='text' name='first' value='" . (isset($child['first']) ? $child['first'] : '') . "'>"
             . "</div>";
-        $content .= "<div class='input last'>" . "<label for='last'>Last Name" . (in_array('last', $required)?' *':'') . "</label>"
+        $content .= "<div class='input last last-field'>" . "<label for='last'>Last Name" . (in_array('last', $required)?' *':'') . "</label>"
             . "<input type='text' class='text' name='last' value='" . (isset($child['last']) ? $child['last'] : '') . "'>"
             . "</div>";
         $content .= "<div class='submit'>"

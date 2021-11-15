@@ -52,7 +52,7 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
             //
             return array('stat'=>'notactive', 'err'=>array('code'=>'ciniki.customers.537', 'msg'=>'Unable to load email', 'err'=>$rc['err']));
         }
-        return array('stat'=>'accountexists', 'err'=>array('code'=>'ciniki.customers.538', 'msg'=>'An account with that email address already exists.', 'err'=>$rc['err']));
+        return array('stat'=>'accountexists', 'err'=>array('code'=>'ciniki.customers.538', 'msg'=>'An account with that email address already exists.'));
     }
    
     
