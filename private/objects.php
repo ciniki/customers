@@ -59,6 +59,8 @@ function ciniki_customers_objects($ciniki) {
             'permalink'=>array('default'=>''),
             'primary_image_id'=>array('ref'=>'ciniki.images.image', 'default'=>'0'),
             'primary_image_caption'=>array('default'=>''),
+            'intro_image_id'=>array('ref'=>'ciniki.images.image', 'default'=>'0'),
+            'intro_image_caption'=>array('default'=>''),
             'short_bio'=>array('default'=>''),
             'short_description'=>array('default'=>''),
             'full_bio'=>array('default'=>''),

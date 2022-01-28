@@ -1,0 +1,6 @@
+#
+# Add the additional fields for member expirations
+#
+ALTER TABLE ciniki_customers ADD COLUMN intro_image_id int not null AFTER primary_image_caption;
+ALTER TABLE ciniki_customers ADD COLUMN intro_image_caption varchar(250) not null AFTER intro_image_id;
+ALTER TABLE ciniki_customers COMMENT='v1.27';

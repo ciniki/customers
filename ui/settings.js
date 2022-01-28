@@ -33,9 +33,11 @@ function ciniki_customers_settings() {
             'ciniki_customers_settings', 'main',
             'mc', 'medium', 'sectioned', 'ciniki.customers.settings.main');
         this.main.sections = {
-//          '_options':{'label':'Options', 'fields':{
-//              'use-relationships':{'label':'Customer Relationships', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
-//          }},
+            '_options':{'label':'Options', 
+                'visible':function() { return (M.userPerms&0x01) == 0x01 ? 'yes' : 'hidden'; },
+                'fields':{
+                    'intro-photo':{'label':'Intro Photo', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            }},
             'name_options':{'label':'Name Format', 'fields':{
                 'display-name-business-format':{'label':'Business', 'type':'select', 'options':this.businessFormats},
                 'display-name-callsign-format':{'label':'Business', 'type':'select', 'options':this.callsignFormats,

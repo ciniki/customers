@@ -64,6 +64,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
     //
     $db_updated = 0;
     $changelog_fields = array(
+        'intro-photo',
         'display-name-business-format',
         'display-name-callsign-format',
         'defaults-edit-form',

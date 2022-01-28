@@ -217,6 +217,26 @@ function ciniki_customers_edit() {
             'fields':{
                 'primary_image_caption':{'label':'Caption', 'type':'text'},
             }},
+        '_image_intro':{'label':'Intro Image', 'type':'imageform', 
+            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
+            'fields':{
+                'intro_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                    'addDropImage':function(iid) {
+                        M.ciniki_customers_edit.edit.setFieldValue('intro_image_id', iid, null, null);
+                        return true;
+                        },
+                    'addDropImageRefresh':'',
+                    'deleteImage':function(fid) {
+                            M.ciniki_customers_edit.edit.setFieldValue('intro_image_id', 0, null, null);
+                            return true;
+                        },
+                    },
+            }},
+        '_image_intro_caption':{'label':'', 'active':'no', 
+            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
+            'fields':{
+                'intro_image_caption':{'label':'Caption', 'type':'text'},
+            }},
         '_short_bio':{'label':'Synopsis', 'active':'no', 
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
             'fields':{
@@ -415,6 +435,26 @@ function ciniki_customers_edit() {
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
             'fields':{
                 'primary_image_caption':{'label':'Caption', 'type':'text'},
+            }},
+        '_image_intro':{'label':'Intro Image', 'type':'imageform', 
+            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
+            'fields':{
+                'intro_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                    'addDropImage':function(iid) {
+                        M.ciniki_customers_edit.edit.setFieldValue('intro_image_id', iid, null, null);
+                        return true;
+                        },
+                    'addDropImageRefresh':'',
+                    'deleteImage':function(fid) {
+                            M.ciniki_customers_edit.edit.setFieldValue('intro_image_id', 0, null, null);
+                            return true;
+                        },
+                    },
+            }},
+        '_image_intro_caption':{'label':'', 'active':'no', 
+            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
+            'fields':{
+                'intro_image_caption':{'label':'Caption', 'type':'text'},
             }},
         '_short_bio':{'label':'Synopsis', 'active':'no', 
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
@@ -640,6 +680,8 @@ function ciniki_customers_edit() {
         p.showHideSection('subscriptions');
         p.showHideSection('_image');
         p.showHideSection('_image_caption');
+        p.showHideSection('_image_intro');
+        p.showHideSection('_image_intro_caption');
         p.showHideSection('_short_bio');
         p.showHideSection('_full_bio');
         p.showHideSection('images');
@@ -970,6 +1012,8 @@ function ciniki_customers_edit() {
             this.edit.forms.business._image.active = 'yes';
             this.edit.forms.person._image_caption.active = 'yes';
             this.edit.forms.business._image_caption.active = 'yes';
+            this.edit.forms.person._image_intro_caption.active = 'yes';
+            this.edit.forms.business._image_intro_caption.active = 'yes';
             this.edit.forms.person.distributor.active = 'yes';
             this.edit.forms.business.distributor.active = 'yes';
             this.edit.forms.person._short_bio.active = 'yes';
