@@ -18,6 +18,8 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $tnid, $permalin
         . "ciniki_customers.full_bio AS description, "
         . "ciniki_customers.primary_image_id, "
         . "ciniki_customers.primary_image_caption, "
+        . "ciniki_customers.intro_image_id, "
+        . "ciniki_customers.intro_image_caption, "
         . "ciniki_customer_images.image_id, "
         . "ciniki_customer_images.name AS image_name, "
         . "ciniki_customer_images.permalink AS image_permalink, "
@@ -40,7 +42,9 @@ function ciniki_customers_web_memberDetails($ciniki, $settings, $tnid, $permalin
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'members', 'fname'=>'id', 
             'fields'=>array('id', 'permalink', 'member', 'company', 
-                'image_id'=>'primary_image_id', 'image_caption'=>'primary_image_caption', 'description')),
+                'image_id'=>'primary_image_id', 'image_caption'=>'primary_image_caption', 
+                'intro_image_id', 'intro_image_caption', 
+                'description')),
         array('container'=>'images', 'fname'=>'image_id', 
             'fields'=>array('image_id', 'title'=>'image_name', 'permalink'=>'image_permalink',
                 'description'=>'image_description', 'sold', 'last_updated'=>'image_last_updated')),

@@ -286,7 +286,9 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
                 $page['blocks'][] = array('type'=>'gallery', 'title'=>'Additional Images', 'section'=>'gallery-images', 'base_url'=>$base_url . '/gallery', 'images'=>$member['images']);
             }
         } else {
-            if( isset($member['image_id']) && $member['image_id'] > 0 ) {
+            if( isset($member['intro_image_id']) && $member['intro_image_id'] > 0 ) {
+                $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'id'=>'aside-image', 'primary'=>'yes', 'image_id'=>$member['intro_image_id'], 'caption'=>$member['intro_image_caption']);
+            } elseif( isset($member['image_id']) && $member['image_id'] > 0 ) {
                 $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'id'=>'aside-image', 'primary'=>'yes', 'image_id'=>$member['image_id'], 'caption'=>$member['image_caption']);
             }
             $page['blocks'][] = array('type'=>'content', 'content'=>$member['description']);
