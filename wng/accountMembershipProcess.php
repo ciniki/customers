@@ -99,7 +99,7 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
         $object_ids = array();
         $final_price = 0;
         foreach($details AS $did => $detail) {
-            if( isset($products[$detail['product_id']]) ) {
+            if( isset($detail['product_id']) && isset($products[$detail['product_id']]) ) {
                 $details[$did]['renewbutton'] = '<div class="cart"><form action="' . $request['ssl_domain_base_url'] . '/cart" method="POST">'
                     . '<input type="hidden" name="action" value="add">'
                     . '<input type="hidden" name="object" value="ciniki.customers.product">'
@@ -113,10 +113,10 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
             } else {
                 $details[$did]['renewbutton'] = 'Contact Us to Renew';
             }
-            if( isset($products[$detail['product_id']]) && $detail['type'] > 20 ) {
+            if( isset($detail['product_id']) && isset($products[$detail['product_id']]) && $detail['type'] > 20 ) {
                 unset($products[$detail['product_id']]);
             }
-            if( isset($addons[$detail['product_id']]) && $detail['type'] > 20 ) {
+            if( isset($detail['product_id']) && isset($addons[$detail['product_id']]) && $detail['type'] > 20 ) {
                 unset($addons[$detail['product_id']]);
             }
         }
