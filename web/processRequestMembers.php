@@ -389,7 +389,7 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
         }
     }
 
-    if( $display == '' && isset($add_membership_info) && $add_membership_info == 'bottom' ) {
+    if( $display == '' && isset($add_membership_info) && ($add_membership_info == 'bottom' || $add_membership_info == 'yes') ) {
         //
         // Pull the membership info from the ciniki.info module
         //
