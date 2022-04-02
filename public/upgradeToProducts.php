@@ -50,7 +50,7 @@ function ciniki_customers_upgradeToProducts(&$ciniki) {
     $products = isset($rc['products']) ? $rc['products'] : array();
 
     if( count($products) == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.540', 'msg'=>'No products specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.544', 'msg'=>'No products specified'));
     }
 
     $individual_id = 0;

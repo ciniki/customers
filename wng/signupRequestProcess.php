@@ -150,7 +150,7 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.customers');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.486', 'msg'=>'Unable to reset password.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.543', 'msg'=>'Unable to reset password.'));
     }
 
     //
