@@ -409,10 +409,16 @@ function ciniki_customers_web_processRequestMembers(&$ciniki, $settings, $tnid, 
 //        if( isset($info['image_id']) && $info['image_id'] != '' && $info['image_id'] != 0 ) {
 //            $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'id'=>'aside-image', 'primary'=>'yes', 'image_id'=>$info['image_id']);
 //        }
+        $title = 'Membership Information';
+        if( !isset($members) || count($members) == 0 ) {
+            $title = '';
+            $page['title'] = 'Membership Information';
+            $page['breadcrumbs'][0]['name'] = 'Membership Information';
+        }
         $page['blocks'][] = array(
             'type' => 'content', 
             'wide' => 'yes',
-            'title' => 'Membership Information', 
+            'title' => $title,
             'aside_image_id' => (isset($info['image_id']) && $info['image_id'] > 0 ? $info['image_id'] : 0),
             'aside_image_caption' => (isset($info['image_caption']) ? $info['image_caption'] : ''),
             'content' => $info['content'],
