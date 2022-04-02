@@ -80,7 +80,18 @@ function ciniki_customers_memberships($ciniki) {
         . "ciniki_customers.membership_type, "
         . "ciniki_customers.membership_type AS membership_type_text, "
         . "ciniki_customers.company ";
-    if( isset($args['category']) && $args['category'] != '' ) {
+    if( isset($args['category']) && $args['category'] == 'Uncategorized' ) {
+        $strsql .= "FROM ciniki_customers "
+            . "LEFT JOIN ciniki_customer_tags AS tags ON ("
+                . "ciniki_customers.id = tags.customer_id "
+                . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ciniki_customers.member_status = 10 "
+            . "AND ISNULL(tags.id) "
+            . "ORDER BY sort_name, last, first, company"
+            . "";
+    } elseif( isset($args['category']) && $args['category'] != '' ) {
         $strsql .= "FROM ciniki_customer_tags "
             . "LEFT JOIN ciniki_customers ON ("
                 . "ciniki_customer_tags.customer_id = ciniki_customers.id "
