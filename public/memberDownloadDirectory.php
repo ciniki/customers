@@ -77,7 +77,7 @@ function ciniki_customers_memberDownloadDirectory(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $categories = $rc['categories'];
+    $categories = isset($rc['categories']) ? $rc['categories'] : array();
 
 
 //    require($ciniki['config']['core']['lib_dir'] . '/PHPWord/src/PhpWord/Settings.php');
