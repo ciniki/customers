@@ -131,6 +131,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                     $membership_details[$detail_idx] = array(
                         'id' => $purchase['id'],
                         'product_id' => $purchase['product_id'], 
+                        'type' => $purchase['type'],
                         'label' => 'Add-on', 
                         'value' => $purchase['short_name'],
                         'name' => $purchase['name'],
@@ -154,6 +155,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                     $membership_details[$detail_idx] = array(
                         'id' => $purchase['id'],
                         'product_id' => $purchase['product_id'],
+                        'type' => $purchase['type'],
                         'label' => 'Add-on', 
                         'value' => $purchase['short_name'],
                         'name' => $purchase['name'],
@@ -177,6 +179,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                     $membership_details[$detail_idx] = array(
                         'id' => $purchase['id'],
                         'product_id' => $purchase['product_id'],
+                        'type' => $purchase['type'],
                         'label' => 'Add-on', 
                         'value' => $purchase['short_name'],
                         'name' => $purchase['name'],
