@@ -18,7 +18,7 @@ function ciniki_customers_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
         return array('stat'=>'ok');
     }
     $form = $args['form'];
-   
+  
     //
     // Process the customer if specified
     //
@@ -116,6 +116,7 @@ function ciniki_customers_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
                             && preg_match("/^ciniki\.customers\.customer\.([^\.]+)/", $field['field_ref'], $m)
                             && isset($refs[$field['field_ref']])
                             ) {
+
                             if( isset($customer[$m[1]]) ) {
                                 $form['sections'][$sid]['fields'][$fid]['default'] = $customer[$m[1]];
                             }
