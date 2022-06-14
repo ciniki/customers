@@ -21,17 +21,17 @@ function ciniki_customers_wng_accountChangePasswordProcess(&$ciniki, $tnid, &$re
     $blocks = array();
 
     $display_form = 'yes';
-    if( isset($_POST['action']) && $_POST['action'] == 'update' 
+    if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' 
         && isset($request['session']['customer']['id']) && $request['session']['customer']['id'] > 0 
         ) {
         //
         // Check if customer wants to change their password
         //
-        if( isset($_POST['oldpassword']) && $_POST['oldpassword'] != '' 
-            && isset($_POST['newpassword']) && $_POST['newpassword'] != '' 
+        if( isset($_POST['f-oldpassword']) && $_POST['f-oldpassword'] != '' 
+            && isset($_POST['f-newpassword']) && $_POST['f-newpassword'] != '' 
             ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'changePassword');
-            $rc = ciniki_customers_wng_changePassword($ciniki, $tnid, $request, $_POST['oldpassword'], $_POST['newpassword']);
+            $rc = ciniki_customers_wng_changePassword($ciniki, $tnid, $request, $_POST['f-oldpassword'], $_POST['f-newpassword']);
             if( $rc['stat'] != 'ok' ) {
                 $blocks[] = array(
                     'type' => 'msg', 
@@ -51,8 +51,33 @@ function ciniki_customers_wng_accountChangePasswordProcess(&$ciniki, $tnid, &$re
    
     if( $display_form == 'yes' ) {
         $blocks[] = array(
-            'type' => 'accountchgpwd',
-            'title' => 'Change Password',
+            'type' => 'form',
+            'class' => 'limit-width limit-width-30',
+            'cancel-label' => 'Cancel',
+            'submit-label' => 'Change Password',
+            'fields' => array(
+                'action' => array(
+                    'id' => 'action',
+                    'ftype' => 'hidden',
+                    'value' => 'update',
+                    ),
+                'oldpassword' => array(
+                    'id' => 'oldpassword',
+                    'label' => 'Old Password', 
+                    'ftype' => 'password',
+                    'size' => 'large',
+                    'required' => 'yes', 
+                    'value' => '',
+                    ),
+                'last' => array(
+                    'id' => 'newpassword',
+                    'label' => 'New Password', 
+                    'ftype' => 'password',
+                    'size' => 'large',
+                    'required' => 'yes', 
+                    'value' => '',
+                    ),
+                ),
             );
     }
 

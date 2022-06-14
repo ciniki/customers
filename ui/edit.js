@@ -1100,7 +1100,7 @@ function ciniki_customers_edit() {
         //
         // Turn on or off the flag for web login based on if the module is enabled
         //
-        if( M.curTenant['modules']['ciniki.web'] != null ) {
+        if( M.modOn('ciniki.web') || M.modOn('ciniki.wng') ) {
             this.edit.forms.person.email.fields.flags.active = 'yes';
             this.edit.forms.business.email.fields.flags.active = 'yes';
             this.email.sections._email.fields.flags.active = 'yes';

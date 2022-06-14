@@ -61,6 +61,7 @@ function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $hashed_p
         . "AND emails.email = '" . ciniki_core_dbQuote($ciniki, $email) . "' "
         . "AND emails.customer_id = customers.id "
         . "AND emails.password = '" . ciniki_core_dbQuote($ciniki, $hashed_password) . "' "
+        . "AND (emails.flags&0x01) = 0x01 "     // Allowed to login
         . "";
     if( isset($settings['account-allowed-attempts']) && $settings['account-allowed-attempts'] > 0 
         && isset($settings['account-lock-hours']) && $settings['account-lock-hours'] > 0 

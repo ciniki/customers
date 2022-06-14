@@ -140,7 +140,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
             $blocks[] = array(
                 'type' => 'msg', 
                 'level' => 'error', 
-                'content' => 'Registrations exists for this child and they cannot be removed',
+                'content' => 'Registrations exist for ' . $child['first'] . ' ' . $child['last'] . ' and they cannot be removed.',
                 );
         } elseif( isset($_GET['confirm']) && $_GET['confirm'] == 'yes' ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDelete');
