@@ -51,6 +51,12 @@ function ciniki_customers_wng_accountChangePasswordProcess(&$ciniki, $tnid, &$re
    
     if( $display_form == 'yes' ) {
         $blocks[] = array(
+            'type' => 'text',
+            'class' => 'limit-width limit-width-30',
+            'title' => 'Change Password',
+            'content' => 'If you would like to change your password, enter your old password followed by a new one.',
+            );
+        $blocks[] = array(
             'type' => 'form',
             'class' => 'limit-width limit-width-30',
             'cancel-label' => 'Cancel',
