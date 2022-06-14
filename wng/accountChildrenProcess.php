@@ -296,6 +296,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
         }
         $blocks[] = array(
             'type' => 'form',
+            'title' => (isset($_POST['f-child_id']) && $_POST['f-child_id'] > 0 ? 'Update Child Name' : 'Add Child'),
             'class' => 'limit-width limit-width-30',
             'cancel-label' => 'Cancel',
             'fields' => array(
