@@ -42,7 +42,6 @@ function ciniki_customers_wng_changePassword(&$ciniki, $tnid, &$request, $oldpas
         . "AND password = SHA1('" . ciniki_core_dbQuote($ciniki, $oldpassword) . "') "
         . "AND (flags&0x01) = 0x01 "
         . "";
-        error_log(print_r($strsql,true));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'user');
     if( $rc['stat'] != 'ok' ) {
