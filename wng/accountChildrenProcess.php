@@ -81,7 +81,6 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
     if( isset($_GET['next']) && $_GET['next'] == 'cart' ) {
         $_POST['next'] = $request['ssl_domain_base_url'] . '/cart';
     }
-    error_log(print_r($_POST,true));
 
     if( isset($_POST['cancel']) && $_POST['cancel'] == 'Cancel' && isset($_POST['next']) && $_POST['next'] != '' ) {
         header("Location: " . $_POST['next']);
