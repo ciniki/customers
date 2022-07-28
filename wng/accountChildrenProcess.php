@@ -78,7 +78,9 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
     //
     // Check if next should go back to cart
     //
-    if( isset($_GET['next']) && $_GET['next'] == 'cart' ) {
+    if( isset($_GET['next']) && $_GET['next'] == 'regreview' ) {
+        $_POST['next'] = $request['ssl_domain_base_url'] . '/cart?regreview';
+    } elseif( isset($_GET['next']) && $_GET['next'] == 'cart' ) {
         $_POST['next'] = $request['ssl_domain_base_url'] . '/cart';
     }
 

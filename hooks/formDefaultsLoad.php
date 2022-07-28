@@ -18,7 +18,7 @@ function ciniki_customers_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
         return array('stat'=>'ok');
     }
     $form = $args['form'];
-  
+ 
     //
     // Process the customer if specified
     //
