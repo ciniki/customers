@@ -91,6 +91,7 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
         'last' => $args['last'],
         'email' => $args['email'],
         'password' => sha1($args['email']),
+        'details' => serialize($args['details']),
         ), 0x04);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.527', 'msg'=>'Unable to add the signup', 'err'=>$rc['err']));

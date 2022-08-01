@@ -1,0 +1,5 @@
+#
+# Add the field to support extra details for signup
+#
+ALTER TABLE ciniki_customer_signups ADD COLUMN details text not null after password;
+ALTER TABLE ciniki_customer_signups COMMENT='v1.02';

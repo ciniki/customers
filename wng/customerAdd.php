@@ -227,7 +227,7 @@ function ciniki_customers_wng_customerAdd(&$ciniki, $tnid, $request, $args) {
                 'password'=>(isset($args['hashed_pwd']) ? $args['hashed_pwd'] : ($args['password']!='' ? sha1($args['password']) : '')),
                 'temp_password'=>'',
                 'temp_password_date'=>'',
-                'flags'=>(isset($args['flags'])?$args['flags']:1),
+                'flags'=>(isset($args['flags'])?$args['flags']:0x01),
                 ), 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
@@ -404,8 +404,7 @@ function ciniki_customers_wng_customerAdd(&$ciniki, $tnid, $request, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
     ciniki_tenants_updateModuleChangeDate($ciniki, $tnid, 'ciniki', 'customers');
 
-    $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 
-        'args'=>array('id'=>$customer_id));
+    $ciniki['syncqueue'][] = array('push'=>'ciniki.customers.customer', 'args'=>array('id'=>$customer_id));
 
     $rsp = array('stat'=>'ok', 'id'=>$customer_id);
 

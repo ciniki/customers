@@ -22,7 +22,8 @@ function ciniki_customers_wng_signupComplete(&$ciniki, $tnid, &$request, $signup
         . "first, "
         . "last, "
         . "email, "
-        . "password "
+        . "password, "
+        . "details "
         . "FROM ciniki_customer_signups "
         . "WHERE signupkey = '" . ciniki_core_dbQuote($ciniki, $signupkey) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -42,17 +43,26 @@ function ciniki_customers_wng_signupComplete(&$ciniki, $tnid, &$request, $signup
             ));
     }
     $signup = $rc['signup'];
+    $create_args = array(
+        'first' => $signup['first'],
+        'last' => $signup['last'],
+        'email_address' => $signup['email'],
+        'hashed_pwd' => $signup['password'],
+        );
+    if( $signup['details'] != '' ) {
+        $details = unserialize($signup['details']);
+        if( $details !== false ) {
+            foreach($details as $k => $v) {
+                $create_args[$k] = $v;
+            }
+        }
+    }
    
     //
     // Create customer
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'customerAdd');
-    $rc = ciniki_customers_wng_customerAdd($ciniki, $tnid, $request, array(
-        'first' => $signup['first'],
-        'last' => $signup['last'],
-        'email_address' => $signup['email'],
-        'hashed_pwd' => $signup['password'],
-        ));
+    $rc = ciniki_customers_wng_customerAdd($ciniki, $tnid, $request, $create_args);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'ok', 'blocks'=>array(
             array(

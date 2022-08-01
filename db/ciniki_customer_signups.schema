@@ -17,7 +17,7 @@
 # email:                    The email address of the customer signing up.
 # password:                 The password chosen by the customer, stored as SHA.
 #
-# return_url:               The URL to redirect to when the signup is completed.
+# details:                  The php serialized encoded other information (cell phone, billing address, etc).
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -32,6 +32,7 @@ create table ciniki_customer_signups (
     last varchar(100) not null,
     email varchar(250) not null,
     password varchar(41) not null,
+    details text not null,
 
     date_added datetime not null,
     last_updated datetime not null,
@@ -39,4 +40,4 @@ create table ciniki_customer_signups (
     unique index (uuid),
     unique index (signupkey), 
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

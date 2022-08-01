@@ -279,6 +279,7 @@ function ciniki_customers_objects($ciniki) {
             'last' => array('name'=>'Last Name', 'default'=>''),
             'email' => array('name'=>'Email', 'default'=>''),
             'password' => array('name'=>'Password', 'default'=>''),
+            'details' => array('name'=>'Details', 'default'=>''),
             ),
         'history_table' => 'ciniki_customer_history',
         );
