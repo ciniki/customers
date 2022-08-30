@@ -90,7 +90,7 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
         'first' => $args['first'],
         'last' => $args['last'],
         'email' => $args['email'],
-        'password' => sha1($args['email']),
+        'password' => sha1($args['password']),
         'details' => serialize($args['details']),
         ), 0x04);
     if( $rc['stat'] != 'ok' ) {
