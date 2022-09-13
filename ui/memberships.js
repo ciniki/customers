@@ -16,7 +16,7 @@ function ciniki_customers_memberships() {
     this.menu.sections = {
         'membertypes':{'label':'Memberships', 'type':'simplegrid', 'num_cols':1, 'aside':'yes'},
         'memberaddons':{'label':'Add-ons', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
-            'visible':function() { return M.ciniki_customers_memberships.menu.data.memberaddons.length > 0 ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_customers_memberships.menu.data.memberaddons != null && M.ciniki_customers_memberships.menu.data.memberaddons.length > 0 ? 'yes' : 'no'; },
         },
         'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'visible':function() { return M.modFlagSet('ciniki.customers', 0x04); },

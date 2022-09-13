@@ -175,7 +175,7 @@ function ciniki_customers_hooks_uiSettings($ciniki, $tnid, $args) {
     //
     // Memberships with categories and no seasons
     //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0c)
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0e)
         && !ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02000000)
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])

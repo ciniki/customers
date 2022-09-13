@@ -17,7 +17,7 @@ function ciniki_customers_members() {
                 'cellClasses':['multiline','multiline'],
                 'hint':'name, company or email', 'noData':'No members found',
                 },
-            'members':{'label':'', 'type':'simplegrid', 'num_cols':1,
+            'members':{'label':'', 'type':'simplegrid', 'num_cols':2,
                 'headerValues':null,
                 'cellClasses':['multiline', 'multiline'],
                 'noData':'No members',
