@@ -123,6 +123,12 @@ function ciniki_customers_memberships($ciniki) {
             . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
             . "ORDER BY sort_name, last, first, company"
             . "";
+    } elseif( isset($args['type']) && $args['type'] == '-2' ) { // Inactive
+        $strsql .= "FROM ciniki_customers ";
+        $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ciniki_customers.member_status = 60 "
+            . "ORDER BY sort_name, last, first, company"
+            . "";
     } elseif( isset($args['type']) && $args['type'] != '' ) {
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
             $strsql .= "FROM ciniki_customers "
@@ -282,6 +288,23 @@ function ciniki_customers_memberships($ciniki) {
     }
     if( isset($rc['expired']) ) {
         $rsp['membertypes'][] = array('membership_type'=>'-1', 'name'=>'Active Expired', 'num_members'=>$rc['expired']);
+    }
+    //
+    // Get the deleted memberships
+    //
+    $strsql = "SELECT COUNT(id) AS num_members "
+        . "FROM ciniki_customers "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND member_status = 60 "
+        . "GROUP BY membership_type "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.customers', 'inactive');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.394', 'msg'=>'Unable to load inactive members', 'err'=>$rc['err']));
+    }
+    if( isset($rc['inactive']) ) {
+        $rsp['membertypes'][] = array('membership_type'=>'-2', 'name'=>'Inactive', 'num_members'=>$rc['inactive']);
     }
 
     //
