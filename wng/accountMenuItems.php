@@ -135,7 +135,9 @@ function ciniki_customers_wng_accountMenuItems($ciniki, $tnid, $request, $args) 
     //
     // Rolling Membership Product Renewals
     //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)
+        && (!isset($settings['account-membership-change']) || $settings['account-membership-change'] == 'yes') 
+        ) {
         $items[] = array(
             'title' => 'Membership', 
             'priority' => 300, 
