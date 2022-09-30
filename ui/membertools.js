@@ -24,6 +24,14 @@ function ciniki_customers_membertools() {
             'visible':function() { return M.modFlagSet('ciniki.customers', 0x02000000); },
             'list':{
             }},
+        'other':{'label':'Tools', 
+            'visible':function() {return M.modFlagSet('ciniki.customers', 0x04); },
+            'list':{
+                'categories':{'label':'Update Member Categories', 
+                    'visible':function() {return M.modFlagSet('ciniki.customers', 0x04); },
+                    'fn':'M.ciniki_customers_membertools.tags.open(\'M.ciniki_customers_membertools.menu.open();\',\'40\',\'Member Categories\');',
+                    },
+            }},
         };
     this.menu.open = function(cb) {
         this.sections.memberlists.list = {};
@@ -118,6 +126,68 @@ function ciniki_customers_membertools() {
         return this.data[s];
     };
     this.contactinfo.addClose('Cancel');
+
+    //
+    // The member category update
+    //
+    this.tags = new M.panel('Tags',
+        'ciniki_customers_membertools', 'tags',
+        'mc', 'medium', 'sectioned', 'ciniki.customers.membertools.tags');
+    this.tags.data = {};
+    this.tags.fieldname = '';
+    this.tags.sections = {
+        'items':{'label':'Fields', 'fields':{}},
+        'buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_customers_membertools.tags.save();'},
+            }},
+        };
+    this.tags.fieldValue = function(s, i, d) {
+        return this.data[i].name;
+    }
+    this.tags.open = function(cb, tag, tagname) {
+        if( tag != null ) {
+            this.tag = tag;
+        }
+        if( tagname != null ) {
+            this.tagname = tagname;
+            this.title = tagname;
+            this.sections.items.label = tagname;
+        }
+        M.api.getJSONCb('ciniki.customers.tags', {'tnid':M.curTenantID, 'types':'40'}, function(rsp) {
+            if( rsp['stat'] != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            } 
+            var p = M.ciniki_customers_membertools.tags;
+            p.data = {};
+            p.sections.items.fields = {};
+            if( rsp.tag_types != null && rsp.tag_types[0]['type']['tags'] != null ) {
+                for(i in rsp.tag_types[0]['type']['tags']) {
+                    var tag = rsp.tag_types[0]['type']['tags'][i]['tag'];
+                    p.sections.items.fields[tag.permalink] = {
+                        'label':tag['name'], 'type':'text',
+                        };
+                    p.data[tag.permalink] = tag;
+                }
+            }
+            p.refresh();
+            p.show(cb);
+            });
+    }
+    this.tags.save = function() {
+        var c = this.serializeForm('yes');
+        M.api.postJSONCb('ciniki.customers.tagsUpdate', {'tnid':M.curTenantID, 'tag':this.tag}, c,
+            function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                } 
+                M.ciniki_customers_membertools.tags.close();
+            });
+    };
+    this.tags.addButton('save', 'Save', 'M.ciniki_customers_membertools.tags.save();');
+    this.tags.addClose('Cancel');
+
 
     //
     // Arguments:
