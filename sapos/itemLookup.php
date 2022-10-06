@@ -18,6 +18,13 @@ function ciniki_customers_sapos_itemLookup($ciniki, $tnid, $args) {
     }
 
     //
+    // Check a customer has been specified
+    //
+    if( !isset($args['customer_id']) || $args['customer_id'] == 0 ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.customers.550', 'msg'=>'You must add a customer first'));
+    }
+
+    //
     // Get the customer settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
