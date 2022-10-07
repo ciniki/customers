@@ -77,13 +77,23 @@ function ciniki_customers_tagsUpdate(&$ciniki) {
             $rows = isset($rc['rows']) ? $rc['rows'] : array();
                 
             foreach($rows as $row) {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.tag', $row['id'], array(
-                    'tag_name' => $tag_name,
-                    'tag_permalink' => $tag_permalink,
-                    ), 0x04);
-                if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.549', 'msg'=>'Unable to update the tag', 'err'=>$rc['err']));
+
+                if( $tag_permalink == '' ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+                    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.tag', $row['id'], $row['uuid'], 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.551', 'msg'=>'Unable to update the tag', 'err'=>$rc['err']));
+                    }
+
+                } else {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.tag', $row['id'], array(
+                        'tag_name' => $tag_name,
+                        'tag_permalink' => $tag_permalink,
+                        ), 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.549', 'msg'=>'Unable to update the tag', 'err'=>$rc['err']));
+                    }
                 }
             }
         }
