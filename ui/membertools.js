@@ -146,14 +146,14 @@ function ciniki_customers_membertools() {
     }
     this.tags.open = function(cb, tag, tagname) {
         if( tag != null ) {
-            this.tag = tag;
+            this.tag_type = tag;
         }
         if( tagname != null ) {
             this.tagname = tagname;
             this.title = tagname;
             this.sections.items.label = tagname;
         }
-        M.api.getJSONCb('ciniki.customers.tags', {'tnid':M.curTenantID, 'types':'40'}, function(rsp) {
+        M.api.getJSONCb('ciniki.customers.tags', {'tnid':M.curTenantID, 'types':this.tag_type}, function(rsp) {
             if( rsp['stat'] != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -176,7 +176,7 @@ function ciniki_customers_membertools() {
     }
     this.tags.save = function() {
         var c = this.serializeForm('yes');
-        M.api.postJSONCb('ciniki.customers.tagsUpdate', {'tnid':M.curTenantID, 'tag':this.tag}, c,
+        M.api.postJSONCb('ciniki.customers.tagsUpdate', {'tnid':M.curTenantID, 'tag':this.tag_type}, c,
             function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
