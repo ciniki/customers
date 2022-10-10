@@ -176,7 +176,7 @@ function ciniki_customers_membertools() {
     }
     this.tags.save = function() {
         var c = this.serializeForm('yes');
-        M.api.postJSONCb('ciniki.customers.tagsUpdate', {'tnid':M.curTenantID, 'tag':this.tag_type}, c,
+        M.api.postJSONCb('ciniki.customers.tagsUpdate', {'tnid':M.curTenantID, 'tag_type':this.tag_type}, c,
             function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);

@@ -19,7 +19,7 @@ function ciniki_customers_tagsUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
-        'tag'=>array('required'=>'yes', 'blank'=>'yes', 'type'=>'text', 'name'=>'Tag'),
+        'tag_type'=>array('required'=>'yes', 'blank'=>'yes', 'type'=>'text', 'name'=>'Tag'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -42,7 +42,7 @@ function ciniki_customers_tagsUpdate(&$ciniki) {
     // Load the existing tags
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsByType');
-    $rc = ciniki_core_tagsByType($ciniki, 'ciniki.customers', $args['tnid'], 'ciniki_customer_tags', array($args['tag']));
+    $rc = ciniki_core_tagsByType($ciniki, 'ciniki.customers', $args['tnid'], 'ciniki_customer_tags', array($args['tag_type']));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -66,7 +66,7 @@ function ciniki_customers_tagsUpdate(&$ciniki) {
             //
             $strsql = "SELECT id, uuid, tag_name, permalink "
                 . "FROM ciniki_customer_tags "
-                . "WHERE tag_type = '" . ciniki_core_dbQuote($ciniki, $args['tag']) . "' "
+                . "WHERE tag_type = '" . ciniki_core_dbQuote($ciniki, $args['tag_type']) . "' "
                 . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $tag['permalink']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
