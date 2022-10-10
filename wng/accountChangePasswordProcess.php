@@ -60,6 +60,7 @@ function ciniki_customers_wng_accountChangePasswordProcess(&$ciniki, $tnid, &$re
             'type' => 'form',
             'class' => 'limit-width limit-width-30',
             'cancel-label' => 'Cancel',
+            'js-cancel' => 'location.replace("' . $request['ssl_domain_base_url'] . '/account");',
             'submit-label' => 'Change Password',
             'fields' => array(
                 'action' => array(

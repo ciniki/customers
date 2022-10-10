@@ -120,14 +120,14 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
     }
     $html_message = $template['html_header']
         . "<tr><td style='" . $theme['td_body'] . "'>"
-        . "<p style='" . $theme['p'] . "'>Please click on the following link to verify your email.  This link will only be valid for 2 hours.</p>"
+        . "<p style='" . $theme['p'] . "'>Please click on the following link to verify your email.  This link will expire in 2 hours.</p>"
         . "<p style='" . $theme['p'] . "'><a style='" . $theme['a'] . "' href='$url'>$url</a></p>"
         . "</td></tr>"
         . $template['html_footer']
         . "";
     $text_message = $template['text_header']
         . "Hi, \n\n"
-        . "Please click the following link to verify your email.  This link will only be valid for 2 hours.\n"
+        . "Please click the following link to verify your email.  This link will expire in 2 hours.\n"
         . "\n"
         . $url . "\n"
         . "\n"
