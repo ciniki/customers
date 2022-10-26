@@ -127,7 +127,7 @@ function ciniki_customers_wng_accountMenuItems($ciniki, $tnid, $request, $args) 
             'title' => 'Children', 
             'priority' => 350, 
             'ref' => 'ciniki.customers.children',
-            'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'children' ? 'yes' : 'no',
             'url' => $base_url . '/children',
             );
     }
@@ -142,7 +142,7 @@ function ciniki_customers_wng_accountMenuItems($ciniki, $tnid, $request, $args) 
             'title' => 'Membership', 
             'priority' => 300, 
             'ref' => 'ciniki.customers.membership',
-            'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'membership' ? 'yes' : 'no',
             'url' => $base_url . '/membership',
             );
     }
@@ -155,7 +155,7 @@ function ciniki_customers_wng_accountMenuItems($ciniki, $tnid, $request, $args) 
             'title' => 'Change Password', 
             'priority' => 250, 
             'ref' => 'ciniki.customers.changepassword',
-            'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'changepassword' ? 'yes' : 'no',
             'url' => $base_url . '/changepassword',
             );
     }
