@@ -128,7 +128,7 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $emails = $rc['customers'];
+        $emails = isset($rc['customers']) ? $rc['customers'] : array();
 
         //
         // Get the addresses
