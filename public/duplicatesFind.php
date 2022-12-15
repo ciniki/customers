@@ -47,7 +47,7 @@ function ciniki_customers_duplicatesFind($ciniki) {
             . "((c1.type = 1 OR c1.type = 10 OR c1.type = 21 OR c1.type = 22 OR c1.type = 31 OR c1.type = 32) "
                 . "AND (c2.type = 1 OR c2.type = 10 OR c1.type = 21 OR c1.type = 22 OR c1.type = 31 OR c1.type = 32)"
                 . "AND ("
-                    . "(c1.first <> '' AND c1.last <> '' AND soundex(c1.first) = soundex(c2.first) AND soundex(c1.last) = soundex(c2.last)) "
+                    . "(c1.first <> '' AND soundex(c1.first) = soundex(c2.first) AND soundex(c1.last) = soundex(c2.last)) "
                     . "OR (c1.first <> '' AND c1.last <> '' AND soundex(c1.first) = soundex(c2.last) AND soundex(c1.last) = soundex(c2.first)) "
                 . ")) "
             . "OR ((c1.type = 2 OR c1.type = 20 OR c1.type = 30) AND (c2.type = 2 OR c2.type = 20 OR c2.type = 30) AND soundex(c1.company) = soundex(c2.company)) "
