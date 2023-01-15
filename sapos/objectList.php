@@ -13,17 +13,19 @@
 //
 function ciniki_customers_sapos_objectList($ciniki, $tnid) {
 
-    $objects = array(
-        //
-        // this object should only be added to carts
-        //
-        'ciniki.customers.membership' => array(
+
+    $objects = array();
+
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02) ) {
+        $objects['ciniki.customers.membership'] = array(
             'name' => 'Membership',
-            ),
-        'ciniki.customers.product' => array(
+            );
+    }
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $objects['ciniki.customers.product'] = array(
             'name' => 'Membership',
-            ),
-        );
+            );
+    }
 
     return array('stat'=>'ok', 'objects'=>$objects);
 }
