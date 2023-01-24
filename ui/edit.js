@@ -1583,7 +1583,7 @@ function ciniki_customers_edit() {
                     M.ciniki_customers_edit.showEditSubscriptions(cb);
                 });
         } else {
-            this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':15, 'phone_label_1':'Home', 'phone_label_2':'Work', 'phone_label_3':'Cell'};
+            this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':7, 'phone_label_1':'Home', 'phone_label_2':'Work', 'phone_label_3':'Cell'};
             if( (M.curTenant.modules['ciniki.customers'].flags&0x200000) > 0 ) {
                 this.edit.forms.person.parent.active = 'yes';
 //                this.edit.forms.business.parent.active = 'yes';
