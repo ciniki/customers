@@ -112,9 +112,9 @@ function ciniki_customers_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
                         //
                         // Check if field ref is for customer and if the reference exists
                         //
-                        if( isset($field['field_ref']) && $field['field_ref'] != '' 
-                            && preg_match("/^ciniki\.customers\.customer\.([^\.]+)/", $field['field_ref'], $m)
-                            && isset($refs[$field['field_ref']])
+                        if( isset($field['prefill_ref']) && $field['prefill_ref'] != '' 
+                            && preg_match("/^ciniki\.customers\.customer\.([^\.]+)/", $field['prefill_ref'], $m)
+                            && isset($refs[$field['prefill_ref']])
                             ) {
 
                             if( isset($customer[$m[1]]) ) {

@@ -54,6 +54,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
         $products[$pid]['price_id'] = 0;
         $products[$pid]['units_available'] = 1;
         $products[$pid]['limited_units'] = 'yes';
+        $products[$pid]['no-cart-msg'] = '&nbsp;';
         if( $product['type'] > 20 ) {
             $addons[] = $products[$pid];
             unset($product[$pid]);
