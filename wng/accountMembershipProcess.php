@@ -145,15 +145,17 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
         if( count($object_ids) > 1 ) {
             $blocks[] = array(
                 'type' => 'html', 
-                'html' => '<div class="wide alignright">'
+                'html' => '<div class="block-text membership-renewall"><div class="wrap"><div class="content">'
+                    . '<div class="wide alignright">'
                     . '<form class="wide" action="' . $request['ssl_domain_base_url'] . '/cart" method="POST">'
                     . '<input type="hidden" name="action" value="addobjectids">'
                     . '<input type="hidden" name="object" value="ciniki.customers.product">'
                     . '<input type="hidden" name="object_ids" value="' . implode(',', $object_ids) . '">'
                     . '<input type="hidden" name="final_price" value="' . $final_price . '">'
                     . '<input type="hidden" name="quantity" value="1">'
-                    . '<input class="submit" type="submit" value="Renew All Now"/>&nbsp;'
-                    . '</form></div>',
+                    . '<input class="submit button" type="submit" value="Renew All Now"/>'
+                    . '</form></div>'
+                    . '</div></div></div>',
                 );
         }
     } 
