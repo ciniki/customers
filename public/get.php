@@ -294,13 +294,15 @@ function ciniki_customers_get($ciniki) {
             foreach($rc['tags'] as $tags) {
                 if( $tags['tags']['tag_type'] == 40 ) {
                     $customer['member_categories'] = $tags['tags']['lists'];
+                } elseif( $tags['tags']['tag_type'] == 45 ) {
+                    $customer['member_subcategories'] = $tags['tags']['lists'];
                 }
             }
         }
     }
 
     //
-    // Get the categories and tags for the post
+    // Get the categories and tags for the member
     //
     if( isset($args['member_categories']) && $args['member_categories'] == 'yes' 
         && ($modules['ciniki.customers']['flags']&0x03) > 0 ) {
@@ -321,6 +323,8 @@ function ciniki_customers_get($ciniki) {
             foreach($rc['tags'] as $tags) {
                 if( $tags['tags']['tag_type'] == 40 ) {
                     $post['member_categories'] = $tags['tags']['lists'];
+                } elseif( $tags['tags']['tag_type'] == 45 ) {
+                    $post['member_subcategories'] = $tags['tags']['lists'];
                 }
             }
         }
@@ -524,6 +528,19 @@ function ciniki_customers_get($ciniki) {
         }
         if( isset($rc['tags']) ) {
             $rsp['member_categories'] = $rc['tags'];
+        }
+        //
+        // Get the available tags
+        //
+        $rsp['member_subcategories'] = array();
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
+        $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['tnid'], 
+            'ciniki_customer_tags', 40);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.83', 'msg'=>'Unable to get list of subcategories', 'err'=>$rc['err']));
+        }
+        if( isset($rc['tags']) ) {
+            $rsp['member_subcategories'] = $rc['tags'];
         }
     }
 

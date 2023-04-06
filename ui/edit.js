@@ -94,6 +94,9 @@ function ciniki_customers_edit() {
         '_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
             'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
             }},
+        '_member_subcategories':{'label':'Member Subcategories', 'aside':'yes', 'active':'no', 'fields':{
+            'member_subcategories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
         'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
             'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
             'webflags_2':{'label':'Website', 'type':'flagtoggle', 'bit':0x02, 'field':'webflags', 'default':'off'},
@@ -316,6 +319,9 @@ function ciniki_customers_edit() {
             }},
         '_member_categories':{'label':'Member Categories', 'aside':'yes', 'active':'no', 'fields':{
             'member_categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+            }},
+        '_member_subcategories':{'label':'Member Subcategories', 'aside':'yes', 'active':'no', 'fields':{
+            'member_subcategories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
             }},
         'dealer':{'label':'Dealer', 'aside':'yes', 'active':'no', 'fields':{
             'dealer_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.dealerStatus},
@@ -1380,9 +1386,20 @@ function ciniki_customers_edit() {
         if( (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
             this.edit.forms.person._member_categories.active = 'yes';
             this.edit.forms.business._member_categories.active = 'yes';
+            if( M.curTenant.modules['ciniki.customers'].settings['ui-member-subcategories'] != null
+                && M.curTenant.modules['ciniki.customers'].settings['ui-member-subcategories'] == 'yes'
+                ) {
+                this.edit.forms.person._member_subcategories.active = 'yes';
+                this.edit.forms.business._member_subcategories.active = 'yes';
+            } else {
+                this.edit.forms.person._member_subcategories.active = 'no';
+                this.edit.forms.business._member_subcategories.active = 'no';
+            }
         } else {
             this.edit.forms.person._member_categories.active = 'no';
             this.edit.forms.business._member_categories.active = 'no';
+            this.edit.forms.person._member_subcategories.active = 'no';
+            this.edit.forms.business._member_subcategories.active = 'no';
         }
 
         //

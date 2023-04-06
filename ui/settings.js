@@ -48,6 +48,9 @@ function ciniki_customers_settings() {
                 'defaults-edit-form':{'label':'Edit Form', 'type':'toggle', 'toggles':{'person':'Person', 'business':'Business'}},
                 'defaults-edit-person-hide-company':{'label':'Hide Company', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'ui-show-places':{'label':'Show Places', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'ui-member-subcategories':{'label':'Member Subcategories', 'type':'toggle', 'default':'no', 
+                    'visible':function() { return M.modFlagSet('ciniki.customers', 0x04); },
+                    'toggles':{'no':'No', 'yes':'Yes'}},
             }},
 /*            
             

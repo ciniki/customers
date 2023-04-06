@@ -173,6 +173,8 @@ function ciniki_customers_getFull($ciniki) {
                     $customer['customer_tags'] = $tags['tags']['lists'];
                 } elseif( $tags['tags']['tag_type'] == 40 ) {
                     $customer['member_categories'] = $tags['tags']['lists'];
+                } elseif( $tags['tags']['tag_type'] == 45 ) {
+                    $customer['member_subcategories'] = $tags['tags']['lists'];
                 } elseif( $tags['tags']['tag_type'] == 60 ) {
                     $customer['dealer_categories'] = $tags['tags']['lists'];
                 } elseif( $tags['tags']['tag_type'] == 80 ) {
@@ -462,6 +464,21 @@ function ciniki_customers_getFull($ciniki) {
             'ciniki_customer_tags', array());
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.87', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
+        }
+        if( isset($rc['types']) ) {
+            $rsp['tag_types'] = $rc['types'];
+        } else {
+            $rsp['tag_types'] = array();
+        }
+        //
+        // Get the available tags
+        //
+        $rsp['member_subcategories'] = array();
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsByType');
+        $rc = ciniki_core_tagsByType($ciniki, 'ciniki.blog', $args['tnid'], 
+            'ciniki_customer_tags', array());
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.87', 'msg'=>'Unable to get list of subcategories', 'err'=>$rc['err']));
         }
         if( isset($rc['types']) ) {
             $rsp['tag_types'] = $rc['types'];

@@ -268,6 +268,9 @@ function ciniki_customers_getModuleData($ciniki) {
                 if( $tags['tags']['tag_type'] == 40 ) {
                     $customer['member_categories'] = $tags['tags']['lists'];
                 }
+                if( $tags['tags']['tag_type'] == 45 ) {
+                    $customer['member_subcategories'] = $tags['tags']['lists'];
+                }
                 if( $tags['tags']['tag_type'] == 60 ) {
                     $customer['dealer_categories'] = $tags['tags']['lists'];
                 }
