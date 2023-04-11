@@ -242,6 +242,7 @@ function ciniki_customers_objects($ciniki) {
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'purchase_date' => array('name'=>'Date Purchased', 'default'=>''),
             'invoice_id' => array('name'=>'Invoice ID', 'ref'=>'ciniki.sapos.invoice', 'default'=>'0'),
+            'invoice_item_id' => array('name'=>'Invoice Item ID', 'ref'=>'ciniki.sapos.invoice_item', 'default'=>'0'),
             'start_date' => array('name'=>'Start Date', 'default'=>''),
             'end_date' => array('name'=>'End Date', 'default'=>''),
             'stripe_customer_id' => array('name'=>'Stripe Customer', 'default'=>''),

@@ -88,6 +88,7 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
         . "products.type, "
         . "purchases.purchase_date, "
         . "purchases.invoice_id, "
+        . "purchases.invoice_item_id, "
         . "purchases.start_date, "
         . "purchases.end_date, "
         . "purchases.stripe_customer_id, "
@@ -118,6 +119,18 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
     $purchases = isset($rc['rows']) ? $rc['rows'] : array();
 
     //
+    // Check for existing purchase
+    //
+    foreach($purchases as $purchase) {
+        if( $purchase['invoice_id'] == $args['invoice_id']
+            && isset($args['invoice_item_id']) 
+            && $args['invoice_item_id'] == $purchase['invoice_item_id']
+            ) {
+            return array('stat'=>'ok');
+        }
+    }
+
+    //
     // Setup the start date to be used for the membership/subscription
     //
     $start_date = new DateTime('NOW', new DateTimezone($intl_timezone));
@@ -145,13 +158,13 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
     $end_date->add(new DateInterval('P' . $product['months'] . 'M'));
     $end_date->sub(new DateInterval('P1D'));
 
-
     $new_purchase = array(
         'product_id' => $product['id'],
         'customer_id' => $args['customer_id'],
         'flags' => 0,
         'purchase_date' => $purchase_date->format('Y-m-d'),
         'invoice_id' => (isset($args['invoice_id']) ? $args['invoice_id'] : 0),
+        'invoice_item_id' => (isset($args['invoice_item_id']) ? $args['invoice_item_id'] : 0),
         'start_date' => $start_date->format('Y-m-d'),
         'end_date' => $end_date->format('Y-m-d'),
         'stripe_customer_id' => 0,

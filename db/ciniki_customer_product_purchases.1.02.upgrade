@@ -1,0 +1,5 @@
+#
+# Add invoice item id to purchase to make sure double purchases don't happen
+#
+ALTER TABLE ciniki_customer_product_purchases ADD COLUMN invoice_item_id int not null after invoice_id;
+ALTER TABLE ciniki_customer_product_purchases COMMENT='v1.02';
