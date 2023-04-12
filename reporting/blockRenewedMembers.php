@@ -88,6 +88,7 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
         . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND c.member_status = 10 "
         . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+        . "AND c.member_lastpaid < NOW() "
         . "AND c.start_date < c.member_lastpaid "
         . "ORDER BY c.member_lastpaid "
         . "";
