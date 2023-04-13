@@ -191,11 +191,13 @@ function ciniki_customers_productSetupCustomer(&$ciniki, $tnid, $args) {
         if( $customer['member_status'] != 10 ) {
             $customer_updates['member_status'] = 10;
         }
-        $customer_updates['member_lastpaid'] = $purchase_date->format('Y-m-d');
-        $customer_updates['member_expires'] = $end_date->format('Y-m-d');
+        if( $product['type'] <= 20 ) {
+            $customer_updates['member_lastpaid'] = $purchase_date->format('Y-m-d');
+            $customer_updates['member_expires'] = $end_date->format('Y-m-d');
+        }
         if( $product['type'] == 20 ) {
             $customer_updates['membership_length'] = 60;
-        } else {
+        } elseif( $product['type'] == 10 ) {
             if( $product['months'] == 1 ) {
                 $customer_updates['membership_length'] = 10;
             } else {

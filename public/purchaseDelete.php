@@ -40,7 +40,7 @@ function ciniki_customers_purchaseDelete(&$ciniki) {
     //
     // Get the current settings for the membership product purchases
     //
-    $strsql = "SELECT id, uuid "
+    $strsql = "SELECT id, uuid, customer_id "
         . "FROM ciniki_customer_product_purchases "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['purchase_id']) . "' "
@@ -92,6 +92,17 @@ function ciniki_customers_purchaseDelete(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
         return $rc;
+    }
+
+    //
+    // Update the member_expires field
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productsUpdateCustomer');
+    $rc = ciniki_customers_productsUpdateCustomer($ciniki, $args['tnid'], array(
+        'customer_id' => $purchase['customer_id'],
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.552', 'msg'=>'Unable to update expiry date', 'err'=>$rc['err']));
     }
 
     //

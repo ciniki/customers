@@ -130,12 +130,15 @@ function ciniki_customers_purchaseAdd(&$ciniki) {
                 $customer_updates['member_status'] = 10;
             }
             $customer_updates['member_lastpaid'] = $args['purchase_date'];
-            if( $args['end_date'] > $customer['member_expires'] ) {
+            //
+            // Update member expiry only for membership, not addons
+            //
+            if( $product['type'] <= 20 && $args['end_date'] > $customer['member_expires'] ) {
                 $customer_updates['member_expires'] = $args['end_date'];
             }
             if( $product['type'] == 20 ) {
                 $customer_updates['membership_length'] = 60;
-            } else {
+            } elseif( $product['type'] == 10 ) {
                 if( $product['months'] == 1 ) {
                     $customer_updates['membership_length'] = 10;
                 } else {
