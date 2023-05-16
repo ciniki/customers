@@ -32,6 +32,7 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'mysql');
+    $php_date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     //
     // Load maps
@@ -82,6 +83,7 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
         elseif( $start_dt < $end_dt ) {
             $interval = $start_dt->diff($end_dt);
             $days = $interval->format("%a") + 1;
+            $months = 0;
         } elseif( $start_dt == $end_dt ) {
             $days = 1;
         } else {
@@ -112,6 +114,9 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
         $end_dt->add(new DateInterval('P' . (isset($days) ? $days : 1) .  'D'));
     }
 
+//    error_log(print_r($start_dt, true));
+//    error_log(print_r($end_dt, true));
+
     //
     // Store the report block chunks
     //
@@ -120,24 +125,51 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
     //
     // Get the new customers
     //
-    $strsql = "SELECT c.id, "
-        . "c.parent_id, "
-        . "c.status, "
-        . "c.status AS status_text, "
-        . "c.display_name, "
-        . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
-        . "FROM ciniki_customers AS c "
-        . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND c.member_status = 10 "
-//        . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
-        . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
-        . "AND c.start_date < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
-        . "ORDER BY c.start_date "
-        . "";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $strsql = "SELECT c.id, "
+            . "c.parent_id, "
+            . "c.status, "
+            . "c.status AS status_text, "
+            . "c.display_name, "
+            . "MIN(purchases.start_date) AS sdate, "
+            . "MIN(purchases.start_date) AS start_date "
+            . "FROM ciniki_customers AS c "
+            . "INNER JOIN ciniki_customer_product_purchases AS purchases ON ("
+                . "c.id = purchases.customer_id "
+                . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//            . "AND c.member_status = 10 "
+    //        . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+            . "GROUP BY c.id "
+            . "HAVING sdate >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
+            . "AND sdate < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+            . "ORDER BY sdate "
+            . "";
+    } else {
+        $strsql = "SELECT c.id, "
+            . "c.parent_id, "
+            . "c.status, "
+            . "c.status AS status_text, "
+            . "c.display_name, "
+            . "c.start_date "
+//            . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS sdate "
+            . "FROM ciniki_customers AS c "
+            . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND c.member_status = 10 "
+    //        . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+            . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
+            . "AND c.start_date < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+            . "ORDER BY c.start_date "
+            . "";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 
-            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date'),
+            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'sdate'),
+            'utctotz'=>array(
+                'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$php_date_format),
+                ),
             'maps'=>array('status_text'=>$maps['customer']['status'])),
             ));
     if( $rc['stat'] != 'ok' ) {
