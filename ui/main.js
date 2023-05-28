@@ -673,7 +673,10 @@ function ciniki_customers_main() {
                 this.sections.data_tabs.selected = rsp.data_tabs[first].id;
             }
         }
-        if( num_tabs > 1 ) {
+        if( num_tabs > 5 ) {
+            this.sections.data_tabs.visible = 'yes';
+            this.size = 'large mediumaside';
+        } else if( num_tabs > 1 ) {
             this.sections.data_tabs.visible = 'yes';
             this.size = 'medium mediumaside';
         } else if( num_tabs == 1 ) {
