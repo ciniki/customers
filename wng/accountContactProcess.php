@@ -731,6 +731,31 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
     $problem_list = '';
     if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
 
+        //
+        // Check if enough email addresses are present
+        //
+        if( count($customer['emails']) == 0 ) {
+            $problem_list .= ($problem_list != '' ? '<br/>' : '')
+                . "You must specifiy an email address.";
+        } else {
+            $num_emails = 0;
+            foreach($customer['emails'] as $email) {
+                if( isset($email['update_args']['email']) ) {
+                    if( $email['update_args']['email'] != '' ) {
+                        $num_emails++;
+                    }
+                } elseif( isset($email['address']) && $email['address'] != '' ) {
+                    $num_emails++;
+                } elseif( isset($email['email']) && $email['email'] != '' ) {
+                    $num_emails++;
+                }
+            }
+            if( $num_emails == 0 ) {
+                $problem_list .= ($problem_list != '' ? '<br/>' : '')
+                    . "You must specifiy an email address.";
+            }
+        }
+
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
@@ -740,7 +765,8 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         if( count($update_args) > 0 ) {
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer', $customer['id'], $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
-                $problem_list .= "We had an error (#1002) updating your information, please try again or contact us for help.";
+                $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                    . "We had an error (#1002) updating your information, please try again or contact us for help.";
             }
         }
         foreach($customer['phones'] as $phone) {
@@ -751,7 +777,8 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( isset($phone['update_args']['phone_number']) && $phone['update_args']['phone_number'] == '' ) {
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.phone', $phone['id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1003) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1003) updating your information, please try again or contact us for help.";
                 }
             } 
             // Update phone
@@ -763,14 +790,16 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 }
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.phone', $phone['id'], $phone['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1004) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1004) updating your information, please try again or contact us for help.";
                 }
             } 
             // Add phone
             elseif( isset($phone['id']) && $phone['id'] == 0 ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.phone', $phone, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1005) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1005) updating your information, please try again or contact us for help.";
                 }
             }
         }
@@ -778,11 +807,12 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( $problem_list != '' ) {
                 break;
             }
-            if( isset($email['update_args']['address']) && $email['update_args']['address'] == '' ) {
+            if( isset($email['update_args']['email']) && $email['update_args']['email'] == '' ) {
                 // Remove email address
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.email', $email['id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1006) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1006) updating your information, please try again or contact us for help.";
                 }
             } elseif( isset($email['update_args']) && count($email['update_args']) > 0 ) {
                 if( isset($email['update_args']['email_public']) && $email['update_args']['email_public'] == 'yes' && ($email['flags']&0x08) == 0 ) {
@@ -792,12 +822,14 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 }
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.email', $email['id'], $email['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1007) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1007) updating your information, please try again or contact us for help.";
                 }
             } elseif( isset($email['id']) && $email['id'] == 0 ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email', $email, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1008) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1008) updating your information, please try again or contact us for help.";
                 }
             }
         }
@@ -810,14 +842,16 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( $mailing_address['id'] == 0 && $mailing_address['str'] != '' ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $mailing_address, 0x04);
                 if( $rc['stat'] != 'ok' ) { 
-                    $problem_list .= "We had an error (#1009) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1009) updating your information, please try again or contact us for help.";
                 }
             }
             // Update address
             elseif( isset($mailing_address['update_args']) && count($mailing_address['update_args']) > 0 ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $mailing_address['id'], $mailing_address['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1010) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1010) updating your information, please try again or contact us for help.";
                 }
             }
         }
@@ -826,14 +860,16 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( $shipping_address['id'] == 0 && $shipping_address['str'] != '' ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $shipping_address, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1011) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1011) updating your information, please try again or contact us for help.";
                 }
             }
             // Update address
             elseif( isset($shipping_address['update_args']) && count($shipping_address['update_args']) > 0 ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $shipping_address['id'], $shipping_address['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1012) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1012) updating your information, please try again or contact us for help.";
                 }
             }
         }
@@ -842,14 +878,16 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( $public_address['id'] == 0 && $public_address['str'] != '' ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $public_address, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1013) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1013) updating your information, please try again or contact us for help.";
                 }
             }
             // Update address
             elseif( isset($public_address['update_args']) && count($public_address['update_args']) > 0 ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $public_address['id'], $public_address['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1014) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1014) updating your information, please try again or contact us for help.";
                 }
             }
         }
@@ -861,7 +899,8 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             foreach($remove_addresses as $aid) {
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.address', $address['id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= "We had an error (#1015) updating your information, please try again or contact us for help.";
+                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
+                        . "We had an error (#1015) updating your information, please try again or contact us for help.";
                 }
             }
         }
