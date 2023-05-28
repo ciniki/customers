@@ -148,8 +148,7 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
         if( count($object_ids) > 1 ) {
             $blocks[] = array(
                 'type' => 'html', 
-            'class' => 'limit-width limit-width-60',
-                'html' => '<div class="block-text membership-renewall"><div class="wrap"><div class="content">'
+                'html' => '<div class="block-text membership-renewall limit-width limit-width-60"><div class="wrap"><div class="content">'
                     . '<div class="wide alignright">'
                     . '<form class="wide" action="' . $request['ssl_domain_base_url'] . '/cart" method="POST">'
                     . '<input type="hidden" name="action" value="addobjectids">'
