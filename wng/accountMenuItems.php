@@ -119,11 +119,18 @@ function ciniki_customers_wng_accountMenuItems($ciniki, $tnid, $request, $args) 
     //
     // FIXME: Add items for editing contact details, mailing lists, past orders, children
     //
-    
+    $options = array();
+    $options[] = array(
+        'title' => 'Contact Info', 
+        'priority' => 350, 
+        'ref' => 'ciniki.customers.contact',
+        'selected' => isset($args['selected']) && $args['selected'] == 'contact' ? 'yes' : 'no',
+        'url' => $base_url . '/contact',
+        );
     if( isset($settings['account-children-update']) && $settings['account-children-update'] == 'yes' 
         && isset($request['session']['customer']['children-allowed']) && $request['session']['customer']['children-allowed'] == 'yes'
         ) {
-        $items[] = array(
+        $options[] = array(
             'title' => 'Children', 
             'priority' => 350, 
             'ref' => 'ciniki.customers.children',
@@ -138,7 +145,7 @@ function ciniki_customers_wng_accountMenuItems($ciniki, $tnid, $request, $args) 
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)
         && (!isset($settings['account-membership-change']) || $settings['account-membership-change'] == 'yes') 
         ) {
-        $items[] = array(
+        $options[] = array(
             'title' => 'Membership', 
             'priority' => 300, 
             'ref' => 'ciniki.customers.membership',
@@ -151,12 +158,28 @@ function ciniki_customers_wng_accountMenuItems($ciniki, $tnid, $request, $args) 
     // Change Password
     //
     if( isset($settings['account-password-change']) && $settings['account-password-change'] == 'yes' ) {
-        $items[] = array(
+        $options[] = array(
             'title' => 'Change Password', 
             'priority' => 250, 
             'ref' => 'ciniki.customers.changepassword',
             'selected' => isset($args['selected']) && $args['selected'] == 'changepassword' ? 'yes' : 'no',
             'url' => $base_url . '/changepassword',
+            );
+    }
+
+    if( count($options) <= 2 ) {
+        foreach($options as $option) {
+            $items[] = $option;
+        }
+
+    } else {
+        $items[] = array(
+            'title' => 'Profile',
+            'priority' => 250,
+            'ref' => 'ciniki.customers.profile',
+            'selected' => isset($args['selected']) && $args['selected'] == 'profile' ? 'yes' : 'no',
+            'url' => $base_url . '/profile',
+            'items' => count($options) > 1 ? $options : null,
             );
     }
 

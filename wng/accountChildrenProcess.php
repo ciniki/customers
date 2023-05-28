@@ -17,11 +17,19 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
 
     $blocks = array();
 
-    $request['breadcrumbs'][] = array(
-        'title' => 'Children',
-        'page-class' => 'page-account-children',
-        'url' => $request['base_url'] . '/account/children',
-        );
+    if( !isset($settings['account-children-update']) || $settings['account-children-update'] != 'yes' 
+        || !isset($request['session']['customer']['children-allowed']) || $request['session']['customer']['children-allowed'] != 'yes'
+        ) {
+        return array('stat'=>'ok', 'blocks'=>array());
+    }
+
+    if( $item['ref'] == 'ciniki.customers.children' ) {
+        $request['breadcrumbs'][] = array(
+            'title' => 'Children',
+            'page-class' => 'page-account-children',
+            'url' => $request['base_url'] . '/account/children',
+            );
+    }
 
     $base_url = $request['base_url'] . '/account/children';
     if( isset($request['uri_split'][2]) && $request['uri_split'][2] == 'cartadd' ) {
@@ -82,6 +90,8 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
         $_POST['next'] = $request['ssl_domain_base_url'] . '/cart?regreview';
     } elseif( isset($_GET['next']) && $_GET['next'] == 'cart' ) {
         $_POST['next'] = $request['ssl_domain_base_url'] . '/cart';
+    } elseif( isset($_GET['next']) && $_GET['next'] == 'profile' ) {
+        $_POST['next'] = $request['ssl_domain_base_url'] . '/account/profile';
     }
 
     if( isset($_POST['cancel']) && $_POST['cancel'] == 'Cancel' && isset($_POST['next']) && $_POST['next'] != '' ) {
@@ -171,11 +181,12 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
                 'list' => array(
                     array(
                         'text' => 'Cancel',
-                        'url' => '/account/children',
+                        'url' => (isset($_POST['next']) && $_POST['next'] == 'profile' ? '/account/profile' : '/account/children'),
                         ),
                     array(
                         'text' => 'Remove Child',
-                        'url' => '/account/children?delete=' . $_POST['f-child_id'] . '&confirm=yes',
+                        'url' => '/account/children?delete=' . $_POST['f-child_id'] . '&confirm=yes'
+                            . (isset($_POST['next']) ? '&next=' . $_POST['next'] : ''),
                         ),
                     ),
                 ); 
@@ -290,7 +301,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
         if( isset($error_msg) && $error_msg != '' ) {
             $blocks[] = array(
                 'type' => 'msg', 
-                'class' => 'limit-width limit-width-30',
+                'class' => 'limit-width limit-width-60',
                 'level' => 'error', 
                 'content' => $error_msg,
                 );
@@ -298,7 +309,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
         $blocks[] = array(
             'type' => 'form',
             'title' => (isset($_POST['f-child_id']) && $_POST['f-child_id'] > 0 ? 'Update Child Name' : 'Add Child'),
-            'class' => 'limit-width limit-width-30',
+            'class' => 'limit-width limit-width-60',
             'cancel-label' => 'Cancel',
             'fields' => array(
                 'child_id' => array(
@@ -320,7 +331,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
                     'id' => 'first',
                     'label' => 'First Name', 
                     'ftype' => 'text',
-                    'size' => 'large',
+                    'size' => 'small',
                     'required' => 'yes', 
                     'value' => isset($child['first']) ? $child['first'] : '',
                     ),
@@ -328,7 +339,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
                     'id' => 'last',
                     'label' => 'Last Name', 
                     'ftype' => 'text',
-                    'size' => 'large',
+                    'size' => 'small',
                     'required' => 'yes', 
                     'value' => isset($child['last']) ? $child['last'] : '',
                     ),
@@ -345,6 +356,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
                 $children[$cid]['editbutton'] = "<form action='{$base_url}' method='POST'>"
                     . "<input type='hidden' name='f-child_id' value='{$cid}' />"
                     . "<input type='hidden' name='f-action' value='edit' />"
+                    . ($item['ref'] == 'ciniki.customers.profile' ? "<input type='hidden' name='f-next' value='profile' />" : '')
                     . "<input class='button' type='submit' name='submit' value='Edit'>"
                     . "<input class='button' type='submit' name='delete' value='Remove'>"
                     . "</form>";
@@ -352,7 +364,7 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
             $blocks[] = array(
                 'type' => 'table', 
                 'title' => 'Account Children',
-                'class' => 'limit-width limit-width-40',
+                'class' => 'limit-width limit-width-60',
                 'headers' => 'no',
                 'columns' => array(
                     array('label' => 'Name', 'field' => 'display_name', 'class' => 'alignleft'),
@@ -363,17 +375,19 @@ function ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, &$request, 
         } else {
             $blocks[] = array(
                 'type' => 'text',
-                'class' => 'limit-width limit-width-40',
+                'class' => 'limit-width limit-width-60',
+                'title' => 'Account Children',
                 'content' => 'You have not added any children to your account.',
                 );
         }
 
         $blocks[] = array(
             'type' => 'buttons', 
-            'class' => 'limit-width limit-width-40 alignright',
+            'class' => 'limit-width limit-width-60 aligncenter',
             'list' => array(array(
                 'text' => 'Add Child',
-                'url' => '/account/children?add=yes',
+                'url' => '/account/children?add=yes'
+                    . ($item['ref'] == 'ciniki.customers.profile' ? '&next=profile' : ''),
                 )),
             ); 
     }

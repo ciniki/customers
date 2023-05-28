@@ -984,7 +984,7 @@ function ciniki_customers_edit() {
         if( (M.curTenant.modules['ciniki.customers'].flags&0x0112) > 0 ) {
             this.addressFlags = {
                 '1':{'name':'Shipping'}, 
-                '2':{'name':'Billing'}, 
+//                '2':{'name':'Billing'}, 
                 '3':{'name':'Mailing'},
                 '4':{'name':'Public'},
             };

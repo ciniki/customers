@@ -23,7 +23,7 @@
 #                   One address can be shipping, billing, home and work.
 #
 #                   0x01 - shipping (use this address for shipping)
-#                   0x02 - billing
+#                   0x02 - billing ** Deprecated - same as mailing ** 
 #                   0x04 - mailing (use for postal mailings, newsletters)
 #                   0x08 - public (used on website)
 #                   0x10 - home

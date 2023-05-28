@@ -20,11 +20,13 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
 
     $blocks = array();
 
-    $request['breadcrumbs'][] = array(
-        'title' => 'Membership',
-        'page-class' => 'page-account-membership',
-        'url' => $request['base_url'] . '/account/membership',
-        );
+    if( $item['ref'] == 'ciniki.customers.membership' ) {
+        $request['breadcrumbs'][] = array(
+            'title' => 'Membership',
+            'page-class' => 'page-account-membership',
+            'url' => $request['base_url'] . '/account/membership',
+            );
+    }
 
     $base_url = $request['base_url'] . '/account/membership';
 
@@ -122,7 +124,8 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
         }
         $blocks[] = array(
             'type' => 'table', 
-            'title' => '',
+            'class' => 'limit-width limit-width-60',
+            'title' => 'Membership',
             'headers' => 'yes',
             'columns' => array(
                 array('label' => 'Purchase', 'field' => 'name', 'class' => 'alignleft'),
@@ -145,6 +148,7 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
         if( count($object_ids) > 1 ) {
             $blocks[] = array(
                 'type' => 'html', 
+            'class' => 'limit-width limit-width-60',
                 'html' => '<div class="block-text membership-renewall"><div class="wrap"><div class="content">'
                     . '<div class="wide alignright">'
                     . '<form class="wide" action="' . $request['ssl_domain_base_url'] . '/cart" method="POST">'
@@ -165,11 +169,14 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
     else {
         $blocks[] = array(
             'type' => 'text', 
+            'class' => 'limit-width limit-width-60',
+            'title' => 'Membership',
             'content' => 'You do not currently have a membership. To become a member, choose one of the options below.',
             );
 
         $blocks[] = array(
             'type' => 'pricelist', 
+            'class' => 'limit-width limit-width-60',
             'prices' => $products, 
             'descriptions' => 'yes',
             );
@@ -178,9 +185,10 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
     //
     // Show history
     //
-    if( isset($rc['history']) && count($rc['history']) > 0 ) {
+    if( isset($rc['history']) && count($rc['history']) > 0 && $item['ref'] == 'ciniki.customers.membership' ) {
         $blocks[] = array(
             'type' => 'table', 
+            'class' => 'limit-width limit-width-60',
             'title' => 'History',
             'headers' => 'yes',
             'columns' => array(

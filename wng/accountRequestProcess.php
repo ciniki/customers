@@ -20,7 +20,15 @@ function ciniki_customers_wng_accountRequestProcess(&$ciniki, $tnid, &$request, 
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.535', 'msg'=>'Must be logged in'));
     }
 
-    if( $item['ref'] == 'ciniki.customers.children' ) {
+    if( $item['ref'] == 'ciniki.customers.contact' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'accountContactProcess');
+        return ciniki_customers_wng_accountContactProcess($ciniki, $tnid, $request, $item);
+    } 
+    elseif( $item['ref'] == 'ciniki.customers.profile' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'accountProfileProcess');
+        return ciniki_customers_wng_accountProfileProcess($ciniki, $tnid, $request, $item);
+    } 
+    elseif( $item['ref'] == 'ciniki.customers.children' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'accountChildrenProcess');
         return ciniki_customers_wng_accountChildrenProcess($ciniki, $tnid, $request, $item);
     } 

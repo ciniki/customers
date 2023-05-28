@@ -66,7 +66,9 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         . (isset($args['full_bio']) && $args['full_bio'] == 'yes' ? "full_bio, " : '')
         . "status, dealer_status, distributor_status, "
         . "member_status, member_status AS member_status_text, member_lastpaid, member_expires, "
-        . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
+        . "ciniki_customer_emails.id AS email_id, "
+        . "ciniki_customer_emails.email, "
+        . "ciniki_customer_emails.flags AS email_flags, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%M %d, %Y') . "'), '') AS birthdate, "
         . "notes "
         . "FROM ciniki_customers "
@@ -97,7 +99,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
             'maps'=>array('member_status_text'=>$maps['customer']['member_status'],)
             ),
         array('container'=>'emails', 'fname'=>'email_id',
-            'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email')),
+            'fields'=>array('id'=>'email_id', 'customer_id'=>'id', 'address'=>'email', 'flags'=>'email_flags')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -243,6 +245,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
             if( $city != '' ) {
                 $joined_address .= $city . "\n";
             }
+            $customer['addresses'][$a]['label'] = $label;
             $customer['addresses'][$a]['joined'] = $joined_address;
             $details[] = array('label'=>$label, 'value'=>$joined_address, 'type'=>'address');
         }
