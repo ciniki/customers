@@ -88,6 +88,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                 }
             } else {
                 $history[] = array(
+                    'id' => $purchase['id'],
                     'product_id' => $purchase['product_id'],
                     'type' => $purchase['type'],
                     'short_name' => $purchase['short_name'],

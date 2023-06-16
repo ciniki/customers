@@ -149,6 +149,7 @@ function ciniki_customers_hooks_uiCustomersData($ciniki, $tnid, $args) {
 //                    'addTxt' => 'Add Membership Product',
 //                    'addApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('customer_id'=>$args['customer_id'], 'source'=>'\'customer\'')),
 //                    'editApp' => array('app'=>'ciniki.customers.reminders', 'args'=>array('reminder_id'=>'d.id;', 'source'=>'\'customer\'')),
+                    'editApp' => array('app'=>'ciniki.customers.products', 'args'=>array('purchase_id'=>'d.id;', 'source'=>'\'customer\'')),
                     'cellValues' => array(
                         '0' => "d.name",
                         '1' => "d.expired",
