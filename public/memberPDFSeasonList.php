@@ -72,7 +72,7 @@ function ciniki_customers_memberPDFSeasonList(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $members = $rc['members'];
+    $members = isset($rc['members']) ? $rc['members'] : array();
 
     //
     // Get the public email addresses
