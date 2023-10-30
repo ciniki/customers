@@ -47,25 +47,28 @@ function ciniki_customers_imageUpdate(&$ciniki) {
     // Check the permalink
     //
     if( isset($args['name']) ) {
+        //
+        // Get the existing image details
+        //
+        $strsql = "SELECT uuid, customer_id FROM ciniki_customer_images "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_image_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( !isset($rc['item']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.98', 'msg'=>'Member image not found'));
+        }
+        $image = $rc['item'];
+
         if( $args['name'] == '' ) {
-            //
-            // Get the existing image details
-            //
-            $strsql = "SELECT uuid FROM ciniki_customer_images "
-                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['customer_image_id']) . "' "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            if( !isset($rc['item']) ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.98', 'msg'=>'Member image not found'));
-            }
-            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($rc['item']['uuid'])));
+            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($image['uuid'])));
         } else {
             $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'])));
         }
+
         //
         // Make sure the permalink is unique
         //
@@ -73,6 +76,7 @@ function ciniki_customers_imageUpdate(&$ciniki) {
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['customer_image_id']) . "' "
+            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $image['customer_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'image');
         if( $rc['stat'] != 'ok' ) {
