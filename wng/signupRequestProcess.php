@@ -138,14 +138,28 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
     //
     // The from address can be set in the config file.
     //
-    $ciniki['emailqueue'][] = array('to'=>$args['email'],
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+    $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+        'customer_id' => 0,
+        'customer_email' => $args['email'],
+        'customer_name' => $args['first'] . ' ' . $args['last'],
+        'subject'=>$subject,
+        'text_content'=>$text_message,
+        'html_content'=>$html_message,
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.553', 'msg'=>'Unable to add verification email', 'err'=>$rc['err']));
+    }
+    $ciniki['emailqueue'][] = array('tnid'=>$tnid, 'mail_id'=>$rc['id']);
+    
+/*    $ciniki['emailqueue'][] = array('to'=>$args['email'],
         'to_name'=>$args['first'] . ' ' . $args['last'],
         'tnid'=>$tnid,
         'subject'=>$subject,
         'textmsg'=>$text_message,
         'htmlmsg'=>$html_message,
-        );
-
+        ); */
+ 
     //
     // Commit the changes and return
     //
