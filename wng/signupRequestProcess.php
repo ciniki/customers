@@ -118,7 +118,7 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
     } else {
         $url .= "?k={$signupkey}";
     }
-    $html_message = $template['html_header']
+/*    $html_message = $template['html_header']
         . "<tr><td style='" . $theme['td_body'] . "'>"
         . "<p style='" . $theme['p'] . "'>Please click on the following link to verify your email.  This link will expire in 2 hours.</p>"
         . "<p style='" . $theme['p'] . "'><a style='" . $theme['a'] . "' href='$url'>$url</a></p>"
@@ -133,7 +133,12 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
         . "\n"
         . "\n"
         . $template['text_footer']
-        . "";
+        . ""; */
+
+    $html_message = "Please click on the following link to verify your email. This link will expire in 2 hours.\n\n"
+        . $url 
+        . "\n\n";
+    $text_message = $html_message;
 
     //
     // The from address can be set in the config file.
