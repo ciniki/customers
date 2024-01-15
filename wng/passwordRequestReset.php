@@ -33,6 +33,8 @@ function ciniki_customers_wng_passwordRequestReset(&$ciniki, $tnid, &$request, $
         . "email, "
         . "ciniki_customer_emails.flags, "
         . "ciniki_customers.uuid, "
+        . "ciniki_customers.first, "
+        . "ciniki_customers.last, "
         . "ciniki_customers.display_name "
         . "FROM ciniki_customer_emails, ciniki_customers "
         . "WHERE ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -134,7 +136,7 @@ function ciniki_customers_wng_passwordRequestReset(&$ciniki, $tnid, &$request, $
         } else {
             $url .= '?email=' . urlencode($customer['email']) . "&pwd=$password";
         }
-        $html_message = $template['html_header']
+/*        $html_message = $template['html_header']
             . "<tr><td style='" . $theme['td_body'] . "'>"
             . "<p style='" . $theme['p'] . "'>You have requested a new password.  Please click on the following link to set a new password.  This link will only be valid for 2 hours.</p>"
             . "<p style='" . $theme['p'] . "'><a style='" . $theme['a'] . "' href='$url'>$url</a></p>"
@@ -151,17 +153,37 @@ function ciniki_customers_wng_passwordRequestReset(&$ciniki, $tnid, &$request, $
             . "\n"
             . $template['text_footer']
             . "";
+*/
+
+        $html_message = "You have requested a new password.  Please click on the following link to set a new password.  This link will only be valid for 2 hours.\n\n"
+            . $url
+            . "\n\n";
+        $text_message = $html_message;
 
         //
         // The from address can be set in the config file.
         //
-        $ciniki['emailqueue'][] = array('to'=>$customer['email'],
+/*        $ciniki['emailqueue'][] = array('to'=>$customer['email'],
             'to_name'=>$customer['display_name'],
             'tnid'=>$tnid,
             'subject'=>$subject,
             'textmsg'=>$text_message,
             'htmlmsg'=>$html_message,
             );
+        */
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+            'customer_id' => $customer['id'],
+            'customer_email' => $customer['email'],
+            'customer_name' => $customer['first'] . ' ' . $customer['last'],
+            'subject'=>$subject,
+            'text_content'=>$text_message,
+            'html_content'=>$html_message,
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.553', 'msg'=>'Unable to add verification email', 'err'=>$rc['err']));
+        }
+        $ciniki['emailqueue'][] = array('tnid'=>$tnid, 'mail_id'=>$rc['id']);
     }
 
     //

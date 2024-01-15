@@ -100,14 +100,14 @@ function ciniki_customers_wng_signupRequestProcess(&$ciniki, $tnid, &$request, $
     //
     // Load the tenant mail template
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'private', 'loadTenantTemplate');
+/*    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'private', 'loadTenantTemplate');
     $rc = ciniki_mail_loadTenantTemplate($ciniki, $tnid, array('title'=>'Email Verification'));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $template = $rc['template'];
     $theme = $rc['theme'];
-
+*/
     //
     // Prepare Messages
     //
