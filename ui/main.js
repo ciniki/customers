@@ -268,7 +268,7 @@ function ciniki_customers_main() {
             'exportcsvcontacts':{'label':'Contacts to Excel', 'fn':'M.ciniki_customers_main.tools.exportCSVContacts();'},
         }},
         'logs':{'label':'Other', 
-            'visible':function() { return M.modOn('ciniki.web') ? 'yes' : 'no'; },
+            'visible':function() { return M.modOn('ciniki.wng') ? 'yes' : 'no'; },
             'list':{
                 'logs':{'label':'Web Authentication Logs', 'fn':'M.startApp(\'ciniki.customers.logs\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
         }},

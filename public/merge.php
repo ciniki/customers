@@ -403,105 +403,6 @@ function ciniki_customers_merge($ciniki) {
     }
 
     //
-    // Merge Subscriptions
-    //
-    if( isset($modules['ciniki.subscriptions']) ) {
-        $updated = 0;
-        $strsql = "SELECT ciniki_subscriptions.id, "
-            . "IFNULL(c1.id, 0) AS c1_id, c1.customer_id AS c1_customer_id, c1.status AS c1_status, UNIX_TIMESTAMP(c1.last_updated) AS c1_last_updated, "
-            . "IFNULL(c2.id, 0) AS c2_id, c2.customer_id AS c2_customer_id, c2.status AS c2_status, UNIX_TIMESTAMP(c2.last_updated) AS c2_last_updated "
-            . "FROM ciniki_subscriptions "
-            . "LEFT JOIN ciniki_subscription_customers AS c1 ON (ciniki_subscriptions.id = c1.subscription_id "
-                . "AND c1.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
-                . "AND c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_subscription_customers AS c2 ON (ciniki_subscriptions.id = c2.subscription_id "
-                . "AND c2.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
-                . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE ciniki_subscriptions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.subscriptions', 'subscription');
-        if( $rc['stat'] != 'ok' ) {
-            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.114', 'msg'=>'Unable to find subscriptions', 'err'=>$rc['err']));
-        }
-        $subscriptions = $rc['rows'];
-        foreach($subscriptions as $i => $row) {
-            // If the secondary customer has a subscription
-            if( $row['c2_id'] > 0 ) {
-                // No subscription for primary
-                if( $row['c1_id'] == 0 ) {
-                    // Move subscription to primary
-                    $strsql = "UPDATE ciniki_subscription_customers SET customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
-                        . "WHERE ciniki_subscription_customers.id = '" . ciniki_core_dbQuote($ciniki, $row['c2_id']) . "' "
-                        . "AND ciniki_subscription_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                        . "";
-                    $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
-                    if( $rc['stat'] != 'ok' ) {
-                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.115', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
-                    }
-                    ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['tnid'],
-                        4, 'ciniki_subscription_customers', $row['c2_id'], 'customer_id', $args['primary_customer_id']);
-                    // subscription history automatically moves with the change in customer_id
-                    $updated = 1;
-                }
-                // subscription for primary exists, and secondary is more recent updated, then copy
-                elseif( $row['c1_id'] > 0 ) {
-                    // If the secondary is more recent than the primary, update the primary
-                    if( $row['c2_last_updated'] > $row['c1_last_updated'] && $row['c2_status'] != $row['c1_status']) {
-                        $strsql = "UPDATE ciniki_subscription_customers "
-                            . "SET last_updated = UTC_TIMESTAMP(), status = '" . ciniki_core_dbQuote($ciniki, $row['c2_status']) . "' "
-                            . "WHERE ciniki_subscription_customers.id = '" . ciniki_core_dbQuote($ciniki, $row['c1_id']) . "' "
-                            . "AND ciniki_subscription_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                            . "";
-                        $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
-                        if( $rc['stat'] != 'ok' ) {
-                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.116', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
-                        }
-                        ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['tnid'],
-                            4, 'ciniki_subscription_customers', $row['c1_id'], 'status', $row['c2_status']);
-                        
-                        // Copy subscription history
-                        $rc = ciniki_core_dbCopyModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['tnid'],
-                            'ciniki_subscription_customers', $row['c2_id'], $row['c1_id'], 'status');
-
-                        $updated = 1;
-                    }   
-                    // Unsubscribe secondary, so that customer can be deleted
-                    if( $row['c2_status'] != '60' ) {
-                        $strsql = "UPDATE ciniki_subscription_customers "
-                            . "SET status = 60 "
-                            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $row['c2_id']) . "' "
-                            . "AND ciniki_subscription_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                            . "";
-                        $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.subscriptions');
-                        if( $rc['stat'] != 'ok' ) {
-                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.117', 'msg'=>'Unable to update subscriptions', 'err'=>$rc['err']));
-                        }
-
-                        ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.subscriptions', 'ciniki_subscription_history', $args['tnid'],
-                            4, 'ciniki_subscription_customers', $row['c2_id'], 'status', '60');
-                        $updated = 1;
-                    }
-                }
-            }
-        }
-        
-        if( $updated == 1 ) {
-            //
-            // Update the last_change date in the tenant modules
-            // Ignore the result, as we don't want to stop user updates if this fails.
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
-            ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'subscriptions');
-        }
-    }
-    
-    //
     // Get existing reminders
     //
     $strsql = "SELECT id "
@@ -524,6 +425,33 @@ function ciniki_customers_merge($ciniki) {
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.485', 'msg'=>'', 'err'=>$rc['err']));
+        }
+    }
+
+    //
+    // Merge customer tags 
+    // FIXME: Could have problems if tag already exists for primary customer
+    //
+    $strsql = "SELECT id "
+        . "FROM ciniki_customer_tags "
+        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+        array('container'=>'items', 'fname'=>'id', 'fields'=>array('id')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.114', 'msg'=>'Unable to get existing customer tags', 'err'=>$rc['err']));
+    }
+    $items = isset($rc['items']) ? $rc['items'] : array();
+    foreach($items as $item) {
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.tag', $item['id'], array(
+            'customer_id' => $args['primary_customer_id'],
+            ), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.115', 'msg'=>'', 'err'=>$rc['err']));
         }
     }
 
