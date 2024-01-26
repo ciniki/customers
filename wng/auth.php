@@ -120,7 +120,7 @@ function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $hashed_p
         //
         // Return error
         //
-        ciniki_customers_wng_logAdd($ciniki, $tnid, $request, 50, 'Login', 0, $email, 'ciniki.customers.454', 'Email address does not exist');
+        ciniki_customers_wng_logAdd($ciniki, $tnid, $request, 50, 'Login', 0, $email, 'ciniki.customers.454', 'Email address does not exist or password incorrect');
         if( $account_locked == 'yes' ) {
             return array('stat'=>'locked', 'err'=>array('code'=>'ciniki.customers.455', 'msg'=>'Unable to authenticate, account locked.'));
         } 
