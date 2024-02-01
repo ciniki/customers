@@ -84,6 +84,7 @@ function ciniki_customers_hooks_uiCustomersData($ciniki, $tnid, $args) {
         $rsp['tabs'][] = array(
             'id' => 'ciniki.customers.reminders',
             'label' => 'Reminders',
+            'priority' => 2000,
             'sections' => array(
                 'ciniki.customers.reminders' => array(
                     'label' => 'Reminders',
@@ -119,6 +120,7 @@ function ciniki_customers_hooks_uiCustomersData($ciniki, $tnid, $args) {
         $rsp['tabs'][] = array(
             'id' => 'ciniki.customers.products',
             'label' => 'Membership',
+            'priority' => 2000,
             'sections' => array(
                 'ciniki.customers.productscurrent' => array(
                     'label' => 'Membership',
