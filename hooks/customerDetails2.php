@@ -189,6 +189,26 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
     if( !isset($args['name']) || $args['name'] == 'yes' ) {
         $details[] = array('label'=>'Name', 'value'=>$customer['display_name'], 'type'=>'name');
     }
+    if( !isset($args['companydetails']) || $args['companydetails'] == 'yes' ) {
+        
+        if( $customer['company'] != '' && !str_contains($customer['display_name'], $customer['company']) ) {
+            $details[] = array('label'=>'Company', 'value'=>$customer['company'], 'type'=>'name');
+        } elseif( $customer['company'] != '' && $customer['company'] == $customer['display_name'] ) {
+            $name = $customer['prefix'];
+            $name .= ($customer['first'] != '' ? ' ' : '') . $customer['first'];
+            $name .= ($customer['middle'] != '' ? ' ' : '') . $customer['middle'];
+            $name .= ($customer['last'] != '' ? ' ' : '') . $customer['last'];
+            $name .= ($customer['suffix'] != '' ? ' ' : '') . $customer['suffix'];
+            
+            $details[] = array('label'=>'Contact', 'value'=>$name, 'type'=>'name');
+        }
+        if( $customer['department'] != '' ) {
+            $details[] = array('label'=>'Department', 'value'=>$customer['department'], 'type'=>'title');
+        }
+        if( $customer['title'] != '' ) {
+            $details[] = array('label'=>'Title', 'value'=>$customer['title'], 'type'=>'title');
+        }
+    }
     if( isset($customer['phones']) ) {
         foreach($customer['phones'] as $phone) {
             $details[] = array('label'=>$phone['phone_label'], 'value'=>$phone['phone_number'], 'type'=>'phone');
