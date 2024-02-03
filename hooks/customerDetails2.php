@@ -191,9 +191,10 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
     }
     if( !isset($args['companydetails']) || $args['companydetails'] == 'yes' ) {
         
-        if( $customer['company'] != '' && !str_contains($customer['display_name'], $customer['company']) ) {
-            $details[] = array('label'=>'Company', 'value'=>$customer['company'], 'type'=>'name');
-        } elseif( $customer['company'] != '' && $customer['company'] == $customer['display_name'] ) {
+//        if( $customer['company'] != '' && !preg_match("/" . $customer['display_name'] . "/", $customer['company']) ) {
+//            $details[] = array('label'=>'Company', 'value'=>$customer['company'], 'type'=>'name');
+//        } else
+        if( $customer['company'] != '' && $customer['company'] == $customer['display_name'] ) {
             $name = $customer['prefix'];
             $name .= ($customer['first'] != '' ? ' ' : '') . $customer['first'];
             $name .= ($customer['middle'] != '' ? ' ' : '') . $customer['middle'];
