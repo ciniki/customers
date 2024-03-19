@@ -443,7 +443,7 @@ function ciniki_customers_edit() {
                 'primary_image_caption':{'label':'Caption', 'type':'text'},
             }},
         '_image_intro':{'label':'Intro Image', 'type':'imageform', 
-            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
+            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'no'); },
             'fields':{
                 'intro_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
                     'addDropImage':function(iid) {
