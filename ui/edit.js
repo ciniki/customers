@@ -265,6 +265,7 @@ function ciniki_customers_edit() {
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_customers_edit.customerSave();'},
+            'password':{'label':'Set Password', 'fn':'M.ciniki_customers_edit.setPassword();'},
             'delete':{'label':'Delete', 'fn':'M.ciniki_customers_edit.deleteCustomer();'},
             'remove':{'label':'Remove', 'fn':'M.ciniki_customers_edit.removeCustomer();'},  // Used when linked with next button.
             }},
@@ -2093,25 +2094,26 @@ function ciniki_customers_edit() {
     };
 
     this.setPassword = function() {
-        var np = prompt("Please enter a new password for the customer: ");
-        if( np != null ) {
-            if( np.length < 8 ) {
-                M.alert("The password must be a minimum of 8 characters long");
-                return false;
+        M.prompt("Please enter a new password for the customer: ", '', 'Set Password', function(np) {
+            if( np != null && np != '' ) {
+                if( np.length < 8 ) {
+                    M.alert("The password must be a minimum of 8 characters long");
+                    M.ciniki_customers_edit.setPassword();
+                    return false;
+                }
+                else {
+                    M.api.postJSONCb('ciniki.customers.customerSetPassword',
+                        {'tnid':M.curTenantID, 'customer_id':M.ciniki_customers_edit.edit.customer_id}, 'newpassword=' + encodeURIComponent(np), 
+                        function(rsp) {
+                            if( rsp.stat != 'ok' ) {    
+                                M.api.err(rsp);
+                                return false;
+                            }
+                            M.alert("Password has been set");
+                        });
+                }
             }
-            else {
-                M.api.postJSONCb('ciniki.customers.customerSetPassword',
-                    {'tnid':M.curTenantID, 'customer_id':this.email.customer_id,
-                        'email_id':this.email.email_id}, 'newpassword=' + encodeURIComponent(np), 
-                    function(rsp) {
-                        if( rsp.stat != 'ok' ) {    
-                            M.api.err(rsp);
-                            return false;
-                        }
-                        M.alert("Password has been set");
-                    });
-            }
-        }
+        });
     };
 
     this.deleteEmail = function(customerID, emailID) {
