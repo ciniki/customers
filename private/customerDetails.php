@@ -63,7 +63,9 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
     //
     // Get the customer details and emails
     //
-    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, permalink, callsign, prefix, first, middle, last, suffix, "
+    $strsql = "SELECT ciniki_customers.id, "
+        . "ciniki_customers.uuid, "
+        . "eid, parent_id, type, permalink, callsign, prefix, first, middle, last, suffix, "
         . "display_name, sort_name, display_name_format, company, department, title, "
         . "status, member_status, member_status AS member_status_display, "
         . "member_lastpaid, member_lastpaid AS member_lastpaid_display, "
@@ -72,14 +74,18 @@ function ciniki_customers__customerDetails($ciniki, $tnid, $customer_id, $args) 
         . "phone_home, phone_work, phone_cell, phone_fax, "
         . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS birthdate, "
+        . "stripe_customer_id, "
         . "notes "
         . "FROM ciniki_customers "
-        . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
+        . "LEFT JOIN ciniki_customer_emails ON ("
+            . "ciniki_customers.id = ciniki_customer_emails.customer_id "
+            . "AND ciniki_customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' ";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'eid', 'parent_id', 'type', 'permalink',
+            'fields'=>array('id', 'uuid', 'eid', 'parent_id', 'stripe_customer_id', 'type', 'permalink',
                 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'display_name_format', 
                 'status', 'member_status', 'member_status_display', 
                 'member_lastpaid', 'member_lastpaid_display', 'member_expires', 'member_expires_display',

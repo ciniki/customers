@@ -221,6 +221,7 @@ create table ciniki_customers (
     sales_total_prev varchar(50) not null,
     discount_percent decimal(19,4) not null,
     start_date datetime not null,
+    stripe_customer_id varchar(100) not null,
     webflags tinyint unsigned not null,
     permalink varchar(250) not null,
     primary_image_id int not null,
