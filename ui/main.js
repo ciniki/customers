@@ -773,6 +773,10 @@ function ciniki_customers_main() {
         if( (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
             this.data.details['customer_tags'] = {'label':'Tags', 'value':(rsp.customer.customer_tags!=null?rsp.customer.customer_tags.replace(/::/g,', '):'')};
         }
+        // Stripe Customer Id
+        if( M.modFlagOn('ciniki.sapos', 0x800000) && rsp.customer.stripe_customer_id != '' ) {
+            this.data.details['stripe_customer_id'] = {'label':'Stripe #', 'value':rsp.customer.stripe_customer_id};
+        }
 
         this.data.account = {};
         //

@@ -112,6 +112,7 @@ function ciniki_customers_getModuleData($ciniki) {
         . "connection, language, "
         . "tax_number, tax_location_id, "
         . "discount_percent, start_date, webflags, "
+        . "stripe_customer_id, "
         . "notes "
         . "FROM ciniki_customers "
         . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -136,7 +137,7 @@ function ciniki_customers_getModuleData($ciniki) {
                 'distributor_status', 'distributor_status_text',
                 'company', 'department', 'title', 
                 'notes', 'birthdate', 'connection', 'language', 'tax_number', 'tax_location_id',
-                'discount_percent', 'start_date', 'webflags'),
+                'discount_percent', 'start_date', 'webflags', 'stripe_customer_id',),
             'maps'=>array('status_text'=>$maps['customer']['status'],
                 'member_status_text'=>$maps['customer']['member_status'],
                 'dealer_status_text'=>$maps['customer']['dealer_status'],
