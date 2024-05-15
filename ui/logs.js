@@ -49,7 +49,6 @@ function ciniki_customers_logs() {
         }
     };
     this.menu.rowClass = function(s, i, d) {
-        console.log(d);
         switch(d.status) {
             case '10': return 'statusgreen';
             case '30': return 'statusorange';
