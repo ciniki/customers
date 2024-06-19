@@ -679,6 +679,7 @@ function ciniki_customers_edit() {
         p.refreshSection('_tabs');
         p.showHideSection('simplephone');
         p.showHideSection('phones');
+        p.showHideSection('_phone');
         p.showHideSection('email');
         p.showHideSection('emails');
         p.showHideSection('address');
@@ -1601,7 +1602,17 @@ function ciniki_customers_edit() {
                     M.ciniki_customers_edit.showEditSubscriptions(cb);
                 });
         } else {
-            this.edit.data = {'status':'10', 'type':'1', 'flags':1, 'address_flags':7, 'phone_label_1':'Home', 'phone_label_2':'Work', 'phone_label_3':'Cell'};
+            this.edit.data = {
+                'status':'10', 
+                'type':'1', 
+                'flags':1, 
+                'address_flags':7, 
+                'phone_label_1':'Home', 
+                'phone_label_2':'Work', 
+                'phone_label_3':'Cell',
+                'primary_image_id':0,
+                'intro_image_id':0,
+            };
             if( (M.curTenant.modules['ciniki.customers'].flags&0x200000) > 0 ) {
                 this.edit.forms.person.parent.active = 'yes';
 //                this.edit.forms.business.parent.active = 'yes';
@@ -1879,6 +1890,7 @@ function ciniki_customers_edit() {
             if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
             if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
             c += 'type=' + type + '&';
+            console.log(c);
             M.api.postJSONCb('ciniki.customers.add', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);

@@ -163,7 +163,6 @@ function ciniki_customers_add(&$ciniki) {
     }   
     $args = $rc['args'];
 
-
     if( isset($args['intro_image_id']) && $args['intro_image_id'] == 'undefined' ) {
         unset($args['intro_image_id']);
     }
