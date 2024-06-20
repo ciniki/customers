@@ -200,10 +200,10 @@ function ciniki_customers_edit() {
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'subscriptions' ? 'yes' : 'hidden'); },
             'fields':{},
             },
-        '_image':{'label':'Website Details', 'type':'imageform', 
+        '_image':{'label':'Website Details', 'type':'simpleform', 
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
             'fields':{
-                'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'primary_image_id':{'label':'Profile Photo', 'type':'image_id', 'hidelabel':'no', 'controls':'all', 'history':'no',
                     'addDropImage':function(iid) {
                         M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', iid, null, null);
                         return true;
@@ -214,16 +214,16 @@ function ciniki_customers_edit() {
                             return true;
                         },
                     },
-            }},
-        '_image_caption':{'label':'', 'active':'no', 
-            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-            'fields':{
+//            }},
+//        '_image_caption':{'label':'', 'active':'no', 
+//            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+//            'fields':{
                 'primary_image_caption':{'label':'Caption', 'type':'text'},
             }},
-        '_image_intro':{'label':'Intro Image', 'type':'imageform', 
+        '_image_intro':{'label':'Intro Image', 'type':'simpleform', 
             'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
             'fields':{
-                'intro_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'intro_image_id':{'label':'Intro Photo', 'type':'image_id', 'hidelabel':'no', 'controls':'all', 'history':'no',
                     'addDropImage':function(iid) {
                         M.ciniki_customers_edit.edit.setFieldValue('intro_image_id', iid, null, null);
                         return true;
@@ -234,10 +234,10 @@ function ciniki_customers_edit() {
                             return true;
                         },
                     },
-            }},
-        '_image_intro_caption':{'label':'', 'active':'no', 
-            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
-            'fields':{
+//            }},
+//        '_image_intro_caption':{'label':'', 'active':'no', 
+//            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
+//            'fields':{
                 'intro_image_caption':{'label':'Caption', 'type':'text'},
             }},
         '_short_bio':{'label':'Synopsis', 'active':'no', 
@@ -426,7 +426,7 @@ function ciniki_customers_edit() {
         '_image':{'label':'Website Details', 'type':'imageform', 
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
             'fields':{
-                'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'primary_image_id':{'label':'Profile Photo', 'type':'image_id', 'hidelabel':'no', 'controls':'all', 'history':'no',
                     'addDropImage':function(iid) {
                         M.ciniki_customers_edit.edit.setFieldValue('primary_image_id', iid, null, null);
                         return true;
@@ -437,10 +437,10 @@ function ciniki_customers_edit() {
                             return true;
                         },
                     },
-            }},
-        '_image_caption':{'label':'', 'active':'no', 
-            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
-            'fields':{
+//            }},
+//        '_image_caption':{'label':'', 'active':'no', 
+//            'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'); },
+//            'fields':{
                 'primary_image_caption':{'label':'Caption', 'type':'text'},
             }},
         '_image_intro':{'label':'Intro Image', 'type':'imageform', 
@@ -457,10 +457,10 @@ function ciniki_customers_edit() {
                             return true;
                         },
                     },
-            }},
-        '_image_intro_caption':{'label':'', 'active':'no', 
-            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
-            'fields':{
+//            }},
+//        '_image_intro_caption':{'label':'', 'active':'no', 
+//            'visible':function() { return ((M.modSetting('ciniki.customers', 'intro-photo') == 'yes' && M.ciniki_customers_edit.edit.sections._tabs.selected == 'website') ? 'yes' : 'hidden'); },
+//            'fields':{
                 'intro_image_caption':{'label':'Caption', 'type':'text'},
             }},
         '_short_bio':{'label':'Synopsis', 'active':'no', 
@@ -687,9 +687,9 @@ function ciniki_customers_edit() {
         p.showHideSection('links');
         p.showHideSection('subscriptions');
         p.showHideSection('_image');
-        p.showHideSection('_image_caption');
+//        p.showHideSection('_image_caption');
         p.showHideSection('_image_intro');
-        p.showHideSection('_image_intro_caption');
+//        p.showHideSection('_image_intro_caption');
         p.showHideSection('_short_bio');
         p.showHideSection('_full_bio');
         p.showHideSection('images');
@@ -1018,10 +1018,10 @@ function ciniki_customers_edit() {
             this.edit.forms.business._phone.fields.phone_flags_3.flags = this.phoneFlags;
             this.edit.forms.person._image.active = 'yes';
             this.edit.forms.business._image.active = 'yes';
-            this.edit.forms.person._image_caption.active = 'yes';
-            this.edit.forms.business._image_caption.active = 'yes';
-            this.edit.forms.person._image_intro_caption.active = 'yes';
-            this.edit.forms.business._image_intro_caption.active = 'yes';
+//            this.edit.forms.person._image_caption.active = 'yes';
+//            this.edit.forms.business._image_caption.active = 'yes';
+//            this.edit.forms.person._image_intro_caption.active = 'yes';
+//            this.edit.forms.business._image_intro_caption.active = 'yes';
             this.edit.forms.person.distributor.active = 'yes';
             this.edit.forms.business.distributor.active = 'yes';
             this.edit.forms.person._short_bio.active = 'yes';
@@ -1052,8 +1052,8 @@ function ciniki_customers_edit() {
             this.edit.forms.business._phone.fields.phone_flags_3.active = 'no'
             this.edit.forms.person._image.active = 'no';
             this.edit.forms.business._image.active = 'no';
-            this.edit.forms.person._image_caption.active = 'no';
-            this.edit.forms.business._image_caption.active = 'no';
+//            this.edit.forms.person._image_caption.active = 'no';
+//            this.edit.forms.business._image_caption.active = 'no';
             this.edit.forms.person.distributor.active = 'no';
             this.edit.forms.business.distributor.active = 'no';
             this.edit.forms.person._short_bio.active = 'no';
