@@ -1890,7 +1890,6 @@ function ciniki_customers_edit() {
             if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
             if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
             c += 'type=' + type + '&';
-            console.log(c);
             M.api.postJSONCb('ciniki.customers.add', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
