@@ -60,7 +60,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
     // Get the customer details and emails
     //
     $strsql = "SELECT ciniki_customers.id, ciniki_customers.uuid, eid, type, prefix, first, middle, last, suffix, "
-        . "display_name, company, department, title, "
+        . "display_name, sort_name, permalink, company, department, title, "
         . "phone_home, phone_cell, phone_work, phone_fax, "
         . "primary_email, alternate_email, "
         . (isset($args['full_bio']) && $args['full_bio'] == 'yes' ? "full_bio, " : '')
@@ -79,7 +79,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
         . "";
-    $fields = array('id', 'uuid', 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name',
+    $fields = array('id', 'uuid', 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'permalink',
         'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
         'primary_email', 'alternate_email',
         'status', 'dealer_status', 'distributor_status',

@@ -298,6 +298,20 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             $update_args['company'] = $_POST['f-company'];
         }
     }
+    if( count($update_args) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerUpdateName');
+        $rc = ciniki_customers_customerUpdateName($ciniki, $tnid, $customer, $customer['id'], $update_args);
+        if( isset($rc['display_name']) && $rc['display_name'] != $customer['display_name'] ) {
+            $update_args['display_name'] = $rc['display_name'];
+        }
+        if( isset($rc['sort_name']) && $rc['sort_name'] != $customer['sort_name'] ) {
+            $update_args['sort_name'] = $rc['sort_name'];
+        }
+        if( isset($rc['permalink']) && $rc['permalink'] != $customer['permalink'] ) {
+            $update_args['permalink'] = $rc['permalink'];
+        }
+    }
+
     //
     // Setup the phone fields
     //
