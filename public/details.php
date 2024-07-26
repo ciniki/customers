@@ -23,6 +23,7 @@ function ciniki_customers_details($ciniki) {
         'emails'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Emails'),
         'addresses'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Addresses'),
         'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Subscriptions'),
+        'membership'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Membership'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
