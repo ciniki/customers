@@ -66,6 +66,18 @@ function ciniki_customers_edit() {
             'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
             'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
             'language':{'label':'Language', 'active':'no', 'type':'text'},
+            'other1':{'label':'', 'visible':'no', 'type':'text'},
+            'other2':{'label':'', 'visible':'no', 'type':'text'},
+            'other3':{'label':'', 'visible':'no', 'type':'text'},
+            'other4':{'label':'', 'visible':'no', 'type':'text'},
+            'other5':{'label':'', 'visible':'no', 'type':'text'},
+            'other6':{'label':'', 'visible':'no', 'type':'text'},
+            'other7':{'label':'', 'visible':'no', 'type':'text'},
+            'other8':{'label':'', 'visible':'no', 'type':'text'},
+            'other9':{'label':'', 'visible':'no', 'type':'text'},
+            'other10':{'label':'', 'visible':'no', 'type':'text'},
+            'other11':{'label':'', 'visible':'no', 'type':'text'},
+            'other12':{'label':'', 'visible':'no', 'type':'text'},
         }},
         'account':{'label':'', 'aside':'yes', 'fields':{
             'tax_number':{'label':'Tax Number', 'active':'no', 'type':'text'},
@@ -298,6 +310,18 @@ function ciniki_customers_edit() {
             'title':{'label':'Title', 'type':'text'},
             'birthdate':{'label':'Birthday', 'active':'no', 'type':'date'},
             'language':{'label':'Language', 'active':'no', 'type':'text'},
+            'other1':{'label':'', 'visible':'no', 'type':'text'},
+            'other2':{'label':'', 'visible':'no', 'type':'text'},
+            'other3':{'label':'', 'visible':'no', 'type':'text'},
+            'other4':{'label':'', 'visible':'no', 'type':'text'},
+            'other5':{'label':'', 'visible':'no', 'type':'text'},
+            'other6':{'label':'', 'visible':'no', 'type':'text'},
+            'other7':{'label':'', 'visible':'no', 'type':'text'},
+            'other8':{'label':'', 'visible':'no', 'type':'text'},
+            'other9':{'label':'', 'visible':'no', 'type':'text'},
+            'other10':{'label':'', 'visible':'no', 'type':'text'},
+            'other11':{'label':'', 'visible':'no', 'type':'text'},
+            'other12':{'label':'', 'visible':'no', 'type':'text'},
             }},
         '_connection':{'label':'How did you hear about us?', 'aside':'yes', 'active':'no', 'fields':{
             'connection':{'label':'', 'hidelabel':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
@@ -981,6 +1005,19 @@ function ciniki_customers_edit() {
             this.edit.forms.business.business.fields.status.label = 'Status';
             this.edit.forms.person.membership.fields.member_status.label = 'Member Status';
             this.edit.forms.business.membership.fields.member_status.label = 'Member Status';
+        }
+
+      
+        for(var i = 1;i <= 12; i++) {
+            if( settings['other-'+i+'-label'] != null && settings['other-'+i+'-label'] != '' ) {
+                this.edit.forms.person.name.fields['other'+i].label = settings['other-'+i+'-label'];
+                this.edit.forms.person.name.fields['other'+i].visible = 'yes';
+                this.edit.forms.business.name.fields['other'+i].label = settings['other-'+i+'-label'];
+                this.edit.forms.business.name.fields['other'+i].visible = 'yes';
+            } else {
+                this.edit.forms.person.name.fields['other'+i].visible = 'no';
+                this.edit.forms.business.name.fields['other'+i].visible = 'no';
+            }
         }
 
         if( (M.curTenant.modules['ciniki.customers'].flags&0x0112) > 0 ) {

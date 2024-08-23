@@ -69,6 +69,18 @@ function ciniki_customers_update(&$ciniki) {
         'member_subcategories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Member Subcategories'),
         'dealer_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Dealer Categories'),
         'distributor_categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Distributor Categories'),
+        'other1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 1'), 
+        'other2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 2'), 
+        'other3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 3'), 
+        'other4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 4'), 
+        'other5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 5'), 
+        'other6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 6'), 
+        'other7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 7'), 
+        'other8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 8'), 
+        'other9'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 9'), 
+        'other10'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 10'), 
+        'other11'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 11'), 
+        'other12'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 12'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

@@ -1,0 +1,13 @@
+ALTER TABLE ciniki_customers ADD COLUMN other1 varchar(250) not null AFTER full_bio;
+ALTER TABLE ciniki_customers ADD COLUMN other2 varchar(250) not null AFTER other1;
+ALTER TABLE ciniki_customers ADD COLUMN other3 varchar(250) not null AFTER other2;
+ALTER TABLE ciniki_customers ADD COLUMN other4 varchar(250) not null AFTER other3;
+ALTER TABLE ciniki_customers ADD COLUMN other5 varchar(250) not null AFTER other4;
+ALTER TABLE ciniki_customers ADD COLUMN other6 varchar(250) not null AFTER other5;
+ALTER TABLE ciniki_customers ADD COLUMN other7 varchar(250) not null AFTER other6;
+ALTER TABLE ciniki_customers ADD COLUMN other8 varchar(250) not null AFTER other7;
+ALTER TABLE ciniki_customers ADD COLUMN other9 varchar(250) not null AFTER other8;
+ALTER TABLE ciniki_customers ADD COLUMN other10 varchar(250) not null AFTER other9;
+ALTER TABLE ciniki_customers ADD COLUMN other11 varchar(250) not null AFTER other10;
+ALTER TABLE ciniki_customers ADD COLUMN other12 varchar(250) not null AFTER other11;
+ALTER TABLE ciniki_customers COMMENT='v1.29';

@@ -104,7 +104,19 @@ function ciniki_customers_getFull($ciniki) {
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
         . "connection, language, "
         . "tax_number, tax_location_id, discount_percent, start_date, "
-        . "notes, primary_image_id, primary_image_caption, intro_image_id, intro_image_caption, webflags, short_bio, full_bio "
+        . "notes, primary_image_id, primary_image_caption, intro_image_id, intro_image_caption, webflags, short_bio, full_bio, "
+        . "other1, "
+        . "other2, "
+        . "other3, "
+        . "other4, "
+        . "other5, "
+        . "other6, "
+        . "other7, "
+        . "other8, "
+        . "other9, "
+        . "other10, "
+        . "other11, "
+        . "other12 "
         . "FROM ciniki_customers "
 //      . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
         . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -120,7 +132,9 @@ function ciniki_customers_getFull($ciniki) {
                 'display_name', 'display_name_format', 'company', 'department', 'title', 
                 'tax_number', 'tax_location_id', 
                 'discount_percent', 'start_date', 
-                'notes', 'primary_image_id', 'primary_image_caption', 'intro_image_id', 'intro_image_caption', 'short_bio', 'full_bio', 'birthdate', 'connection', 'language'),
+                'notes', 'primary_image_id', 'primary_image_caption', 'intro_image_id', 'intro_image_caption', 'short_bio', 'full_bio', 'birthdate', 'connection', 'language',
+                'other1', 'other2', 'other3', 'other4', 'other5', 'other6', 'other7', 'other8', 'other9', 'other10', 'other11', 'other12',
+                ),
             'utctotz'=>array(
                 'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),

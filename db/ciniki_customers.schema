@@ -231,6 +231,18 @@ create table ciniki_customers (
     short_bio varchar(1000) not null,
     short_description varchar(2000) not null,
     full_bio text not null,
+    other1 varchar(250) not null,
+    other2 varchar(250) not null,
+    other3 varchar(250) not null,
+    other4 varchar(250) not null,
+    other5 varchar(250) not null,
+    other6 varchar(250) not null,
+    other7 varchar(250) not null,
+    other8 varchar(250) not null,
+    other9 varchar(250) not null,
+    other10 varchar(250) not null,
+    other11 varchar(250) not null,
+    other12 varchar(250) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -239,4 +251,4 @@ create table ciniki_customers (
     index (company),
     index (eid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.28';
+) ENGINE='InnoDB', COMMENT='v1.29';

@@ -767,6 +767,18 @@ function ciniki_customers_main() {
                 this.data.details['link-'+i] = {'label':'Website', 'value':(rsp.customer.links[i].link.name!=''?rsp.customer.links[i].link.name + ' <span class="subdue">' + url + '</span>':url)};
             }
         }
+        for(var i = 1; i <= 12; i++) {
+            if( M.curTenant.modules['ciniki.customers'].settings['other-'+i+'-label'] != null
+                && M.curTenant.modules['ciniki.customers'].settings['other-'+i+'-label'] != ''
+                && rsp.customer['other'+1] != null
+                && rsp.customer['other'+1] != ''
+                ) {
+                this.data.details['other'+i] = {
+                    'label':M.curTenant.modules['ciniki.customers'].settings['other-'+i+'-label'],
+                    'value':rsp.customer['other'+i],
+                    };
+            }
+        }
         if( (M.curTenant.modules['ciniki.customers'].flags&0x400000) > 0 ) {
             this.data.details['customer_categories'] = {'label':'Categories', 'value':(rsp.customer.customer_categories!=null?rsp.customer.customer_categories.replace(/::/g,', '):'')};
         }
