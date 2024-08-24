@@ -31,6 +31,18 @@ function ciniki_customers_download() {
             'department':{'label':'Department', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'title':{'label':'Title', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
             'birthdate':{'label':'Birthdate', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
+            'other1':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other2':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other3':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other4':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other5':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other6':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other7':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other8':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other9':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other10':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other11':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
+            'other12':{'label':'', 'type':'toggle', 'visible':'no', 'default':'no', 'toggles':this.toggleOptions},
             'visible':{'label':'Web Visible', 'type':'toggle', 'default':'no', 'toggles':this.toggleOptions},
         }},
         '_members':{'label':'', 'aside':'yes', 'fields':{
@@ -101,6 +113,18 @@ function ciniki_customers_download() {
         if( appContainer == null ) {
             M.alert('App Error');
             return false;
+        }
+
+    console.log(M.curTenant.modules['ciniki.customers']);
+        for(var i = 1; i <= 12; i++) {
+            if( M.curTenant.modules['ciniki.customers'].settings['other-'+i+'-label'] != null
+                && M.curTenant.modules['ciniki.customers'].settings['other-'+i+'-label'] != ''
+                ) {
+                this.exportlist.sections.options.fields['other'+i].label = M.curTenant.modules['ciniki.customers'].settings['other-'+i+'-label'];
+                this.exportlist.sections.options.fields['other'+i].visible = 'yes';
+            } else {
+                this.exportlist.sections.options.fields['other'+i].visible = 'no';
+            }
         }
 
         var slabel = 'Customer';

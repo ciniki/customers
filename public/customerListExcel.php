@@ -45,6 +45,16 @@ function ciniki_customers_customerListExcel(&$ciniki) {
     $modules = $rc['modules'];
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $args['tnid'], 'ciniki.customers', 'settings', '');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.556', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    $settings = isset($rc['settings']) ? $rc['settings'] : array();
+    
+    //
     // Load maps
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
@@ -420,6 +430,18 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.tax_number, "
             . "ciniki_customers.tax_location_id, "
             . "ciniki_customers.start_date, "
+            . "ciniki_customers.other1, "
+            . "ciniki_customers.other2, "
+            . "ciniki_customers.other3, "
+            . "ciniki_customers.other4, "
+            . "ciniki_customers.other5, "
+            . "ciniki_customers.other6, "
+            . "ciniki_customers.other7, "
+            . "ciniki_customers.other8, "
+            . "ciniki_customers.other9, "
+            . "ciniki_customers.other10, "
+            . "ciniki_customers.other11, "
+            . "ciniki_customers.other12, "
             . "'' AS member_categories, "
             . "'' AS phones, "
             . "'' AS addresses, "
@@ -453,6 +475,18 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.tax_number, "
             . "ciniki_customers.tax_location_id, "
             . "ciniki_customers.start_date, "
+            . "ciniki_customers.other1, "
+            . "ciniki_customers.other2, "
+            . "ciniki_customers.other3, "
+            . "ciniki_customers.other4, "
+            . "ciniki_customers.other5, "
+            . "ciniki_customers.other6, "
+            . "ciniki_customers.other7, "
+            . "ciniki_customers.other8, "
+            . "ciniki_customers.other9, "
+            . "ciniki_customers.other10, "
+            . "ciniki_customers.other11, "
+            . "ciniki_customers.other12, "
             . "'' AS member_categories, "
             . "'' AS phones, "
             . "'' AS addresses, "
@@ -489,6 +523,18 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             . "ciniki_customers.tax_number, "
             . "ciniki_customers.tax_location_id, "
             . "ciniki_customers.start_date, "
+            . "ciniki_customers.other1, "
+            . "ciniki_customers.other2, "
+            . "ciniki_customers.other3, "
+            . "ciniki_customers.other4, "
+            . "ciniki_customers.other5, "
+            . "ciniki_customers.other6, "
+            . "ciniki_customers.other7, "
+            . "ciniki_customers.other8, "
+            . "ciniki_customers.other9, "
+            . "ciniki_customers.other10, "
+            . "ciniki_customers.other11, "
+            . "ciniki_customers.other12, "
             . "'' AS member_categories, "
             . "'' AS phones, "
             . "'' AS addresses, "
@@ -528,6 +574,7 @@ function ciniki_customers_customerListExcel(&$ciniki) {
                 'connection', 'language', 'tax_number', 'tax_location_id', 
                 'start_date',
                 'phones', 'emails', 'addresses', 'links',
+                'other1', 'other2', 'other3', 'other4', 'other5', 'other6', 'other7', 'other8', 'other9', 'other10', 'other11', 'other12',
                 'primary_image', 'primary_image_caption', 'short_description', 'full_bio'),
             'maps'=>array(
                 'type'=>array('1'=>'Individual', '2'=>'Business'),
@@ -654,6 +701,11 @@ function ciniki_customers_customerListExcel(&$ciniki) {
             }
         } 
         else {
+            if( preg_match("/other([0-9]+)/", $column, $m) ) {
+                if( isset($settings['other-' . $m[1] . '-label']) && $settings['other-' . $m[1] . '-label'] != '' ) {
+                    $value = $settings['other-' . $m[1] . '-label'];
+                }
+            }
             if( preg_match("/^season-([0-9]+)$/", $column, $matches) ) {
                 if( isset($seasons[$matches[1]]) ) {
                     $value = $seasons[$matches[1]]['name'] . ' Status';

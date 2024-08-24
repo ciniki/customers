@@ -37,6 +37,16 @@ function ciniki_customers_customerListExcelOptions($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
 
+/*    //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_customer_settings', 'tnid', $args['tnid'], 'ciniki.customers', 'settings', '');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.557', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    $rsp['settings'] = isset($rc['settings']) ? $rc['settings'] : array();
+ */   
     //
     // Check if subscriptions module enabled
     //
