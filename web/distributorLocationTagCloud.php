@@ -17,18 +17,6 @@
 //
 function ciniki_customers_web_distributorLocationTagCloud($ciniki, $settings, $tnid, $args) {
 
-    //
-    // Load the tenant settings
-    //
-//  ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
-//  $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
-//  if( $rc['stat'] != 'ok' ) {
-//      return $rc;
-//  }
-//  $intl_timezone = $rc['settings']['intl-default-timezone'];
-//  $intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
-//  $intl_currency = $rc['settings']['intl-default-currency'];
-
     $rsp = array('stat'=>'ok');
     
     //
