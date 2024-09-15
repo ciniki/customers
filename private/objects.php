@@ -20,8 +20,8 @@ function ciniki_customers_objects($ciniki) {
             'status'=>array('default'=>'10'),
             'type'=>array('default'=>'1'),
             'member_status'=>array('default'=>'0'),
-            'member_lastpaid'=>array('default'=>''),
-            'member_expires'=>array('default'=>''),
+            'member_lastpaid'=>array('default'=>'0000-00-00 00:00:00'),
+            'member_expires'=>array('default'=>'0000-00-00 00:00:00'),
             'membership_length'=>array('default'=>'0'),
             'membership_type'=>array('default'=>'0'),
             'dealer_status'=>array('default'=>'0'),
@@ -43,7 +43,7 @@ function ciniki_customers_objects($ciniki) {
             'phone_cell'=>array('default'=>''),
             'phone_fax'=>array('default'=>''),
             'notes'=>array('default'=>''),
-            'birthdate'=>array('name'=>'Birthdate', 'default'=>''),
+            'birthdate'=>array('name'=>'Birthdate', 'default'=>'0000-00-00 00:00:00'),
             'connection'=>array('name'=>'Connection', 'default'=>''),
             'language'=>array('name'=>'Preferred Language', 'default'=>''),
             'pricepoint_id'=>array('ref'=>'ciniki.customers.pricepoint', 'default'=>'0'), //deprecated
@@ -54,7 +54,7 @@ function ciniki_customers_objects($ciniki) {
             'sales_total'=>array('default'=>''), //deprecated
             'sales_total_prev'=>array('default'=>''), //deprecated
             'discount_percent'=>array('default'=>'0'),
-            'start_date'=>array('default'=>''),
+            'start_date'=>array('default'=>'0000-00-00'),
             'stripe_customer_id'=>array('name'=>'Stripe Customer ID', 'default'=>''),
             'webflags'=>array('default'=>'0'),
             'permalink'=>array('default'=>''),
@@ -167,10 +167,10 @@ function ciniki_customers_objects($ciniki) {
         'name'=>'Customer Tag',
         'table'=>'ciniki_customer_tags',
         'fields'=>array(
-            'customer_id'=>array('ref'=>'ciniki.customers.customer'),
-            'tag_type'=>array(),
-            'tag_name'=>array(),
-            'permalink'=>array(),
+            'customer_id'=>array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'tag_type'=>array('name'=>'Tag Type',),
+            'tag_name'=>array('name'=>'Tag'),
+            'permalink'=>array('name'=>'Permalink'),
             ),
         'history_table'=>'ciniki_customer_history',
         );

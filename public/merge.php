@@ -548,7 +548,7 @@ function ciniki_customers_merge($ciniki) {
         $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.customers.tag', $item['id'], array(
             'customer_id' => $args['primary_customer_id'],
             ), 0x04);
-        if( $rc['stat'] != 'ok' ) {
+        if( $rc['stat'] != 'ok' && $rc['stat'] != 'exists' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.115', 'msg'=>'', 'err'=>$rc['err']));
         }

@@ -248,6 +248,31 @@ function ciniki_customers_delete(&$ciniki) {
     }
 
     //
+    // Delete any tags
+    //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_customer_tags "
+        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+        return $rc;
+    }
+    if( isset($rc['rows']) ) {
+        $items = $rc['rows'];
+        foreach($items as $item) {
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.tag',
+                $item['id'], $item['uuid'], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+                return $rc;
+            }
+        }
+    }
+
+    //
     // Delete the customer
     //
     $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.customer',
