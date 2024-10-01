@@ -342,7 +342,7 @@ function ciniki_customers_templates_fullpage($ciniki, $tnid, $categories, $args,
     //
     $page_num = 1;
     $pdf->toc_categories = 'no';
-    if( count($categories) > 1 ) {
+    if( isset($categories) && is_array($categories) && count($categories) > 1 ) {
         $pdf->toc_categories = 'yes';
     }
     if( isset($args['toc']) && $args['toc'] == 'yes' ) {

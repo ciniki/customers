@@ -165,6 +165,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
     // Merge with members
     //
 //  foreach($categories as $cid => $category) {
+    if( isset($members) && is_array($members) ) {
         foreach($members as $mid => $member) {
             $members[$mid]['title'] = $member['last'] . (($member['first'].$member['last'])!=''?', ':'') . $member['first'];
             if( $member['company'] != '' ) {
@@ -180,6 +181,7 @@ function ciniki_customers_memberPDFContactInfo(&$ciniki) {
                 $members[$mid]['links'] = $links[$mid]['links'];
             }
         }
+    }
 //  }
 
     //

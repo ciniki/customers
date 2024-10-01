@@ -194,19 +194,21 @@ function ciniki_customers_memberPDFDirectory(&$ciniki) {
     //
     // Merge with members
     //
-    foreach($categories as $cid => $category) {
-        foreach($category['members'] as $mid => $member) {
-            if( isset($addresses[$mid]) ) {
-                $categories[$cid]['members'][$mid]['addresses'] = $addresses[$mid]['addresses'];
-            }
-            if( isset($phones[$mid]) ) {
-                $categories[$cid]['members'][$mid]['phones'] = $phones[$mid]['phones'];
-            }
-            if( isset($emails[$mid]) ) {
-                $categories[$cid]['members'][$mid]['emails'] = $emails[$mid]['emails'];
-            }
-            if( isset($links[$mid]) ) {
-                $categories[$cid]['members'][$mid]['links'] = $links[$mid]['links'];
+    if( isset($categories) && is_array($categories) ) {
+        foreach($categories as $cid => $category) {
+            foreach($category['members'] as $mid => $member) {
+                if( isset($addresses[$mid]) ) {
+                    $categories[$cid]['members'][$mid]['addresses'] = $addresses[$mid]['addresses'];
+                }
+                if( isset($phones[$mid]) ) {
+                    $categories[$cid]['members'][$mid]['phones'] = $phones[$mid]['phones'];
+                }
+                if( isset($emails[$mid]) ) {
+                    $categories[$cid]['members'][$mid]['emails'] = $emails[$mid]['emails'];
+                }
+                if( isset($links[$mid]) ) {
+                    $categories[$cid]['members'][$mid]['links'] = $links[$mid]['links'];
+                }
             }
         }
     }

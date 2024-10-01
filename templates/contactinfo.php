@@ -392,6 +392,7 @@ function ciniki_customers_templates_contactinfo($ciniki, $tnid, $members, $args,
 //          $pdf->fresh_page = 'yes';       // Reset
 //      }
 //      
+    if( isset($members) && is_array($members) ) {
         foreach($members as $mid => $member) {
 //          if( $member_num == 1 ) {
 //              $section_title = $category['name'];
@@ -402,6 +403,7 @@ function ciniki_customers_templates_contactinfo($ciniki, $tnid, $members, $args,
             $pdf->AddMember($member, '');
             $pdf->fresh_page = 'no';
         }
+    }
 //  }
     $pdf->endPage();
 
