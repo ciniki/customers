@@ -24,6 +24,9 @@ function ciniki_customers_membertools() {
             'visible':function() { return M.modFlagSet('ciniki.customers', 0x02000000); },
             'list':{
             }},
+        'cleanup':{'label':'Cleanup', 'list':{
+            'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
+            }},
         'other':{'label':'Tools', 
             'visible':function() {return M.modFlagSet('ciniki.customers', 0x04); },
             'list':{
