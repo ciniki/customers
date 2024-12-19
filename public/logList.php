@@ -36,6 +36,22 @@ function ciniki_customers_logList($ciniki) {
     }
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    
+    //
+    // Load the date format strings for the user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
+    
+    //
     // Load maps
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
@@ -68,6 +84,7 @@ function ciniki_customers_logList($ciniki) {
         array('container'=>'logs', 'fname'=>'id', 
             'fields'=>array('id', 'log_date', 'status', 'status_text', 'ip_address', 'action', 'customer_id', 'email', 
                 'error_code', 'error_msg'),
+            'utctotz'=>array('log_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format)),
             'maps'=>array('status_text'=>$maps['log']['status']),
             ),
         ));
