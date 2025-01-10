@@ -284,7 +284,9 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         }
     }
 
-    if( isset($args['membership']) && $args['membership'] == 'yes' ) {
+    if( isset($args['membership']) && $args['membership'] == 'yes' 
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x02) 
+        ) {
         $details[] = array('label'=>'Member', 'value'=>$customer['member_status_text'], 'type'=>'membership');
         if( isset($customer['member_status']) && $customer['member_status'] > 0 ) {
             $details[] = array('label'=>'Last Paid', 'value'=>$customer['member_lastpaid'], 'type'=>'membership');
