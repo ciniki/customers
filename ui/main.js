@@ -72,6 +72,8 @@ function ciniki_customers_main() {
         'customers':{'label':'Customers', 'num_cols':2, 'type':'simplegrid', 
             'visible':function() {return (M.ciniki_customers_main.menu.list != 'recent' ? 'yes' : 'no'); },
             'headerValues':['Customer', 'Status'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text'],
             'noData':'No customers',
             },
         };
