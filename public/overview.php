@@ -56,6 +56,16 @@ function ciniki_customers_overview($ciniki) {
     }
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'maps');
+    $rc = ciniki_customers_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Get the list of categories if specified
     //
     if( ($modules['ciniki.customers']['flags']&0xC00000) > 0 ) {
@@ -81,12 +91,48 @@ function ciniki_customers_overview($ciniki) {
                 }
             }
         }
+        $strsql = "SELECT COUNT(*) AS num FROM ciniki_customers "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+        $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.customers', 'num');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.558', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+        }
+        $num_items = isset($rc['num']) ? $rc['num'] : '';
+
+        array_unshift($rsp['customer_categories'], ['name'=>'All', 'num_customers'=>$num_items]);
     }
 
-    if( isset($args['category']) && $args['category'] != '' ) {
+    if( isset($args['category']) && $args['category'] == 'All' ) {
         $strsql = "SELECT customers.id, "
             . "customers.display_name, "
             . "customers.status, "
+            . "customers.status AS status_text, "
+            . "customers.type, "
+            . "customers.company, "
+            . "customers.eid "
+            . "FROM ciniki_customers AS customers "
+            . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY display_name "
+            . "";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
+                'fields'=>array('id', 'display_name', 'status', 'status_text', 'type', 'company', 'eid'),
+                'maps'=>array('status_text'=>$maps['customer']['status']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['customers']) ) { 
+            $rsp['customers'] = $rc['customers'];
+        }
+    } elseif( isset($args['category']) && $args['category'] != '' ) {
+        $strsql = "SELECT customers.id, "
+            . "customers.display_name, "
+            . "customers.status, "
+            . "customers.status AS status_text, "
             . "customers.type, "
             . "customers.company, "
             . "customers.eid "
@@ -98,10 +144,13 @@ function ciniki_customers_overview($ciniki) {
             . "WHERE tags.tag_type = 10 "
             . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
             . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY display_name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
             array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-                'fields'=>array('id', 'display_name', 'status', 'type', 'company', 'eid')),
+                'fields'=>array('id', 'display_name', 'status', 'status_text', 'type', 'company', 'eid'),
+                'maps'=>array('status_text'=>$maps['customer']['status']),
+                ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

@@ -136,6 +136,12 @@ function ciniki_customers_main() {
             }
         }
     };
+    this.menu.rowClass = function(s, i, d) {
+        if( s == 'customer_categories' && d.name == this.category ) {
+            return 'highlight';
+        }
+        return '';
+    }
     this.menu.rowFn = function(s, i, d) { 
         if( s == 'places' ) {
             return 'M.startApp(\'ciniki.customers.places\',null,\'M.ciniki_customers_main.menu.open();\',\'mc\',{\'country\':\'' + escape(d.place.country) + '\'' + (d.place.province!=null?',\'province\':\'' + escape(d.place.province)+'\'':'') + (d.place.city!=null?',\'city\':\''+escape(d.place.city)+'\'':'') + '});';
