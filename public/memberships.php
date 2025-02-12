@@ -71,6 +71,7 @@ function ciniki_customers_memberships($ciniki) {
         . "ciniki_customers.first, "
         . "ciniki_customers.last, "
         . "ciniki_customers.display_name, "
+        . "ciniki_customers.type, "
         . "ciniki_customers.member_status AS member_status_text, "
         . "ciniki_customers.member_lastpaid, "
         . "ciniki_customers.member_expires, "
@@ -160,7 +161,7 @@ function ciniki_customers_memberships($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customer', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('id', 'first', 'last', 'display_name', 'company', 
+            'fields'=>array('id', 'type', 'first', 'last', 'display_name', 'company', 
                 'member_status_text', 
                 'member_lastpaid', 'member_lastpaid_age', 
                 'member_expires', 'member_expires_age', 

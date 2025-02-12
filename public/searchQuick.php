@@ -77,6 +77,8 @@ function ciniki_customers_searchQuick($ciniki) {
     //
     $strsql = "SELECT DISTINCT c1.id, if(c1.type=20 OR c1.type = 30, '', c1.display_name) AS display_name, "
         . "IFNULL(c2.display_name, if(c1.type=20 OR c1.type = 30, c1.display_name, '')) AS parent_name, "
+        . "c1.first, "
+        . "c1.last, "
         . "c1.parent_id, "
         . "c1.status, "
         . "c1.status AS status_text, "
@@ -167,7 +169,7 @@ function ciniki_customers_searchQuick($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id',
-            'fields'=>array('id', 'eid', 'display_name', 'parent_name', 'status', 'status_text',
+            'fields'=>array('id', 'eid', 'first', 'last', 'display_name', 'parent_name', 'status', 'status_text',
                 'type', 'type_text', 'company', 'member_lastpaid', 'member_expires', 'member_status', 
                 'membership_type', 'membership_type_text', 'membership_length', 'membership_length_text'),
             'maps'=>array('status_text'=>$maps['customer']['status'],
