@@ -723,6 +723,12 @@ function ciniki_customers_edit() {
     this.edit.saveFirst = function(nc) {
         if( this.customer_id == 0 ) {
             var c = this.serializeForm('yes');
+            var unsubs = '';
+            var subs = '';
+            var type = 1;
+            if( this.formtab == 'business' ) {
+                type = 2;
+            }
             if( this.subscriptions != null ) {
                 for(i in this.subscriptions) {
                     var fname = 'subscription_' + this.subscriptions[i].subscription.id;
@@ -740,7 +746,7 @@ function ciniki_customers_edit() {
             if( subs != '' ) { c += 'subscriptions=' + subs + '&'; }
             if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
             c += 'type=' + type + '&';
-            M.api.postJSONCb('ciniki.customer.add', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, c,
+            M.api.postJSONCb('ciniki.customers.add', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, c,
                 function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
