@@ -36,6 +36,14 @@ function ciniki_customers_wng_process(&$ciniki, $tnid, &$request, $section) {
     if( $section['ref'] == 'ciniki.customers.memberships' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'membershipsProcess');
         return ciniki_customers_wng_membershipsProcess($ciniki, $tnid, $request, $section);
+    } 
+    elseif( $section['ref'] == 'ciniki.customers.membersgalleries' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'membersGalleriesProcess');
+        return ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, $request, $section);
+    }
+    elseif( $section['ref'] == 'ciniki.customers.memberlist' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'memberListProcess');
+        return ciniki_customers_wng_memberListProcess($ciniki, $tnid, $request, $section);
     }
 
     return array('stat'=>'ok');

@@ -26,7 +26,7 @@ function ciniki_customers_wng_sections(&$ciniki, $tnid, $args) {
     $sections = array();
 
     //
-    // Image, Menu with no drop downs/submenus
+    // Display membership information
     //
     $sections['ciniki.customers.memberships'] = array(
         'name'=>'Memberships',
@@ -35,6 +35,30 @@ function ciniki_customers_wng_sections(&$ciniki, $tnid, $args) {
             'title' => array('label' => 'Title', 'type' => 'text'),
             ),
         );
+
+    //
+    // Display members photo galleries
+    //
+    $sections['ciniki.customers.membersgalleries'] = array(
+        'name' => 'Member Galleries',
+        'module' => 'Members',
+        'settings' => array(
+            'title' => array('label' => 'Title', 'type' => 'text'),
+            'content' => array('label' => 'Intro', 'type' => 'textarea', 'size' => 'medium'),
+            ),
+        );
+
+    //
+    // Display members only members list
+    //
+/*    $sections['ciniki.customers.memberlist'] = array(
+        'name' => 'Member List',
+        'module' => 'Members Only',
+        'settings' => array(
+            'title' => array('label' => 'Title', 'type' => 'text'),
+            'content' => array('label' => 'Intro', 'type' => 'textarea', 'size' => 'medium'),
+            ),
+        ); */
 
     return array('stat'=>'ok', 'sections'=>$sections);
 }
