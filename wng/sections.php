@@ -51,14 +51,14 @@ function ciniki_customers_wng_sections(&$ciniki, $tnid, $args) {
     //
     // Display members only members list
     //
-/*    $sections['ciniki.customers.memberlist'] = array(
+    $sections['ciniki.customers.memberlist'] = array(
         'name' => 'Member List',
         'module' => 'Members Only',
         'settings' => array(
             'title' => array('label' => 'Title', 'type' => 'text'),
             'content' => array('label' => 'Intro', 'type' => 'textarea', 'size' => 'medium'),
             ),
-        ); */
+        );
 
     return array('stat'=>'ok', 'sections'=>$sections);
 }
