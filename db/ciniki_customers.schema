@@ -53,7 +53,7 @@
 #                    
 #                            0 - Not a member
 #                           10 - Active Member
-#                           60 - Suspended Member
+#                           60 - Inactive Member
 #
 # member_lastpaid:      The UTC date and time of the last membership payment.  This is used to know
 #                       who is behind or not.

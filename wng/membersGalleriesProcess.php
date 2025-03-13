@@ -21,6 +21,8 @@ function ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, &$request,
     //
     $strsql = "SELECT customers.id, "
         . "customers.permalink, "
+        . "customers.last, "
+        . "customers.first, "
         . "customers.display_name, "
         . "customers.primary_image_id, "
         . "customers.full_bio, "
@@ -43,7 +45,7 @@ function ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, &$request,
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('id', 'permalink', 'title'=>'display_name', 'image-id'=>'primary_image_id', 'full_bio'),
+            'fields'=>array('id', 'permalink', 'title'=>'display_name', 'first', 'last', 'image-id'=>'primary_image_id', 'full_bio'),
             ),
         array('container'=>'images', 'fname'=>'image_id', 
             'fields'=>array('image-id'=>'image_id', 'permalink'=>'image_permalink', 'title', 'description'),
@@ -57,9 +59,17 @@ function ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, &$request,
     //
     // Process the members
     //
+    $list_content = '';
     foreach($members as $mid => $member) {
         $members[$mid]['url'] = $request['page']['path'] . '/' . $member['permalink'];
 
+        if( isset($s['list-format']) && $s['list-format'] == 'last-first' ) {
+            $list_content .= ($list_content != '' ? "\n" : '')
+                . "<a href='{$request['ssl_domain_base_url']}{$members[$mid]['url']}'>{$member['last']}, {$member['first']}</a>";
+        } elseif( isset($s['list-format']) && $s['list-format'] == 'first-last' ) {
+            $list_content .= ($list_content != '' ? "\n" : '')
+                . "<a href='{$request['ssl_domain_base_url']}{$members[$mid]['url']}'>{$member['title']}</a>";
+        }
         //
         // Check if member requested
         //
@@ -140,14 +150,26 @@ function ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, &$request,
             );
     }
 
-    $blocks[] = array(
-        'type' => 'imagebuttons',
-        'title-position' => 'below',
-        'base-url' => $request['page']['path'],
-        'items' => $members,
-        );
-
-     
+    if( isset($s['list-format']) && $s['list-format'] == 'last-first' ) {
+        $blocks[] = array(
+            'type' => 'text',
+            'columns' => 'medium',
+            'content' => $list_content,
+            );
+    } elseif( isset($s['list-format']) && $s['list-format'] == 'first-last' ) {
+        $blocks[] = array(
+            'type' => 'text',
+            'columns' => 'medium',
+            'content' => $list_content,
+            );
+    } else {
+        $blocks[] = array(
+            'type' => 'imagebuttons',
+            'title-position' => 'below',
+            'base-url' => $request['page']['path'],
+            'items' => $members,
+            );
+    }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

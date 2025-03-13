@@ -45,6 +45,11 @@ function ciniki_customers_wng_sections(&$ciniki, $tnid, $args) {
         'settings' => array(
             'title' => array('label' => 'Title', 'type' => 'text'),
             'content' => array('label' => 'Intro', 'type' => 'textarea', 'size' => 'medium'),
+            'list-format' => array('label' => 'List Format', 'type'=>'select', 'options'=>array(
+                'imagebuttons' => 'Thumbnails',
+                'last-first' => 'Name List (Last, First)',
+                'first-last' => 'Name List (First, Last)',
+                )),
             ),
         );
 
