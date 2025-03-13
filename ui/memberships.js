@@ -23,6 +23,10 @@ function ciniki_customers_memberships() {
             },
         '_email':{'label':'', 'aside':'yes', 'visible':'no', 'buttons':{
             'email':{'label':'Email List', 'fn':'M.ciniki_customers_memberships.menu.emailShow();'},
+            'expire':{'label':'De-activate Expired Members',
+                'visible':function() { return (M.ciniki_customers_memberships.menu.membertype == -1 ? 'yes' : 'no'); },
+                'fn':'M.ciniki_customers_memberships.menu.deactivateExpiredMembers();',
+                },
             }},
         'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':4, 
             'headerValues':['Name', 'Membership', 'Paid', 'Expires'],
@@ -151,6 +155,18 @@ function ciniki_customers_memberships() {
 //                'object_id':this.offering_id,
                 'removeable':'yes',
             });
+    }
+    this.menu.deactivateExpiredMembers = function() {
+        M.confirm("Are you sure you want to change the member status to inactive for all 'Active Expired' members?",null,function() {
+            M.api.getJSONCb('ciniki.customers.membersExpiredDeactivate', {'tnid':M.curTenantID}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_customers_memberships.menu.open();
+            });
+        });
+        
     }
     this.menu.open = function(cb) {
         var args = {'tnid':M.curTenantID};
