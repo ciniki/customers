@@ -139,14 +139,14 @@ function ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, &$request,
     if( isset($s['content']) && $s['content'] != '' ) {
         $blocks[] = array(
             'type' => 'text',
-            'class' => 'member-galleries',
+            'class' => 'members-galleries',
             'title' => $s['title'],
             'content' => $s['content'],
             );
     } elseif( isset($s['title']) && $s['title'] != '' ) {
         $blocks[] = array(
             'type' => 'title',
-            'class' => 'member-galleries',
+            'class' => 'members-galleries',
             'level' => 1,
             'title' => $s['title'],
             );
