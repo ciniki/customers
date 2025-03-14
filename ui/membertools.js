@@ -35,6 +35,11 @@ function ciniki_customers_membertools() {
                     'fn':'M.ciniki_customers_membertools.tags.open(\'M.ciniki_customers_membertools.menu.open();\',\'40\',\'Member Categories\');',
                     },
             }},
+        'logs':{'label':'Other', 
+            'visible':function() { return M.modOn('ciniki.wng') ? 'yes' : 'no'; },
+            'list':{
+                'logs':{'label':'Web Authentication Logs', 'fn':'M.startApp(\'ciniki.customers.logs\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
+        }},
         };
     this.menu.open = function(cb) {
         this.sections.memberlists.list = {};
