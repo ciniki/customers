@@ -95,11 +95,14 @@ function ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, &$request,
             // Process the images
             //
             $images = [];
-            foreach($member['images'] as $iid => $image) {
-                $image['url'] = $request['page']['path'] . '/' . $member['permalink'] . '/' . $image['permalink'];
-                $image['title-position'] = 'below';
-                $images[$image['permalink']] = $image;
+            if( isset($member['images']) ) {
+                foreach($member['images'] as $iid => $image) {
+                    $image['url'] = $request['page']['path'] . '/' . $member['permalink'] . '/' . $image['permalink'];
+                    $image['title-position'] = 'below';
+                    $images[$image['permalink']] = $image;
+                }
             }
+
             //
             // Check if image selected
             //
