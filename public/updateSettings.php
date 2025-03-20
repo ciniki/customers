@@ -122,6 +122,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
         'ui-colours-customer-status-60',
         'dropbox-customerprofiles',
         'ui-member-subcategories',
+        'members-deactivate-days',
 //      'use-cid',
 //      'use-relationships',
 //      'use-tax-number',

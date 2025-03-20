@@ -43,6 +43,15 @@ function ciniki_customers_cron_jobs(&$ciniki) {
     }
 
     //
+    // Deactivate expire members
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'cron', 'expiredMembersDeactivate');
+    $rc = ciniki_customers_cron_expiredMembersDeactivate($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+
+    //
     // Get the list of tenants that have customers enables and dropbox flag 
     //
     $strsql = "SELECT tnid "

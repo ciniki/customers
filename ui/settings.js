@@ -50,7 +50,11 @@ function ciniki_customers_settings() {
                 'ui-show-places':{'label':'Show Places', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'ui-member-subcategories':{'label':'Member Subcategories', 'type':'toggle', 'default':'no', 
                     'visible':function() { return M.modFlagSet('ciniki.customers', 0x04); },
-                    'toggles':{'no':'No', 'yes':'Yes'}},
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'members-deactivate-days':{'label':'Deactivate Members X Days after Membership Expiry', 'type':'number', 'size':'small',
+                    'visible':function() { return M.modFlagSet('ciniki.customers', 0x0a); },
+                    },
             }},
 /*            
             
