@@ -130,10 +130,10 @@ function ciniki_customers_objects($ciniki) {
         'table'=>'ciniki_customer_links',
         'fields'=>array(
             'customer_id'=>array('ref'=>'ciniki.customers.customer'),
-            'name'=>array(),
-            'url'=>array(),
-            'description'=>array(),
-            'webflags'=>array(),
+            'name'=>array('name'=>'Name'),
+            'url'=>array('name'=>'URL'),
+            'description'=>array('name'=>'Description', 'default'=>''),
+            'webflags'=>array('name'=>'Options', 'default'=>0x01),
             ),
         'history_table'=>'ciniki_customer_history',
         );
