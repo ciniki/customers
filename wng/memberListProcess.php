@@ -214,9 +214,7 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
                 $details .= ($details != '' ? "\n" : '') . "<b>Email</b>: {$email['email']}";
             }
         }
-            error_log(print_r($addresses,true));
         if( isset($addresses[$member['id']]['addresses']) ) {
-            error_log('test');
             foreach($addresses[$member['id']]['addresses'] as $address) {
                 $label = '';
                 $comma = '';
