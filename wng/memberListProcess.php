@@ -52,6 +52,7 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
         . "customers.first, "
         . "customers.display_name, "
         . "IFNULL(DATE_FORMAT(customers.birthdate, '%b %e, %Y'), '') AS birthdate, "
+        . "IFNULL(DATE_FORMAT(customers.start_date, '%b %e, %Y'), '') AS start_date, "
         . "customers.other1, "
         . "customers.other2, "
         . "customers.other3, "
@@ -79,7 +80,8 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('id', 'permalink', 'id-permalink'=>'permalink', 'first', 'last', 'display_name', 'birthdate', 
+            'fields'=>array('id', 'permalink', 'id-permalink'=>'permalink', 'first', 'last', 'display_name', 
+                'birthdate', 'start_date',
                 'other1', 'other2', 'other3', 'other4', 'other5', 'other6', 'other7', 'other8',
                 'other9', 'other10', 'other11', 'other12',
                 ),
@@ -203,6 +205,9 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
 
         if( $member['birthdate'] != '' ) {
             $details .= ($details != '' ? "\n" : '') . "<b>Birthday</b>: {$member['birthdate']}";
+        }
+        if( $member['start_date'] != '' ) {
+            $details .= ($details != '' ? "\n" : '') . "<b>Start Date</b>: {$member['start_date']}";
         }
         if( isset($phones[$member['id']]['phones']) ) {
             foreach($phones[$member['id']]['phones'] as $phone) {
