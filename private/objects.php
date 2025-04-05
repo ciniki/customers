@@ -54,7 +54,7 @@ function ciniki_customers_objects($ciniki) {
             'sales_total'=>array('default'=>''), //deprecated
             'sales_total_prev'=>array('default'=>''), //deprecated
             'discount_percent'=>array('default'=>'0'),
-            'start_date'=>array('default'=>'0000-00-00'),
+            'start_date'=>array('name'=>'Start Date', 'default'=>'0000-00-00'),
             'stripe_customer_id'=>array('name'=>'Stripe Customer ID', 'default'=>''),
             'webflags'=>array('default'=>'0'),
             'permalink'=>array('default'=>''),
