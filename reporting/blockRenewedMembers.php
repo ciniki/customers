@@ -60,13 +60,57 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
         $date_text .= $days . ' day' . ($days > 1 ? 's' : '');
     }
 
-    $start_dt = new DateTime('now', new DateTimezone($intl_timezone));
-    $end_dt = clone $start_dt;
-    if( $days != 0 ) {
-        $end_dt->sub(new DateInterval('P' . $days . 'D'));
+//    $start_dt = new DateTime('now', new DateTimezone($intl_timezone));
+//    $end_dt = clone $start_dt;
+//    if( $days != 0 ) {
+//        $end_dt->sub(new DateInterval('P' . $days . 'D'));
+//    }
+//    if( $months != 0 ) {
+//        $end_dt->sub(new DateInterval('P' . $months . 'M'));
+//    }
+    if( isset($args['start_date']) && $args['start_date'] != '' 
+        && isset($args['end_date']) && $args['end_date'] != '' 
+        ) {
+        $start_dt = new DateTime($args['start_date'] . ' 00:00:00' , new DateTimezone($intl_timezone));
+        $end_dt = new DateTime($args['end_date'] . ' 23:59:59', new DateTimezone($intl_timezone));
+        if( $start_dt > $end_dt ) {
+            $interval = $end_dt->diff($start_dt);
+            $days = $interval->format("%a");
+            $start_dt = clone $end_dt;
+            $start_dt->sub(new DateInterval('P1D'));
+        }
+        elseif( $start_dt < $end_dt ) {
+            $interval = $start_dt->diff($end_dt);
+            $days = $interval->format("%a") + 1;
+            $months = 0;
+        } elseif( $start_dt == $end_dt ) {
+            $days = 1;
+        } else {
+            $days = 1;
+        }
+        $start_dt->setTimezone(new DateTimezone('UTC'));
     }
-    if( $months != 0 ) {
-        $end_dt->sub(new DateInterval('P' . $months . 'M'));
+    elseif( isset($args['start_date']) && $args['start_date'] != '' 
+        && (!isset($args['end_date']) || $args['end_date'] == '') 
+        ) {
+        $start_dt = new DateTime($args['start_date'] . ' 00:00:00' , new DateTimezone($intl_timezone));
+        $start_dt->setTimezone(new DateTimezone('UTC'));
+    }
+    else {
+        $start_dt = new DateTime('now', new DateTimezone($intl_timezone));
+        $start_dt->setTime(0,0,0);
+        if( $months > 0 ) {
+            $start_dt->sub(new DateInterval('P' . $months . 'M'));
+        } elseif( $days > 1 ) {
+            $start_dt->sub(new DateInterval('P' . $days . 'D'));
+        }
+        $start_dt->setTimezone(new DateTimezone('UTC'));
+    }
+    $end_dt = clone $start_dt;
+    if( $months > 0 ) {
+        $end_dt->add(new DateInterval('P' . $months .  'M'));
+    } else {
+        $end_dt->add(new DateInterval('P' . (isset($days) ? $days : 1) .  'D'));
     }
 
     //
@@ -87,7 +131,7 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
         . "FROM ciniki_customers AS c "
         . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND c.member_status = 10 "
-        . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+        . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
         . "AND c.member_lastpaid < NOW() "
         . "AND c.start_date < c.member_lastpaid "
         . "ORDER BY c.member_lastpaid "
@@ -96,6 +140,9 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 
             'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'member_lastpaid'),
+            'utctotz'=>array(
+                'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$php_date_format),
+                ),
             'maps'=>array('status_text'=>$maps['customer']['status'])),
             ));
     if( $rc['stat'] != 'ok' ) {
