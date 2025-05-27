@@ -146,6 +146,15 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
             . "AND sdate < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
             . "ORDER BY sdate "
             . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 
+                'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'sdate'),
+                'utctotz'=>array(
+                    'start_date'=>array('timezone'=>'UTC', 'format'=>$php_date_format),
+                    ),
+                'maps'=>array('status_text'=>$maps['customer']['status'])),
+                ));
     } else {
         $strsql = "SELECT c.id, "
             . "c.parent_id, "
@@ -162,16 +171,16 @@ function ciniki_customers_reporting_blockNewMembers(&$ciniki, $tnid, $args) {
             . "AND c.start_date < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
             . "ORDER BY c.start_date "
             . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 
+                'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'sdate'),
+                'utctotz'=>array(
+                    'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$php_date_format),
+                    ),
+                'maps'=>array('status_text'=>$maps['customer']['status'])),
+                ));
     }
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'customers', 'fname'=>'id', 
-            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'sdate'),
-            'utctotz'=>array(
-                'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$php_date_format),
-                ),
-            'maps'=>array('status_text'=>$maps['customer']['status'])),
-            ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

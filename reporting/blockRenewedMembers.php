@@ -32,6 +32,7 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'mysql');
+    $php_date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     //
     // Load maps
@@ -210,6 +211,7 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
                 array('label'=>'Address', 'pdfwidth'=>'30%', 'field'=>'address'),
                 ),
             'data'=>array(),
+            'editApp'=>array('app'=>'ciniki.customers.main', 'args'=>array('customer_id'=>'d.id')),
             'textlist'=>'',
             );
         foreach($customers as $cid => $customer) {
