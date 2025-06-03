@@ -120,34 +120,70 @@ function ciniki_customers_reporting_blockRenewedMembers(&$ciniki, $tnid, $args) 
     $chunks = array();
 
     //
-    // Get the new customers
+    // Get the renewed members
     //
-    $strsql = "SELECT c.id, "
-        . "c.parent_id, "
-        . "c.status, "
-        . "c.status AS status_text, "
-        . "c.display_name, "
-        . "DATE_FORMAT(c.member_lastpaid, '%b %e, %Y') AS member_lastpaid, "
-        . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
-        . "FROM ciniki_customers AS c "
-        . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND c.member_status = 10 "
-        . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
-        . "AND c.member_lastpaid < NOW() "
-        . "AND c.start_date < c.member_lastpaid "
-        . "ORDER BY c.member_lastpaid "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
-        array('container'=>'customers', 'fname'=>'id', 
-            'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'member_lastpaid'),
-            'utctotz'=>array(
-                'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$php_date_format),
-                ),
-            'maps'=>array('status_text'=>$maps['customer']['status'])),
-            ));
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $strsql = "SELECT c.id, "
+            . "c.parent_id, "
+            . "c.status, "
+            . "c.status AS status_text, "
+            . "c.display_name, "
+//            . "MIN(purchases.start_date) AS sdate, "
+            . "c.member_lastpaid AS mlp, "
+            . "DATE_FORMAT(c.member_lastpaid, '%b %e, %Y') AS member_lastpaid, "
+            . "MIN(purchases.start_date) AS min_start_date "
+            . "FROM ciniki_customers AS c "
+            . "INNER JOIN ciniki_customer_product_purchases AS purchases ON ("
+                . "c.id = purchases.customer_id "
+                . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//            . "AND c.member_status = 10 "
+    //        . "AND c.start_date >= '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+//            . "HAVING sdate >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
+//            . "AND sdate < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
+            . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
+            . "GROUP BY c.id "
+            . "HAVING min_start_date < mlp "
+            . "ORDER BY c.member_lastpaid "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 
+                'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date'=>'min_start_date', 'member_lastpaid'),
+                'utctotz'=>array(
+                    'start_date'=>array('timezone'=>'UTC', 'format'=>$php_date_format),
+                    ),
+                'maps'=>array('status_text'=>$maps['customer']['status'])),
+                ));
+    } else {
+        $strsql = "SELECT c.id, "
+            . "c.parent_id, "
+            . "c.status, "
+            . "c.status AS status_text, "
+            . "c.display_name, "
+            . "DATE_FORMAT(c.member_lastpaid, '%b %e, %Y') AS member_lastpaid, "
+            . "DATE_FORMAT(c.start_date, '%b %e, %Y') AS start_date "
+            . "FROM ciniki_customers AS c "
+            . "WHERE c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND c.member_status = 10 "
+            . "AND c.member_lastpaid >= '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
+            . "AND c.member_lastpaid < NOW() "
+            . "AND c.start_date < c.member_lastpaid "
+            . "ORDER BY c.member_lastpaid "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 
+                'fields'=>array('id', 'parent_id', 'display_name', 'status', 'status_text', 'start_date', 'member_lastpaid'),
+                'utctotz'=>array(
+                    'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$php_date_format),
+                    ),
+                'maps'=>array('status_text'=>$maps['customer']['status'])),
+                ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
     }
     $customer_ids = array();
     if( isset($rc['customers']) ) {
