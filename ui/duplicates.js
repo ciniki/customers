@@ -23,6 +23,7 @@ function ciniki_customers_duplicates() {
         'ciniki_customers_duplicates', 'list',
         'mc', 'medium', 'sectioned', 'ciniki.customers.duplicates.list');
     this.list.data = {};
+    this.list.matchon = 'soundex';
     this.list.sections = {
         'matches':{'label':'Duplicate Customers', 'num_cols':4, 'type':'simplegrid', 
             'headerValues':['ID', 'Name', 'ID', 'Name'],
@@ -43,8 +44,25 @@ function ciniki_customers_duplicates() {
         return '';
     };
     this.list.rowFn = function(s, i, d) { 
-        return 'M.ciniki_customers_duplicates.duplicate.open(\'M.ciniki_customers_duplicates.showList();\',\'' + d.match.c1_id + '\',\'' + d.match.c2_id + '\');'; 
-//        return 'M.ciniki_customers_duplicates.showMatch(\'M.ciniki_customers_duplicates.showList();\',\'' + d.match.c1_id + '\',\'' + d.match.c2_id + '\');'; 
+        return 'M.ciniki_customers_duplicates.duplicate.open(\'M.ciniki_customers_duplicates.list.open();\',\'' + d.match.c1_id + '\',\'' + d.match.c2_id + '\');'; 
+    };
+    this.list.open = function(cb, matchon) {
+        if( matchon != null && matchon != '' ) {
+            this.matchon = matchon;
+        }
+        //
+        // Grab list of recently updated customers
+        //
+        M.api.getJSONCb('ciniki.customers.duplicatesFind', {'tnid':M.curTenantID, 'matchon':this.matchon}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            } 
+            var p = M.ciniki_customers_duplicates.list;
+            p.data.matches = rsp.matches;
+            p.refresh();
+            p.show(cb);
+        });
     };
     this.list.addClose('Back');
 
@@ -446,27 +464,13 @@ function ciniki_customers_duplicates() {
             return false;
         } 
 
-        this.showList(cb);
+        if( args.matchon != null && args.matchon != '' ) {
+            this.list.open(cb, args.matchon);
+        }
+
+        this.list.open(cb);
     };
 
-    //
-    // Grab the stats for the business from the database and present the list of customers.
-    //
-    this.showList = function(cb) {
-        //
-        // Grab list of recently updated customers
-        //
-        var rsp = M.api.getJSONCb('ciniki.customers.duplicatesFind', {'tnid':M.curTenantID}, function(rsp) {
-            if( rsp.stat != 'ok' ) {
-                M.api.err(rsp);
-                return false;
-            } 
-            var p = M.ciniki_customers_duplicates.list;
-            p.data.matches = rsp.matches;
-            p.refresh();
-            p.show(cb);
-        });
-    };
 
     this.showMatch = function(cb, cid1, cid2) {
         

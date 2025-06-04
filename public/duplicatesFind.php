@@ -14,6 +14,7 @@ function ciniki_customers_duplicatesFind($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
+        'matchon'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Match On'), 
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -35,15 +36,27 @@ function ciniki_customers_duplicatesFind($ciniki) {
     //
     // Search for any potential duplicate customers
     //
-    $strsql = "SELECT CONCAT_WS('-', c1.id, c2.id) AS match_id, c1.id AS c1_id, "
+    $strsql = "SELECT CONCAT_WS('-', c1.id, c2.id) AS match_id, "
+        . "c1.id AS c1_id, "
         . "c1.display_name AS c1_display_name, "
-        . "c2.id AS c2_id, c2.display_name AS c2_display_name "
+        . "c2.id AS c2_id, "
+        . "c2.display_name AS c2_display_name "
         . "FROM ciniki_customers AS c1, ciniki_customers AS c2 "
         . "WHERE c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND c1.id < c2.id "
+        . "AND c1.id < c2.id ";
 //      . "AND ((c1.first = c2.first and c1.last = c2.last) OR (c1.first = c2.last and c1.last = c2.first)) "
-        . "AND ("
+    if( isset($args['matchon']) && $args['matchon'] == 'exact' ) {
+        $strsql .= "AND c1.first = c2.first "
+            . "AND c1.last = c2.last "
+            . "";
+    } elseif( isset($args['matchon']) && $args['matchon'] == 'email' ) {
+        $strsql .= "AND c1.first = c2.first "
+            . "AND c1.last = c2.last "
+            . "";
+
+    } else {
+        $strsql .= "AND ("
             . "((c1.type = 1 OR c1.type = 10 OR c1.type = 21 OR c1.type = 22 OR c1.type = 31 OR c1.type = 32) "
                 . "AND (c2.type = 1 OR c2.type = 10 OR c1.type = 21 OR c1.type = 22 OR c1.type = 31 OR c1.type = 32)"
                 . "AND ("
@@ -51,13 +64,14 @@ function ciniki_customers_duplicatesFind($ciniki) {
                     . "OR (c1.first <> '' AND c1.last <> '' AND soundex(c1.first) = soundex(c2.last) AND soundex(c1.last) = soundex(c2.first)) "
                 . ")) "
             . "OR ((c1.type = 2 OR c1.type = 20 OR c1.type = 30) AND (c2.type = 2 OR c2.type = 20 OR c2.type = 30) AND soundex(c1.company) = soundex(c2.company)) "
-            . ") "
+            . ") ";
 //        . "AND ((c1.type = 1 AND soundex(c1.first) = soundex(c2.first) and soundex(c1.last) = soundex(c2.last)) "
 //            . "OR (c1.type = 1 AND soundex(c1.first) = soundex(c2.last) and soundex(c1.last) = soundex(c2.first)) "
 //            . "OR (c1.type = 2 AND soundex(c1.company) = soundex(c2.company)) "
 //            . "OR (soundex(c1.display_name) = soundex(c2.display_name)) "
 //            . ") "
-        . "ORDER BY c1_display_name, c1.id "
+    }
+    $strsql .= "ORDER BY c1_display_name, c1.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(

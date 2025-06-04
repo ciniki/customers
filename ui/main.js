@@ -268,7 +268,9 @@ function ciniki_customers_main() {
             }},
         'tools':{'label':'Cleanup', 'list':{
             'blank':{'label':'Find Blank Names', 'fn':'M.startApp(\'ciniki.customers.blanks\', null, \'M.ciniki_customers_main.tools.show();\');'},
-            'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\');'},
+//            'emailduplicates':{'label':'Find Duplicates (Email)', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\',\'mc\',{\'matchon\':\'email\'});'},
+            'exactduplicates':{'label':'Find Duplicates (Exact)', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\',\'mc\',{\'matchon\':\'exact\'});'},
+            'duplicates':{'label':'Find Duplicates (Slow)', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\',\'mc\',{\'matchon\':\'soundex\'});'},
             'members':{'label':'Update Lastpaid/Expires', 'fn':'M.ciniki_customers_main.tools.updateLastpaidExpires();'},
         }},
         'download':{'label':'Export (Advanced)', 'list':{
