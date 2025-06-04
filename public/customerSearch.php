@@ -23,9 +23,9 @@ function ciniki_customers_customerSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
-        'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
+        'start_needle'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Search String'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field',
-            'validlist'=>array('eid', 'name', 'first', 'last', 'company', 'display_name', 'family', 'business')), 
+            'validlist'=>array('eid', 'name', 'first', 'last', 'company', 'display_name', 'family', 'business', 'email_address')), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -42,6 +42,10 @@ function ciniki_customers_customerSearch($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+
+    if( $args['start_needle'] == '' ) { 
+        return array('stat'=>'ok');
+    }
 
     //
     // Load maps
@@ -66,6 +70,8 @@ function ciniki_customers_customerSearch($ciniki) {
     //
     // Get the number of customers in each status for the tenant, 
     // if no rows found, then return empty array
+    //
+    // If Accounts is enabled
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x0800) ) {
         $strsql = "SELECT DISTINCT c1.id, if(c1.type=20 OR c1.type = 30, '', c1.display_name) AS display_name, "
@@ -142,15 +148,31 @@ function ciniki_customers_customerSearch($ciniki) {
     //
     // The default search
     //
-    $strsql = "SELECT DISTINCT ciniki_customers.id, eid, display_name, status, type, company, eid ";
-    $strsql .= "FROM ciniki_customers "
-        . "LEFT JOIN ciniki_customer_emails ON (ciniki_customers.id = ciniki_customer_emails.customer_id) "
-        . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_customers.status < 50 "
-        . "AND (" . $args['field'] . " LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR " . $args['field'] . " LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+    $strsql = "SELECT DISTINCT customers.id, "
+        . "customers.eid, "
+        . "customers.display_name, "
+        . "customers.status, "
+        . "customers.type, "
+        . "customers.company, "
+        . "customers.eid, "
+        . "GROUP_CONCAT(emails.email SEPARATOR ', ') AS emails "
+        . "FROM ciniki_customers AS customers "
+        . "LEFT JOIN ciniki_customer_emails AS emails ON ("
+            . "customers.id = emails.customer_id "
+            . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "ORDER BY last, first DESC ";
+        . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND customers.status < 50 ";
+    if( in_array($args['field'], ['email_address']) ) {
+        $strsql .= "AND emails.email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
+    } else {
+        $strsql .= "AND (customers." . $args['field'] . " LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR customers." . $args['field'] . " LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . ") ";
+    }
+    $strsql .= "GROUP BY customers.id "
+        . "ORDER BY last, first DESC "
+        . "";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
         $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified
     } else {

@@ -60,7 +60,7 @@ function ciniki_customers_edit() {
                 'visible':function() { return M.modFlagSet('ciniki.customers', 0x0400); },
                 },
             'prefix':{'label':'Title', 'type':'text', 'hint':'Mr., Ms., Dr., ...'},
-            'first':{'label':'First', 'type':'text', 'livesearch':'yes',},
+            'first':{'label':'First', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
             'middle':{'label':'Middle', 'type':'text'},
             'last':{'label':'Last', 'type':'text', 'livesearch':'yes',},
             'suffix':{'label':'Degrees', 'type':'text', 'hint':'Ph.D, M.D., Jr., ...'},
@@ -169,7 +169,7 @@ function ciniki_customers_edit() {
         'email':{'label':'Email', 'active':'no', 
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
             'fields':{
-                'email_address':{'label':'Primary', 'type':'text'},
+                'email_address':{'label':'Primary', 'type':'text', 'livesearch':'yes'},
                 'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
             }},
         'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
@@ -404,7 +404,7 @@ function ciniki_customers_edit() {
         'email':{'label':'Email', 'active':'no', 
             'visible':function() { return (M.ciniki_customers_edit.edit.sections._tabs.selected == 'contact' ? 'yes' : 'hidden'); },
             'fields':{
-                'email_address':{'label':'Primary', 'type':'text'},
+                'email_address':{'label':'Primary', 'type':'text', 'livesearch':'yes'},
                 'flags':{'label':'Options', 'active':'no', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.emailFlags},
             }},
         'emails':{'label':'Emails', 'active':'no', 'type':'simplegrid', 'num_cols':1,
@@ -609,7 +609,7 @@ function ciniki_customers_edit() {
                 {'tnid':M.curTenantID, 'start_needle':value, 'limit':25}, function(rsp) { 
                     M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp['cities']); 
                 });
-        } else if( i == 'eid' || i == 'first' || i == 'last' || i == 'company' ) {
+        } else if( i == 'eid' || i == 'first' || i == 'last' || i == 'company' || i == 'email_address' ) {
             M.api.getJSONBgCb('ciniki.customers.customerSearch', 
                 {'tnid':M.curTenantID, 'start_needle':value, 'field':i, 'limit':25}, function(rsp) { 
                     M.ciniki_customers_edit.edit.liveSearchShow(s, i, M.gE(M.ciniki_customers_edit.edit.panelUID + '_' + i), rsp.customers); 
@@ -624,18 +624,22 @@ function ciniki_customers_edit() {
         }
     };
     this.edit.liveSearchResultValue = function(s, f, i, j, d) {
-        if( f == 'parent_id' || f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
+        if( f == 'parent_id' || f == 'eid' || f == 'first' || f == 'last' || f == 'company' || f == 'email_address' ) {     
+            var emails = '';
+            if( d.customer.emails != null && d.customer.emails != '' ) {
+                emails = ' (' + d.customer.emails + ')';
+            }
             // FIXME: Remove when all searched return no subarray
             if( d.customer != null ) {
                 if( d.customer.eid != null && d.customer.eid != '' ) {
-                    return d.customer.eid + ' - ' + d.customer.display_name; 
+                    return d.customer.eid + ' - ' + d.customer.display_name + emails; 
                 }
-                return d.customer.display_name; 
+                return d.customer.display_name + emails; 
             } else {
                 if( d.eid != null && d.eid != '' ) {
-                    return d.eid + ' - ' + d.display_name; 
+                    return d.eid + ' - ' + d.display_name + emails; 
                 }
-                return d.display_name; 
+                return d.display_name + emails; 
             }
         }
         else if( f == 'city') { return d.city.name + ',' + d.city.province; }
@@ -653,7 +657,7 @@ function ciniki_customers_edit() {
                 return 'M.ciniki_customers_edit.edit.updateParent(\'' + s + '\',\'' + escape(d.id) + '\',\'' + escape(d.display_name) + '\');'
             }
         }
-        else if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' ) { 
+        else if( f == 'eid' || f == 'first' || f == 'last' || f == 'company' || f == 'email_address' ) { 
             if( d.customer != null ) {
                 if( this.parent_id != null && this.parent_id > 0 ) {
                     return 'M.ciniki_customers_edit.showEdit(null,\'' + d.customer.id + '\',null,\'' + this.parent_id + '\',\'' + escape(this.parent_name) + '\');';
@@ -986,7 +990,66 @@ function ciniki_customers_edit() {
 
     this.link.addButton('save', 'Save', 'M.ciniki_customers_edit.saveLink();');
     this.link.addClose('cancel');
-    
+   
+    //
+    // Show list of duplicates found
+    //
+    this.duplicates = new M.panel('Duplicates List',
+        'ciniki_customers_edit', 'duplicates',
+        'mc', 'large', 'sectioned', 'ciniki.customers.edit.duplicates');
+    this.data = null;
+    this.add_args = '';
+    this.duplicates.sections = {
+        'list':{'label':'Duplicates Found', 'type':'simplegrid', 'num_cols':3, 
+            'cellClasses':['', '', 'textbuttons'],
+            },
+        '_buttons':{'label':'', 'buttons':{
+            'add':{'label':'Add Duplicate', 'fn':'M.ciniki_customers_edit.duplicates.add();'},
+            'cancel':{'label':'Cancel', 'fn':'M.ciniki_customers_edit.duplicates.close();'},
+            }},
+        };
+    this.duplicates.cellValue = function(s, i, j, d) {
+        switch(j) {
+            case 0: return d.display_name;
+            case 1: return d.emails;
+            case 2:
+                if( M.ciniki_customers_edit.edit.nextFn != null ) {
+                    return '<button class="button" onclick="M.ciniki_customers_edit.duplicates.viewCustomer(' + d.id + ');">View</button>'
+                        + '&nbsp;<button class="button" onclick="M.ciniki_customers_edit.duplicates.useCustomer(' + d.id + ');">Use</button>';
+                } 
+                return '';
+            }
+        return '';
+    }
+    this.duplicates.open = function(c, list) {
+        this.add_args = c;
+        this.cb = 'M.ciniki_customers_edit.edit.show();';
+        this.data = {'list':list};
+        this.sections.list.num_cols = 2;
+        if( M.ciniki_customers_edit.edit.nextFn != null ) {
+            this.sections.list.num_cols = 3;
+        }
+        this.refresh();
+        this.show();
+    }
+    this.duplicates.add = function() {
+        M.api.postJSONCb('ciniki.customers.add', {'tnid':M.curTenantID, 'dupcheck':'no'}, this.add_args, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            } 
+            M.ciniki_customers_edit.edit.customer_id = rsp.id;
+            M.ciniki_customers_edit.closeEdit();
+        });
+    }
+    this.duplicates.viewCustomer = function(id) {
+        M.startApp('ciniki.customers.main', '', 'M.ciniki_customers_edit.duplicates.show();', 'mc', {'customer_id':id, 'edit':'no'});
+    }
+    this.duplicates.useCustomer = function(id) {
+        M.ciniki_customers_edit.edit.customer_id = id;
+        M.ciniki_customers_edit.closeEdit();
+    }
+    this.duplicates.addClose('cancel');
 
     //
     // Arguments:
@@ -1923,10 +1986,10 @@ function ciniki_customers_edit() {
                         M.api.err(rsp);
                         return false;
                     } 
-                    M.ciniki_customers_edit.closeEdit(rsp);
+                    M.ciniki_customers_edit.closeEdit();
                 });
             } else {
-                M.ciniki_customers_edit.closeEdit(null);
+                M.ciniki_customers_edit.closeEdit();
             }
         } else {
             var c = this.edit.serializeForm('yes');
@@ -1934,17 +1997,22 @@ function ciniki_customers_edit() {
             if( unsubs != '' ) { c += 'unsubscriptions=' + unsubs + '&'; }
             c += 'type=' + type + '&';
             M.api.postJSONCb('ciniki.customers.add', {'tnid':M.curTenantID}, c, function(rsp) {
+                // Check if customer already exists
+                if( rsp.stat == 'duplicate' ) {
+                    M.ciniki_customers_edit.duplicates.open(c, rsp.customers);
+                    return false;
+                }
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 } 
                 M.ciniki_customers_edit.edit.customer_id = rsp.id;
-                M.ciniki_customers_edit.closeEdit(rsp);
+                M.ciniki_customers_edit.closeEdit();
             });
         }
     };
 
-    this.closeEdit = function(rsp) {
+    this.closeEdit = function() {
         if( M.ciniki_customers_edit.edit.nextFn != null ) {
             // Check if we should pass customer id to next panel
             eval(M.ciniki_customers_edit.edit.nextFn + '(' + M.ciniki_customers_edit.edit.customer_id + ');');

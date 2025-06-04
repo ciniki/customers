@@ -963,7 +963,9 @@ function ciniki_customers_main() {
             ) {
             this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.menu.open();\',\'mc\',{\'customer_id\':0});');
             this.menu.addButton('tools', 'Tools', 'M.ciniki_customers_main.tools.show(\'M.ciniki_customers_main.menu.open();\');');
-            this.customer.addButton('edit', 'Edit', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.customer.open();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});');
+            if( args.edit == null || args.edit == 'yes' ) {
+                this.customer.addButton('edit', 'Edit', 'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_customers_main.customer.open();\',\'mc\',{\'customer_id\':M.ciniki_customers_main.customer.customer_id});');
+            }
         } 
 
         //

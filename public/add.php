@@ -169,6 +169,7 @@ function ciniki_customers_add(&$ciniki) {
         'other10'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 10'), 
         'other11'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 11'), 
         'other12'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Other 12'), 
+        'dupcheck'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Duplicate Check'),     // Default yes
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -294,81 +295,35 @@ function ciniki_customers_add(&$ciniki) {
     $args['permalink'] = $rc['permalink'];
 
     //
-    // Determine the display name
+    // Check for an existing customer
     //
-/*    $space = '';
-    $person_name = '';
-    $args['sort_name'] = '';
-    if( isset($args['prefix']) && $args['prefix'] != '' ) {
-        $person_name .= $args['prefix'];
-    }
-    if( $space == '' && $person_name != '' ) { $space = ' '; }
-    if( isset($args['first']) && $args['first'] != '' ) {
-        $person_name .= $space . $args['first'];
-    }
-    if( $space == '' && $person_name != '' ) { $space = ' '; }
-    if( isset($args['middle']) && $args['middle'] != '' ) {
-        $person_name .= $space . $args['middle'];
-    }
-    if( $space == '' && $person_name != '' ) { $space = ' '; }
-    if( isset($args['last']) && $args['last'] != '' ) {
-        $person_name .= $space . $args['last'];
-    }
-    if( $space == '' && $person_name != '' ) { $space = ' '; }
-    if( isset($args['suffix']) && $args['suffix'] != '' ) {
-        $person_name .= ($space!=''?',':'') . $space . $args['suffix'];
-    }
-    $sort_person_name = '';
-    if( isset($args['last']) && $args['last'] != '' ) {
-        $sort_person_name = $args['last'];
-    }
-    if( isset($args['first']) && $args['first'] != '' ) {
-        $sort_person_name .= ($sort_person_name!=''?', ':'') . $args['first'];
-    }
-    if( $args['type'] == 2 && $args['company'] != '' ) {
-        // Find the format to use
-        $format = 'company';
-        if( isset($args['display_name_format']) && $args['display_name_format'] != '' ) {
-            $format = $args['display_name_format'];
-        } elseif( !isset($settings['display-name-business-format']) 
-            || $settings['display-name-business-format'] == 'company' ) {
-            $format = 'company';
-        } elseif( $settings['display-name-business-format'] != '' ) {
-            $format = $settings['display-name-business-format'];
+    if( (!isset($args['dupcheck']) || $args['dupcheck'] == 'yes') && isset($args['email_address']) && $args['email_address'] != '' ) {
+        $strsql = "SELECT customers.id, "
+            . "customers.display_name, "
+            . "GROUP_CONCAT(emails.email SEPARATOR ', ') AS emails "
+            . "FROM ciniki_customers AS customers "
+            . "INNER JOIN ciniki_customer_emails AS emails ON ("
+                . "customers.id = emails.customer_id "
+                . "AND emails.email = '" . ciniki_core_dbQuote($ciniki, $args['email_address']) . "' "
+                . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE customers.status < 60 "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY customers.id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 'fields'=>array('id', 'display_name', 'emails')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.573', 'msg'=>'Unable to check for duplicates', 'err'=>$rc['err']));
         }
-        // Format the display_name
-        if( $format == 'company' ) {
-            $args['display_name'] = $args['company'];
-            $args['sort_name'] = $args['company'];
-        } 
-        elseif( $format == 'company - person' ) {
-            $args['display_name'] = $args['company'] . ($person_name != ''?' - ' . $person_name:'');
-            $args['sort_name'] = $args['company'];
-        } 
-        elseif( $format == 'person - company' ) {
-            $args['display_name'] = ($person_name!=''?$person_name . ' - ':'') . $args['company'];
-            $args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $args['company'];
-        } 
-        elseif( $format == 'company [person]' ) {
-            $args['display_name'] = $args['company'] . ($person_name!=''?' [' . $person_name . ']':'');
-            $args['sort_name'] = $args['company'];
-        } 
-        elseif( $format == 'person [company]' ) {
-            if( $person_name == '' ) {
-                $args['display_name'] = $args['company'];
-            } else {
-                $args['display_name'] = $person_name . ' [' . $args['company'] . ']';
-            }
-            $args['sort_name'] = ($sort_person_name!=''?$sort_person_name.', ':'') . $args['company'];
+       
+        if( isset($rc['customers']) && count($rc['customers']) > 0 ) {
+            return array('stat'=>'duplicate', 'err'=>array('code'=>'ciniki.customers.573', 'msg'=>'Duplicate Email'), 'customers'=>$rc['customers']);
         }
-    } else {
-        $args['display_name'] = $person_name;
-        $args['sort_name'] = $sort_person_name;
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-    $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['display_name']);
-*/
 
     //  
     // Turn off autocommit
