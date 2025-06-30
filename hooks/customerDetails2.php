@@ -78,6 +78,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
             . ") "
         . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
+        . "ORDER BY ciniki_customer_emails.date_added "
         . "";
     $fields = array('id', 'uuid', 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'permalink',
         'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
