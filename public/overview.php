@@ -101,6 +101,9 @@ function ciniki_customers_overview($ciniki) {
         }
         $num_items = isset($rc['num']) ? $rc['num'] : '';
 
+        if( !isset($rsp['customer_categories']) ) {
+            $rsp['customer_categories'] = [];
+        }
         array_unshift($rsp['customer_categories'], ['name'=>'All', 'num_customers'=>$num_items]);
     }
 
