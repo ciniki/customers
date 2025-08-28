@@ -75,6 +75,7 @@ function ciniki_customers_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text'],
             'noData':'No customers',
+            'menu':{}, 
             },
         };
     this.menu.liveSearchCb = function(s, i, value) {
@@ -165,6 +166,25 @@ function ciniki_customers_main() {
         this.sections.customers.label = this.category;
         this.open();
     }
+    this.menu.emailCustomers = function() {
+        var customers = [];
+        for(var i in this.data.customers) {
+            if( this.data.customers[i].id > 0 ) {
+                customers[i] = {
+                    'id':this.data.customers[i].id,
+                    'name':this.data.customers[i].display_name,
+                    };
+            }
+        }
+        M.startApp('ciniki.mail.omessage',
+            null,
+            'M.ciniki_customers_main.menu.open();',
+            'mc',
+            {'subject':'',
+                'list':customers, 
+                'removeable':'yes',
+            });
+    }
     this.menu.open = function(cb) {
         //
         // Grab list of recently updated customers
@@ -229,6 +249,13 @@ function ciniki_customers_main() {
                     p.sections.customer_tags.visible = 'no';
                 }
                 p.data = rsp; 
+
+                // Check if email customers menu should be shown
+                if( p.data.customers != null && p.data.customers.length < 250 ) {
+                    p.sections.customers.menu = {'email':{'label':'Email Customers', 'fn':'M.ciniki_customers_main.menu.emailCustomers();'}};
+                } else if( p.sections.customers.menu != null ) {
+                    p.sections.customers.menu = null;
+                }
                 p.refresh();
                 p.show(cb);
             });
