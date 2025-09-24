@@ -65,6 +65,28 @@ function ciniki_customers_memberships($ciniki) {
     $mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
     //
+    // Get the list of lifetime members
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+        $strsql = "SELECT purchases.customer_id "
+            . "FROM ciniki_customer_product_purchases AS purchases "
+            . "INNER JOIN ciniki_customer_products AS products ON (" 
+                . "purchases.product_id = products.id "
+                . "AND products.type = 20 "
+                . "AND products.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND (purchases.end_date = '0000-00-00' OR purchases.end_date > NOW()) "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+        $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.customers', 'customers', 'customer_id');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.575', 'msg'=>'Unable to load product_purchases', 'err'=>$rc['err']));
+        }
+        $lifetime_customers = isset($rc['customers']) ? $rc['customers'] : array();
+    }
+
+    //
     // Load the list of members for a tenant
     //
     $strsql = "SELECT ciniki_customers.id, "
@@ -121,8 +143,12 @@ function ciniki_customers_memberships($ciniki) {
         $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_customers.member_status = 10 "
             . "AND ciniki_customers.membership_length < 60 "
-            . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
-            . "ORDER BY sort_name, last, first, company"
+            . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
+        if( isset($lifetime_customers) && count($lifetime_customers) > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+            $strsql .= "AND ciniki_customers.id NOT IN (" . ciniki_core_dbQuoteIDs($ciniki, $lifetime_customers) . ") ";
+        }
+        $strsql .= "ORDER BY sort_name, last, first, company"
             . "";
     } elseif( isset($args['type']) && $args['type'] == '-2' ) { // Inactive
         $strsql .= "FROM ciniki_customers ";
@@ -271,6 +297,7 @@ function ciniki_customers_memberships($ciniki) {
         }
         $rsp['memberaddons'] = isset($rc['types']) ? $rc['types'] : array();
     }
+
     //
     // Get the expired memberships
     //
@@ -279,8 +306,12 @@ function ciniki_customers_memberships($ciniki) {
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND member_status = 10 "
         . "AND membership_length < 60 "
-        . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
-        . "GROUP BY membership_type "
+        . "AND member_expires < '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
+    if( isset($lifetime_customers) && count($lifetime_customers) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+        $strsql .= "AND id NOT IN (" . ciniki_core_dbQuoteIDs($ciniki, $lifetime_customers) . ") ";
+    }
+    $strsql .= "GROUP BY membership_type "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
     $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.customers', 'expired');
