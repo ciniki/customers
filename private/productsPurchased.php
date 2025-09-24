@@ -64,12 +64,12 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
     //
     // Determine the membership type
     //
+    $now_dt = new DateTime('NOW', new DateTimezone($intl_timezone));
     $history = array();
     foreach($purchases as $purchase) {
-        if( $purchase['type'] == 10 ) {
+        if( $purchase['type'] == 10 || $purchase['type'] == 20 ) {
             $end_dt = new DateTime($purchase['end_date'], new DateTimezone($intl_timezone));
             if( !isset($membership_details['type-' . $purchase['product_id']]) ) {
-                $now_dt = new DateTime('NOW', new DateTimezone($intl_timezone));
                 $membership_details['type-' . $purchase['product_id']] = array(
                     'id' => $purchase['id'],
                     'product_id' => $purchase['product_id'],
@@ -79,7 +79,11 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                     'value' => $purchase['short_name'],
                     'name' => $purchase['name'],
                     );
-                if( $end_dt < $now_dt ) {
+                if( $purchase['type'] == 20 && $purchase['end_date'] == '0000-00-00' ) {
+                    $membership_details['type-' . $purchase['product_id']]['expires'] = 'future';
+                    $membership_details['type-' . $purchase['product_id']]['expiry_display'] = 'Never';
+                }
+                elseif( $end_dt < $now_dt ) {
                     $membership_details['type-' . $purchase['product_id']]['expires'] = 'past';
                     $membership_details['type-' . $purchase['product_id']]['expiry_display'] = 'Expired ' . $end_dt->format('M j, Y');
                 } else {
@@ -93,17 +97,35 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                     'type' => $purchase['type'],
                     'short_name' => $purchase['short_name'],
                     'name' => $purchase['name'],
-                    'expired' => $end_dt->format('M j, Y'),
+                    'expired' => ($purchase['end_date'] != '0000-00-00' ? $end_dt->format('M j, Y') : ($purchase['type'] == '20' ? 'Never' : '')),
                     'end_dt' => clone $end_dt, 
                     );
             }
         }
-        if( $purchase['type'] == 20 ) {
+/*        elseif( $purchase['type'] == 20 ) {
             $ptype = 'lifetime';
+            if( $purchase['end_date'] != '0000-00-00' ) {
+                $end_dt = new DateTime($purchase['end_date'], new DateTimezone($intl_timezone));
+                if( $end_dt < $now_dt ) {
+                    $history[] = array(
+                        'id' => $purchase['id'],
+                        'product_id' => $purchase['product_id'],
+                        'type' => $purchase['type'],
+                        'short_name' => $purchase['short_name'],
+                        'name' => $purchase['name'],
+                        'expired' => $end_dt->format('M j, Y'),
+                        'end_dt' => clone $end_dt, 
+                        );
+                    continue;
+                }
+            }
             if( isset($membership_details['type']['expires']) && $membership_details['type']['expires'] == 'past' ) {
                 $history[] = $membership_details['type'];
                 $ptype = 'type';
             } else {
+                if( isset($membership_details['lifetime']) ) {
+                    $history[] = $membership_details['lifetime'];
+                }
                 $membership_details['lifetime'] = array(
                     'id' => $purchase['id'], 
                     'label' => 'Type', 
@@ -114,7 +136,7 @@ function ciniki_customers_productsPurchased(&$ciniki, $tnid, $args) {
                     'expiry_display' => 'Never',
                     );
             }
-        }
+        }  */
     }
     //
     // Determine the add-on's that are active and expired

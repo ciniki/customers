@@ -67,6 +67,28 @@ function ciniki_customers_cron_expiredMembersDeactivate(&$ciniki) {
        
         foreach($members as $member) {
             //
+            // Check if the member was a lifetime member
+            //
+            $strsql = "SELECT purchases.id "
+                . "FROM ciniki_customer_product_purchases AS purchases "
+                . "INNER JOIN ciniki_customer_products AS products ON ("
+                    . "purchases.product_id = products.id "
+                    . "AND products.type = 20 "     // Lifetime
+                    . "AND products.tnid = '" . ciniki_core_dbQuote($ciniki, $t['tnid']) . "' "
+                    . ") "
+                . "WHERE purchases.customer_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
+                . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $t['tnid']) . "' "
+                . "AND (purchases.end_date = '0000-00-00' OR purchases.end_date > NOW()) "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'purchase');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.574', 'msg'=>'Unable to load purchase', 'err'=>$rc['err']));
+            }
+            if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+                continue;
+            }
+
+            //
             // Deactivate the member status
             //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
@@ -75,7 +97,7 @@ function ciniki_customers_cron_expiredMembersDeactivate(&$ciniki) {
                 ], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.564', 'msg'=>'Unable to update the customer', 'err'=>$rc['err']));
-            } 
+            }  
         }
     }
 
