@@ -36,6 +36,6 @@ function ciniki_customers_hooks_customerLookup($ciniki, $tnid, $args) {
         return $rc;
     }
 
-    return array('stat'=>'noexist');
+    return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.customers.576', 'msg'=>'No customer found'));
 }
 ?>

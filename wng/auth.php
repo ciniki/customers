@@ -275,7 +275,7 @@ function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $hashed_p
     $request['session']['customer'] = $customer;
     $request['session']['customers'] = $customers;
     $request['session']['children'] = $children;
-
+    
     ciniki_customers_wng_logAdd($ciniki, $tnid, $request, 10, 'Login', $customer['id'], $email, '', 'Success');
 
     return array('stat'=>'ok');
