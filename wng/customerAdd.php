@@ -240,15 +240,24 @@ function ciniki_customers_wng_customerAdd(&$ciniki, $tnid, $request, $args) {
     // Check if there is an address to add
     //
     $address_id = 0;
-    if( (isset($args['address1']) && $args['address1'] != '' ) 
-        || (isset($args['address2']) && $args['address2'] != '' )
-        || (isset($args['city']) && $args['city'] != '' )
-        || (isset($args['province']) && $args['province'] != '' )
-        || (isset($args['postal']) && $args['postal'] != '' )
-        ) {
+    $billing_address = '';
+    $shipping_address = '';
+    foreach(['address1', 'address2', 'city', 'province', 'postal', 'country'] as $field) {
+        if( isset($args[$field]) && $args[$field] != '' ) {
+            $billing_address .= ($billing_address != '' ? ' ' : '') . $args[$field];
+        }
+        if( isset($args['shipping_' . $field]) && $args['shipping_' . $field] != '' ) {
+            $shipping_address .= ($shipping_address != '' ? ' ' : '') . $args['shipping_' . $field];
+        }
+    }
+    if( $billing_address != '' ) {
+        $flags = 0x06;
+        if( $shipping_address == '' || $billing_address == $shipping_address ) {
+            $flags = 0x07;
+        }
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address',
             array('customer_id'=>$customer_id,
-                'flags'=>(isset($args['address_flags'])?$args['address_flags']:0x07),
+                'flags'=>$flags,
                 'address1'=>isset($args['address1']) ? $args['address1'] : '',
                 'address2'=>isset($args['address2']) ? $args['address2'] : '',
                 'city'=>isset($args['city']) ? $args['city'] : '',
@@ -265,6 +274,31 @@ function ciniki_customers_wng_customerAdd(&$ciniki, $tnid, $request, $args) {
             return $rc;
         }
         $address_id = $rc['id'];
+    }
+    if( $shipping_address != '' && $shipping_address != $billing_address ) {
+        $flags = 0x01;
+        if( $billing_address == '' ) {
+            $flags = 0x07;
+        }
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address',
+            array('customer_id'=>$customer_id,
+                'flags'=>$flags,
+                'address1'=>isset($args['shipping_address1']) ? $args['shipping_address1'] : '',
+                'address2'=>isset($args['shipping_address2']) ? $args['shipping_address2'] : '',
+                'city'=>isset($args['shipping_city']) ? $args['shipping_city'] : '',
+                'province'=>isset($args['shipping_province']) ? $args['shipping_province'] : '',
+                'postal'=>isset($args['shipping_postal']) ? $args['shipping_postal'] : '',
+                'country'=>isset($args['shipping_country']) ? $args['shipping_country'] : '',
+                'latitude'=>(isset($args['shipping_latitude'])?$args['shipping_latitude']:''),
+                'longitude'=>(isset($args['shipping_longitude'])?$args['shipping_longitude']:''),
+                'phone'=>(isset($args['shipping_phone'])?$args['shipping_phone']:''),
+                'notes'=>'',
+                ), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.customers');
+            return $rc;
+        }
+        $shipping_address_id = $rc['id'];
     }
 
     if( isset($args['link_url_1']) && $args['link_url_1'] != '' ) {

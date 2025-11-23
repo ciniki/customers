@@ -27,6 +27,13 @@ function ciniki_customers_wng_passwordRequestReset(&$ciniki, $tnid, &$request, $
     }
 
     //
+    // Check for spam
+    //
+    if( $email == 'testing@example.com' ) {
+        return array('stat'=>'ok');
+    }
+
+    //
     // Get the username for the account
     //
     $strsql = "SELECT ciniki_customer_emails.id, "
