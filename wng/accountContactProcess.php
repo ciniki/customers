@@ -61,12 +61,13 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
     if( !isset($customer['addresses']) ) {
         $customer['addresses'] = array();
     }
-    
 
     $editable = 'no';
     if( isset($request['uri_split'][($request['cur_uri_pos']+2)])
         && $request['uri_split'][($request['cur_uri_pos']+2)] == 'edit' 
         ) {
+        $editable = 'yes';
+    } elseif( isset($item['editable']) && $item['editable'] == 'yes' ) {
         $editable = 'yes';
     }
 
@@ -89,11 +90,13 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         'ftype' => 'hidden',
         'value' => 'update',
         );
-    $fields['next'] = array(
-        'id' => 'next',
-        'ftype' => 'hidden',
-        'value' => isset($_GET['next']) ? $_GET['next'] : '',
-        );
+    if( isset($_GET['next']) ) {
+        $fields['next'] = array(
+            'id' => 'next',
+            'ftype' => 'hidden',
+            'value' => isset($_GET['next']) ? $_GET['next'] : '',
+            );
+    }
     if( $editable == 'no' ) {
         $name = $customer['prefix'];
         $name .= ($name != '' ? ' ' : '') . $customer['first'];
@@ -189,7 +192,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 ),
             );
 
-        return array('stat'=>'ok', 'blocks'=>$blocks);
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'fields'=>$fields);
     } 
 
     //
@@ -244,17 +247,19 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             'ftype' => 'newline',
             );
     }
-    $fields['middle'] = array(
-        'id' => 'middle',
-        'label' => 'Middle',
-        'ftype' => 'text',
-        'size' => 'tiny',
-        'editable' => $editable,
-        'autocomplete' => 'additional-name',
-        'value' => isset($_POST['f-middle']) ? $_POST['f-middle'] : $customer['middle'],
-        );
-    if( isset($_POST['f-middle']) && $_POST['f-middle'] != $customer['middle'] ) {
-        $update_args['middle'] = $_POST['f-middle'];
+    if( $customer['middle'] != '' ) {
+        $fields['middle'] = array(
+            'id' => 'middle',
+            'label' => 'Middle',
+            'ftype' => 'text',
+            'size' => 'tiny',
+            'editable' => $editable,
+            'autocomplete' => 'additional-name',
+            'value' => isset($_POST['f-middle']) ? $_POST['f-middle'] : $customer['middle'],
+            );
+        if( isset($_POST['f-middle']) && $_POST['f-middle'] != $customer['middle'] ) {
+            $update_args['middle'] = $_POST['f-middle'];
+        }
     }
     $fields['last'] = array(
         'id' => 'last',
@@ -283,7 +288,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             $update_args['suffix'] = $_POST['f-suffix'];
         }
     }
-    if( $customer['type'] != 2 ) {
+    if( $customer['type'] != 2 && (!isset($item['business-name']) || $item['business-name'] == 'yes') ) {
         $fields['company'] = array(
             'id' => 'company',
             'label' => 'Business Name',
@@ -321,7 +326,14 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         'ftype' => 'break',
         'label' => 'Phone Numbers',
         );
-    $labels = ['Cell'=>[], 'Home'=>[], 'Work'=>[], 'Cottage'=>[]];
+    $labels = ['Cell'=>[], 'Home'=>[], 'Work'=>[]];
+    if( isset($item['phone-labels']) && $item['phone-labels'] != '' ) {
+        $m = explode(',', $item['phone-labels']);
+        $labels = [];
+        foreach($m as $label) {
+            $labels[$label] = [];
+        }
+    }
     foreach($customer['phones'] as $pid => $phone) {
         $customer['phones'][$pid]['update_args'] = array();
         $fields["phone_label{$i}"] = array(
@@ -377,8 +389,8 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             );
         $i++;
     }
-    if( $i <= 3 ) {
-        for(; $i <= 3; $i++) {
+    if( count($labels) > 0 ) {
+        for($i = 0; $i <= count($labels); $i++) {
             $label = array_key_first($labels);
             if( $label == null ) {
                 $label = ''; 
@@ -919,8 +931,11 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             }
         }
 
-        if( $problem_list == '' ) {
-            if( isset($_POST['cancel']) && $_POST['cancel'] == 'Cancel' && isset($_POST['f-next']) && $_POST['f-next'] == 'profile' ) {
+        if( $problem_list == '' && (!isset($item['redirect-url']) || $item['redirect-url'] != '') ) {
+            if( isset($item['redirect-url']) && $item['redirect-url'] != '' ) {
+                header("Location: " . $item['redirect-url']);
+            }
+            elseif( isset($_POST['cancel']) && $_POST['cancel'] == 'Cancel' && isset($_POST['f-next']) && $_POST['f-next'] == 'profile' ) {
                 header("Location: " . $request['ssl_domain_base_url'] . "/account/profile");
             } else {
                 header("Location: " . $request['ssl_domain_base_url'] . "/account/contact");
@@ -946,6 +961,6 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
 //        );
 
 
-    return array('stat'=>'ok', 'blocks'=>$blocks);
+    return array('stat'=>'ok', 'blocks'=>$blocks, 'fields'=>$fields, 'problems'=>$problem_list);
 }
 ?>
