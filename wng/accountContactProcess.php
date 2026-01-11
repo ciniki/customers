@@ -10,13 +10,13 @@
 // Returns
 // -------
 //
-function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $item) {
+function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $args) {
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
 
     $blocks = array();
 
-    if( $item['ref'] == 'ciniki.customers.contact' ) {
+    if( $args['ref'] == 'ciniki.customers.contact' ) {
         $request['breadcrumbs'][] = array(
             'title' => 'Membership',
             'page-class' => 'page-account-contact',
@@ -25,6 +25,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
     }
 
     $base_url = $request['base_url'] . '/account/contact';
+    $problem_list = '';
 
     //
     // Double check the account is logged in, should never reach this spot
@@ -67,7 +68,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         && $request['uri_split'][($request['cur_uri_pos']+2)] == 'edit' 
         ) {
         $editable = 'yes';
-    } elseif( isset($item['editable']) && $item['editable'] == 'yes' ) {
+    } elseif( isset($args['editable']) && $args['editable'] == 'yes' ) {
         $editable = 'yes';
     }
 
@@ -188,7 +189,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             'type' => 'buttons',
             'class' => 'limit-width limit-width-60 aligncenter',
             'list' => array(
-                array('url'=>"/account/contact/edit" . ($item['ref'] == 'ciniki.customers.profile' ? "?next=profile" : ''), 'text' => 'Edit Contact'),
+                array('url'=>"/account/contact/edit" . ($args['ref'] == 'ciniki.customers.profile' ? "?next=profile" : ''), 'text' => 'Edit Contact'),
                 ),
             );
 
@@ -199,7 +200,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
     // Setup the fields for an editable form
     //
     $update_args = array();
-    if( $customer['type'] == 2 ) {
+    if( $customer['type'] == 2 && (!isset($args['business-name']) || $args['business-name'] == 'yes') ) {
         $fields['company'] = array(
             'id' => 'company',
             'label' => 'Business Name',
@@ -239,7 +240,11 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         'value' => isset($_POST['f-first']) ? $_POST['f-first'] : $customer['first'],
         );
     if( isset($_POST['f-first']) && $_POST['f-first'] != $customer['first'] ) {
-        $update_args['first'] = $_POST['f-first'];
+        if( $_POST['f-first'] == '' ) {
+            $problem_list .= "You must specify first name\n";
+        } else {
+            $update_args['first'] = $_POST['f-first'];
+        }
     }
     if( $customer['prefix'] != '' || $customer['suffix'] != '' ) {
         $fields['newline'] = array(
@@ -272,7 +277,11 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         'value' => isset($_POST['f-last']) ? $_POST['f-last'] : $customer['last'],
         );
     if( isset($_POST['f-last']) && $_POST['f-last'] != $customer['last'] ) {
-        $update_args['last'] = $_POST['f-last'];
+        if( $_POST['f-last'] == '' ) {
+            $problem_list .= "You must specify last name\n";
+        } else {
+            $update_args['last'] = $_POST['f-last'];
+        }
     }
     if( $customer['suffix'] != '' ) {
         $fields['suffix'] = array(
@@ -288,7 +297,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             $update_args['suffix'] = $_POST['f-suffix'];
         }
     }
-    if( $customer['type'] != 2 && (!isset($item['business-name']) || $item['business-name'] == 'yes') ) {
+    if( $customer['type'] != 2 && (!isset($args['business-name']) || $args['business-name'] == 'yes') ) {
         $fields['company'] = array(
             'id' => 'company',
             'label' => 'Business Name',
@@ -327,8 +336,8 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         'label' => 'Phone Numbers',
         );
     $labels = ['Cell'=>[], 'Home'=>[], 'Work'=>[]];
-    if( isset($item['phone-labels']) && $item['phone-labels'] != '' ) {
-        $m = explode(',', $item['phone-labels']);
+    if( isset($args['phone-labels']) && $args['phone-labels'] != '' ) {
+        $m = explode(',', $args['phone-labels']);
         $labels = [];
         foreach($m as $label) {
             $labels[$label] = [];
@@ -336,27 +345,33 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
     }
     foreach($customer['phones'] as $pid => $phone) {
         $customer['phones'][$pid]['update_args'] = array();
-        $fields["phone_label{$i}"] = array(
+/*        $fields["phone_label{$i}"] = array(
             'id' => "phone_label{$i}",
             'label' => 'Location',
             'ftype' => 'text',
             'size' => 'small',
-            'editable' => $editable,
+            'editable' => 'no',
             'autocomplete' => 'stop',
             'value' => isset($_POST["f-phone_label{$i}"]) ? $_POST["f-phone_label{$i}"] : $phone['phone_label'],
             );
         if( isset($_POST["f-phone_label{$i}"]) && $_POST["f-phone_label{$i}"] != $phone['phone_label'] ) {
             $customer['phones'][$pid]['update_args']['phone_label'] = $_POST["f-phone_label{$i}"];
-        }
+        } */
         $fields["phone_number{$i}"] = array(
             'id' => "phone_number{$i}",
-            'label' => 'Number',
+            'label' => $phone['phone_label'],
             'ftype' => 'text',
             'size' => 'small',
             'editable' => $editable,
             'autocomplete' => 'tel',
             'value' => isset($_POST["f-phone_number{$i}"]) ? $_POST["f-phone_number{$i}"] : $phone['phone_number'],
             );
+        if( isset($args['required']) && in_array($phone['phone_label'], $args['required']) ) {
+            $fields["phone_number{$i}"]['required'] = 'yes';
+            if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' && $fields["phone_number{$i}"]['value'] == '' ) {
+                $problem_list .= "You must specify a {$label} number\n"; 
+            }
+        }
         if( isset($_POST["f-phone_number{$i}"]) && $_POST["f-phone_number{$i}"] != $phone['phone_number'] ) {
             $customer['phones'][$pid]['update_args']['phone_number'] = $_POST["f-phone_number{$i}"];
         }
@@ -383,43 +398,50 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 $customer['phones'][$pid]['update_args']['phone_public'] = $_POST["f-phone_public{$i}"];
             }
         }
-        $fields["newline-p{$i}"] = array(
+/*        $fields["newline-p{$i}"] = array(
             'id' => "newline-p{$i}",
             'ftype' => 'newline',
-            );
+            ); */
         $i++;
     }
     if( count($labels) > 0 ) {
-        for($i = 0; $i <= count($labels); $i++) {
+        while(count($labels) > 0 ) {
             $label = array_key_first($labels);
             if( $label == null ) {
                 $label = ''; 
             } else {
                 unset($labels[$label]);
             }
-            $fields["phone_label{$i}"] = array(
+/*            $fields["phone_label{$i}"] = array(
                 'id' => "phone_label{$i}",
                 'label' => 'Location',
                 'ftype' => 'text',
                 'size' => 'small',
-                'editable' => $editable,
+                'editable' => 'no',
                 'autocomplete' => 'stop',
-                'value' => isset($_POST["f-phone_label{$i}"]) ? $_POST["f-phone_label{$i}"] : $label,
-                );
+//                'value' => isset($_POST["f-phone_label{$i}"]) ? $_POST["f-phone_label{$i}"] : 
+                'value' => $label,
+                ); */
             $fields["phone_number{$i}"] = array(
                 'id' => "phone_number{$i}",
-                'label' => 'Number',
+                'label' => $label,
                 'ftype' => 'text',
                 'size' => 'small',
                 'editable' => $editable,
                 'autocomplete' => 'tel',
                 'value' => isset($_POST["f-phone_number{$i}"]) ? $_POST["f-phone_number{$i}"] : '',
                 );
+            if( isset($args['required']) && in_array($label, $args['required']) ) {
+                $fields["phone_number{$i}"]['required'] = 'yes';
+                if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' && $fields["phone_number{$i}"]['value'] == '' ) {
+                    $problem_list .= "You must specify a {$label} number\n"; 
+                }
+            }
             if( isset($_POST["f-phone_number{$i}"]) && $_POST["f-phone_number{$i}"] != '' ) {
                 $customer['phones']["new-{$i}"] = array(
                     'id' => 0,
                     'customer_id' => $customer['id'],
-                    'phone_label' => $_POST["f-phone_label{$i}"],
+                    'phone_label' => $label,
                     'phone_number' => $_POST["f-phone_number{$i}"],
                     'flags' => (isset($_POST["f-phone_public{$i}"]) && $_POST["f-phone_public{$i}"] == 'yes' ? 0x08 : 0),
                     );
@@ -440,10 +462,11 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                     'value' => isset($_POST["f-phone_public{$i}"]) ? $_POST["f-phone_public{$i}"] : 'no',
                     );
             }
-            $fields["newline-p{$i}"] = array(
-                'id' => "newline-p{$i}",
-                'ftype' => 'newline',
-                );
+//            $fields["newline-p{$i}"] = array(
+//                'id' => "newline-p{$i}",
+//                'ftype' => 'newline',
+//                );
+            $i++;
         }
     }
 
@@ -622,6 +645,19 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         'editable' => 'yes',
         'value' => isset($mailing_address) ? $mailing_address : array(),
         );
+    if( isset($args['required']) && in_array('Mailing', $args['required']) ) {
+        $fields["mailing_address"]['required'] = 'yes';
+        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' 
+            && (
+                $mailing_address['address1'] == '' 
+                || $mailing_address['city'] == '' 
+                || $mailing_address['province'] == '' 
+                || $mailing_address['postal'] == '' 
+                )
+            ) {
+            $problem_list .= "You must specify a Mailing Address\n"; 
+        }
+    }
     if( isset($settings['account-shipping-address']) && $settings['account-shipping-address'] == 'yes' ) {
         $fields['break_shipping'] = array(
             'id' => 'break_shipping',
@@ -754,15 +790,13 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
     //
     // Check for any errors to information submitted
     //
-    $problem_list = '';
     if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
 
         //
         // Check if enough email addresses are present
         //
         if( count($customer['emails']) == 0 ) {
-            $problem_list .= ($problem_list != '' ? '<br/>' : '')
-                . "You must specifiy an email address.";
+            $problem_list .= "You must specifiy an email address.\n";
         } else {
             $num_emails = 0;
             foreach($customer['emails'] as $email) {
@@ -777,8 +811,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 }
             }
             if( $num_emails == 0 ) {
-                $problem_list .= ($problem_list != '' ? '<br/>' : '')
-                    . "You must specifiy an email address.";
+                $problem_list .= "You must specifiy an email address.\n";
             }
         }
 
@@ -791,8 +824,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
         if( count($update_args) > 0 ) {
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.customer', $customer['id'], $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
-                $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                    . "We had an error (#1002) updating your information, please try again or contact us for help.";
+                $problem_list .= "We had an error (#1002) updating your information, please try again or contact us for help.\n";
             }
         }
         foreach($customer['phones'] as $phone) {
@@ -803,8 +835,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( isset($phone['update_args']['phone_number']) && $phone['update_args']['phone_number'] == '' ) {
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.phone', $phone['id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1003) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1003) updating your information, please try again or contact us for help.\n";
                 }
             } 
             // Update phone
@@ -816,16 +847,14 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 }
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.phone', $phone['id'], $phone['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1004) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1004) updating your information, please try again or contact us for help.\n";
                 }
             } 
             // Add phone
             elseif( isset($phone['id']) && $phone['id'] == 0 ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.phone', $phone, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1005) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1005) updating your information, please try again or contact us for help.\n";
                 }
             }
         }
@@ -837,8 +866,7 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 // Remove email address
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.email', $email['id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1006) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1006) updating your information, please try again or contact us for help.\n";
                 }
             } elseif( isset($email['update_args']) && count($email['update_args']) > 0 ) {
                 if( isset($email['update_args']['email_public']) && $email['update_args']['email_public'] == 'yes' && ($email['flags']&0x08) == 0 ) {
@@ -848,14 +876,12 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
                 }
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.email', $email['id'], $email['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1007) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1007) updating your information, please try again or contact us for help.\n";
                 }
             } elseif( isset($email['id']) && $email['id'] == 0 ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.email', $email, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1008) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1008) updating your information, please try again or contact us for help.\n";
                 }
             }
         }
@@ -868,16 +894,14 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( $mailing_address['id'] == 0 && $mailing_address['str'] != '' ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $mailing_address, 0x04);
                 if( $rc['stat'] != 'ok' ) { 
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1009) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1009) updating your information, please try again or contact us for help.\n";
                 }
             }
             // Update address
             elseif( isset($mailing_address['update_args']) && count($mailing_address['update_args']) > 0 ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $mailing_address['id'], $mailing_address['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1010) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1010) updating your information, please try again or contact us for help.\n";
                 }
             }
         }
@@ -886,16 +910,14 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( $shipping_address['id'] == 0 && $shipping_address['str'] != '' ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $shipping_address, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1011) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1011) updating your information, please try again or contact us for help.\n";
                 }
             }
             // Update address
             elseif( isset($shipping_address['update_args']) && count($shipping_address['update_args']) > 0 ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $shipping_address['id'], $shipping_address['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1012) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1012) updating your information, please try again or contact us for help.\n";
                 }
             }
         }
@@ -904,16 +926,14 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             if( $public_address['id'] == 0 && $public_address['str'] != '' ) {
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.customers.address', $public_address, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1013) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1013) updating your information, please try again or contact us for help.\n";
                 }
             }
             // Update address
             elseif( isset($public_address['update_args']) && count($public_address['update_args']) > 0 ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.customers.address', $public_address['id'], $public_address['update_args'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1014) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1014) updating your information, please try again or contact us for help.\n";
                 }
             }
         }
@@ -925,15 +945,14 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             foreach($remove_addresses as $aid) {
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.customers.address', $address['id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    $problem_list .= ($problem_list != '' ? '<br/>' : '') 
-                        . "We had an error (#1015) updating your information, please try again or contact us for help.";
+                    $problem_list .= "We had an error (#1015) updating your information, please try again or contact us for help.\n";
                 }
             }
         }
 
-        if( $problem_list == '' && (!isset($item['redirect-url']) || $item['redirect-url'] != '') ) {
-            if( isset($item['redirect-url']) && $item['redirect-url'] != '' ) {
-                header("Location: " . $item['redirect-url']);
+        if( $problem_list == '' && (!isset($args['redirect-url']) || $args['redirect-url'] != '') ) {
+            if( isset($args['redirect-url']) && $args['redirect-url'] != '' ) {
+                header("Location: " . $args['redirect-url']);
             }
             elseif( isset($_POST['cancel']) && $_POST['cancel'] == 'Cancel' && isset($_POST['f-next']) && $_POST['f-next'] == 'profile' ) {
                 header("Location: " . $request['ssl_domain_base_url'] . "/account/profile");
