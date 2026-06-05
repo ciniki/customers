@@ -59,13 +59,37 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
     //
     // Get the customer details and emails
     //
-    $strsql = "SELECT ciniki_customers.id, ciniki_customers.uuid, eid, type, prefix, first, middle, last, suffix, "
-        . "display_name, sort_name, permalink, company, department, title, "
-        . "phone_home, phone_cell, phone_work, phone_fax, "
-        . "primary_email, alternate_email, "
+    $strsql = "SELECT ciniki_customers.id, "
+        . "ciniki_customers.uuid, "
+        . "eid, "
+        . "type, "
+        . "ciniki_customers.flags, "
+        . "prefix, "
+        . "first, "
+        . "middle, "
+        . "last, "
+        . "suffix, "
+        . "display_name, "
+        . "sort_name, "
+        . "permalink, "
+        . "company, "
+        . "department, "
+        . "title, "
+        . "phone_home, "
+        . "phone_cell, "
+        . "phone_work, "
+        . "phone_fax, "
+        . "primary_email, "
+        . "alternate_email, "
+        . "crc_expiry_date, "
         . (isset($args['full_bio']) && $args['full_bio'] == 'yes' ? "full_bio, " : '')
-        . "status, dealer_status, distributor_status, "
-        . "member_status, member_status AS member_status_text, member_lastpaid, member_expires, "
+        . "status, "
+        . "dealer_status, "
+        . "distributor_status, "
+        . "member_status, "
+        . "member_status AS member_status_text, "
+        . "member_lastpaid, "
+        . "member_expires, "
         . "ciniki_customer_emails.id AS email_id, "
         . "ciniki_customer_emails.email, "
         . "ciniki_customer_emails.flags AS email_flags, "
@@ -80,11 +104,12 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         . "AND ciniki_customers.id = '" . ciniki_core_dbQuote($ciniki, $customer_id) . "' "
         . "ORDER BY ciniki_customer_emails.date_added "
         . "";
-    $fields = array('id', 'uuid', 'eid', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'permalink',
+    $fields = array('id', 'uuid', 'eid', 'type', 'flags', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 'sort_name', 'permalink',
         'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
         'primary_email', 'alternate_email',
         'status', 'dealer_status', 'distributor_status',
         'member_status', 'member_status_text', 'member_lastpaid', 'member_expires',
+        'crc_expiry_date',
         'company', 'department', 'title', 
         'notes', 'birthdate');
     if( isset($args['full_bio']) && $args['full_bio'] == 'yes' ) {
@@ -94,6 +119,7 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         array('container'=>'customers', 'fname'=>'id',
             'fields'=>$fields,
             'utctotz'=>array(
+                'crc_expiry_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'member_lastpaid'=>array('format'=>'M d, Y', 'timezone'=>'UTC'),
                 'member_expires'=>array('format'=>'M d, Y', 'timezone'=>'UTC'),
                 ),
@@ -292,6 +318,18 @@ function ciniki_customers_hooks_customerDetails2($ciniki, $tnid, $args) {
         if( isset($customer['member_status']) && $customer['member_status'] > 0 ) {
             $details[] = array('label'=>'Last Paid', 'value'=>$customer['member_lastpaid'], 'type'=>'membership');
             $details[] = array('label'=>'Expires', 'value'=>$customer['member_expires'], 'type'=>'membership');
+        }
+    }
+
+    if( isset($args['crc']) && $args['crc'] == 'yes'
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x100000) 
+        ) {
+        if( ($customer['flags']&0x0100) == 0x0100 ) {
+            $value = 'Checked';
+            if( $customer['crc_expiry_date'] != '' && $customer['crc_expiry_date'] != '0000-00-00' ) {
+                $value .= ', Expires: ' . $customer['crc_expiry_date'];
+            }
+            $details[] = array('label'=>'CRC', 'value'=>$value);
         }
     }
 

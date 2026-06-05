@@ -95,6 +95,7 @@ function ciniki_customers_customerGet($ciniki) {
             'membership_type' => 0,
             'dealer_status' => 0,
             'distributor_status' => 0,
+            'flags' => 0,
             'prefix' => '',
             'first' => '',
             'middle' => '',

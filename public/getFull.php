@@ -91,7 +91,7 @@ function ciniki_customers_getFull($ciniki) {
     //
     // Get the customer details and emails
     //
-    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, status, "
+    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, flags, status, "
         . "member_status, member_lastpaid, member_expires, membership_length, membership_type, "
         . "dealer_status, distributor_status, "
         . "callsign, prefix, first, middle, last, suffix, "
@@ -100,6 +100,7 @@ function ciniki_customers_getFull($ciniki) {
 //      . "ciniki_customer_emails.id AS email_id, ciniki_customer_emails.email, "
 //      . "ciniki_customer_emails.flags AS email_flags, "
         . "IFNULL(DATE_FORMAT(birthdate, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS birthdate, "
+        . "IFNULL(DATE_FORMAT(crc_expiry_date, '" . ciniki_core_dbQuote($ciniki, '%b %e, %Y') . "'), '') AS crc_expiry_date, "
         . "connection, language, "
         . "tax_number, tax_location_id, discount_percent, start_date, "
         . "notes, primary_image_id, primary_image_caption, intro_image_id, intro_image_caption, webflags, short_bio, full_bio, "
@@ -126,11 +127,12 @@ function ciniki_customers_getFull($ciniki) {
                 'member_status', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type', 
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax', 'primary_email', 'alternate_email',
                 'dealer_status', 'distributor_status',
-                'eid', 'type', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 
+                'eid', 'type', 'flags', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 
                 'display_name', 'display_name_format', 'company', 'department', 'title', 
                 'tax_number', 'tax_location_id', 
                 'discount_percent', 'start_date', 
-                'notes', 'primary_image_id', 'primary_image_caption', 'intro_image_id', 'intro_image_caption', 'short_bio', 'full_bio', 'birthdate', 'connection', 'language',
+                'notes', 'primary_image_id', 'primary_image_caption', 'intro_image_id', 'intro_image_caption', 'short_bio', 'full_bio', 
+                'birthdate', 'crc_expiry_date', 'connection', 'language',
                 'other1', 'other2', 'other3', 'other4', 'other5', 'other6', 'other7', 'other8', 'other9', 'other10', 'other11', 'other12',
                 ),
             'utctotz'=>array(

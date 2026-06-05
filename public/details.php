@@ -24,6 +24,7 @@ function ciniki_customers_details($ciniki) {
         'addresses'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Addresses'),
         'subscriptions'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Subscriptions'),
         'membership'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'Membership'),
+        'crc'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'no', 'name'=>'CRC'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

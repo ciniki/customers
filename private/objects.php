@@ -27,6 +27,7 @@ function ciniki_customers_objects($ciniki) {
             'dealer_status'=>array('default'=>'0'),
             'distributor_status'=>array('default'=>'0'),
             'callsign'=>array('name'=>'Callsign', 'default'=>''),
+            'flags'=>array('name' => 'Options', 'default'=>'0'),
             'prefix'=>array('default'=>''),
             'first'=>array(),
             'middle'=>array('default'=>''),
@@ -44,6 +45,7 @@ function ciniki_customers_objects($ciniki) {
             'phone_fax'=>array('default'=>''),
             'notes'=>array('default'=>''),
             'birthdate'=>array('name'=>'Birthdate', 'default'=>'0000-00-00 00:00:00'),
+            'crc_expiry_date'=>array('name'=>'CRC Expiry', 'default'=>''),
             'connection'=>array('name'=>'Connection', 'default'=>''),
             'language'=>array('name'=>'Preferred Language', 'default'=>''),
             'pricepoint_id'=>array('ref'=>'ciniki.customers.pricepoint', 'default'=>'0'), //deprecated

@@ -23,7 +23,7 @@ function ciniki_customers_flags($ciniki, $modules) {
 //      array('flag'=>array('bit'=>'7', 'name'=>'Dealer Tags')),
 //      array('flag'=>array('bit'=>'8', 'name'=>'Member Tags')),
         // 0x0100
-        array('flag'=>array('bit'=>'9', 'name'=>'Distributors')),
+        array('flag'=>array('bit'=>'9', 'name'=>'Distributors')),   
         array('flag'=>array('bit'=>'10', 'name'=>'Distributor Categories')),
         array('flag'=>array('bit'=>'11', 'name'=>'Callsigns')),
         array('flag'=>array('bit'=>'12', 'name'=>'Accounts')),
@@ -43,7 +43,7 @@ function ciniki_customers_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'19', 'name'=>'Tax Locations')),
         array('flag'=>array('bit'=>'20', 'name'=>'Reminders')), // Former: Reward Levels
         // 0x100000
-//        array('flag'=>array('bit'=>'21', 'name'=>'')), // Former: Sales Total
+        array('flag'=>array('bit'=>'21', 'name'=>'Criminal Record Checks')), 
         array('flag'=>array('bit'=>'22', 'name'=>'Children')),
         array('flag'=>array('bit'=>'23', 'name'=>'Customer Categories')),
         array('flag'=>array('bit'=>'24', 'name'=>'Customer Tags')),

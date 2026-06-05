@@ -48,6 +48,25 @@
 #                       31 - Admin
 #                       32 - Employee
 #
+# flags:                The options for the customer
+#
+#                           0x01 - 
+#                           0x02 - 
+#                           0x04 - 
+#                           0x08 - 
+#                           0x10 - 
+#                           0x20 - 
+#                           0x40 - 
+#                           0x80 - 
+#                           0x0100 - Criminal Record Check Completed
+#                           0x0200 - 
+#                           0x0400 - 
+#                           0x0800 - 
+#                           0x1000 - 
+#                           0x2000 - 
+#                           0x4000 - 
+#                           0x8000 - 
+#
 # member_status:        The membership status for the customer/member.  This is only used if the
 #                       members are enabled for the business/club.
 #                    
@@ -126,6 +145,7 @@
 # notes:                The current notes for the customer.  Any updates to notes are tracked through change_log.
 #
 # birthdate:            The birthdate of the customer.
+# crc_expirty_date:     The date of expiry for the criminal record check.
 #
 # connection:           How did you hear about us?
 #
@@ -183,6 +203,7 @@ create table ciniki_customers (
     parent_id int not null,
     status tinyint unsigned not null,
     type tinyint unsigned not null,
+    flags int unsigned not null,
     member_status tinyint unsigned not null,
     member_lastpaid datetime not null,
     member_expires date not null,
@@ -210,6 +231,7 @@ create table ciniki_customers (
     alternate_email varchar(255) not null,
     notes varchar(6000) not null,
     birthdate date not null,
+    crc_expiry_date date not null,
     connection varchar(250) not null,
     language varchar(50) not null,
     pricepoint_id int not null,

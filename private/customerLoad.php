@@ -60,6 +60,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "distributor_status, "
         . "distributor_status AS distributor_status_text, "
         . "callsign, "
+        . "flags, "
         . "prefix, "
         . "first, "
         . "middle, "
@@ -69,6 +70,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
         . "department, "
         . "title, "
         . "birthdate, "
+        . "crc_expiry_date, "
         . "short_bio, "
         . "full_bio, "
         . "webflags, "
@@ -86,14 +88,14 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'parent_id', 'type', 'type_text', 'eid', 'display_name', 'sort_name', 'permalink', 'primary_image_id', 
+            'fields'=>array('id', 'parent_id', 'type', 'type_text', 'flags', 'eid', 'display_name', 'sort_name', 'permalink', 'primary_image_id', 
                 'status', 'status_text',
                 'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
                 'dealer_status', 'dealer_status_text', 'distributor_status', 'distributor_status_text', 
                 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'company', 'department', 'title',
                 'tax_number', 'tax_location_id',
                 'discount_percent', 'start_date', 
-                'birthdate', 'short_bio', 'full_bio', 'webflags', 'connection', 'language', 'notes'),
+                'birthdate', 'crc_expiry_date', 'short_bio', 'full_bio', 'webflags', 'connection', 'language', 'notes'),
             'maps'=>array(
                 'type_text'=>$maps['customer']['type'],
                 'status_text'=>$maps['customer']['status'],
@@ -103,6 +105,7 @@ function ciniki_customers_customerLoad($ciniki, $tnid, $customer_id) {
                 ),
             'utctotz'=>array(
                 'birthdate'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                'crc_expiry_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'member_lastpaid'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'member_expires'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'start_date'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),

@@ -31,6 +31,7 @@ function ciniki_customers_update(&$ciniki) {
         'dealer_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dealer Status'), 
         'distributor_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Distributor Status'), 
         'callsign'=>array('required'=>'no', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Callsign'), 
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
         'prefix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Prefix'), 
         'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'), 
         'middle'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Middle Name'), 
@@ -55,6 +56,7 @@ function ciniki_customers_update(&$ciniki) {
         'short_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Bio'), 
         'full_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'birthdate'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Birthday'), 
+        'crc_expiry_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'CRC Expiry'), 
         'connection'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Connection'), 
         'language'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Preferred Language'), 
         'tax_number'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tax Number'), 
@@ -119,7 +121,7 @@ function ciniki_customers_update(&$ciniki) {
     //
     // Get the existing customer name
     //
-    $strsql = "SELECT status, type, callsign, prefix, first, middle, last, suffix, "
+    $strsql = "SELECT status, type, flags, callsign, prefix, first, middle, last, suffix, "
         . "display_name, display_name_format, sort_name, permalink, company, dealer_status, distributor_status, webflags "
         . "FROM ciniki_customers "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
