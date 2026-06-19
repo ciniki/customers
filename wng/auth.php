@@ -45,6 +45,7 @@ function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $hashed_p
         . "customers.first, "
         . "customers.last, "
         . "customers.display_name, "
+        . "customers.flags AS customer_flags, "
         . "emails.email, "
         . "customers.status, "
         . "customers.member_status, "
@@ -220,6 +221,10 @@ function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $hashed_p
     if( $customer['status'] < 50 ) {
         // they can see prices if not suspended/deleted
         $customer['price_flags'] |= 0x10;
+    }
+
+    if( isset($customer['customer_flags']) && ($customer['customer_flags']&0x10) == 0x10 ) {
+        $customer['cheque_checkout'] = 'yes';
     }
 
     //
