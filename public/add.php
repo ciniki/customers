@@ -353,6 +353,14 @@ function ciniki_customers_add(&$ciniki) {
     //
     for($i=1;$i<4;$i++) {
         if( isset($args["phone_number_$i"]) && $args["phone_number_$i"] != '' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+            $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $args['tnid'], ['number'=>$args["phone_number_{$i}"]]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['formatted_number']) ) {
+                $args["phone_number_{$i}"] = $rc['formatted_number'];
+            }
             $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.customers.phone',
                 array('customer_id'=>$customer_id,
                     'phone_label'=>$args["phone_label_$i"],

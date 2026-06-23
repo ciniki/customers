@@ -125,6 +125,16 @@ function ciniki_customers_customerAdd(&$ciniki) {
     foreach(['phone_home', 'phone_work', 'phone_cell', 'phone_fax'] AS $field) {
         if( isset($args[$field]) ) {
             $phone_args[$field] = $args[$field];
+            if( $args[$field] != '' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+                $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $args['tnid'], ['number'=>$args[$field]]);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['formatted_number']) ) {
+                    $phone_args[$field] = $rc['formatted_number'];
+                }
+            }
             unset($args[$field]);
         }
     }
