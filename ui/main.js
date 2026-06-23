@@ -299,6 +299,7 @@ function ciniki_customers_main() {
             'exactduplicates':{'label':'Find Duplicates (Exact)', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\',\'mc\',{\'matchon\':\'exact\'});'},
             'duplicates':{'label':'Find Duplicates (Slow)', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.tools.show();\',\'mc\',{\'matchon\':\'soundex\'});'},
             'members':{'label':'Update Lastpaid/Expires', 'fn':'M.ciniki_customers_main.tools.updateLastpaidExpires();'},
+            'phoneformat':{'label':'Update Phone Format', 'fn':'M.ciniki_customers_main.tools.updatePhoneFormat();'},
         }},
         'download':{'label':'Export (Advanced)', 'list':{
             'export':{'label':'Export to Excel', 'fn':'M.startApp(\'ciniki.customers.download\',null,\'M.ciniki_customers_main.tools.show();\',\'mc\',{});'},
@@ -315,6 +316,15 @@ function ciniki_customers_main() {
         };
     this.tools.updateLastpaidExpires = function() {
         M.api.getJSONCb('ciniki.customers.updateMembersLastPaid', {'tnid':M.curTenantID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.alert('Done');
+        });
+    }
+    this.tools.updatePhoneFormat = function() {
+        M.api.getJSONCb('ciniki.customers.phonesReformat', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
