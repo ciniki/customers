@@ -12,6 +12,8 @@
 //
 function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
 
     $blocks = array();
@@ -343,6 +345,15 @@ function ciniki_customers_wng_accountContactProcess($ciniki, $tnid, &$request, $
             $labels[$label] = [];
         }
     }
+    for($i = 1; $i <= 3; $i++) {
+        if( isset($_POST["f-phone_number{$i}"]) && $_POST["f-phone_number{$i}"] != '' ) {
+            $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $tnid, ['number' => $_POST["f-phone_number{$i}"]]);
+            if( isset($rc['formatted_number']) && $rc['formatted_number'] != $_POST["f-phone_number{$i}"] ) {
+                $_POST["f-phone_number{$i}"] = $rc['formatted_number'];
+            }
+        }
+    }
+    $i = 1;
     foreach($customer['phones'] as $pid => $phone) {
         $customer['phones'][$pid]['update_args'] = array();
 /*        $fields["phone_label{$i}"] = array(
