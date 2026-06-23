@@ -223,6 +223,19 @@ function ciniki_customers_customerUpdate(&$ciniki) {
     //
     foreach(['phone_home', 'phone_work', 'phone_cell', 'phone_fax'] as $field) {
         if( isset($args[$field]) ) {
+            //
+            // Reformat number
+            //
+            if( $args[$field] != '' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+                $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $args['tnid'], ['number'=>$args[$field]]);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['formatted_number']) ) {
+                    $args[$field] = $rc['formatted_number'];
+                }
+            }
             // check for delete
             if( $args[$field] == '' && isset($customer[$field . '_id']) && $customer[$field . '_id'] > 0 ) {
                 $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.customers.phone', $customer[$field . '_id'], null, 0x04);

@@ -45,6 +45,20 @@ function ciniki_customers_phoneUpdate(&$ciniki) {
     }   
 
     //
+    // Format the phone number
+    //
+    if( isset($args['phone_number']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+        $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $args['tnid'], ['number'=>$args['phone_number']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['formatted_number']) ) {
+            $args['phone_number'] = $rc['formatted_number'];
+        }
+    }
+
+    //
     // Update the address
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
