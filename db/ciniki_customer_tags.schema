@@ -17,6 +17,7 @@
 #                   0 - unknown
 #                   10 - Customer Category 
 #                   20 - Customer Tag 
+#                   30 - Customer Permissions
 #                   40 - Member Category
 #                   41 - Member Tags *future*
 #                   45 - Member Subcategory

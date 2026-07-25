@@ -165,7 +165,7 @@ function ciniki_customers_getFull($ciniki) {
     //
     // Get the categories and tags for the customers
     //
-    if( ($modules['ciniki.customers']['flags']&0xC00224) > 0 ) {
+    if( ($modules['ciniki.customers']['flags']&0xC01224) > 0 ) {
         $strsql = "SELECT tag_type, tag_name AS lists "
             . "FROM ciniki_customer_tags "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
@@ -185,6 +185,8 @@ function ciniki_customers_getFull($ciniki) {
                     $customer['customer_categories'] = $tags['tags']['lists'];
                 } elseif( $tags['tags']['tag_type'] == 20 ) {
                     $customer['customer_tags'] = $tags['tags']['lists'];
+                } elseif( $tags['tags']['tag_type'] == 30 ) {
+                    $customer['customer_perms'] = $tags['tags']['lists'];
                 } elseif( $tags['tags']['tag_type'] == 40 ) {
                     $customer['member_categories'] = $tags['tags']['lists'];
                 } elseif( $tags['tags']['tag_type'] == 45 ) {
@@ -468,7 +470,7 @@ function ciniki_customers_getFull($ciniki) {
     //
     // Check if all available member categories should be returned
     //
-    if( ($modules['ciniki.customers']['flags']&0xC00224) > 0 && $args['tags'] == 'yes' ) {
+    if( ($modules['ciniki.customers']['flags']&0xC01224) > 0 && $args['tags'] == 'yes' ) {
         //
         // Get the available tags
         //

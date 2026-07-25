@@ -260,6 +260,9 @@ function ciniki_customers_wng_auth(&$ciniki, $tnid, &$request, $email, $hashed_p
     if( $customer['distributor_status'] == 10 ) {
         $customer['price_flags'] |= 0x80;
     } */
+    //
+    // Check if customer permissions are enabled
+    //
     foreach($customers as $cid => $cust) {
         $customers[$cid]['price_flags'] = 0x01;
         if( $cust['status'] < 50 ) {

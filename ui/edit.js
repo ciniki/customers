@@ -104,6 +104,9 @@ function ciniki_customers_edit() {
         '_customer_tags':{'label':'Tags', 'aside':'yes', 'active':'no', 'fields':{
             'customer_tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
             }},
+        '_customer_perms':{'label':'Permissions', 'aside':'yes', 'active':'no', 'fields':{
+            'customer_perms':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new permission:'},
+            }},
         'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
             'member_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
             'member_lastpaid':{'label':'Last Paid', 'active':'no', 'type':'date', 'size':'medium'},
@@ -353,6 +356,9 @@ function ciniki_customers_edit() {
             }},
         '_customer_tags':{'label':'Tags', 'aside':'yes', 'active':'no', 'fields':{
             'customer_tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
+            }},
+        '_customer_perms':{'label':'Permissions', 'aside':'yes', 'active':'no', 'fields':{
+            'customer_perms':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new permission:'},
             }},
         'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
             'member_status':{'label':'Membership', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},
@@ -1573,6 +1579,10 @@ function ciniki_customers_edit() {
             this.edit.forms.person._customer_tags.active = 'yes';
             this.edit.forms.business._customer_tags.active = 'yes';
         }
+        if( M.modFlagOn('ciniki.customers', 0x1000) ) {
+            this.edit.forms.person._customer_perms.active = 'yes';
+            this.edit.forms.business._customer_perms.active = 'yes';
+        }
 
         if( args.edit_phone_id != null && args.edit_phone_id != '' && args.customer_id != null && args.customer_id > 0 ) {
             this.showPhoneEdit(cb, args.customer_id, args.edit_phone_id);
@@ -1615,6 +1625,8 @@ function ciniki_customers_edit() {
         this.edit.forms.business._customer_categories.fields.customer_categories.tags = [];
         this.edit.forms.person._customer_tags.fields.customer_tags.tags = [];
         this.edit.forms.business._customer_tags.fields.customer_tags.tags = [];
+        this.edit.forms.person._customer_perms.fields.customer_perms.tags = [];
+        this.edit.forms.business._customer_perms.fields.customer_perms.tags = [];
         this.edit.forms.person._member_categories.fields.member_categories.tags = [];
         this.edit.forms.business._member_categories.fields.member_categories.tags = [];
         this.edit.forms.person._dealer_categories.fields.dealer_categories.tags = [];
@@ -1664,7 +1676,7 @@ function ciniki_customers_edit() {
             this.edit.forms.business.addresses.active = 'yes';
             this.edit.forms.business.links.active = 'yes';
             M.api.getJSONCb('ciniki.customers.getFull', {'tnid':M.curTenantID, 'customer_id':this.edit.customer_id, 
-                'tags':'yes', 'customer_categories':'yes', 'customer_tags':'yes', 'member_categories':'yes', 
+                'tags':'yes', 'customer_categories':'yes', 'customer_tags':'yes', 'customer_perms':'yes', 'member_categories':'yes', 
                 'dealer_categories':'yes', 'distributor_categories':'yes', 'images':'yes'}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -1696,6 +1708,10 @@ function ciniki_customers_edit() {
                         else if( rsp.tag_types[i].type.tag_type == 20 && p.forms.person._customer_tags.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
                             p.forms.person._customer_tags.fields.customer_tags.tags = tags;
                             p.forms.business._customer_tags.fields.customer_tags.tags = tags;
+                        }
+                        else if( rsp.tag_types[i].type.tag_type == 30 && p.forms.person._customer_perms.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x1000) > 0 ) {
+                            p.forms.person._customer_perms.fields.customer_perms.tags = tags;
+                            p.forms.business._customer_perms.fields.customer_perms.tags = tags;
                         }
                         else if( rsp.tag_types[i].type.tag_type == 40 && (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
                             p.forms.person._member_categories.fields.member_categories.tags = tags;
@@ -1816,6 +1832,10 @@ function ciniki_customers_edit() {
                         if( rsp.tag_types[i].type.tag_type == 20 && p.forms.person._customer_tags.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
                             p.forms.person._customer_tags.fields.customer_tags.tags = tags;
                             p.forms.business._customer_tags.fields.customer_tags.tags = tags;
+                        }
+                        if( rsp.tag_types[i].type.tag_type == 30 && p.forms.person._customer_perms.active == 'yes' && (M.curTenant.modules['ciniki.customers'].flags&0x1000) > 0 ) {
+                            p.forms.person._customer_perms.fields.customer_perms.tags = tags;
+                            p.forms.business._customer_perms.fields.customer_perms.tags = tags;
                         }
                         if( rsp.tag_types[i].type.tag_type == 40 && (M.curTenant.modules['ciniki.customers'].flags&0x04) > 0 ) {
                             p.forms.person._member_categories.fields.member_categories.tags = tags;

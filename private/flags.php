@@ -33,7 +33,7 @@ function ciniki_customers_flags($ciniki, $modules) {
             // The IFB flag will change many aspects of the module, and how customer information is stored.
             //
         // 0x1000
-//        array('flag'=>array('bit'=>'13', 'name'=>'')), // Former: Price Points
+        array('flag'=>array('bit'=>'13', 'name'=>'Permission Tags')), // Permissions: used by other modules to control access
 //        array('flag'=>array('bit'=>'14', 'name'=>'')), // Former: Sales Reps
         array('flag'=>array('bit'=>'15', 'name'=>'Connection')),
         array('flag'=>array('bit'=>'16', 'name'=>'Birthdate')),
