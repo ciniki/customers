@@ -38,7 +38,9 @@ function ciniki_customers_main() {
     this.menu.list = 'customers';
     this.menu.country = '';
     this.menu.province = '';
-    this.menu.tag = '';
+    this.menu.category = 'All';
+    this.menu.tag = 'All';
+    this.menu.perm = 'All';
     this.menu.sections = {
 //          'tools':{'label':'Tools', 'list':{
 //              'duplicates':{'label':'Find Duplicates', 'fn':'M.startApp(\'ciniki.customers.duplicates\', null, \'M.ciniki_customers_main.menu.show();\');'},
@@ -51,6 +53,10 @@ function ciniki_customers_main() {
         'customer_categories':{'label':'Categories', 'aside':'yes', 'visible':'no', 'type':'simplegrid', 'num_cols':1,
             'headerValues':null,
             'noData':'No categories',
+            },
+        'customer_perms':{'label':'Permissions', 'aside':'yes', 'visible':'no', 'type':'simplegrid', 'num_cols':1,
+            'headerValues':null,
+            'noData':'No permissions',
             },
         'places':{'label':'Countries', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
             'visible':'no',
@@ -112,7 +118,7 @@ function ciniki_customers_main() {
     };
     this.menu.noData = function(s) { return 'No customers'; }
     this.menu.cellValue = function(s, i, j, d) {
-        if( s == 'customer_categories' || s == 'customer_tags' ) {
+        if( s == 'customer_categories' || s == 'customer_tags' || s == 'customer_perms' ) {
             return d.name + ' <span class="count">' + d.num_customers + '</span>';
         }
         if( s == 'places' ) {
@@ -141,6 +147,12 @@ function ciniki_customers_main() {
         if( s == 'customer_categories' && d.name == this.category ) {
             return 'highlight';
         }
+        if( s == 'customer_tags' && d.name == this.tag ) {
+            return 'highlight';
+        }
+        if( s == 'customer_perms' && d.name == this.perm ) {
+            return 'highlight';
+        }
         return '';
     }
     this.menu.rowFn = function(s, i, d) { 
@@ -151,7 +163,10 @@ function ciniki_customers_main() {
             return 'M.ciniki_customers_main.menu.openCategory(\'' + M.eU(d.name) + '\');';
         }
         if( s == 'customer_tags' ) {
-            return 'M.ciniki_customers_main.menu.openCategory(\'' + M.eU(d.name) + '\');';
+            return 'M.ciniki_customers_main.menu.openTag(\'' + M.eU(d.name) + '\');';
+        }
+        if( s == 'customer_perms' ) {
+            return 'M.ciniki_customers_main.menu.openPerm(\'' + M.eU(d.name) + '\');';
         }
         if( s == 'recent' ) {
             return 'M.ciniki_customers_main.customer.open(\'M.ciniki_customers_main.menu.open();\',\'' + d.customer.id + '\');'; 
@@ -163,7 +178,25 @@ function ciniki_customers_main() {
     this.menu.openCategory = function(c) {
         this.list = 'category';
         this.category = M.dU(c);
+        this.tag = 'All';
+        this.perm = 'All';
         this.sections.customers.label = this.category;
+        this.open();
+    }
+    this.menu.openTag = function(c) {
+        this.list = 'tag';
+        this.tag = M.dU(c);
+        this.category = 'All';
+        this.perm = 'All';
+        this.sections.customers.label = this.tag;
+        this.open();
+    }
+    this.menu.openPerm = function(c) {
+        this.list = 'perm';
+        this.perm = M.dU(c);
+        this.category = 'All';
+        this.tag = 'All';
+        this.sections.customers.label = this.perm;
         this.open();
     }
     this.menu.emailCustomers = function() {
@@ -192,6 +225,12 @@ function ciniki_customers_main() {
         var args = {'tnid':M.curTenantID};
         if( this.list == 'category' ) {
             args.category = M.eU(this.category);
+        }
+        if( this.list == 'tag' ) {
+            args.tag = M.eU(this.tag);
+        }
+        if( this.list == 'perm' ) {
+            args.perm = M.eU(this.perm);
         }
         if( this.list == 'customers' ) {
             M.api.getJSONCb('ciniki.customers.customerList', args, function(rsp) {
@@ -247,6 +286,12 @@ function ciniki_customers_main() {
                     p.data.customer_tags = rsp.customer_tags;
                 } else {
                     p.sections.customer_tags.visible = 'no';
+                }
+                if( rsp.customer_perms != null ) {
+                    p.sections.customer_perms.visible = 'yes';
+                    p.data.customer_perms = rsp.customer_perms;
+                } else {
+                    p.sections.customer_perms.visible = 'no';
                 }
                 p.data = rsp; 
 
@@ -831,6 +876,9 @@ function ciniki_customers_main() {
         }
         if( (M.curTenant.modules['ciniki.customers'].flags&0x800000) > 0 ) {
             this.data.details['customer_tags'] = {'label':'Tags', 'value':(rsp.customer.customer_tags!=null?rsp.customer.customer_tags.replace(/::/g,', '):'')};
+        }
+        if( (M.curTenant.modules['ciniki.customers'].flags&0x1000) > 0 ) {
+            this.data.details['customer_perms'] = {'label':'Permissions', 'value':(rsp.customer.customer_perms!=null?rsp.customer.customer_perms.replace(/::/g,', '):'')};
         }
         // Stripe Customer Id
         if( M.modFlagOn('ciniki.sapos', 0x800000) && rsp.customer.stripe_customer_id != '' ) {

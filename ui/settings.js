@@ -56,6 +56,11 @@ function ciniki_customers_settings() {
                     'visible':function() { return M.modFlagSet('ciniki.customers', 0x0a); },
                     },
             }},
+            '_customer_perms':{'label':'Customer Permissions', 
+                'visible':function() { return M.modFlagSet('ciniki.customers', 0x1000); },
+                'fields':{
+                    'customers-permission-tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[]},
+            }},
 /*            
             
             'ui_labels':{'label':'Labels', 'visible':'no', 'fields':{
@@ -306,6 +311,10 @@ function ciniki_customers_settings() {
             p.data = rsp.settings;
             if( rsp.seasons != null ) {
                 p.data.seasons = rsp.seasons;
+            }
+            p.sections._customer_perms.fields['customers-permission-tags'].tags = [];
+            if( rsp.settings['customers-permission-tags'] != null ) {
+                p.sections._customer_perms.fields['customers-permission-tags'].tags = rsp.settings['customers-permission-tags'].split(/::/);
             }
             p.refresh();
             p.show(cb);

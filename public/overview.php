@@ -20,6 +20,8 @@ function ciniki_customers_overview($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
+        'tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag'), 
+        'perm'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Perm'), 
         'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -68,7 +70,7 @@ function ciniki_customers_overview($ciniki) {
     //
     // Get the list of categories if specified
     //
-    if( ($modules['ciniki.customers']['flags']&0xC00000) > 0 ) {
+    if( ($modules['ciniki.customers']['flags']&0xC01000) > 0 ) {
         $strsql = "SELECT tag_type, tag_name, COUNT(customer_id) AS num_customers "
             . "FROM ciniki_customer_tags "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -88,6 +90,8 @@ function ciniki_customers_overview($ciniki) {
                     $rsp['customer_categories'] = $tag_type['tags'];
                 } elseif( $tag_type['tag_type'] == 20 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x800000) ) { 
                     $rsp['customer_tags'] = $tag_type['tags'];
+                } elseif( $tag_type['tag_type'] == 30 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x1000) ) { 
+                    $rsp['customer_perms'] = $tag_type['tags'];
                 }
             }
         }
@@ -105,9 +109,16 @@ function ciniki_customers_overview($ciniki) {
             $rsp['customer_categories'] = [];
         }
         array_unshift($rsp['customer_categories'], ['name'=>'All', 'num_customers'=>$num_items]);
+        if( isset($rsp['customer_tags']) ) {
+            array_unshift($rsp['customer_tags'], ['name'=>'All', 'num_customers'=>$num_items]);
+        }
+        if( isset($rsp['customer_perms']) ) {
+            array_unshift($rsp['customer_perms'], ['name'=>'All', 'num_customers'=>$num_items]);
+        }
     }
 
-    if( isset($args['category']) && $args['category'] == 'All' ) {
+/*    if( isset($args['category']) && $args['category'] == 'All' 
+        ) {
         $strsql = "SELECT customers.id, "
             . "customers.display_name, "
             . "customers.status, "
@@ -131,7 +142,11 @@ function ciniki_customers_overview($ciniki) {
         if( isset($rc['customers']) ) { 
             $rsp['customers'] = $rc['customers'];
         }
-    } elseif( isset($args['category']) && $args['category'] != '' ) {
+    } else */
+    if( (isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' )
+        || (isset($args['tag']) && $args['tag'] != '' && $args['tag'] != 'All' )
+        || (isset($args['perm']) && $args['perm'] != '' && $args['perm'] != 'All' )
+        ) {
         $strsql = "SELECT customers.id, "
             . "customers.display_name, "
             . "customers.status, "
@@ -143,10 +158,47 @@ function ciniki_customers_overview($ciniki) {
             . "JOIN ciniki_customers AS customers ON ("
                 . "tags.customer_id = customers.id "
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE tags.tag_type = 10 "
-            . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' "
-            . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") ";
+        if( isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' ) {
+            $strsql .= "WHERE tags.tag_type = 10 "
+                . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+        } elseif( isset($args['tag']) && $args['tag'] != '' && $args['tag'] != 'All' ) {
+            $strsql .= "WHERE tags.tag_type = 20 "
+                . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['tag']) . "' ";
+        } elseif( isset($args['perm']) && $args['perm'] != '' && $args['tag'] != 'All' ) {
+            $strsql .= "WHERE tags.tag_type = 30 "
+                . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['perm']) . "' ";
+        } else {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.581', 'msg'=>'Nothing specified'));
+        }
+        $strsql .= "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY display_name "
+            . "";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
+            array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
+                'fields'=>array('id', 'display_name', 'status', 'status_text', 'type', 'company', 'eid'),
+                'maps'=>array('status_text'=>$maps['customer']['status']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['customers']) ) { 
+            $rsp['customers'] = $rc['customers'];
+        }
+    } elseif( (isset($args['category']) && $args['category'] == 'All' )
+        || (isset($args['tag']) && $args['tag'] == 'All' )
+        || (isset($args['perm']) && $args['perm'] == 'All' )
+        ) {
+        $strsql = "SELECT customers.id, "
+            . "customers.display_name, "
+            . "customers.status, "
+            . "customers.status AS status_text, "
+            . "customers.type, "
+            . "customers.company, "
+            . "customers.eid "
+            . "FROM ciniki_customers AS customers "
+            . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY display_name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(

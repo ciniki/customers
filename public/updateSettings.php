@@ -123,6 +123,7 @@ function ciniki_customers_updateSettings(&$ciniki) {
         'dropbox-customerprofiles',
         'ui-member-subcategories',
         'members-deactivate-days',
+        'customers-permission-tags',
 //      'use-cid',
 //      'use-relationships',
 //      'use-tax-number',

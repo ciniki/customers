@@ -105,7 +105,7 @@ function ciniki_customers_edit() {
             'customer_tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
             }},
         '_customer_perms':{'label':'Permissions', 'aside':'yes', 'active':'no', 'fields':{
-            'customer_perms':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new permission:'},
+            'customer_perms':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'add':'no', 'hint':'Enter a new permission:'},
             }},
         'membership':{'label':'Membership', 'aside':'yes', 'active':'no', 'fields':{
             'member_status':{'label':'Status', 'type':'toggle', 'none':'yes', 'toggles':this.memberStatus},

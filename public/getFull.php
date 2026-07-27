@@ -476,7 +476,7 @@ function ciniki_customers_getFull($ciniki) {
         //
         $rsp['member_categories'] = array();
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsByType');
-        $rc = ciniki_core_tagsByType($ciniki, 'ciniki.blog', $args['tnid'], 
+        $rc = ciniki_core_tagsByType($ciniki, 'ciniki.customers', $args['tnid'], 
             'ciniki_customer_tags', array());
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.87', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
@@ -486,12 +486,41 @@ function ciniki_customers_getFull($ciniki) {
         } else {
             $rsp['tag_types'] = array();
         }
+
         //
+        // Get the default permissions
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x1000) 
+            && isset($settings['customers-permission-tags']) && $settings['customers-permission-tags'] != '' 
+            ) {
+            $tags = explode('::', $settings['customers-permission-tags']);
+            foreach($rsp['tag_types'] as $tid => $tag_type) {
+                if( $tag_type['type']['tag_type'] == 30 ) {
+                    foreach($tags as $tag) {
+                        $found = 'no';
+                        foreach($tag_type['type']['tags'] as $i => $etag) {
+                            if( $etag['tag']['name'] == $tag ) {
+                                $found = 'yes';
+                            }
+                        }
+                        if( $found == 'no' ) {
+                            $rsp['tag_types'][$tid]['type']['tags'][] = ['tag'=>['tag_type' => 30, 'name' => $tag]];
+                        }
+                    }
+                    uasort($rsp['tag_types'][$tid]['type']['tags'], function($a, $b) {
+                        return strnatcasecmp($a['tag']['name'], $b['tag']['name']);
+                        });
+                    $rsp['tag_types'][$tid]['type']['tags'] = array_values($rsp['tag_types'][$tid]['type']['tags']);
+                }
+            }
+        }
+
+/*        //
         // Get the available tags
         //
         $rsp['member_subcategories'] = array();
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsByType');
-        $rc = ciniki_core_tagsByType($ciniki, 'ciniki.blog', $args['tnid'], 
+        $rc = ciniki_core_tagsByType($ciniki, 'ciniki.customers', $args['tnid'], 
             'ciniki_customer_tags', array());
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.87', 'msg'=>'Unable to get list of subcategories', 'err'=>$rc['err']));
@@ -500,7 +529,7 @@ function ciniki_customers_getFull($ciniki) {
             $rsp['tag_types'] = $rc['types'];
         } else {
             $rsp['tag_types'] = array();
-        }
+        } */
     }
 
     //
@@ -514,7 +543,7 @@ function ciniki_customers_getFull($ciniki) {
         //
         $rsp['dealer_categories'] = array();
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
-        $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['tnid'], 
+        $rc = ciniki_core_tagsList($ciniki, 'ciniki.customers', $args['tnid'], 
             'ciniki_customer_tags', 60);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.88', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));
@@ -535,7 +564,7 @@ function ciniki_customers_getFull($ciniki) {
         //
         $rsp['distributor_categories'] = array();
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
-        $rc = ciniki_core_tagsList($ciniki, 'ciniki.blog', $args['tnid'], 
+        $rc = ciniki_core_tagsList($ciniki, 'ciniki.customers', $args['tnid'], 
             'ciniki_customer_tags', 40);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.89', 'msg'=>'Unable to get list of categories', 'err'=>$rc['err']));

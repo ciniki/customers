@@ -21,6 +21,9 @@ function ciniki_customers_memberships() {
         'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'visible':function() { return M.modFlagSet('ciniki.customers', 0x04); },
             },
+        'perms':{'label':'Permissions', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
+            'visible':function() { return M.modFlagSet('ciniki.customers', 0x1000); },
+            },
         '_email':{'label':'', 'aside':'yes', 'visible':'no', 'buttons':{
             'email':{'label':'Email List', 'fn':'M.ciniki_customers_memberships.menu.emailShow();'},
             'expire':{'label':'De-activate Expired Members',
@@ -87,11 +90,13 @@ function ciniki_customers_memberships() {
             return 'highlight';
         } else if( s == 'categories' && this.filterby == 'category' && unescape(this.category) == d.name ) {
             return 'highlight';
+        } else if( s == 'perms' && this.filterby == 'perm' && unescape(this.perm) == d.name ) {
+            return 'highlight';
         }
         return '';
     }
     this.menu.cellValue = function(s, i, j, d) {
-        if( s == 'membertypes' || s == 'memberaddons' || s == 'categories' ) {
+        if( s == 'membertypes' || s == 'memberaddons' || s == 'categories' || s == 'perms' ) {
             return d.name + '<span class="count">' + d.num_members + '</span>';
         }
         if( s == 'members' && M.modFlagOn('ciniki.customers', 0x08) ) {
@@ -125,6 +130,8 @@ function ciniki_customers_memberships() {
             return 'M.ciniki_customers_memberships.menu.showType(' + d.membership_type + ');';
         } else if( s == 'categories' ) {
             return 'M.ciniki_customers_memberships.menu.showCategory("' + escape(d.name) + '");';
+        } else if( s == 'perms' ) {
+            return 'M.ciniki_customers_memberships.menu.showPerm("' + escape(d.name) + '");';
         }
     }
     this.menu.showType = function(t) {
@@ -135,6 +142,15 @@ function ciniki_customers_memberships() {
     this.menu.showCategory = function(c) {
         this.filterby = 'category';
         this.category = c;
+        this.membertype = '';
+        this.perm = '';
+        this.open();
+    }
+    this.menu.showPerm = function(p) {
+        this.filterby = 'perm';
+        this.membertype = '';
+        this.category = '';
+        this.perm = p;
         this.open();
     }
     this.menu.emailShow = function() {
@@ -174,6 +190,8 @@ function ciniki_customers_memberships() {
             args['type'] = this.membertype;
         } else if( this.filterby == 'category' ) {
             args['category'] = this.category;
+        } else if( this.filterby == 'perm' ) {
+            args['perm'] = this.perm;
         }
         M.api.getJSONCb('ciniki.customers.memberships', args, function(rsp) {
             if( rsp.stat != 'ok' ) {
@@ -201,6 +219,9 @@ function ciniki_customers_memberships() {
                 }
             } else if( p.filterby == 'category' && p.category != '' ) {
                 p.sections._email.buttons.email.label = 'Email ' + unescape(p.category);
+                p.sections._email.visible = 'yes';
+            } else if( p.filterby == 'perm' && p.perm != '' ) {
+                p.sections._email.buttons.email.label = 'Email ' + unescape(p.perm);
                 p.sections._email.visible = 'yes';
             } else {
                 p.sections._email.visible = 'no';

@@ -52,7 +52,7 @@ function ciniki_customers_wng_perms(&$ciniki, $tnid, &$request, $args) {
         }
     }
 
-    $perms_sql .= ')';
+    $perms_sql .= ') ';
 
     return array('stat'=>'ok', 'perms'=>$perms, 'perms_sql'=>$perms_sql);
 }
