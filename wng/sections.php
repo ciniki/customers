@@ -62,6 +62,10 @@ function ciniki_customers_wng_sections(&$ciniki, $tnid, $args) {
         'settings' => array(
             'title' => array('label' => 'Title', 'type' => 'text'),
             'content' => array('label' => 'Intro', 'type' => 'textarea', 'size' => 'medium'),
+            'private-info' => array('label' => 'Display', 'type' => 'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Only Public Details',
+                'yes' => 'All Member Details',
+                )),
             ),
         );
 

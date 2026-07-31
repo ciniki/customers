@@ -43,6 +43,19 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
     }
     $settings = $rc['settings'];
 
+    $strsql_customer_visible = 'AND (customers.webflags&0x01) = 0x01 ';
+    $strsql_email_visible = 'AND (emails.flags&0x08) = 0x08 ';
+    $strsql_address_visible = 'AND (addresses.flags&0x08) = 0x08 ';
+    $strsql_phone_visible = 'AND (phones.flags&0x08) = 0x08 ';
+    $strsql_link_visible = 'AND (links.webflags&0x01) = 0x01 ';
+    if( isset($s['private-info']) && $s['private-info'] == 'yes' ) {
+        $strsql_customer_visible = '';
+        $strsql_email_visible = '';
+        $strsql_phone_visible = '';
+        $strsql_address_visible = '';
+        $strsql_link_visible = '';
+    }
+
     //
     // Get the list of members and emails
     //
@@ -70,11 +83,13 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
         . "FROM ciniki_customers AS customers "
         . "LEFT JOIN ciniki_customer_emails AS emails ON ("
             . "customers.id = emails.customer_id "
+            . $strsql_email_visible
             . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND customers.status = 10 "
         . "AND customers.member_status = 10 "
+        . $strsql_customer_visible
         . "ORDER BY customers.last, customers.first  "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -106,9 +121,11 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
         . "FROM ciniki_customers AS customers "
         . "LEFT JOIN ciniki_customer_phones AS phones ON ("
             . "customers.id = phones.customer_id "
+            . $strsql_phone_visible
             . "AND phones.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . $strsql_customer_visible
         . "AND customers.status = 10 "
         . "AND customers.member_status = 10 "
         . "ORDER BY customers.id "
@@ -142,9 +159,11 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
         . "FROM ciniki_customers AS customers "
         . "LEFT JOIN ciniki_customer_addresses AS addresses ON ("
             . "customers.id = addresses.customer_id "
+            . $strsql_address_visible
             . "AND addresses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . $strsql_customer_visible
         . "AND customers.status = 10 "
         . "AND customers.member_status = 10 "
         . "ORDER BY customers.id "
@@ -173,9 +192,11 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
         . "FROM ciniki_customers AS customers "
         . "LEFT JOIN ciniki_customer_links AS links ON ("
             . "customers.id = links.customer_id "
+            . $strsql_link_visible
             . "AND links.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . $strsql_customer_visible
         . "AND customers.status = 10 "
         . "AND customers.member_status = 10 "
         . "ORDER BY customers.id "
@@ -268,8 +289,6 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
         $members[$mid]['title'] = "{$member['last']}, {$member['first']}";
         $members[$mid]['synopsis'] = $details;
     }
-
-
     
     if( isset($s['content']) && $s['content'] != '' ) {
         $blocks[] = array(
