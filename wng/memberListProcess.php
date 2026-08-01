@@ -227,7 +227,7 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
         if( $member['birthdate'] != '' ) {
             $details .= ($details != '' ? "\n" : '') . "<b>Birthday</b>: {$member['birthdate']}";
         }
-        if( $member['start_date'] != '' ) {
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x04000000) && $member['start_date'] != '' ) {
             $details .= ($details != '' ? "\n" : '') . "<b>Start Date</b>: {$member['start_date']}";
         }
         if( isset($phones[$member['id']]['phones']) ) {
