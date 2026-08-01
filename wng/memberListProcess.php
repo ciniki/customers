@@ -244,10 +244,14 @@ function ciniki_customers_wng_memberListProcess($ciniki, $tnid, &$request, $sect
             foreach($addresses[$member['id']]['addresses'] as $address) {
                 $label = '';
                 $comma = '';
-                if( ($address['flags']&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
-                if( ($address['flags']&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
-                if( ($address['flags']&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
-                if( ($address['flags']&0x08) == 0x08 ) { $label .= $comma . 'Public'; $comma = ', ';}
+                if( ($address['flags']&0x07) == 0x07 ) { 
+                    $label = 'Address';
+                } else {
+                    if( ($address['flags']&0x01) == 0x01 ) { $label .= $comma . 'Shipping'; $comma = ', ';}
+                    if( ($address['flags']&0x02) == 0x02 ) { $label .= $comma . 'Billing'; $comma = ', ';}
+                    if( ($address['flags']&0x04) == 0x04 ) { $label .= $comma . 'Mailing'; $comma = ', ';}
+                }
+//                if( ($address['flags']&0x08) == 0x08 ) { $label .= $comma . 'Public'; $comma = ', ';}
                 if( $label == '' ) { 
                     $label = 'Address'; 
                 }
