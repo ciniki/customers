@@ -11,7 +11,7 @@
 // -------
 //
 function ciniki_customers_wng_memberContactsProcess($ciniki, $tnid, &$request, $section) {
-error_log('test');
+
     $s = isset($section['settings']) ? $section['settings'] : array();
 
     $blocks = array();
