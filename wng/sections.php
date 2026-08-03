@@ -54,11 +54,27 @@ function ciniki_customers_wng_sections(&$ciniki, $tnid, $args) {
         );
 
     //
-    // Display members only members list
+    // Display members only members list, all member details
     //
     $sections['ciniki.customers.memberlist'] = array(
         'name' => 'Member List',
         'module' => 'Members Only',
+        'settings' => array(
+            'title' => array('label' => 'Title', 'type' => 'text'),
+            'content' => array('label' => 'Intro', 'type' => 'textarea', 'size' => 'medium'),
+            'private-info' => array('label' => 'Display', 'type' => 'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Only Public Details',
+                'yes' => 'All Member Details',
+                )),
+            ),
+        );
+
+    //
+    // Display members contact list, only contact info no other details
+    //
+    $sections['ciniki.customers.membercontacts'] = array(
+        'name' => 'Member Contacts',
+        'module' => 'Members',
         'settings' => array(
             'title' => array('label' => 'Title', 'type' => 'text'),
             'content' => array('label' => 'Intro', 'type' => 'textarea', 'size' => 'medium'),
