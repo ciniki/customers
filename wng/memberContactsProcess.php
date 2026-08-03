@@ -206,12 +206,6 @@ error_log('test');
         $members_list .= ($members_list != '' ? "\n" : '') 
             . "<a href='{$request['ssl_domain_base_url']}{$request['page']['path']}/{$member['permalink']}'>{$member['last']}, {$member['first']}</a>";
 
-        if( $member['birthdate'] != '' ) {
-            $details .= ($details != '' ? "\n" : '') . "<b>Birthday</b>: {$member['birthdate']}";
-        }
-        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x04000000) && $member['start_date'] != '' ) {
-            $details .= ($details != '' ? "\n" : '') . "<b>Start Date</b>: {$member['start_date']}";
-        }
         if( isset($phones[$member['id']]['phones']) ) {
             foreach($phones[$member['id']]['phones'] as $phone) {
                 $details .= ($details != '' ? "\n" : '') . "<b>{$phone['label']}</b>: {$phone['number']}";
@@ -261,14 +255,6 @@ error_log('test');
         if( isset($links[$member['id']]['links']) ) {
             foreach($links[$member['id']]['links'] as $link) {
                 $details .= ($details != '' ? "\n" : '') . "<b>{$link['label']}</b>: {$link['url']}";
-            }
-        }
-
-        for($i = 1; $i <= 12; $i++) {
-            if( isset($settings["other-{$i}-label"]) && $settings["other-{$i}-label"] != '' 
-                && $member["other{$i}"] != '' 
-                ) {
-                $details .= ($details != '' ? "\n" : '') . '<b>' . $settings["other-{$i}-label"] . '</b>: ' . $member["other{$i}"];
             }
         }
 
