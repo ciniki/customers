@@ -107,7 +107,7 @@ function ciniki_customers_wng_membersGalleriesProcess($ciniki, $tnid, &$request,
             // Check if image selected
             //
             if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-                && $images[$request['uri_split'][($request['cur_uri_pos']+2)]]
+                && isset($images[$request['uri_split'][($request['cur_uri_pos']+2)]])
                 ) {
                 $image = $images[$request['uri_split'][($request['cur_uri_pos']+2)]];
                 $blocks = array();
