@@ -33,6 +33,10 @@ function ciniki_customers_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Customers',
         'settings'=>array(
             'title' => array('label' => 'Title', 'type' => 'text'),
+            'show-all' => array('label' => 'Show', 'type' => 'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Only Currently Subscribed Membership',
+                'yes' => 'All Memberships',
+                )),
             ),
         );
 

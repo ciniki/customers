@@ -68,6 +68,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'productsPurchased');
         $rc = ciniki_customers_productsPurchased($ciniki, $tnid, array(
             'customer_id' => $request['session']['customer']['id'],
+            'show-all' => (isset($s['show-all']) ? $s['show-all'] : ''),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.515', 'msg'=>'Unable to load purchased products.', 'err'=>$rc['err']));
@@ -96,24 +97,42 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
                 } else {
                     $details[$did]['renewbutton'] = 'Contact Us to Renew';
                 }
-                if( isset($products[$detail['product_id']]) && $detail['type'] > 20 ) {
-                    unset($products[$detail['product_id']]);
+                if( isset($products[$detail['product_id']]) && $detail['type'] >= 10 ) {
+                    if( !isset($s['show-all']) || $s['show-all'] != 'yes' ) {
+                        unset($products[$detail['product_id']]);
+                    } else {
+                        $products[$detail['product_id']]['name'] .= ' (Expires: ' . $detail['expiry_display'] . ')';
+                        $products[$detail['product_id']]['add_text'] = 'Renew';
+                    }
                 }
                 if( isset($addons[$detail['product_id']]) && $detail['type'] > 20 ) {
-                    unset($addons[$detail['product_id']]);
+                    if( !isset($s['show-all']) || $s['show-all'] != 'yes' ) {
+                        unset($addons[$detail['product_id']]);
+                    } else {
+                        $addons[$detail['product_id']]['name'] .= ' (Expires: ' . $detail['expiry_display'] . ')';
+                    }
                 }
             }
-            $blocks[] = array(
-                'title' => isset($s['title']) ? $s['title'] : '',
-                'type' => 'table', 
-                'headers' => 'yes',
-                'columns' => array(
-                    array('label' => 'Purchase', 'field' => 'name', 'class' => 'alignleft'),
-                    array('label' => 'Expiry', 'field' => 'expiry_display', 'class' => 'aligncenter'),
-                    array('label' => 'Renew', 'field' => 'renewbutton', 'class' => 'alignright'),
-                    ),
-                'rows' => $details,
-                );
+            if( !isset($s['show-all']) || $s['show-all'] != 'yes' ) {
+                $blocks[] = array(
+                    'title' => isset($s['title']) ? $s['title'] : '',
+                    'type' => 'table', 
+                    'headers' => 'yes',
+                    'columns' => array(
+                        array('label' => 'Purchase', 'field' => 'name', 'class' => 'alignleft'),
+                        array('label' => 'Expiry', 'field' => 'expiry_display', 'class' => 'aligncenter'),
+                        array('label' => 'Renew', 'field' => 'renewbutton', 'class' => 'alignright'),
+                        ),
+                    'rows' => $details,
+                    );
+            } else {
+                $blocks[] = array(
+                    'title' => isset($s['title']) ? $s['title'] : '',
+                    'type' => 'pricelist', 
+                    'prices' => $products, 
+                    'descriptions' => 'yes',
+                    );
+            }
 
             //
             // FIXME: Show membership addon's available
