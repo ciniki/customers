@@ -1813,7 +1813,7 @@ function ciniki_customers_edit() {
             this.edit.forms.business.addresses.active = 'no';
             this.edit.forms.business.links.active = 'no';
             this.edit.forms.person._customer_categories.fields.customer_categories.tags = [];
-            if( (M.curTenant.modules['ciniki.customers'].flags&0xC00224) > 0 ) {
+            if( (M.curTenant.modules['ciniki.customers'].flags&0xC01224) > 0 ) {
                 M.api.getJSONCb('ciniki.customers.tags', {'tnid':M.curTenantID}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
