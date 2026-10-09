@@ -192,6 +192,12 @@ function ciniki_customers_memberships($ciniki) {
             . "AND ciniki_customers.member_status = 60 "
             . "ORDER BY sort_name, last, first, company "
             . "";
+    } elseif( isset($args['type']) && $args['type'] == '-3' ) { // Active
+        $strsql .= "FROM ciniki_customers ";
+        $strsql .= "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ciniki_customers.member_status = 10 "
+            . "ORDER BY sort_name, last, first, company "
+            . "";
     } elseif( isset($args['type']) && $args['type'] != '' ) {
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
             $strsql .= "FROM ciniki_customers "
@@ -335,6 +341,24 @@ function ciniki_customers_memberships($ciniki) {
     }
 
     //
+    // Get the deleted memberships
+    //
+    $strsql = "SELECT COUNT(id) AS num_members "
+        . "FROM ciniki_customers "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND member_status = 10 "
+        . "GROUP BY membership_type "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.customers', 'active');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.394', 'msg'=>'Unable to load active members', 'err'=>$rc['err']));
+    }
+    if( isset($rc['active']) ) {
+        $rsp['membertypes'][] = array('membership_type'=>'-3', 'name'=>'Active', 'num_members'=>$rc['active']);
+    }
+
+    //
     // Get the expired memberships
     //
     $strsql = "SELECT COUNT(id) AS num_members "
@@ -357,6 +381,7 @@ function ciniki_customers_memberships($ciniki) {
     if( isset($rc['expired']) ) {
         $rsp['membertypes'][] = array('membership_type'=>'-1', 'name'=>'Active Expired', 'num_members'=>$rc['expired']);
     }
+
     //
     // Get the deleted memberships
     //
