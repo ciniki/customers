@@ -98,7 +98,7 @@ function ciniki_customers_getModuleData($ciniki) {
     //
     // Get the customer details and emails
     //
-    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, callsign, prefix, first, middle, last, suffix, "
+    $strsql = "SELECT ciniki_customers.id, eid, parent_id, type, prefix, first, middle, last, suffix, "
         . "display_name, company, department, title, "
         . "phone_home, phone_work, phone_cell, phone_fax, "
         . "status, status AS status_text, "
@@ -139,7 +139,7 @@ function ciniki_customers_getModuleData($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-            'fields'=>array('id', 'eid', 'parent_id', 'type', 'callsign', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
+            'fields'=>array('id', 'eid', 'parent_id', 'type', 'prefix', 'first', 'middle', 'last', 'suffix', 'display_name', 
                 'status', 'status_text',
                 'phone_home', 'phone_work', 'phone_cell', 'phone_fax',
                 'member_status', 'member_status_text', 'member_lastpaid', 'member_expires', 'membership_length', 'membership_type',
@@ -175,6 +175,51 @@ function ciniki_customers_getModuleData($ciniki) {
     $customer['addresses'] = array();
     $customer['subscriptions'] = array();
 
+    //
+    // Get the categories and tags for the customer
+    // **NOTE** Must be done before products load
+    //
+    if( ($modules['ciniki.customers']['flags']&0xC00224) > 0 ) {
+        $strsql = "SELECT tag_type, tag_name AS lists "
+            . "FROM ciniki_customer_tags "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY tag_type, tag_name "
+            . "";
+        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.blog', array(
+            array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
+                'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['tags']) ) {
+            foreach($rc['tags'] as $tags) {
+                if( $tags['tags']['tag_type'] == 10 ) {
+                    $customer['customer_categories'] = $tags['tags']['lists'];
+                }
+                if( $tags['tags']['tag_type'] == 20 ) {
+                    $customer['customer_tags'] = $tags['tags']['lists'];
+                }
+                if( $tags['tags']['tag_type'] == 30 ) {
+                    $customer['customer_perms'] = $tags['tags']['lists'];
+                }
+                if( $tags['tags']['tag_type'] == 40 ) {
+                    $customer['member_categories'] = $tags['tags']['lists'];
+                }
+                if( $tags['tags']['tag_type'] == 45 ) {
+                    $customer['member_subcategories'] = $tags['tags']['lists'];
+                }
+                if( $tags['tags']['tag_type'] == 60 ) {
+                    $customer['dealer_categories'] = $tags['tags']['lists'];
+                }
+                if( $tags['tags']['tag_type'] == 80 ) {
+                    $customer['distributor_categories'] = $tags['tags']['lists'];
+                }
+            }
+        }
+    }
+
 
     //
     // Get the membership products purchased
@@ -186,6 +231,14 @@ function ciniki_customers_getModuleData($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.427', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
         }
         $customer['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
+
+        if( isset($customer['member_categories']) && $customer['member_categories'] != '' ) {
+            array_unshift($customer['membership_details'], array(
+                'label' => 'Categories',
+                'value' => preg_replace("/::/", ", ", $customer['member_categories']),
+                ));
+            
+        }
 
         if( $customer['member_status'] == 0 ) {
             array_unshift($customer['membership_details'], array(
@@ -248,50 +301,6 @@ function ciniki_customers_getModuleData($ciniki) {
             if( isset($tax['rates']) ) {
                 foreach($tax['rates'] as $rid => $rate) {
                     $customer['tax_location_id_rates'] .= ($customer['tax_location_id_rates']!=''?', ':'') . $rate['name'];
-                }
-            }
-        }
-    }
-
-    //
-    // Get the categories and tags for the customer
-    //
-    if( ($modules['ciniki.customers']['flags']&0xC00224) > 0 ) {
-        $strsql = "SELECT tag_type, tag_name AS lists "
-            . "FROM ciniki_customer_tags "
-            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $customer['id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "ORDER BY tag_type, tag_name "
-            . "";
-        $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.blog', array(
-            array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
-                'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( isset($rc['tags']) ) {
-            foreach($rc['tags'] as $tags) {
-                if( $tags['tags']['tag_type'] == 10 ) {
-                    $customer['customer_categories'] = $tags['tags']['lists'];
-                }
-                if( $tags['tags']['tag_type'] == 20 ) {
-                    $customer['customer_tags'] = $tags['tags']['lists'];
-                }
-                if( $tags['tags']['tag_type'] == 30 ) {
-                    $customer['customer_perms'] = $tags['tags']['lists'];
-                }
-                if( $tags['tags']['tag_type'] == 40 ) {
-                    $customer['member_categories'] = $tags['tags']['lists'];
-                }
-                if( $tags['tags']['tag_type'] == 45 ) {
-                    $customer['member_subcategories'] = $tags['tags']['lists'];
-                }
-                if( $tags['tags']['tag_type'] == 60 ) {
-                    $customer['dealer_categories'] = $tags['tags']['lists'];
-                }
-                if( $tags['tags']['tag_type'] == 80 ) {
-                    $customer['distributor_categories'] = $tags['tags']['lists'];
                 }
             }
         }

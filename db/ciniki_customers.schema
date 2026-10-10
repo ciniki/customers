@@ -114,6 +114,8 @@
 #                        40 - Previous
 #                        60 - Suspended Distributor
 #
+# callsign:                 Amateur Radio callsign **deprecated**
+#
 # prefix:                   Dr. Mr. Ms. Miss. Mrs.
 # first:                    The first name(s) of the customer.
 # middle:                   The middle name(s) of the customer.
