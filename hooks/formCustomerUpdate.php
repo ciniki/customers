@@ -143,7 +143,7 @@ function ciniki_customers_hooks_formCustomerUpdate(&$ciniki, $tnid, $args) {
         // Update the customer fields
         //
         $update_args = [];
-        foreach(['first', 'middle', 'last', 'company'] as $t) {
+        foreach(['eid', 'first', 'middle', 'last', 'company'] as $t) {
             if( isset($customer["{$t}_new"]) && $customer[$t] != $customer["{$t}_new"] ) {
                 $update_args[$t] = $customer["{$t}_new"];
             }

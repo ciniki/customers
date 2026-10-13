@@ -16,6 +16,7 @@ function ciniki_customers_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
     
     $module = 'Customers';
     $refs = array(
+        'ciniki.customers.customer.eid' => array('module'=>$module, 'type'=>'text', 'name'=>'External ID'),
         'ciniki.customers.customer.first' => array('module'=>$module, 'type'=>'text', 'name'=>'First Name'),
         'ciniki.customers.customer.middle' => array('module'=>$module, 'type'=>'text', 'name'=>'Middle Name'),
         'ciniki.customers.customer.last' => array('module'=>$module, 'type'=>'text', 'name'=>'Last Name'),
