@@ -16,7 +16,6 @@ function ciniki_customers_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
     
     $module = 'Customers';
     $refs = array(
-        'ciniki.customers.customer.eid' => array('module'=>$module, 'type'=>'text', 'name'=>'External ID'),
         'ciniki.customers.customer.first' => array('module'=>$module, 'type'=>'text', 'name'=>'First Name'),
         'ciniki.customers.customer.middle' => array('module'=>$module, 'type'=>'text', 'name'=>'Middle Name'),
         'ciniki.customers.customer.last' => array('module'=>$module, 'type'=>'text', 'name'=>'Last Name'),
@@ -34,6 +33,10 @@ function ciniki_customers_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
         'ciniki.customers.customer.instagram' => array('module'=>$module, 'type'=>'url', 'name'=>'Instagram'),
         'ciniki.customers.customer.twitter' => array('module'=>$module, 'type'=>'url', 'name'=>'Twitter'),
         );
+
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x010000) ) {
+        $refs['ciniki.customers.customer.eid'] = array('module'=>$module, 'type'=>'text', 'name'=>'External ID');
+    }
 
     return array('stat'=>'ok', 'refs'=>$refs);
 }
