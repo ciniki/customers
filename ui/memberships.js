@@ -103,20 +103,22 @@ function ciniki_customers_memberships() {
             switch(j) {
                 case 0: return (d.type == 2 ? d.display_name : d.first);
                 case 1: return (d.type == 2 ? '' : d.last);
-                case 2: return d.member_lastpaid;
-                case 3: return d.member_expires;
+                case 2: return d.member_status_text;
+                case 3: return d.member_lastpaid;
+                case 4: return d.member_expires;
             }
         }
         if( s == 'members' ) {
             switch(j) {
                 case 0: return (d.type == 2 ? d.display_name : d.first);
                 case 1: return (d.type == 2 ? '' : d.last);
-                case 2: //if( d.membership_type == '20' ) {
+                case 2: return d.member_status_text;
+                case 3: //if( d.membership_type == '20' ) {
                     return d.membership_type_text;
                     //} 
                     //return '<span class="maintext">' + d.membership_type_text + '</span><span class="subtext">Paid: ' + d.member_lastpaid + '</span>';
-                case 3: return d.member_lastpaid;
-                case 4: return d.member_expires;
+                case 4: return d.member_lastpaid;
+                case 5: return d.member_expires;
             }
         }
     };
@@ -516,16 +518,16 @@ function ciniki_customers_memberships() {
             this.member.sections.membership.list.member_lastpaid.visible = 'yes';
             this.member.sections.membership.list.member_expires.visible = 'yes';
             this.member.sections.membership.list.type.visible = 'yes';
-            this.menu.sections.members.num_cols = 4;
-            this.menu.sections.members.headerValues = ['First', 'Last', 'Paid', 'Expires'];
-            this.menu.sections.members.sortTypes = ['text', 'text', 'date', 'date'];
+            this.menu.sections.members.num_cols = 5;
+            this.menu.sections.members.headerValues = ['First', 'Last', 'Status', 'Paid', 'Expires'];
+            this.menu.sections.members.sortTypes = ['text', 'text', 'Status', 'date', 'date'];
         } else {
             this.member.sections.membership.list.member_lastpaid.visible = 'no';
             this.member.sections.membership.list.member_expires.visible = 'no';
             this.member.sections.membership.list.type.visible = 'no';
-            this.menu.sections.members.num_cols = 5;
-            this.menu.sections.members.headerValues = ['First', 'Last', 'Membership', 'Paid', 'Expires'];
-            this.menu.sections.members.sortTypes = ['text', 'text', 'text', 'date', 'date'];
+            this.menu.sections.members.num_cols = 6;
+            this.menu.sections.members.headerValues = ['First', 'Last', 'Status', 'Membership', 'Paid', 'Expires'];
+            this.menu.sections.members.sortTypes = ['text', 'text', 'Status', 'text', 'date', 'date'];
         }
 
         if( (M.curTenant.modules['ciniki.customers'].flags&0x04000000) > 0 ) {

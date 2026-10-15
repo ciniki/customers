@@ -208,7 +208,7 @@ function ciniki_customers_memberships($ciniki) {
                     . "AND purchases.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND ciniki_customers.member_status = 10 "
+//                . "AND ciniki_customers.member_status = 10 "
                 . "ORDER BY ciniki_customers.sort_name, last, first, company "
                 . "";
         } else {
@@ -267,7 +267,7 @@ function ciniki_customers_memberships($ciniki) {
                 . ") "
             . "INNER JOIN ciniki_customers AS customers ON ("
                 . "purchases.customer_id = customers.id "
-                . "AND customers.member_status = 10 "
+//                . "AND customers.member_status = 10 "
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE (products.type = 10 OR products.type = 20) "
