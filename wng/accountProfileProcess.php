@@ -49,19 +49,20 @@ function ciniki_customers_wng_accountProfileProcess($ciniki, $tnid, &$request, $
         }
     }
 
-
     //
     // Display memberships
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'accountMembershipProcess');
-    $rc = ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, $request, $item);
-    if( isset($rc['blocks']) ) {
-        foreach($rc['blocks'] as $block) {
-            $blocks[] = $block;
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08)
+        && (!isset($settings['account-membership-change']) || $settings['account-membership-change'] == 'yes') 
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'accountMembershipProcess');
+        $rc = ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, $request, $item);
+        if( isset($rc['blocks']) ) {
+            foreach($rc['blocks'] as $block) {
+                $blocks[] = $block;
+            }
         }
     }
-
-
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

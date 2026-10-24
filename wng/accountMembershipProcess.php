@@ -38,6 +38,33 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
     }
 
     //
+    // Check membership categories
+    //
+    $member_categories_content = '';
+    if( isset($request['site']['settings']['account-member-categories']) && $request['site']['settings']['account-member-categories'] == 'yes' ) {
+        //
+        // Get the categories
+        //
+        $strsql = "SELECT tag_name "
+            . "FROM ciniki_customer_tags "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+        $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.customers', 'categories', 'tag_name');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.586', 'msg'=>'Unable to load the list of ', 'err'=>$rc['err']));
+        }
+        $categories = isset($rc['categories']) ? implode(', ', $rc['categories']) : '';
+
+        if( isset($request['site']['settings']['account-member-categories-label']) && $request['site']['settings']['account-member-categories-label'] != '' ) {
+            $member_categories_content = '<b>' . $request['site']['settings']['account-member-categories-label'] . '</b>: ' . $categories;
+        } else {
+            $member_categories_content = '<b>Categories</b>: ' . $categories;
+        }
+    }
+
+    //
     // Load the list of membership products
     //
     $strsql = "SELECT products.id, "
@@ -170,7 +197,8 @@ function ciniki_customers_wng_accountMembershipProcess($ciniki, $tnid, &$request
             'type' => 'text', 
             'class' => 'limit-width limit-width-60',
             'title' => 'Membership',
-            'content' => 'You do not currently have a membership. To become a member, choose one of the options below.',
+            'content' => 'You do not currently have a membership. To become a member, choose one of the options below.'
+                . (isset($member_categories_content) && $member_categories_content != '' ? '<br/><br/>' . $member_categories_content : ''),
             );
 
         $blocks[] = array(

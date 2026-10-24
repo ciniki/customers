@@ -17,6 +17,33 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
     $blocks = array();
 
     //
+    // Check membership categories
+    //
+    $member_categories_content = '';
+    if( isset($s['show-member-categories']) && $s['show-member-categories'] == 'yes' ) {
+        //
+        // Get the categories
+        //
+        $strsql = "SELECT tag_name "
+            . "FROM ciniki_customer_tags "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+        $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.customers', 'categories', 'tag_name');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.586', 'msg'=>'Unable to load the list of ', 'err'=>$rc['err']));
+        }
+        $categories = isset($rc['categories']) ? implode(', ', $rc['categories']) : '';
+
+        if( isset($s['member-categories-label']) && $s['member-categories-label'] != '' ) {
+            $member_categories_content = '<b>' . $s['member-categories-label'] . '</b>: ' . $categories;
+        } else {
+            $member_categories_content = '<b>Categories</b>: ' . $categories;
+        }
+    }
+
+    //
     // Load the list of membership products
     //
     $strsql = "SELECT products.id, "
@@ -118,6 +145,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
                     'title' => isset($s['title']) ? $s['title'] : '',
                     'type' => 'table', 
                     'headers' => 'yes',
+                    'content' => isset($member_categories_content) && $member_categories_content != '' ? $member_categories_content : '',
                     'columns' => array(
                         array('label' => 'Purchase', 'field' => 'name', 'class' => 'alignleft'),
                         array('label' => 'Expiry', 'field' => 'expiry_display', 'class' => 'aligncenter'),
@@ -129,6 +157,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
                 $blocks[] = array(
                     'title' => isset($s['title']) ? $s['title'] : '',
                     'type' => 'pricelist', 
+                    'intro' => isset($member_categories_content) && $member_categories_content != '' ? $member_categories_content : '',
                     'prices' => $products, 
                     'descriptions' => 'yes',
                     );
@@ -166,6 +195,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
             $blocks[] = array(
                 'title' => isset($s['title']) ? $s['title'] : '',
                 'type' => 'pricelist', 
+                'intro' => isset($member_categories_content) && $member_categories_content != '' ? $member_categories_content : '',
                 'prices' => $products, 
                 'descriptions' => 'yes',
                 );
@@ -179,6 +209,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
         $blocks[] = array(
             'title' => isset($s['title']) ? $s['title'] : '',
             'type' => 'pricelist', 
+            'intro' => isset($member_categories_content) && $member_categories_content != '' ? $member_categories_content : '',
             'prices' => $products, 
             'descriptions' => 'yes',
             );
