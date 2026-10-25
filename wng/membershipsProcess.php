@@ -27,6 +27,7 @@ function ciniki_customers_wng_membershipsProcess($ciniki, $tnid, &$request, $sec
         $strsql = "SELECT tag_name "
             . "FROM ciniki_customer_tags "
             . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND tag_type = 40 "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
